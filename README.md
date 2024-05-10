@@ -6,7 +6,7 @@
     │
     ├── modules/
     │   ├── data/
-    │   │   # here will be data for testing models
+    │   │   # data for testing models
     │   ├── fetch.py
     │   │   # function/s that will send request to required model
     │   ├── routes.py
