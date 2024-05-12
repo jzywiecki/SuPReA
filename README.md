@@ -1,6 +1,15 @@
-# intelligent-system-supporting-project-requirements-analysis
+# AI supported system for creating project requirements analysis and crafting blueprint for development
 
-# Structure: <br>
+# Setup:
+#### Install python: https://www.python.org/downloads/windows/
+#### Install required libraries
+#### Run in ./server:	`python server.py`
+#  Libraries:
+
+### Creating UML visualisation: plantuml 0.3.0: 
+#### https://pypi.org/project/plantuml/ `pip install plantuml`
+
+# Project structure: <br>
  <pre>
     Server/
     │
@@ -20,4 +29,8 @@
     └── utils/
         # main utils for server
   </pre>
+
+
+
+
 
