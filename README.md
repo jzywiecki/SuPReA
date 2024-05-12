@@ -2,7 +2,7 @@
 
 # Setup:
 #### Install python: https://www.python.org/downloads/windows/
-#### Install required libraries from requirements.txt by running: `pip install -r requirements.txt`
+#### Install required libraries: `pip install -r requirements.txt`
 #### Setup your OpenAI API key: https://platform.openai.com/docs/quickstart
 #### Run in ./server:	`python server.py`
 

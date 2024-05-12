@@ -7,7 +7,7 @@ logger = logging.getLogger("umlModule")
 
 def convert_to_uml_imageFile(uml_filename, png_filename, data):
     try:
-        with open(uml_filename, 'w') as f:
+        with open(uml_filename, 'w', encoding='utf8') as f:
             f.write(data)
             logging.info('PlantUML code has been written to file.')
             
