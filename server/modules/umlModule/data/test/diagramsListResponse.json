@@ -1,0 +1,73 @@
+{
+    "aktorzy": {
+        "Właściciel psa": {
+            "diagramy": [
+                "Rejestracja konta",
+                "Logowanie",
+                "Edycja profilu",
+                "Dodanie psa do profilu",
+                "Rezerwacja wyprowadzania psa",
+                "Anulowanie rezerwacji",
+                "Ocena wyprowadzacza",
+                "Płatność za usługę",
+                "Zgłaszanie problemów",
+                "Komunikacja z wyprowadzaczem",
+                "Przeglądanie historii rezerwacji",
+                "Zarządzanie powiadomieniami"
+            ]
+        },
+        "Wyprowadzacz psów": {
+            "diagramy": [
+                "Rejestracja konta wyprowadzacza",
+                "Logowanie",
+                "Tworzenie dostępnego harmonogramu",
+                "Aktualizacja dostępnego harmonogramu",
+                "Akceptacja rezerwacji",
+                "Odrzucenie rezerwacji",
+                "Oznaczanie rozpoczęcia wyprowadzania",
+                "Oznaczanie zakończenia wyprowadzania",
+                "Ocena właściciela psa",
+                "Wyświetlanie zarobków",
+                "Rozwiązywanie konfliktów",
+                "Komunikacja z właścicielem psa"
+            ]
+        },
+        "Administrator systemu": {
+            "diagramy": [
+                "Zarządzanie kontami użytkowników",
+                "Zarządzanie bazą wyprowadzaczy",
+                "Monitorowanie transakcji płatniczych",
+                "Zarządzanie zgłoszeniami problemów",
+                "Aktualizowanie informacji aplikacji",
+                "Zarządzanie bazą danych",
+                "Moderacja ocen i komentarzy"
+            ]
+        },
+        "System płatności": {
+            "diagramy": [
+                "Przetwarzanie płatności",
+                "Zwrot środków",
+                "Weryfikacja statusu płatności",
+                "Generowanie raportów płatności"
+            ]
+        },
+        "System powiadomień": {
+            "diagramy": [
+                "Wysyłanie powiadomień o rezerwacji",
+                "Wysyłanie przypomnień o nadchodzących wyprowadzeniach",
+                "Wysyłanie alertów systemowych",
+                "Wysyłanie powiadomień o nowych wiadomościach"
+            ]
+        },
+        "Mieszane": {
+            "diagramy": [
+                "Właściciel psa i Wyprowadzacz psów: Negocjacje terminu wyprowadzenia",
+                "Właściciel psa i System płatności: Realizacja płatności",
+                "Właściciel psa i System powiadomień: Otrzymywanie powiadomień",
+                "Wyprowadzacz psów i System płatności: Otrzymywanie wynagrodzenia",
+                "Wyprowadzacz psów i System powiadomień: Otrzymywanie powiadomień o nowych rezerwacjach",
+                "Administrator systemu i Właściciel psa: Zarządzanie skargami"
+            ]
+        }
+    }
+}
