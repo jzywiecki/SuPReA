@@ -2,12 +2,16 @@
 
 # Setup:
 #### Install python: https://www.python.org/downloads/windows/
-#### Install required libraries
+#### Install required libraries from requirements.txt by running: `pip install -r requirements.txt`
+#### Setup your OpenAI API key: https://platform.openai.com/docs/quickstart
 #### Run in ./server:	`python server.py`
+
 #  Libraries:
+### Making requests to OpenAI api: openai 1.28.1:
+#### https://pypi.org/project/openai/
 
 ### Creating UML visualisation: plantuml 0.3.0: 
-#### https://pypi.org/project/plantuml/ `pip install plantuml`
+#### https://pypi.org/project/plantuml/
 
 # Project structure: <br>
  <pre>
