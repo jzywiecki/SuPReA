@@ -1,7 +1,7 @@
 {
-    "aktorzy": {
+    "actors": {
         "Właściciel psa": {
-            "diagramy": [
+            "diagrams": [
                 "Rejestracja konta",
                 "Logowanie",
                 "Edycja profilu",
@@ -17,7 +17,7 @@
             ]
         },
         "Wyprowadzacz psów": {
-            "diagramy": [
+            "diagrams": [
                 "Rejestracja konta wyprowadzacza",
                 "Logowanie",
                 "Tworzenie dostępnego harmonogramu",
@@ -33,7 +33,7 @@
             ]
         },
         "Administrator systemu": {
-            "diagramy": [
+            "diagrams": [
                 "Zarządzanie kontami użytkowników",
                 "Zarządzanie bazą wyprowadzaczy",
                 "Monitorowanie transakcji płatniczych",
@@ -44,7 +44,7 @@
             ]
         },
         "System płatności": {
-            "diagramy": [
+            "diagrams": [
                 "Przetwarzanie płatności",
                 "Zwrot środków",
                 "Weryfikacja statusu płatności",
@@ -52,7 +52,7 @@
             ]
         },
         "System powiadomień": {
-            "diagramy": [
+            "diagrams": [
                 "Wysyłanie powiadomień o rezerwacji",
                 "Wysyłanie przypomnień o nadchodzących wyprowadzeniach",
                 "Wysyłanie alertów systemowych",
@@ -60,7 +60,7 @@
             ]
         },
         "Mieszane": {
-            "diagramy": [
+            "diagrams": [
                 "Właściciel psa i Wyprowadzacz psów: Negocjacje terminu wyprowadzenia",
                 "Właściciel psa i System płatności: Realizacja płatności",
                 "Właściciel psa i System powiadomień: Otrzymywanie powiadomień",

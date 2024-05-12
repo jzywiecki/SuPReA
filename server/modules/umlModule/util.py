@@ -2,6 +2,7 @@ import logging
 import re
 import plantuml 
 
+umlGenerator = plantuml.PlantUML(url='http://www.plantuml.com/plantuml/img/', basic_auth={}, form_auth={}, http_opts={}, request_opts={})
 logger = logging.getLogger("umlModule")
 
 def convert_to_uml_imageFile(uml_filename, png_filename, data):
@@ -10,8 +11,10 @@ def convert_to_uml_imageFile(uml_filename, png_filename, data):
             f.write(data)
             logging.info('PlantUML code has been written to file.')
             
-
-        plantuml.generate(uml_filename).to_png(png_filename)
+        try:
+            umlGenerator.processes_file(uml_filename, outfile=png_filename) #this also can be done without writing and reading from file
+        except Exception as e:
+            logging.info(f'Got exception from PlanUMl server: {e}')
         logging.info('PNG image has been generated successfully.')
     except Exception as e:
         logging.error(f'Error occurred while converting to UML image: {e}')
