@@ -1,5 +1,4 @@
 import utils.openaiUtils as utils
-import json
 import modules.module.module as modules
 
 actors_with_description_json = '''

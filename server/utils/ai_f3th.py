@@ -1,5 +1,6 @@
 
 import openai
+api_key = "sk-proj-7snYR4D7O3AjawkMVZ8vT3BlbkFJ2YNNMy8ardHb59LO9B7q"
 client = openai.OpenAI(api_key=api_key)
 
 async def send_openai_request(model, messages, format=None, max_tokens=None):
