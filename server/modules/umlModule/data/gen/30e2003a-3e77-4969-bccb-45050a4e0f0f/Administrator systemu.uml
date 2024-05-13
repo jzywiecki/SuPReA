@@ -1,0 +1,46 @@
+@startuml
+
+!define ADMINISTRATOR_ACTOR
+actor "Administrator systemu" as Admin
+
+usecase (Zarządzanie kontami\nużytkowników) as ManageUsers {
+    usecase "Tworzenie kont" as CreateUser
+    usecase "Modyfikowanie kont" as ModifyUser
+    usecase "Usuwanie kont" as DeleteUser
+    usecase "Przyznawanie uprawnień" as GrantPermissions
+}
+
+usecase (Zarządzanie bazą\nwyprowadzaczy) as ManageExtractors {
+    usecase "Dodawanie wyprowadzaczy" as AddExtractors
+    usecase "Konfiguracja wyprowadzaczy" as ConfigExtractors
+    usecase "Usuwanie wyprowadzaczy" as RemoveExtractors
+}
+
+usecase (Monitorowanie transakcji\npłatniczych) as MonitorTransactions
+usecase (Zarządzanie zgłoszeniami\nproblemów) as ManageIssues
+
+usecase (Aktualizowanie informacji\naplikacji) as UpdateAppInfo {
+    usecase "Aktualizowanie dokumentacji" as UpdateDocs
+    usecase "Wprowadzanie zmian w danych aplikacji" as ChangeAppData
+}
+
+usecase (Zarządzanie bazą danych) as ManageDatabase {
+    usecase "Backup danych" as DatabaseBackup
+    usecase "Przywracanie danych" as DatabaseRestore
+    usecase "Aktualizacja schematu" as UpdateSchema
+}
+
+usecase (Moderacja ocen i\nkomentarzy) as ModerateRatings {
+    usecase "Usuwanie komentarzy" as DeleteComments
+    usecase "Zmiana ocen" as EditRatings
+}
+
+Admin -up-> ManageUsers
+Admin .right.> ManageExtractors
+Admin .down.> MonitorTransactions
+Admin -left-> ManageIssues
+Admin .left.> UpdateAppInfo
+Admin -down-> ManageDatabase
+Admin -up-> ModerateRatings
+
+@enduml

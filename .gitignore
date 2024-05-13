@@ -1,0 +1,9 @@
+*.pyc
+*.pyo
+
+*.log
+
+__pycache__/
+
+
+*utils/ai_f3th.py
