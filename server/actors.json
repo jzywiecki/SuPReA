@@ -1,24 +1,24 @@
 {
     "actors": [
         {
-            "name": "Założyciel startupu",
-            "description": "Osoba odpowiedzialna za stworzenie i rozwijanie startupu. Wyznacza cele, strategię oraz nadzoruje całość działań."
+            "name": "Współzałożyciele",
+            "description": "Osoby odpowiedzialne za pomysł oraz rozwój aplikacji do wyprowadzania psów. Są zaangażowane w podejmowanie strategicznych decyzji oraz pozyskiwanie inwestorów."
         },
         {
-            "name": "Programista",
-            "description": "Osoba odpowiedzialna za tworzenie aplikacji mobilnej do wyprowadzania psów. Programista zajmuje się implementacją funkcjonalności oraz dba o stabilność i bezpieczeństwo systemu."
+            "name": "Programiści",
+            "description": "Specjaliści od programowania, którzy odpowiadają za rozwój i utrzymanie techniczne aplikacji. Projektują i implementują funkcjonalności zgodnie z wymaganiami klientów."
         },
         {
-            "name": "Projektant UI/UX",
-            "description": "Osoba odpowiedzialna za zaprojektowanie intuicyjnego interfejsu użytkownika w aplikacji mobilnej. Projektant dba o estetykę oraz przyjazność użytkownika podczas korzystania z aplikacji."
+            "name": "Projektant UX/UI",
+            "description": "Osoba odpowiedzialna za zaprojektowanie intuicyjnego interfejsu użytkownika, który spełnia oczekiwania użytkowników. Dbają o estetykę i użyteczność aplikacji."
         },
         {
             "name": "Specjalista ds. marketingu",
-            "description": "Osoba odpowiedzialna za promocję aplikacji do wyprowadzania psów. Specjalista ds. marketingu zajmuje się pozyskiwaniem użytkowników oraz budowaniem świadomości marki."
+            "description": "Osoba zajmująca się promocją aplikacji oraz pozyskiwaniem nowych użytkowników. Opracowuje strategię marketingową i dba o budowanie świadomości marki."
         },
         {
-            "name": "Tester",
-            "description": "Osoba odpowiedzialna za sprawdzenie poprawności działania aplikacji oraz wyszukiwanie ewentualnych błędów. Tester dba o jakość ostatecznego produktu dostarczanego użytkownikom."
+            "name": "Wsparcie techniczne",
+            "description": "Osoby odpowiedzialne za obsługę klienta, udzielanie pomocy technicznej oraz rozwiązywanie problemów użytkowników. Zapewniają płynne funkcjonowanie aplikacji."
         }
     ]
 }

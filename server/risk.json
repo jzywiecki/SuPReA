@@ -1,44 +1,44 @@
 {
     "risks": [
         {
-            "risk": "Niskie zrozumienie zachowań psów przez użytkowników",
-            "description": "Użytkownicy mogą nieprawidłowo interpretować zachowania psów, co może prowadzić do niebezpiecznych sytuacji podczas wyprowadzania."
+            "risk": "Niskie zabezpieczenia aplikacji",
+            "description": "Brak odpowiednich zabezpieczeń w aplikacji może prowadzić do wycieku danych osobowych klientów korzystających z usługi, co może zaszkodzić reputacji startupu oraz narazić go na ryzyko prawne."
         },
         {
-            "risk": "Brak stabilnej komunikacji z urządzeniami GPS",
-            "description": "Nieprawidłowa współpraca z urządzeniami GPS może generować błędne lokalizacje psów, co utrudni użytkownikom odnalezienie swojego pupila."
+            "risk": "Zawodność technologii lokalizacyjnych",
+            "description": "Nieprawidłowe działanie technologii lokalizacyjnych może wpłynąć na precyzję wyznaczania tras spacerowych dla psów, co może zniechęcić użytkowników do korzystania z aplikacji."
         },
         {
-            "risk": "Problemy z baterią w urządzeniach mobilnych",
-            "description": "Wyczerpanie baterii w smartfonach użytkowników może uniemożliwić korzystanie z aplikacji w trakcie wyprowadzania psów."
+            "risk": "Konieczność integracji z systemami zewnętrznymi",
+            "description": "Zintegrowanie aplikacji z systemami zewnętrznymi, takimi jak bazy danych schronisk czy usługi pogodowe, może być trudne i podatne na błędy, co może prowadzić do nieprawidłowego funkcjonowania aplikacji."
         },
         {
-            "risk": "Wrażliwość na usterki sprzętowe",
-            "description": "Awarie w smartfonach użytkowników lub innych urządzeniach mogą powodować niedziałanie aplikacji, co wpłynie na komfort wyprowadzania psów."
+            "risk": "Zbyt duże obciążenie serwerów",
+            "description": "W przypadku nagłego wzrostu popularności aplikacji, serwery mogą zostać przeciążone, co skutkować będzie spadkiem wydajności aplikacji oraz utratą klientów."
         },
         {
-            "risk": "Słaba jakość map i danych geograficznych",
-            "description": "Niedokładne mapy lub niekompletne informacje geograficzne mogą wprowadzać użytkowników w błąd podczas planowania tras spacerów z psami."
+            "risk": "Brak ciągłego monitoringu aplikacji",
+            "description": "Niedostateczny monitoring działania aplikacji może skutkować opóźnionym wykryciem problemów technicznych lub cyberataków, co może prowadzić do strat finansowych i utraty zaufania klientów."
         },
         {
-            "risk": "Problemy z odbiorem sygnału GPS",
-            "description": "Brak lub słaby odbiór sygnału GPS może uniemożliwić precyzyjne określenie lokalizacji psa, co wpłynie na funkcjonalność aplikacji."
+            "risk": "Konieczność spełnienia wymagań regulacyjnych",
+            "description": "Startup musi zadbać o spełnienie wymagań regulacyjnych związanych z ochroną danych osobowych klientów oraz bezpieczeństwem aplikacji, aby uniknąć konsekwencji prawnych i kar finansowych."
         },
         {
-            "risk": "Wrażliwość na ataki cybernetyczne",
-            "description": "Zagrożenie atakami hakerskimi może narazić na niebezpieczeństwo prywatne dane użytkowników oraz funkcjonalność aplikacji."
+            "risk": "Brak testów odpowiedzialności za szkody",
+            "description": "W przypadku wypadku lub incydentu z udziałem psa podczas korzystania z aplikacji, startup może być pociągnięty do odpowiedzialności prawnej, dlatego ważne jest przeprowadzenie testów odpowiedzialności za szkody."
         },
         {
-            "risk": "Brak zrozumienia interfejsu aplikacji przez użytkowników",
-            "description": "Niezrozumienie lub trudności w obsłudze interfejsu aplikacji mogą zniechęcić użytkowników do korzystania z niej, co wpłynie na popularność startupu."
+            "risk": "Słaba komunikacja z klientami",
+            "description": "Niedostateczna komunikacja z użytkownikami aplikacji może skutkować niezrozumieniem funkcjonalności, utratą zaufania i zniechęceniem do korzystania z usługi."
         },
         {
-            "risk": "Konkurencja na rynku aplikacji dla psów",
-            "description": "Wysoka konkurencja na rynku aplikacji dla psów może negatywnie wpłynąć na pozycjonowanie i popularność nowego startupu."
+            "risk": "Wrażliwość na zmiany na rynku technologicznym",
+            "description": "Szybkie zmiany technologiczne mogą sprawić, że rozwiązania oferowane przez startup staną się przestarzałe, dlatego konieczne jest monitorowanie trendów i adaptacja do nowych technologii."
         },
         {
-            "risk": "Ograniczony budżet na marketing i promocję",
-            "description": "Brak odpowiednich środków na promocję aplikacji może utrudnić dotarcie do potencjalnych użytkowników i zwiększenie bazy klientów."
+            "risk": "Niestabilność partnerów technologicznych",
+            "description": "Zależność od partnerów technologicznych, takich jak dostawcy usług chmurowych czy systemów płatności, może być ryzykowna ze względu na ich potencjalną niestabilność lub problemy operacyjne."
         }
     ]
 }
