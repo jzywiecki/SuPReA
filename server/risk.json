@@ -1,0 +1,44 @@
+{
+    "risks": [
+        {
+            "risk": "Niskie zrozumienie zachowań psów przez użytkowników",
+            "description": "Użytkownicy mogą nieprawidłowo interpretować zachowania psów, co może prowadzić do niebezpiecznych sytuacji podczas wyprowadzania."
+        },
+        {
+            "risk": "Brak stabilnej komunikacji z urządzeniami GPS",
+            "description": "Nieprawidłowa współpraca z urządzeniami GPS może generować błędne lokalizacje psów, co utrudni użytkownikom odnalezienie swojego pupila."
+        },
+        {
+            "risk": "Problemy z baterią w urządzeniach mobilnych",
+            "description": "Wyczerpanie baterii w smartfonach użytkowników może uniemożliwić korzystanie z aplikacji w trakcie wyprowadzania psów."
+        },
+        {
+            "risk": "Wrażliwość na usterki sprzętowe",
+            "description": "Awarie w smartfonach użytkowników lub innych urządzeniach mogą powodować niedziałanie aplikacji, co wpłynie na komfort wyprowadzania psów."
+        },
+        {
+            "risk": "Słaba jakość map i danych geograficznych",
+            "description": "Niedokładne mapy lub niekompletne informacje geograficzne mogą wprowadzać użytkowników w błąd podczas planowania tras spacerów z psami."
+        },
+        {
+            "risk": "Problemy z odbiorem sygnału GPS",
+            "description": "Brak lub słaby odbiór sygnału GPS może uniemożliwić precyzyjne określenie lokalizacji psa, co wpłynie na funkcjonalność aplikacji."
+        },
+        {
+            "risk": "Wrażliwość na ataki cybernetyczne",
+            "description": "Zagrożenie atakami hakerskimi może narazić na niebezpieczeństwo prywatne dane użytkowników oraz funkcjonalność aplikacji."
+        },
+        {
+            "risk": "Brak zrozumienia interfejsu aplikacji przez użytkowników",
+            "description": "Niezrozumienie lub trudności w obsłudze interfejsu aplikacji mogą zniechęcić użytkowników do korzystania z niej, co wpłynie na popularność startupu."
+        },
+        {
+            "risk": "Konkurencja na rynku aplikacji dla psów",
+            "description": "Wysoka konkurencja na rynku aplikacji dla psów może negatywnie wpłynąć na pozycjonowanie i popularność nowego startupu."
+        },
+        {
+            "risk": "Ograniczony budżet na marketing i promocję",
+            "description": "Brak odpowiednich środków na promocję aplikacji może utrudnić dotarcie do potencjalnych użytkowników i zwiększenie bazy klientów."
+        }
+    ]
+}

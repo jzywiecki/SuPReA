@@ -1,20 +1,24 @@
 {
     "actors": [
         {
+            "name": "Założyciel startupu",
+            "description": "Osoba odpowiedzialna za stworzenie i rozwijanie startupu. Wyznacza cele, strategię oraz nadzoruje całość działań."
+        },
+        {
             "name": "Programista",
-            "description": "Osoba odpowiedzialna za pisanie kodu aplikacji oraz implementację funkcjonalności według wymagań."
+            "description": "Osoba odpowiedzialna za tworzenie aplikacji mobilnej do wyprowadzania psów. Programista zajmuje się implementacją funkcjonalności oraz dba o stabilność i bezpieczeństwo systemu."
         },
         {
-            "name": "Projektant interfejsu graficznego",
-            "description": "Osoba zajmująca się projektowaniem interfejsu użytkownika tak, aby był estetyczny, intuicyjny i łatwy w obsłudze."
+            "name": "Projektant UI/UX",
+            "description": "Osoba odpowiedzialna za zaprojektowanie intuicyjnego interfejsu użytkownika w aplikacji mobilnej. Projektant dba o estetykę oraz przyjazność użytkownika podczas korzystania z aplikacji."
         },
         {
-            "name": "Analityk biznesowy",
-            "description": "Osoba zajmująca się analizą potrzeb i wymagań klienta, definiowaniem funkcjonalności oraz wymagań dla tworzonej aplikacji."
+            "name": "Specjalista ds. marketingu",
+            "description": "Osoba odpowiedzialna za promocję aplikacji do wyprowadzania psów. Specjalista ds. marketingu zajmuje się pozyskiwaniem użytkowników oraz budowaniem świadomości marki."
         },
         {
-            "name": "Quality Assurance (QA)",
-            "description": "Osoba odpowiedzialna za testowanie aplikacji pod kątem jakości i zgodności z wymaganiami, w celu zapewnienia wysokiej jakości oprogramowania."
+            "name": "Tester",
+            "description": "Osoba odpowiedzialna za sprawdzenie poprawności działania aplikacji oraz wyszukiwanie ewentualnych błędów. Tester dba o jakość ostatecznego produktu dostarczanego użytkownikom."
         }
     ]
 }

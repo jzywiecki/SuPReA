@@ -1,6 +1,6 @@
 
 import openai
-client = openai.OpenAI(api_key=api_key)
+client = openai.OpenAI()
 
 async def send_openai_request(model, messages, format=None, max_tokens=None):
     params = {"model": model, "messages": messages}

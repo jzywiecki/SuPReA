@@ -1,1 +1,4 @@
 Django~=5.0.6
+plantuml~=0.3.0
+six~=1.16.0
+openai~=1.30.1
