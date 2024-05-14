@@ -46,11 +46,3 @@ class UmlModule(modules.Module):
             uml_list = await generate_uml_list(self.make_ai_call, is_mock=is_mock)
             await generate_uml_images(self.make_ai_call, is_mock=is_mock)
         return uml_list
-
-# async def generate_business(is_mock=True):
-#     try:
-#         business_list_json = await fetch_business(is_mock)
-#         return business_list_json
-#     except Exception as e:
-#         logger.error(f"Error generating business data: {e}")
-#         raise Exception(f"Error generating business data: {e}")
