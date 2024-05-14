@@ -10,11 +10,11 @@ class Module(metaclass=abc.ABCMeta):
                 NotImplemented)
 
     @abc.abstractmethod
-    def make_ai_call(self, message, type):
+    def make_ai_call(self, message, msg_type):
         """ Make a call to ai model of type with given message and return the response """
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def get_content(self, forWho, doingWhat):
+    async def get_content(self, forWho, doingWhat, **kwargs):
         """ Get content for given forWho and doingWhat and return the response """
         raise NotImplementedError

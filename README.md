@@ -13,6 +13,9 @@
 ### Creating UML visualisation: plantuml 0.3.0: 
 #### https://pypi.org/project/plantuml/
 
+### Validating data: jsonschema 4.22.0:
+#### https://pypi.org/project/jsonschema/
+
 # Project structure: <br>
  <pre>
     Server/
