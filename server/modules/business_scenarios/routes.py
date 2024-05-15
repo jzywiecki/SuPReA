@@ -10,9 +10,7 @@ logger = logging.getLogger("business_scenario")
 dirname =  os.path.dirname(__file__)
 async def generate_business(make_ai_call, is_mock=True):
     try:
-        print("asda")
         business_list_json = await fetch_business(make_ai_call,is_mock)
-        print(business_list_json)
         write_to_file(os.path.join(dirname,'data','gen','scenario.txt'), str(business_list_json))
         return business_list_json
     except Exception as e:
