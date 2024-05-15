@@ -10,7 +10,8 @@ import modules.actorsModule.routes as actors
 from modules.business_scenarios.routes import BusinessModule
 # ----------------------------
 from modules.elevator_speech.routes import ElevatorSpeechModule
-
+# ----------------------------
+from modules.title.routes import TitleModule
 # ----------------------------
 import utils.openaiUtils as utils 
 # ----------------------------
@@ -19,7 +20,7 @@ if __name__ == "__main__":
     logger.configure_logging()
     logger = logging.getLogger("server")
     logger.info("Server started")
-    is_mock=True
+    is_mock=False
     logger.info(f"Mocking is: {is_mock}")
 
     loop = asyncio.get_event_loop()
@@ -27,7 +28,8 @@ if __name__ == "__main__":
     # actors = actors.ActorsModule(utils.Model.GPT3)
     # uml_generator = UmlModule(utils.Model.GPT3)
     # business_generator = BusinessModule(utils.Model.GPT3)
-    speech_generator = ElevatorSpeechModule(utils.Model.GPT3)
+    # speech_generator = ElevatorSpeechModule(utils.Model.GPT3)
+    title_generator = TitleModule(utils.Model.GPT3)
     
     # logger.info("Generating actors")
     # loop.run_until_complete(actors.get_content("systemu", "tworzenia aplikacji"))
@@ -40,6 +42,10 @@ if __name__ == "__main__":
     # logger.info("Generating busines scenraios")
     # loop.run_until_complete(business_generator.get_content("","", is_mock=is_mock))
 
-    logger.info("Generating elevator speech")
-    loop.run_until_complete(speech_generator.get_content("","", is_mock=is_mock))
+    # logger.info("Generating elevator speech")
+    # loop.run_until_complete(speech_generator.get_content("","", is_mock=is_mock))
+
+    logger.info("Generating title")
+    loop.run_until_complete(title_generator.get_content("","", is_mock=is_mock))
+
 
