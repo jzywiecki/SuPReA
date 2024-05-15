@@ -15,14 +15,16 @@ from modules.title.routes import TitleModule
 # ----------------------------
 from modules.project_schedule.routes import ScheduleModule
 # ----------------------------
+from modules.database_schema.routes import DatabaseSchemaModule
+# ----------------------------
 import utils.openaiUtils as utils 
 # ----------------------------
-
+ABS_DRIVER_PATH='D:\Magazyn\Studia\Inzynierka\intelligent-system-supporting-project-requirements-analysis\server\chromeDriver\chromedriver.exe'
 if __name__ == "__main__":
     logger.configure_logging()
     logger = logging.getLogger("server")
     logger.info("Server started")
-    is_mock=False
+    is_mock=True
     logger.info(f"Mocking is: {is_mock}")
 
     loop = asyncio.get_event_loop()
@@ -32,7 +34,8 @@ if __name__ == "__main__":
     # business_generator = BusinessModule(utils.Model.GPT3)
     # speech_generator = ElevatorSpeechModule(utils.Model.GPT3)
     # title_generator = TitleModule(utils.Model.GPT3)
-    schedule_generator = ScheduleModule(utils.Model.GPT3)
+    # schedule_generator = ScheduleModule(utils.Model.GPT3)
+    database_schema_generator = DatabaseSchemaModule(utils.Model.GPT3)
     
     # logger.info("Generating actors")
     # loop.run_until_complete(actors.get_content("systemu", "tworzenia aplikacji"))
@@ -51,8 +54,11 @@ if __name__ == "__main__":
     # logger.info("Generating title")
     # loop.run_until_complete(title_generator.get_content("","", is_mock=is_mock))
 
-    logger.info("Generating schedule")
-    loop.run_until_complete(schedule_generator.get_content("","", is_mock=is_mock))
+    # logger.info("Generating schedule")
+    # loop.run_until_complete(schedule_generator.get_content("","", is_mock=is_mock))
+
+    logger.info("Generating database schema")
+    loop.run_until_complete(database_schema_generator.get_content("","", is_mock=is_mock, driver= ABS_DRIVER_PATH))
 
 
 

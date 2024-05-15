@@ -16,7 +16,6 @@ details = """Let the plan show the development of the application from the progr
     {name: '', description: '', duration: ''},
     ]}"""
 
-
 required_schema =   {
     "type": "object",
     "properties": {
