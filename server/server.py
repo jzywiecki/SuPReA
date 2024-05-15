@@ -13,6 +13,8 @@ from modules.elevator_speech.routes import ElevatorSpeechModule
 # ----------------------------
 from modules.title.routes import TitleModule
 # ----------------------------
+from modules.project_schedule.routes import ScheduleModule
+# ----------------------------
 import utils.openaiUtils as utils 
 # ----------------------------
 
@@ -29,7 +31,8 @@ if __name__ == "__main__":
     # uml_generator = UmlModule(utils.Model.GPT3)
     # business_generator = BusinessModule(utils.Model.GPT3)
     # speech_generator = ElevatorSpeechModule(utils.Model.GPT3)
-    title_generator = TitleModule(utils.Model.GPT3)
+    # title_generator = TitleModule(utils.Model.GPT3)
+    schedule_generator = ScheduleModule(utils.Model.GPT3)
     
     # logger.info("Generating actors")
     # loop.run_until_complete(actors.get_content("systemu", "tworzenia aplikacji"))
@@ -45,7 +48,11 @@ if __name__ == "__main__":
     # logger.info("Generating elevator speech")
     # loop.run_until_complete(speech_generator.get_content("","", is_mock=is_mock))
 
-    logger.info("Generating title")
-    loop.run_until_complete(title_generator.get_content("","", is_mock=is_mock))
+    # logger.info("Generating title")
+    # loop.run_until_complete(title_generator.get_content("","", is_mock=is_mock))
+
+    logger.info("Generating schedule")
+    loop.run_until_complete(schedule_generator.get_content("","", is_mock=is_mock))
+
 
 
