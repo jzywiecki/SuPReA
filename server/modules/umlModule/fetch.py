@@ -1,8 +1,9 @@
 import json
 import logging
 import os
-from .util import read_from_file, extract_uml_from_messeage
+from .util import  extract_uml_from_messeage
 from utils.validation import validate_json
+from utils.data import read_from_file
 
 logger = logging.getLogger("umlModule")
 dirname =  os.path.dirname(__file__)
