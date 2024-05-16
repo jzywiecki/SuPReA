@@ -1,24 +1,16 @@
 {
     "actors": [
         {
-            "name": "Współzałożyciele",
-            "description": "Osoby odpowiedzialne za pomysł oraz rozwój aplikacji do wyprowadzania psów. Są zaangażowane w podejmowanie strategicznych decyzji oraz pozyskiwanie inwestorów."
+            "name": "Właściciele psów",
+            "description": "Osoby posiadające psy, które korzystają z aplikacji do wyprowadzania swoich czworonogów. Mogą rejestrować swoje psy, ustalać harmonogram spacerów oraz monitorować ich aktywność podczas wyprowadzania."
         },
         {
-            "name": "Programiści",
-            "description": "Specjaliści od programowania, którzy odpowiadają za rozwój i utrzymanie techniczne aplikacji. Projektują i implementują funkcjonalności zgodnie z wymaganiami klientów."
+            "name": "Spacerowicze",
+            "description": "Osoby chętne do wyprowadzania psów innych użytkowników aplikacji. Mogą przeglądać dostępne spacery, wybierać te, które pasują do ich harmonogramu oraz śledzić trasę spaceru i aktywność psa podczas wyprowadzania."
         },
         {
-            "name": "Projektant UX/UI",
-            "description": "Osoba odpowiedzialna za zaprojektowanie intuicyjnego interfejsu użytkownika, który spełnia oczekiwania użytkowników. Dbają o estetykę i użyteczność aplikacji."
-        },
-        {
-            "name": "Specjalista ds. marketingu",
-            "description": "Osoba zajmująca się promocją aplikacji oraz pozyskiwaniem nowych użytkowników. Opracowuje strategię marketingową i dba o budowanie świadomości marki."
-        },
-        {
-            "name": "Wsparcie techniczne",
-            "description": "Osoby odpowiedzialne za obsługę klienta, udzielanie pomocy technicznej oraz rozwiązywanie problemów użytkowników. Zapewniają płynne funkcjonowanie aplikacji."
+            "name": "Administratorzy",
+            "description": "Osoby odpowiedzialne za utrzymanie i rozwijanie aplikacji. Monitorują działanie systemu, rozwiązują problemy techniczne oraz dbają o zgodność z przepisami dotyczącymi obrony praw zwierząt."
         }
     ]
 }

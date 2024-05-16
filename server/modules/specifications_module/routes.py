@@ -2,12 +2,18 @@ import utils.openaiUtils as utils
 import json
 import modules.module.module as modules
 
-actors_with_description_json = '''
-    "strategy": "string"
+specifications_schema_json = '''
+    "specifications": [
+        {
+            "name": "string",
+            "description": "string"
+        }
+    ]
 '''
-query_for_who = "Opracuj strategie marketingową dla"
+
+query_for_who = "Napisz specyfikacje dla"
 query_doing_what = "tworzacego aplikacje do"
-query_expectations = "Wynik zwróć w postaci json zgodnie ze schematem  " + actors_with_description_json + ", wartości pól uzupełnij w języku polskim."
+query_expectations = "Wynik zwróć w postaci json zgodnie ze schematem  " + specifications_schema_json + ", wartości pól uzupełnij w języku polskim."
 
 class SpecificationsModule(modules.Module):
     def __init__(self, model):

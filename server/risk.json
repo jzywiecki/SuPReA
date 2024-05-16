@@ -1,44 +1,44 @@
 {
     "risks": [
         {
-            "risk": "Niskie zabezpieczenia aplikacji",
-            "description": "Brak odpowiednich zabezpieczeń w aplikacji może prowadzić do wycieku danych osobowych klientów korzystających z usługi, co może zaszkodzić reputacji startupu oraz narazić go na ryzyko prawne."
+            "risk": "Zagrożenie cybernetyczne",
+            "description": "Możliwość ataku hakerów na aplikację, kradzieży danych klientów lub podszywania się pod użytkowników."
         },
         {
-            "risk": "Zawodność technologii lokalizacyjnych",
-            "description": "Nieprawidłowe działanie technologii lokalizacyjnych może wpłynąć na precyzję wyznaczania tras spacerowych dla psów, co może zniechęcić użytkowników do korzystania z aplikacji."
+            "risk": "Błędy w aplikacji",
+            "description": "Powstałe błędy w programowaniu mogą prowadzić do niestabilności aplikacji lub awarii, co może zniechęcić użytkowników."
         },
         {
-            "risk": "Konieczność integracji z systemami zewnętrznymi",
-            "description": "Zintegrowanie aplikacji z systemami zewnętrznymi, takimi jak bazy danych schronisk czy usługi pogodowe, może być trudne i podatne na błędy, co może prowadzić do nieprawidłowego funkcjonowania aplikacji."
+            "risk": "Konkurencja na rynku",
+            "description": "Rynek aplikacji dla wyprowadzania psów może być konkurencyjny, co utrudni zdobycie i utrzymanie klientów."
         },
         {
-            "risk": "Zbyt duże obciążenie serwerów",
-            "description": "W przypadku nagłego wzrostu popularności aplikacji, serwery mogą zostać przeciążone, co skutkować będzie spadkiem wydajności aplikacji oraz utratą klientów."
+            "risk": "Problemy z dostępnością mobilną",
+            "description": "Aplikacja powinna działać sprawnie i być dostępna na różnych urządzeniach mobilnych, co może być wyzwaniem technicznym."
         },
         {
-            "risk": "Brak ciągłego monitoringu aplikacji",
-            "description": "Niedostateczny monitoring działania aplikacji może skutkować opóźnionym wykryciem problemów technicznych lub cyberataków, co może prowadzić do strat finansowych i utraty zaufania klientów."
+            "risk": "Błędy w nawigacji",
+            "description": "Niewłaściwa nawigacja w aplikacji może prowadzić do frustracji użytkowników i utraty zainteresowania."
         },
         {
-            "risk": "Konieczność spełnienia wymagań regulacyjnych",
-            "description": "Startup musi zadbać o spełnienie wymagań regulacyjnych związanych z ochroną danych osobowych klientów oraz bezpieczeństwem aplikacji, aby uniknąć konsekwencji prawnych i kar finansowych."
+            "risk": "Problemy z integracją z zewnętrznymi serwisami",
+            "description": "Potrzeba integracji z serwisami zewnętrznymi, np. mapami, może wiązać się z problemami technicznymi lub brakiem zgodności."
         },
         {
-            "risk": "Brak testów odpowiedzialności za szkody",
-            "description": "W przypadku wypadku lub incydentu z udziałem psa podczas korzystania z aplikacji, startup może być pociągnięty do odpowiedzialności prawnej, dlatego ważne jest przeprowadzenie testów odpowiedzialności za szkody."
+            "risk": "Brak zrozumienia potrzeb klientów",
+            "description": "Niewłaściwe zrozumienie potrzeb klientów może skutkować tworzeniem niepraktycznych funkcji w aplikacji."
         },
         {
-            "risk": "Słaba komunikacja z klientami",
-            "description": "Niedostateczna komunikacja z użytkownikami aplikacji może skutkować niezrozumieniem funkcjonalności, utratą zaufania i zniechęceniem do korzystania z usługi."
+            "risk": "Zmiany w prawie ochrony danych",
+            "description": "Konieczność ciągłego monitorowania i dostosowywania aplikacji do zmian w przepisach dotyczących ochrony danych osobowych."
         },
         {
-            "risk": "Wrażliwość na zmiany na rynku technologicznym",
-            "description": "Szybkie zmiany technologiczne mogą sprawić, że rozwiązania oferowane przez startup staną się przestarzałe, dlatego konieczne jest monitorowanie trendów i adaptacja do nowych technologii."
+            "risk": "Problemy z płatnościami online",
+            "description": "Konieczność zapewnienia bezpiecznych i niezawodnych transakcji online może stanowić wyzwanie techniczne."
         },
         {
-            "risk": "Niestabilność partnerów technologicznych",
-            "description": "Zależność od partnerów technologicznych, takich jak dostawcy usług chmurowych czy systemów płatności, może być ryzykowna ze względu na ich potencjalną niestabilność lub problemy operacyjne."
+            "risk": "Negatywne opinie i recenzje",
+            "description": "Negatywne opinie użytkowników mogą wpłynąć negatywnie na reputację startupu i zmniejszyć zaufanie klientów."
         }
     ]
 }

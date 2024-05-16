@@ -1,3 +1,8 @@
 {
-    "strategy": "Nasza strategia marketingowa będzie oparta na aktywnym uczestnictwie w lokalnych wydarzeniach dedykowanych psom, takich jak spacery z psami, szkolenia czy dni otwarte w schroniskach. Będziemy również współpracować z influencerami z branży zoologicznej oraz prowadzić kampanie promocyjne na platformach społecznościowych, takich jak Instagram i Facebook. Dodatkowo planujemy organizację konkursów dla naszych użytkowników oraz udział w targach zoologicznych. Naszym celem jest zbudowanie świadomości marki oraz pozyskanie pierwszych użytkowników aplikacji." 
+    "specifications": [
+        {
+            "name": "Aplikacja do wyprowadzania psów",
+            "description": "Startup tworzący aplikację mobilną, która pozwala właścicielom psów znaleźć licencjonowanych opiekunów do wyprowadzania swoich pupili. Aplikacja umożliwia rezerwację spacerów, monitorowanie trasy spaceru, kontakt z opiekunem oraz płatności online. Startup zapewnia także możliwość oceniania opiekunów i dzielenia się opiniami na temat ich usług."
+        }
+    ]
 }
