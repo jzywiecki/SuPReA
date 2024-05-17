@@ -1,5 +1,4 @@
 import utils.openaiUtils as utils
-import json
 import modules.module.module as modules
 
 actors_with_description_json = '''
@@ -18,12 +17,12 @@ class ActorsModule(modules.Module):
     def __init__(self, model):
         self.Model = model
 
-    def make_ai_call(self, message, type):
+    def make_ai_call(self, message, msg_type):
         messages = [{"role": "system", "content": message}]
         response = utils.sendAIRequest(self.Model, messages, "json", 4000)
         return response
 
-    async def get_content(self, forWho, doingWhat):
+    async def get_content(self, forWho, doingWhat, **kwargs):
         text_response_for_actors = self.make_ai_call(query_for_who + " " + forWho + " " + query_doing_what + " " + doingWhat + " " + query_expectations, {"type": "json_object"});
         
         with open('actors.json', 'w') as file:

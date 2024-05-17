@@ -13,6 +13,13 @@
 ### Creating UML visualisation: plantuml 0.3.0: 
 #### https://pypi.org/project/plantuml/
 
+### Validating data: jsonschema 4.22.0:
+#### https://pypi.org/project/jsonschema/
+
+### Using webtools: selenium 4.20.0
+#### https://pypi.org/project/selenium/
+#### WebDriver: https://googlechromelabs.github.io/chrome-for-testing/#stable
+
 # Project structure: <br>
  <pre>
     Server/

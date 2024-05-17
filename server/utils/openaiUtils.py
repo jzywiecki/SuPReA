@@ -1,7 +1,7 @@
 from openai import OpenAI
 from enum import Enum
 
-client = OpenAI()
+client = OpenAI(api_key="")
 
 class Model(Enum):
     GPT3 = "gpt-3.5-turbo"
