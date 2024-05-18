@@ -1,44 +1,44 @@
 {
     "risks": [
         {
-            "risk": "Naruszenie prywatności użytkowników",
-            "description": "Może dojść do wycieku danych osobowych użytkowników aplikacji, co może powodować poważne konsekwencje prawne i szkody reputacyjne dla startupu."
-        },
-        {
-            "risk": "Problemy z bezpieczeństwem danych",
-            "description": "Brak odpowiednich mechanizmów zabezpieczeń danych może skutkować kradzieżą informacji o użytkownikach oraz wyciekiem poufnych danych."
-        },
-        {
-            "risk": "Niska jakość usług",
-            "description": "Niezadowolenie klientów z funkcjonalności aplikacji może prowadzić do utraty zaufania i odpływu użytkowników do konkurencji."
-        },
-        {
-            "risk": "Błędy w lokalizacji",
-            "description": "Niedokładność lokalizacji psów może skutkować zgubieniem zwierząt oraz niezadowoleniem posiadaczy."
-        },
-        {
-            "risk": "Problemy z interakcją ze zwierzętami",
-            "description": "Niedostosowanie interfejsu aplikacji do potrzeb i zachowań psów może utrudniać korzystanie z niej przez użytkowników."
+            "risk": "Niskie zaangażowanie użytkowników",
+            "description": "Możliwość braku zainteresowania aplikacją przez właścicieli psów, co może prowadzić do niskiej liczby pobrań i użytkowników."
         },
         {
             "risk": "Konkurencja na rynku",
-            "description": "Wprowadzenie podobnych rozwiązań przez konkurencję może zmniejszyć atrakcyjność aplikacji i skutkować utratą użytkowników."
+            "description": "Występowanie innych aplikacji do wyprowadzania psów, które mogą być bardziej znane i popularne wśród użytkowników."
         },
         {
-            "risk": "Brak akceptacji społecznej",
-            "description": "Nieprzewidziane reakcje społeczne na aplikację mogą negatywnie wpłynąć na jej popularność i wizerunek."
+            "risk": "Problemy z integracją z lokalizacją",
+            "description": "Trudności z precyzyjnym określeniem lokalizacji psa i właściciela, co może wpłynąć na funkcjonalność i użyteczność aplikacji."
         },
         {
-            "risk": "Ograniczone możliwości skalowania",
-            "description": "Brak elastyczności i skalowalności infrastruktury może utrudniać rozwój i dostosowanie aplikacji do szybkiego wzrostu liczby użytkowników."
+            "risk": "Problemy z bezpieczeństwem danych",
+            "description": "Ryzyko wycieku danych osobowych użytkowników, takich jak lokalizacja czy informacje kontaktowe, co może zaszkodzić reputacji startupu."
         },
         {
-            "risk": "Złożoność integracji z innymi systemami",
-            "description": "Problemy z integracją z systemami zewnętrznymi, takimi jak bazy danych czy systemy płatności, mogą prowadzić do zakłóceń w działaniu aplikacji."
+            "risk": "Niska jakość interfejsu użytkownika",
+            "description": "Brak intuicyjności i atrakcyjności interfejsu może wpłynąć na użyteczność i popularność aplikacji wśród użytkowników."
         },
         {
-            "risk": "Zmiany w przepisach prawnych",
-            "description": "Niezgodność z nowymi przepisami dotyczącymi ochrony danych osobowych lub zwierząt może wymagać rewizji i dostosowania funkcji aplikacji, co wiąże się z dodatkowymi kosztami i ryzykiem operacyjnym."
+            "risk": "Brak zabezpieczeń przed atakami cybernetycznymi",
+            "description": "Narażenie aplikacji na ataki hakerów i kradzież danych, co może spowodować poważne konsekwencje dla startupu i jego użytkowników."
+        },
+        {
+            "risk": "Ograniczenia prawne związane z wyprowadzaniem psów",
+            "description": "Możliwe konflikty z przepisami prawnymi dotyczącymi wyprowadzania psów, co może skutkować koniecznością dostosowania funkcjonalności aplikacji."
+        },
+        {
+            "risk": "Błędy w nawigacji i wskazówkach",
+            "description": "Nieprawidłowe wskazania trasy czy błędy w nawigacji mogą prowadzić do dezorientacji użytkowników i utraty zaufania do aplikacji."
+        },
+        {
+            "risk": "Zmiany w preferencjach użytkowników",
+            "description": "Możliwość szybkich zmian w oczekiwaniach i potrzebach użytkowników, co może wymagać ciągłego dostosowywania funkcji i usług."
+        },
+        {
+            "risk": "Brak wsparcia inwestorów",
+            "description": "Odmowa udzielenia finansowania przez inwestorów może negatywnie wpłynąć na rozwój i dalsze funkcjonowanie startupu."
         }
     ]
 }

@@ -1,20 +1,16 @@
 {
     "actors": [
         {
-            "name": "Współzałożyciel startupu",
-            "description": "Osoba odpowiedzialna za pomysł na biznes oraz jego rozwój. Zajmuje się planowaniem strategii i poszukiwaniem inwestorów."
+            "name": "Właściciel psa",
+            "description": "Osoba posiadająca psa, która korzysta z aplikacji do wyprowadzania czworonoga. Może rejestrować swojego pupila w aplikacji, umawiać się na spacery z opiekunami psów oraz monitorować aktywność i zdrowie swojego pupila."
         },
         {
-            "name": "Programista",
-            "description": "Osoba odpowiedzialna za tworzenie i rozwijanie aplikacji do wyprowadzania psów. Programista dba o funkcjonalność i bezpieczeństwo oprogramowania."
+            "name": "Opiekun psa",
+            "description": "Osoba zajmująca się wyprowadzaniem psów zarejestrowanych w aplikacji. Ma możliwość przyjmowania zleceń spacerów, śledzenia tras spacerów oraz komunikacji z właścicielami psów. "
         },
         {
-            "name": "Projektant UI/UX",
-            "description": "Osoba zajmująca się projektowaniem interfejsu użytkownika oraz doświadczenia użytkownika w aplikacji. Dbająca o estetykę i intuicyjność aplikacji."
-        },
-        {
-            "name": "Specjalista ds. marketingu",
-            "description": "Osoba odpowiedzialna za promocję aplikacji do wyprowadzania psów. Zajmuje się pozyskiwaniem klientów oraz budowaniem marki startupu."
+            "name": "Administrator",
+            "description": "Osoba odpowiedzialna za zarządzanie aplikacją oraz bazą danych. Monitoruje działanie systemu, rozwiązuje problemy techniczne oraz dba o bezpieczeństwo danych użytkowników."
         }
     ]
 }

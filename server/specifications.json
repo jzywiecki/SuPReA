@@ -2,7 +2,7 @@
     "specifications": [
         {
             "name": "Aplikacja do wyprowadzania psów",
-            "description": "Startup będzie tworzył aplikację mobilną, która pomoże właścicielom psów w znalezieniu profesjonalnych wyprowadzających. Aplikacja pozwoli zarejestrowanym użytkownikom umawiać się na spacery z psami, przeglądać opinie innych użytkowników, dokonywać płatności online oraz śledzić trasę spaceru. Dla wyprowadzających zapewni prosty sposób znalezienia nowych klientów oraz zarządzanie harmonogramem spotkań." 
+            "description": "Aplikacja mobilna, która umożliwia właścicielom psów znalezienie dogodnych tras do spacerów oraz dzielenie się informacjami o ulubionych miejscach z innymi użytkownikami. Aplikacja zawiera także funkcje pozwalające na rezerwację wizyt u profesjonalnych wyprowadzaczy psów oraz śledzenie aktywności i zdrowia czworonogów."
         }
     ]
 }
