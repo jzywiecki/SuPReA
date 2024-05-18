@@ -1,44 +1,44 @@
 {
     "risks": [
         {
-            "risk": "Zagrożenie cybernetyczne",
-            "description": "Możliwość ataku hakerów na aplikację, kradzieży danych klientów lub podszywania się pod użytkowników."
+            "risk": "Naruszenie prywatności użytkowników",
+            "description": "Może dojść do wycieku danych osobowych użytkowników aplikacji, co może powodować poważne konsekwencje prawne i szkody reputacyjne dla startupu."
         },
         {
-            "risk": "Błędy w aplikacji",
-            "description": "Powstałe błędy w programowaniu mogą prowadzić do niestabilności aplikacji lub awarii, co może zniechęcić użytkowników."
+            "risk": "Problemy z bezpieczeństwem danych",
+            "description": "Brak odpowiednich mechanizmów zabezpieczeń danych może skutkować kradzieżą informacji o użytkownikach oraz wyciekiem poufnych danych."
+        },
+        {
+            "risk": "Niska jakość usług",
+            "description": "Niezadowolenie klientów z funkcjonalności aplikacji może prowadzić do utraty zaufania i odpływu użytkowników do konkurencji."
+        },
+        {
+            "risk": "Błędy w lokalizacji",
+            "description": "Niedokładność lokalizacji psów może skutkować zgubieniem zwierząt oraz niezadowoleniem posiadaczy."
+        },
+        {
+            "risk": "Problemy z interakcją ze zwierzętami",
+            "description": "Niedostosowanie interfejsu aplikacji do potrzeb i zachowań psów może utrudniać korzystanie z niej przez użytkowników."
         },
         {
             "risk": "Konkurencja na rynku",
-            "description": "Rynek aplikacji dla wyprowadzania psów może być konkurencyjny, co utrudni zdobycie i utrzymanie klientów."
+            "description": "Wprowadzenie podobnych rozwiązań przez konkurencję może zmniejszyć atrakcyjność aplikacji i skutkować utratą użytkowników."
         },
         {
-            "risk": "Problemy z dostępnością mobilną",
-            "description": "Aplikacja powinna działać sprawnie i być dostępna na różnych urządzeniach mobilnych, co może być wyzwaniem technicznym."
+            "risk": "Brak akceptacji społecznej",
+            "description": "Nieprzewidziane reakcje społeczne na aplikację mogą negatywnie wpłynąć na jej popularność i wizerunek."
         },
         {
-            "risk": "Błędy w nawigacji",
-            "description": "Niewłaściwa nawigacja w aplikacji może prowadzić do frustracji użytkowników i utraty zainteresowania."
+            "risk": "Ograniczone możliwości skalowania",
+            "description": "Brak elastyczności i skalowalności infrastruktury może utrudniać rozwój i dostosowanie aplikacji do szybkiego wzrostu liczby użytkowników."
         },
         {
-            "risk": "Problemy z integracją z zewnętrznymi serwisami",
-            "description": "Potrzeba integracji z serwisami zewnętrznymi, np. mapami, może wiązać się z problemami technicznymi lub brakiem zgodności."
+            "risk": "Złożoność integracji z innymi systemami",
+            "description": "Problemy z integracją z systemami zewnętrznymi, takimi jak bazy danych czy systemy płatności, mogą prowadzić do zakłóceń w działaniu aplikacji."
         },
         {
-            "risk": "Brak zrozumienia potrzeb klientów",
-            "description": "Niewłaściwe zrozumienie potrzeb klientów może skutkować tworzeniem niepraktycznych funkcji w aplikacji."
-        },
-        {
-            "risk": "Zmiany w prawie ochrony danych",
-            "description": "Konieczność ciągłego monitorowania i dostosowywania aplikacji do zmian w przepisach dotyczących ochrony danych osobowych."
-        },
-        {
-            "risk": "Problemy z płatnościami online",
-            "description": "Konieczność zapewnienia bezpiecznych i niezawodnych transakcji online może stanowić wyzwanie techniczne."
-        },
-        {
-            "risk": "Negatywne opinie i recenzje",
-            "description": "Negatywne opinie użytkowników mogą wpłynąć negatywnie na reputację startupu i zmniejszyć zaufanie klientów."
+            "risk": "Zmiany w przepisach prawnych",
+            "description": "Niezgodność z nowymi przepisami dotyczącymi ochrony danych osobowych lub zwierząt może wymagać rewizji i dostosowania funkcji aplikacji, co wiąże się z dodatkowymi kosztami i ryzykiem operacyjnym."
         }
     ]
 }

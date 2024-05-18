@@ -1,16 +1,20 @@
 {
     "actors": [
         {
-            "name": "Właściciele psów",
-            "description": "Osoby posiadające psy, które korzystają z aplikacji do wyprowadzania swoich czworonogów. Mogą rejestrować swoje psy, ustalać harmonogram spacerów oraz monitorować ich aktywność podczas wyprowadzania."
+            "name": "Współzałożyciel startupu",
+            "description": "Osoba odpowiedzialna za pomysł na biznes oraz jego rozwój. Zajmuje się planowaniem strategii i poszukiwaniem inwestorów."
         },
         {
-            "name": "Spacerowicze",
-            "description": "Osoby chętne do wyprowadzania psów innych użytkowników aplikacji. Mogą przeglądać dostępne spacery, wybierać te, które pasują do ich harmonogramu oraz śledzić trasę spaceru i aktywność psa podczas wyprowadzania."
+            "name": "Programista",
+            "description": "Osoba odpowiedzialna za tworzenie i rozwijanie aplikacji do wyprowadzania psów. Programista dba o funkcjonalność i bezpieczeństwo oprogramowania."
         },
         {
-            "name": "Administratorzy",
-            "description": "Osoby odpowiedzialne za utrzymanie i rozwijanie aplikacji. Monitorują działanie systemu, rozwiązują problemy techniczne oraz dbają o zgodność z przepisami dotyczącymi obrony praw zwierząt."
+            "name": "Projektant UI/UX",
+            "description": "Osoba zajmująca się projektowaniem interfejsu użytkownika oraz doświadczenia użytkownika w aplikacji. Dbająca o estetykę i intuicyjność aplikacji."
+        },
+        {
+            "name": "Specjalista ds. marketingu",
+            "description": "Osoba odpowiedzialna za promocję aplikacji do wyprowadzania psów. Zajmuje się pozyskiwaniem klientów oraz budowaniem marki startupu."
         }
     ]
 }
