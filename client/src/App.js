@@ -1,9 +1,14 @@
 import './App.css';
+import Menu from './components/Menu';
+import ProjectView from './pages/ProjectView';
 
 export default function App() {
   return (
-    <h1 className="text-3xl font-bold underline">
-      Hello world!
-    </h1>
+    <div>
+      <Menu />
+      <ProjectView />
+    </div>
   )
 }
+
+
