@@ -13,10 +13,15 @@ import {
   
 
 const ProjectView = ({ projectName }) => {
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const [isCollapsedLeft, setIsCollapsedLeft] = useState(true);
+    const [isCollapsedRight, setIsCollapsedRight] = useState(true);
 
-    const toggleCollapse = () => {
-        setIsCollapsed(!isCollapsed);
+    const toggleCollapseLeft = () => {
+        setIsCollapsedLeft(!isCollapsedLeft);
+    };
+
+    const toggleCollapseRight = () => {
+        setIsCollapsedRight(!isCollapsedRight);
     };
 
     const elements = [
@@ -31,32 +36,43 @@ const ProjectView = ({ projectName }) => {
     ]
 
   return (
-    <div>
+    <div style={{ height: 'calc(100vh - 64px)'}}>
         <ResizablePanelGroup
         direction="horizontal"
         className="w-full border"
         >
             <ResizablePanel
-                    maxSize={!isCollapsed ? 5 : 30}
-                    minSize={!isCollapsed ? 5 : 15}
-                    defaultSize={!isCollapsed ? 5 : 15}
+                    maxSize={!isCollapsedLeft ? 5 : 30}
+                    minSize={!isCollapsedLeft ? 5 : 15}
+                    defaultSize={!isCollapsedLeft ? 5 : 15}
                 >
-                <div className={`flex m-4 ${isCollapsed ? 'justify-end' : 'justify-center'}`}>
-                    <Button variant="outline" size="icon" onClick={toggleCollapse}>
+                <div className={`flex m-4 ${isCollapsedLeft ? 'justify-end' : 'justify-center'}`}>
+                    <Button variant="outline" size="icon" onClick={toggleCollapseLeft}>
                         <MenuIcon className="h-[1.2rem] w-[1.2rem]" />
                     </Button>
                 </div>
-                <ProjectElementsList elements={elements} isCollapsed={isCollapsed} />
+                <ProjectElementsList elements={elements} isCollapsed={isCollapsedLeft} />
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel defaultSize={50}>
-                <div className="h-full flex align-middle justify-center">
-                    <TextStructure />
+                <div className="">
+                    {/* <TextStructure component="Name" description="Name of your project" content="as dj ajs jhsaj kahsd kjhad hjdkshfsdad" /> */}
                 </div>
             </ResizablePanel>
             <ResizableHandle />
-            <ResizablePanel defaultSize={20} maxSize={25}>
-                <Chat />
+            <ResizablePanel
+                    maxSize={!isCollapsedRight ? 5 : 30}
+                    minSize={!isCollapsedRight ? 5 : 15}
+                    defaultSize={!isCollapsedRight ? 5 : 15}
+                >
+                <div className={`flex m-4 ${isCollapsedRight ? 'justify-start' : 'justify-center'}`}>
+                    <Button variant="outline" size="icon" onClick={toggleCollapseRight}>
+                        <MenuIcon className="h-[1.2rem] w-[1.2rem]" />
+                    </Button>
+                </div>
+
+
+                <Chat isCollapsed={isCollapsedRight}/>
             </ResizablePanel>
         </ResizablePanelGroup> 
 

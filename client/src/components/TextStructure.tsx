@@ -1,11 +1,12 @@
 
-const TextStructure = () => {
+const TextStructure = ( { component, description, content } ) => {
 
     return (
         <div>
-        <h1>Text Structure</h1>
-        <p>This is a paragraph</p>
-        <p>This is another paragraph</p>
+            <h1 className="text-3xl">{component}</h1>
+            <p className="">{description}</p>
+            <br></br>
+            <p>{content}</p>
         </div>
     );
 }

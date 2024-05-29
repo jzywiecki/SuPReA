@@ -1,5 +1,6 @@
 import ProjectElement from './ProjectElement';
 import React from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Element {
     id: number;
@@ -14,7 +15,8 @@ interface ProjectElementsListProps {
 
 const ProjectElementsList: React.FC<ProjectElementsListProps> = ({ elements, isCollapsed }) => {
     return (
-        <div className='h-screen'>
+        <ScrollArea className="h-full">
+        <div className=''>
             {isCollapsed && (
                 <div>
                     {elements.map((element) => (
@@ -23,6 +25,7 @@ const ProjectElementsList: React.FC<ProjectElementsListProps> = ({ elements, isC
                 </div>
             )}
         </div>
+        </ScrollArea>
     );
 };
 
