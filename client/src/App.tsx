@@ -8,8 +8,7 @@ function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Navbar />
-      <ProjectView />
-      <Button>Click me</Button>
+      <ProjectView projectName="Project name" />
     </ThemeProvider>
   )
 }
