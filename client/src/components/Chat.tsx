@@ -11,12 +11,12 @@ const Chat = ({ isCollapsed }) => {
             {isCollapsed && (
             <>
             <Tabs defaultValue="ai">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-2 h-10">
                 <TabsTrigger value="ai">AI Chat</TabsTrigger>
                 <TabsTrigger value="discussion">Discussion</TabsTrigger>
             </TabsList>
             <TabsContent value="ai">
-            <ScrollArea className="h-[600px]">
+            <ScrollArea style={{ height: 'calc(100vh - 68*4px)'}}>
                     <ChatMessage message={{user: "GPT", content: "What do you need help with?"}} id={3} />
                     <ChatMessage message={{user: "User", content: "I need help with my project"}} id={4} />    
                     <ChatMessage message={{user: "GPT", content: "What do you need help with?"}} id={3} />
@@ -25,7 +25,6 @@ const Chat = ({ isCollapsed }) => {
                     <ChatMessage message={{user: "User", content: "I need help with my project"}} id={4} />
                     <ChatMessage message={{user: "GPT", content: "Hello, how can I help you?"}} id={1} />
                     <ChatMessage message={{user: "User", content: "I need help with my project"}} id={2} />
-                    <ChatMessage message={{user: "GPT", content: "What do you need help with?"}} id={3} />
                 </ScrollArea>
             </TabsContent>
             <TabsContent value="discussion">
@@ -33,12 +32,12 @@ a
             </TabsContent>
             </Tabs>
             
-            <div className="w-full flex items-center bg-muted">
+            <div className="w-full flex items-center bg-muted h-18">
                 <Input placeholder="Write your message here" className="m-2"/>
                 <Button className="m-2">Send message</Button>
             </div>
-            <div className="bg-muted text-center text-sm text-muted-foreground">
-            GPT might make mistakes. Check important informations.
+            <div className="bg-muted text-center text-sm text-muted-foreground p-2 h-18">
+            GPT might make mistakes. 
             </div>
             </>
             )}

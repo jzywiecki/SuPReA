@@ -46,7 +46,7 @@ const ProjectView = ({ projectName }) => {
                     minSize={!isCollapsedLeft ? 5 : 15}
                     defaultSize={!isCollapsedLeft ? 5 : 15}
                 >
-                <div className={`flex m-4 ${isCollapsedLeft ? 'justify-end' : 'justify-center'}`}>
+                <div className={`flex h-10 m-4 ${isCollapsedLeft ? 'justify-end' : 'justify-center'}`}>
                     <Button variant="outline" size="icon" onClick={toggleCollapseLeft}>
                         <MenuIcon className="h-[1.2rem] w-[1.2rem]" />
                     </Button>
@@ -65,7 +65,7 @@ const ProjectView = ({ projectName }) => {
                     minSize={!isCollapsedRight ? 5 : 15}
                     defaultSize={!isCollapsedRight ? 5 : 15}
                 >
-                <div className={`flex m-4 ${isCollapsedRight ? 'justify-start' : 'justify-center'}`}>
+                <div className={`flex h-10 m-4 ${isCollapsedRight ? 'justify-start' : 'justify-center'}`}>
                     <Button variant="outline" size="icon" onClick={toggleCollapseRight}>
                         <MenuIcon className="h-[1.2rem] w-[1.2rem]" />
                     </Button>
