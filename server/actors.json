@@ -1,20 +1,16 @@
 {
     "actors": [
         {
-            "name": "Programista",
-            "description": "Osoba odpowiedzialna za pisanie kodu aplikacji oraz implementację funkcjonalności według wymagań."
+            "name": "Właściciel psa",
+            "description": "Osoba posiadająca psa, która korzysta z aplikacji do wyprowadzania czworonoga. Może rejestrować swojego pupila w aplikacji, umawiać się na spacery z opiekunami psów oraz monitorować aktywność i zdrowie swojego pupila."
         },
         {
-            "name": "Projektant interfejsu graficznego",
-            "description": "Osoba zajmująca się projektowaniem interfejsu użytkownika tak, aby był estetyczny, intuicyjny i łatwy w obsłudze."
+            "name": "Opiekun psa",
+            "description": "Osoba zajmująca się wyprowadzaniem psów zarejestrowanych w aplikacji. Ma możliwość przyjmowania zleceń spacerów, śledzenia tras spacerów oraz komunikacji z właścicielami psów. "
         },
         {
-            "name": "Analityk biznesowy",
-            "description": "Osoba zajmująca się analizą potrzeb i wymagań klienta, definiowaniem funkcjonalności oraz wymagań dla tworzonej aplikacji."
-        },
-        {
-            "name": "Quality Assurance (QA)",
-            "description": "Osoba odpowiedzialna za testowanie aplikacji pod kątem jakości i zgodności z wymaganiami, w celu zapewnienia wysokiej jakości oprogramowania."
+            "name": "Administrator",
+            "description": "Osoba odpowiedzialna za zarządzanie aplikacją oraz bazą danych. Monitoruje działanie systemu, rozwiązuje problemy techniczne oraz dba o bezpieczeństwo danych użytkowników."
         }
     ]
 }

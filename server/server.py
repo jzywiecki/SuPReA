@@ -5,7 +5,7 @@ from utils import logger
 # ----------------------------
 from modules.umlModule.routes import UmlModule 
 # ----------------------------
-import modules.actorsModule.routes as actors
+import modules.actors_module.routes as actors
 # ----------------------------
 from modules.business_scenarios.routes import BusinessModule
 # ----------------------------
@@ -19,6 +19,11 @@ from modules.database_schema.routes import DatabaseSchemaModule
 # ----------------------------
 from modules.logo.routes import LogoModule
 # ----------------------------
+import modules.risk_module.routes as risks
+import modules.specifications_module.routes as specifications
+import modules.strategy_module.routes as strategy
+import modules.motto_module.routes as motto_module
+import modules.requirements_module.routes as requirements_module
 import utils.openaiUtils as utils 
 # ----------------------------
 ABS_DRIVER_PATH='D:\Magazyn\Studia\Inzynierka\intelligent-system-supporting-project-requirements-analysis\server\chromeDriver\chromedriver.exe'
@@ -32,7 +37,7 @@ if __name__ == "__main__":
     logger.info(f"Mocking is: {is_mock}")
 
     loop = asyncio.get_event_loop()
-    
+
     actors = actors.ActorsModule(utils.Model.GPT3)
     uml_generator = UmlModule(utils.Model.GPT3)
     business_generator = BusinessModule(utils.Model.GPT3)
@@ -41,12 +46,33 @@ if __name__ == "__main__":
     schedule_generator = ScheduleModule(utils.Model.GPT3)
     database_schema_generator = DatabaseSchemaModule(utils.Model.GPT3)
     logo_generator = LogoModule(utils.Model.GPT3)
-    
+    risks = risks.RiskModule(utils.Model.GPT3)
+    specifications = specifications.SpecificationsModule(utils.Model.GPT3)
+    strategies = strategy.StrategyModule(utils.Model.GPT3)
+    motto = motto_module.MottoModule(utils.Model.GPT3)
+    requirements = requirements_module.RequirementsModule(utils.Model.GPT3)
+
     logger.info("Generating actors")
-    loop.run_until_complete(actors.get_content("systemu", "tworzenia aplikacji"))
+    loop.run_until_complete(actors.get_content("startupu", "wyprowadzania psów"))
+
+    logger.info("Generating risks")
+    loop.run_until_complete(risks.get_content("startupu", "wyprowadzania psów"))
+
+    logger.info("Generating specifications")
+    loop.run_until_complete(specifications.get_content("startupu", "wyprowadzania psów"))
+
+    logger.info("Generating strategies")
+    loop.run_until_complete(strategies.get_content("startupu", "wyprowadzania psów"))
+
+    logger.info("Generating motto")
+    loop.run_until_complete(motto.get_content("startupu", "wyprowadzania psów"))
+
+    logger.info("Generating requirements")
+    loop.run_until_complete(requirements.get_content("startupu", "wyprowadzania psów"))
     
     logger.info("Generating uml list")
     loop.run_until_complete(uml_generator.get_content("","",uml_list=True,is_mock=is_mock))
+
     logger.info("Generating uml images")
     loop.run_until_complete(uml_generator.get_content("","", is_mock=is_mock))
 
