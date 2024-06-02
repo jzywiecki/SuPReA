@@ -1,7 +1,7 @@
 from openai import OpenAI
 from enum import Enum
 
-client = OpenAI(api_key="")
+client = OpenAI()
 
 class Model(Enum):
     GPT3 = "gpt-3.5-turbo"
@@ -9,9 +9,6 @@ class Model(Enum):
     
 def sendAIRequest(Model, messages, response_format, maxTokens):
     params = {"model": Model.value, "messages": messages, "max_tokens": maxTokens}
-    # params["response_format"] = response_format
     chat_completion = client.chat.completions.create(**params)
 
     return chat_completion
-
-

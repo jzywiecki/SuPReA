@@ -1,28 +1,26 @@
 import asyncio
-import logging
+# import logging
 
-from utils import logger
+# from utils import logger
 # ----------------------------
-from modules.umlModule.routes import UmlModule 
+# from modules.uml.routes import UmlModule 
 # ----------------------------
-import modules.actorsModule.routes as actors
-# ----------------------------
-from modules.business_scenarios.routes import BusinessModule
-# ----------------------------
-from modules.elevator_speech.routes import ElevatorSpeechModule
-# ----------------------------
-from modules.title.routes import TitleModule
-# ----------------------------
-from modules.project_schedule.routes import ScheduleModule
-# ----------------------------
-from modules.database_schema.routes import DatabaseSchemaModule
-# ----------------------------
-from modules.logo.routes import LogoModule
-# ----------------------------
+import modules.actors.routes as actors
+# # ----------------------------
+# from modules.business_scenarios.routes import BusinessModule
+# # ----------------------------
+# from modules.elevator_speech.routes import ElevatorSpeechModule
+# # ----------------------------
+# from modules.title.routes import TitleModule
+# # ----------------------------
+# from modules.project_schedule.routes import ScheduleModule
+# # ----------------------------
+# from modules.database_schema.routes import DatabaseSchemaModule
+# # ----------------------------
+# from modules.logo.routes import LogoModule
+# # ----------------------------
 import utils.openaiUtils as utils 
 # ----------------------------
-ABS_DRIVER_PATH='D:\Magazyn\Studia\Inzynierka\intelligent-system-supporting-project-requirements-analysis\server\chromeDriver\chromedriver.exe'
-IMAGE_API_KEY=""
 
 if __name__ == "__main__":
     logger.configure_logging()
@@ -33,7 +31,7 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
     
-    actors = actors.ActorsModule(utils.Model.GPT3)
+    actors = actors.ActorsModule(utils.Model.GPT4)
     uml_generator = UmlModule(utils.Model.GPT3)
     business_generator = BusinessModule(utils.Model.GPT3)
     speech_generator = ElevatorSpeechModule(utils.Model.GPT3)
@@ -43,8 +41,8 @@ if __name__ == "__main__":
     logo_generator = LogoModule(utils.Model.GPT3)
     
     logger.info("Generating actors")
-    loop.run_until_complete(actors.get_content("systemu", "tworzenia aplikacji"))
-    
+    a = loop.run_until_complete(actors.get_content("systemu", "tworzenia aplikacji"))
+
     logger.info("Generating uml list")
     loop.run_until_complete(uml_generator.get_content("","",uml_list=True,is_mock=is_mock))
     logger.info("Generating uml images")
@@ -62,8 +60,8 @@ if __name__ == "__main__":
     logger.info("Generating schedule")
     loop.run_until_complete(schedule_generator.get_content("","", is_mock=is_mock))
 
-    logger.info("Generating database schema")
-    loop.run_until_complete(database_schema_generator.get_content("","", is_mock=is_mock, driver= ABS_DRIVER_PATH))
+    # logger.info("Generating database schema")
+    # loop.run_until_complete(database_schema_generator.get_content("","", is_mock=is_mock, driver= ABS_DRIVER_PATH))
 
     logger.info("Generating logo images")
     loop.run_until_complete(logo_generator.get_content("","", is_mock=is_mock, images=1, api_key=IMAGE_API_KEY))

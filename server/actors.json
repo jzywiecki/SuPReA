@@ -2,19 +2,19 @@
     "actors": [
         {
             "name": "Programista",
-            "description": "Osoba odpowiedzialna za pisanie kodu aplikacji oraz implementację funkcjonalności według wymagań."
+            "description": "Osoba odpowiedzialna za pisanie kodu aplikacji oraz implementację funkcjonalności wg wymagań klienta."
         },
         {
-            "name": "Projektant interfejsu graficznego",
-            "description": "Osoba zajmująca się projektowaniem interfejsu użytkownika tak, aby był estetyczny, intuicyjny i łatwy w obsłudze."
+            "name": "Projektant UX/UI",
+            "description": "Osoba tworząca interfejs użytkownika aplikacji, dbająca o użyteczność i atrakcyjny wygląd."
         },
         {
             "name": "Analityk biznesowy",
-            "description": "Osoba zajmująca się analizą potrzeb i wymagań klienta, definiowaniem funkcjonalności oraz wymagań dla tworzonej aplikacji."
+            "description": "Osoba analizująca potrzeby i wymagania klienta, definiująca funkcjonalności oraz zbierająca informacje potrzebne do tworzenia aplikacji."
         },
         {
-            "name": "Quality Assurance (QA)",
-            "description": "Osoba odpowiedzialna za testowanie aplikacji pod kątem jakości i zgodności z wymaganiami, w celu zapewnienia wysokiej jakości oprogramowania."
+            "name": "Kierownik Projektu",
+            "description": "Osoba nadzorująca cały proces tworzenia aplikacji, dbająca o terminy, jakość oraz komunikację między zespołem a klientem."
         }
     ]
 }
