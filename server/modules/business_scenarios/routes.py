@@ -1,9 +1,9 @@
 
 import os
-import modules.module.module as modules
-import utils.openaiUtils as utils
+import server.modules.module.module as modules
+import server.utils.openaiUtils as utils
 import logging
-from utils.data import write_to_file
+from server.utils.data import write_to_file
 from .fetch import fetch_business
 
 logger = logging.getLogger("business_scenario")

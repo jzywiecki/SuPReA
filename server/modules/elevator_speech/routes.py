@@ -1,11 +1,11 @@
 
 import json
 import os
-import modules.module.module as modules
-import utils.openaiUtils as utils
+import server.modules.module.module as modules
+import server.utils.openaiUtils as utils
 import logging
-from utils.data import write_to_file
-from utils.validation import validate_json
+from server.utils.data import write_to_file
+from server.utils.validation import validate_json
 
 
 logger = logging.getLogger("elevator_speech")

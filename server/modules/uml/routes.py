@@ -3,8 +3,8 @@ import os
 import uuid
 from .fetch import fetch_uml_fragments, fetch_uml_list
 from .util import convert_to_uml_imageFile
-import modules.module.module as modules
-import utils.openaiUtils as utils
+import server.modules.module.module as modules
+import server.utils.openaiUtils as utils
 
 dirname =  os.path.dirname(__file__)
 logger = logging.getLogger("umlModule")

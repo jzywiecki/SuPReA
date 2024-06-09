@@ -1,5 +1,5 @@
-import utils.openaiUtils as utils
-import modules.module.module as modules
+import server.utils.openaiUtils as utils
+import server.modules.module.module as modules
 
 actors_with_description_json = '''
 "actors": [
