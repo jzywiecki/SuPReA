@@ -1,0 +1,50 @@
+@startuml ' Rozpocznij definicję diagramu UML
+
+!define ACTOR(x) actor x as "**<<Actor>>**\n" #purple
+!define RECTANGLE(x,y) rectangle x as "**<<Rectangle>>**\n" #pink
+
+' Zdefiniuj aktora
+ACTOR(Wyprowadzacz_psów)
+
+' Zdefiniuj przypadki użycia
+RECTANGLE(Rejestracja_konta "Rejestracja konta wyprowadzacza")
+RECTANGLE(Logowanie "Logowanie")
+RECTANGLE(Tworzenie_harmonogramu "Tworzenie dostępnego harmonogramu")
+RECTANGLE(Aktualizacja_harmonogramu "Aktualizacja dostępnego harmonogramu")
+RECTANGLE(Akceptacja_rezerwacji "Akceptacja rezerwacji")
+RECTANGLE(Odrzucenie_rezerwacji "Odrzucenie rezerwacji")
+RECTANGLE(Rozpoczecie_wyprowadzania "Oznaczanie rozpoczęcia wyprowadzania")
+RECTANGLE(Zakonczenie_wyprowadzania "Oznaczanie zakończenia wyprowadzania")
+RECTANGLE(Ocena_właściciela "Ocena właściciela psa")
+RECTANGLE(Wyświetlanie_zarobków "Wyświetlanie zarobków")
+RECTANGLE(Rozwiązywanie_konfliktów "Rozwiązywanie konfliktów")
+RECTANGLE(Komunikacja_z_właścicielem "Komunikacja z właścicielem psa")
+
+' Połącz aktora z przypadkami użycia
+Wyprowadzacz_psów --> Rejestracja_konta
+Wyprowadzacz_psów --> Logowanie
+Wyprowadzacz_psów --> Tworzenie_harmonogramu
+Wyprowadzacz_psów --> Aktualizacja_harmonogramu
+Wyprowadzacz_psów --> Akceptacja_rezerwacji
+Wyprowadzacz_psów --> Odrzucenie_rezerwacji
+Wyprowadzacz_psów --> Rozpoczecie_wyprowadzania
+Wyprowadzacz_psów --> Zakonczenie_wyprowadzania
+Wyprowadzacz_psów --> Ocena_właściciela
+Wyprowadzacz_psów --> Wyświetlanie_zarobków
+Wyprowadzacz_psów --> Rozwiązywanie_konfliktów
+Wyprowadzacz_psów --> Komunikacja_z_właścicielem
+
+' Określ zależności między przypadkami użycia
+Logowanie .> Rejestracja_konta : <<extends>>
+Tworzenie_harmonogramu .> Logowanie : <<precondition>>
+Aktualizacja_harmonogramu .> Tworzenie_harmonogramu : <<extends>>
+Akceptacja_rezerwacji .> Tworzenie_harmonogramu : <<extends>>
+Odrzucenie_rezerwacji .> Tworzenie_harmonogramu : <<extends>>
+Rozpoczecie_wyprowadzania .> Akceptacja_rezerwacji : <<precondition>>
+Zakonczenie_wyprowadzania .> Rozpoczecie_wyprowadzania : <<precondition>>
+Ocena_właściciela .> Zakonczenie_wyprowadzania : <<precondition>>
+Wyświetlanie_zarobków .> Zakonczenie_wyprowadzania : <<extends>>
+Rozwiązywanie_konfliktów .> Akceptacja_rezerwacji : <<extends>>
+Komunikacja_z_właścicielem .> Akceptacja_rezerwacji : <<extends>>
+
+@enduml

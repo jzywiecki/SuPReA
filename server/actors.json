@@ -2,15 +2,11 @@
     "actors": [
         {
             "name": "Właściciel psa",
-            "description": "Osoba posiadająca psa, która korzysta z aplikacji do wyprowadzania czworonoga. Może rejestrować swojego pupila w aplikacji, umawiać się na spacery z opiekunami psów oraz monitorować aktywność i zdrowie swojego pupila."
+            "description": "Osoba posiadająca psa, która korzysta z aplikacji do wyprowadzania pupila. Może dodawać informacje o swoim psie, planować spacery oraz monitorować aktywność fizyczną zwierzęcia."
         },
         {
             "name": "Opiekun psa",
-            "description": "Osoba zajmująca się wyprowadzaniem psów zarejestrowanych w aplikacji. Ma możliwość przyjmowania zleceń spacerów, śledzenia tras spacerów oraz komunikacji z właścicielami psów. "
-        },
-        {
-            "name": "Administrator",
-            "description": "Osoba odpowiedzialna za zarządzanie aplikacją oraz bazą danych. Monitoruje działanie systemu, rozwiązuje problemy techniczne oraz dba o bezpieczeństwo danych użytkowników."
+            "description": "Osoba zatrudniona do wyprowadzania psów przez właścicieli, korzystająca z aplikacji do zarządzania trasami spacerów oraz komunikowania się z właścicielami w razie potrzeby."
         }
     ]
 }

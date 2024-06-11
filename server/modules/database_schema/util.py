@@ -2,7 +2,7 @@ import os
 import re
 import uuid
 import logging
-from utils.data import write_to_file
+from server.utils.data import write_to_file
 
 logger = logging.getLogger("database_schema")
 dirname =  os.path.dirname(__file__)

@@ -2,7 +2,7 @@
 import json
 import os
 import logging
-from utils.validation import validate_json
+from server.utils.validation import validate_json
 
 logger = logging.getLogger("business_scenario")
 

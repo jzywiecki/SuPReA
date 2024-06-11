@@ -7,9 +7,10 @@ import { ThemeProvider } from "@/components/ThemeProvider"
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <div className='h-screen'>
       <Navbar />
-      <ProjectView />
-      <Button>Click me</Button>
+      <ProjectView projectName="Project name" />
+      </div>
     </ThemeProvider>
   )
 }

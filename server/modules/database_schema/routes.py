@@ -1,8 +1,8 @@
 
 import json
 import os
-import modules.module.module as modules
-import utils.openaiUtils as utils
+import server.modules.module.module as modules
+import server.utils.openaiUtils as utils
 import logging
 from .util import json_to_mermaid
 from .util import save_schema
