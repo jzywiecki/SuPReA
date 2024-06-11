@@ -39,12 +39,18 @@ if __name__ == "__main__":
     schedule_generator = ScheduleModule(utils.Model.GPT3)
     database_schema_generator = DatabaseSchemaModule(utils.Model.GPT3)
     logo_generator = LogoModule(utils.Model.GPT3)
-    
+    risks = risks.RiskModule(utils.Model.GPT3)
+    specifications = specifications.SpecificationsModule(utils.Model.GPT3)
+    strategies = strategy.StrategyModule(utils.Model.GPT3)
+    motto = motto_module.MottoModule(utils.Model.GPT3)
+    requirements = requirements_module.RequirementsModule(utils.Model.GPT3)
+
     logger.info("Generating actors")
     a = loop.run_until_complete(actors.get_content("systemu", "tworzenia aplikacji"))
 
     logger.info("Generating uml list")
     loop.run_until_complete(uml_generator.get_content("","",uml_list=True,is_mock=is_mock))
+
     logger.info("Generating uml images")
     loop.run_until_complete(uml_generator.get_content("","", is_mock=is_mock))
 
