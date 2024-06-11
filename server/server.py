@@ -19,7 +19,7 @@ import modules.actors.routes as actors
 # # ----------------------------
 # from modules.logo.routes import LogoModule
 # # ----------------------------
-import utils.openaiUtils as utils 
+import server.utils.openaiUtils as utils 
 # ----------------------------
 
 if __name__ == "__main__":

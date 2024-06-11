@@ -1,20 +1,12 @@
 {
     "actors": [
         {
-            "name": "Programista",
-            "description": "Osoba odpowiedzialna za pisanie kodu aplikacji oraz implementację funkcjonalności wg wymagań klienta."
+            "name": "Właściciel psa",
+            "description": "Osoba posiadająca psa, która korzysta z aplikacji do wyprowadzania pupila. Może dodawać informacje o swoim psie, planować spacery oraz monitorować aktywność fizyczną zwierzęcia."
         },
         {
-            "name": "Projektant UX/UI",
-            "description": "Osoba tworząca interfejs użytkownika aplikacji, dbająca o użyteczność i atrakcyjny wygląd."
-        },
-        {
-            "name": "Analityk biznesowy",
-            "description": "Osoba analizująca potrzeby i wymagania klienta, definiująca funkcjonalności oraz zbierająca informacje potrzebne do tworzenia aplikacji."
-        },
-        {
-            "name": "Kierownik Projektu",
-            "description": "Osoba nadzorująca cały proces tworzenia aplikacji, dbająca o terminy, jakość oraz komunikację między zespołem a klientem."
+            "name": "Opiekun psa",
+            "description": "Osoba zatrudniona do wyprowadzania psów przez właścicieli, korzystająca z aplikacji do zarządzania trasami spacerów oraz komunikowania się z właścicielami w razie potrzeby."
         }
     ]
 }
