@@ -8,7 +8,7 @@ from server.modules.project_schedule.routes import ScheduleModule
 from server.modules.title.routes import TitleModule
 from server.modules.uml.routes import UmlModule
 from server.utils.openaiUtils import Model
-
+import json
 from bson import ObjectId
 import motor.motor_asyncio
 import os
@@ -87,9 +87,9 @@ class ProjectModel(BaseModel):
     additional_info: Optional[str] = None
     members: List[EmailStr]
     created_at: datetime = Field(default=datetime.now())
-    actors: Optional[List[ActorsModel]] = None
-    business_scenarios: Optional[List[BusinessScenariosModel]] = None
-    elevator_speech: Optional[List[ElevatorSpeechesModel]] = None
+    actors: Optional[ActorsModel] = None
+    business_scenarios: Optional[BusinessScenariosModel] = None
+    elevator_speech: Optional[ElevatorSpeechesModel] = None
 
     class Config:
         arbitrary_types_allowed = True
@@ -200,19 +200,22 @@ async def delete_project(project_id: str):
 
 
 @app.get(
-    "/projects/{project_id}/actors/{actors_id}",
+    "/projects/{project_id}/actors",
 )
-async def get_actors(project_id: PyObjectId, actors_id: PyObjectId):
+async def get_actors(project_id: str):
     """
     Retrieve actors from a project
     """
-    project = await project_collection.find_one({"_id": project_id})
-    actors = project["actors"]
-    actor = actors[actors_id]
-    return actor
+    if (
+        project := await project_collection.find_one({"_id": ObjectId(project_id)})
+    ) is not None:
+        actors = project["actors"]
+        return actors
+    else:
+        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
 
 @app.get(
-    "/projects/{project_id}/business_scenarios/{business_scenarios_id}",
+    "/projects/{project_id}/business_scenarios",
 )
 async def get_business_scenarios(project_id: PyObjectId, business_scenarios_id: PyObjectId):
     """
@@ -224,7 +227,7 @@ async def get_business_scenarios(project_id: PyObjectId, business_scenarios_id: 
     return business_scenario
 
 @app.get(
-    "/projects/{project_id}/elevator_speeches/{elevator_speeches_id}",
+    "/projects/{project_id}/elevator_speeches",
 )
 async def get_elevator_speeches(project_id: str, elevator_speeches_id: PyObjectId):
     """
@@ -237,17 +240,24 @@ async def get_elevator_speeches(project_id: str, elevator_speeches_id: PyObjectI
 
 @app.post("/generate-actors/{project_id}")
 async def generate_actors(project_id: str):
-    actors = ActorsModule(Model.GPT3)
-    project = await project_collection.find_one({"_id": project_id})
-    
-    forWho = project["for_who"]
-    doingWhat = project["doing_what"]
-    actors.get_content(forWho, doingWhat)
+    project = await project_collection.find_one({"_id": ObjectId(project_id)})
+    if project:
+        actors = ActorsModule(Model.GPT3)
+        forWho = project["for_who"]
+        doingWhat = project["doing_what"]
+        content = actors.get_content(forWho, doingWhat)
+        data = json.loads(content.choices[0].message.content)
+        actors_model = ActorsModel(**data)
+        project["actors"] = actors_model.dict()
 
-    project["actors"] = actors
-    await project_collection.update_one({"_id": project_id}, {"$set": project})
+        await project_collection.find_one_and_update(
+            {"_id": ObjectId(project_id)},
+            {"$set": project},
+            return_document=ReturnDocument.AFTER,
+        )
+        return actors_model
+    raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
 
-    return actors
 
 @app.post("/generate-app")
 async def generate_app(forWho: str, doingWhat: str, project_id: PyObjectId, background_tasks: BackgroundTasks):

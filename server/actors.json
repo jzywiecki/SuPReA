@@ -1,20 +1,16 @@
 {
     "actors": [
         {
-            "name": "Współzałożyciele",
-            "description": "Osoby odpowiedzialne za stworzenie i rozwijanie startupu. Mogą posiadać umiejętności z zakresu programowania, projektowania, marketingu oraz zarządzania."
+            "name": "Programista",
+            "description": "Osoba tworząca aplikację według ustalonych wymagań i specyfikacji, odpowiedzialna za pisanie kodu i testowanie aplikacji."
         },
         {
-            "name": "Programiści",
-            "description": "Specjaliści ds. tworzenia aplikacji mobilnych, odpowiedzialni za rozwój i utrzymanie techniczne aplikacji do wyprowadzania psów."
+            "name": "Projektant UX/UI",
+            "description": "Osoba projektująca interfejs użytkownika aplikacji, dbająca o user experience (UX) oraz user interface (UI) w celu zapewnienia intuicyjnego i estetycznego sposobu korzystania z aplikacji."
         },
         {
-            "name": "Behawiorysta zwierzęcy",
-            "description": "Ekspert w dziedzinie zachowania zwierząt, który może wspomóc w tworzeniu funkcjonalności aplikacji związanych z psami i ich właścicielami."
-        },
-        {
-            "name": "Marketingowiec",
-            "description": "Osoba odpowiedzialna za promocję i pozyskiwanie użytkowników do aplikacji do wyprowadzania psów."
+            "name": "Tester",
+            "description": "Osoba odpowiedzialna za testowanie aplikacji pod kątem błędów, sprawdzanie czy działa zgodnie z oczekiwaniami oraz raportowanie znalezionych defektów."
         }
     ]
 }
