@@ -258,21 +258,42 @@ async def generate_actors(project_id: str):
         return actors_model
     raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
 
+@app.post("/generate-business-scenarios/{project_id}")
+async def generate_business_scenarios(project_id: str):
+    project = await project_collection.find_one({"_id": ObjectId(project_id)})
+    if project:
+        business_scenarios = BusinessModule(Model.GPT3)
+        forWho = project["for_who"]
+        doingWhat = project["doing_what"]
+        content = business_scenarios.get_content(forWho, doingWhat)
+        data = json.loads(content.choices[0].message.content)
+        business_scenarios_model = BusinessScenariosModel(**data)
+        project["business_scenarios"] = business_scenarios_model.dict()
 
-@app.post("/generate-app")
-async def generate_app(forWho: str, doingWhat: str, project_id: PyObjectId, background_tasks: BackgroundTasks):
-    background_tasks.add_task(generator, forWho, doingWhat)
-    return 
+        await project_collection.find_one_and_update(
+            {"_id": ObjectId(project_id)},
+            {"$set": project},
+            return_document=ReturnDocument.AFTER,
+        )
+        return business_scenarios_model
+    raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
 
-def declare_text_modules(llm_model: Model):
-    actors = ActorsModule(llm_model)
-    # uml_generator = UmlModule(llm_model)
-    # business_generator = BusinessModule(llm_model)
-    speech_generator = ElevatorSpeechModule(llm_model)
-    # title_generator = TitleModule(llm_model)
-    # schedule_generator = ScheduleModule(llm_model)
-    # database_schema_generator = DatabaseSchemaModule(llm_model)
-    # logo_generator = LogoModule(llm_model)
+@app.post("/generate-elevator-speech/{project_id}")
+async def generate_elevator_speech(project_id: str):
+    project = await project_collection.find_one({"_id": ObjectId(project_id)})
+    if project:
+        elevator_speech = ElevatorSpeechModule(Model.GPT3)
+        forWho = project["for_who"]
+        doingWhat = project["doing_what"]
+        content = elevator_speech.get_content(forWho, doingWhat)
+        data = json.loads(content.choices[0].message.content)
+        elevator_speech_model = ElevatorSpeechesModel(**data)
+        project["elevator_speech"] = elevator_speech_model.dict()
 
-    # return [actors, uml_generator, business_generator, speech_generator, title_generator, schedule_generator, database_schema_generator]
-    return [actors, speech_generator]
+        await project_collection.find_one_and_update(
+            {"_id": ObjectId(project_id)},
+            {"$set": project},
+            return_document=ReturnDocument.AFTER,
+        )
+        return elevator_speech_model
+    raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
