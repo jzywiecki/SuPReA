@@ -4,6 +4,8 @@ from server.models import SpecificationsModel
 from server.database import project_collection
 from server.modules.specifications_module.routes import SpecificationsModule
 from server.utils.openaiUtils import Model
+from bson.json_util import dumps
+from pymongo import ReturnDocument
 import json
 
 router = APIRouter(
@@ -31,7 +33,7 @@ async def generate_specifications(project_id: str):
         specifications = SpecificationsModule(Model.GPT3)
         forWho = project["for_who"]
         doingWhat = project["doing_what"]
-        content = specifications.get_content(forWho, doingWhat)
+        content = specifications.get_content(forWho, doingWhat, False)
         data = json.loads(content.choices[0].message.content)
         specifications_model = SpecificationsModel(**data)
         project["specifications"] = specifications_model.dict()

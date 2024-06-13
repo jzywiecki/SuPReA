@@ -4,6 +4,8 @@ from server.models import MottoModel
 from server.database import project_collection
 from server.modules.motto_module.routes import MottoModule
 from server.utils.openaiUtils import Model
+from bson.json_util import dumps
+from pymongo import ReturnDocument
 import json
 
 router = APIRouter(
@@ -31,7 +33,7 @@ async def generate_motto(project_id: str):
         motto = MottoModule(Model.GPT3)
         forWho = project["for_who"]
         doingWhat = project["doing_what"]
-        content = motto.get_content(forWho, doingWhat)
+        content = motto.get_content(forWho, doingWhat, False)
         data = json.loads(content.choices[0].message.content)
         motto_model = MottoModel(**data)
         project["motto"] = motto_model.dict()

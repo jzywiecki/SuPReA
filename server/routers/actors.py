@@ -4,6 +4,8 @@ from server.models import ActorsModel
 from server.database import project_collection
 from server.modules.actors.routes import ActorsModule
 from server.utils.openaiUtils import Model
+from bson.json_util import dumps
+from pymongo import ReturnDocument
 import json
 
 router = APIRouter(
@@ -31,7 +33,7 @@ async def generate_actors(project_id: str):
         actors = ActorsModule(Model.GPT3)
         forWho = project["for_who"]
         doingWhat = project["doing_what"]
-        content = actors.get_content(forWho, doingWhat)
+        content = actors.get_content(forWho, doingWhat, False)
         data = json.loads(content.choices[0].message.content)
         actors_model = ActorsModel(**data)
         project["actors"] = actors_model.dict()

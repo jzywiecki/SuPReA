@@ -4,6 +4,8 @@ from server.models import RequirementsModel
 from server.database import project_collection
 from server.modules.requirements_module.routes import RequirementsModule
 from server.utils.openaiUtils import Model
+from pymongo import ReturnDocument
+
 import json
 
 router = APIRouter(
@@ -31,7 +33,7 @@ async def generate_requirements(project_id: str):
         requirements = RequirementsModule(Model.GPT3)
         forWho = project["for_who"]
         doingWhat = project["doing_what"]
-        content = requirements.get_content(forWho, doingWhat)
+        content = requirements.get_content(forWho, doingWhat, False)
         data = json.loads(content.choices[0].message.content)
         requirements_model = RequirementsModel(**data)
         project["requirements"] = requirements_model.dict()

@@ -4,6 +4,7 @@ from server.models import BusinessScenariosModel
 from server.database import project_collection
 from server.modules.business_scenarios.routes import BusinessModule
 from server.utils.openaiUtils import Model
+from pymongo import ReturnDocument
 import json
 
 router = APIRouter(
@@ -31,7 +32,7 @@ async def generate_business_scenarios(project_id: str):
         business_scenarios = BusinessModule(Model.GPT3)
         forWho = project["for_who"]
         doingWhat = project["doing_what"]
-        content = business_scenarios.get_content(forWho, doingWhat)
+        content = business_scenarios.get_content(forWho, doingWhat, False)
         data = json.loads(content.choices[0].message.content)
         business_scenarios_model = BusinessScenariosModel(**data)
         project["business_scenarios"] = business_scenarios_model.dict()

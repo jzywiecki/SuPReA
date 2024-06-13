@@ -23,13 +23,10 @@ class BusinessScenarioModel(BaseModel):
     features: List[FeatureModel]
 
 class BusinessScenariosModel(BaseModel):
-    scenarios: List[BusinessScenarioModel]
+    business_scenario: BusinessScenarioModel 
 
 class ElevatorSpeechModel(BaseModel):
     content: str
-
-class ElevatorSpeechesModel(BaseModel):
-    speeches: List[ElevatorSpeechModel]
 
 class MottoModel(BaseModel):
     motto: str
@@ -72,7 +69,7 @@ class StrategyModel(BaseModel):
     strategy: str
 
 class TitleModel(BaseModel):
-    title: List[str]
+    names: List[str]
 
 class ProjectModel(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
@@ -86,7 +83,7 @@ class ProjectModel(BaseModel):
     created_at: datetime = Field(default=datetime.now())
     actors: Optional[ActorsModel] = None
     business_scenarios: Optional[BusinessScenariosModel] = None
-    elevator_speech: Optional[ElevatorSpeechesModel] = None
+    elevator_speech: Optional[ElevatorSpeechModel] = None
     motto: Optional[MottoModel] = None
     project_schedule: Optional[ProjectScheduleModel] = None
     requirements: Optional[RequirementsModel] = None

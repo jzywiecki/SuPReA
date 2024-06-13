@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from bson import ObjectId
-from server.models import ElevatorSpeechesModel
+from server.models import ElevatorSpeechModel
 from server.database import project_collection
 from server.modules.elevator_speech.routes import ElevatorSpeechModule
 from server.utils.openaiUtils import Model
+from pymongo import ReturnDocument
 import json
 
 router = APIRouter(
@@ -31,9 +32,9 @@ async def generate_elevator_speech(project_id: str):
         elevator_speech = ElevatorSpeechModule(Model.GPT3)
         forWho = project["for_who"]
         doingWhat = project["doing_what"]
-        content = elevator_speech.get_content(forWho, doingWhat)
+        content = elevator_speech.get_content(forWho, doingWhat, False)
         data = json.loads(content.choices[0].message.content)
-        elevator_speech_model = ElevatorSpeechesModel(**data)
+        elevator_speech_model = ElevatorSpeechModel(**data)
         project["elevator_speech"] = elevator_speech_model.dict()
         await project_collection.find_one_and_update(
             {"_id": ObjectId(project_id)},

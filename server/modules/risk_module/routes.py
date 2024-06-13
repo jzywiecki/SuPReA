@@ -23,10 +23,6 @@ class RiskModule(modules.Module):
         response = utils.sendAIRequest(self.Model, messages, "json", 4000)
         return response
 
-    async def get_content(self, forWho, doingWhat):
+    def get_content(self, forWho, doingWhat, isMock, **kwargs):
         text_response_for_risk = self.make_ai_call(query_for_who + " " + forWho + " " + query_doing_what + " " + doingWhat + " " + query_expectations, {"type": "json_object"});
-        
-        with open('risk.json', 'w') as file:
-            file.write(text_response_for_risk.choices[0].message.content)
-
         return text_response_for_risk

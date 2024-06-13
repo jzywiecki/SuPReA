@@ -4,6 +4,7 @@ from server.models import StrategyModel
 from server.database import project_collection
 from server.modules.strategy_module.routes import StrategyModule
 from server.utils.openaiUtils import Model
+from pymongo import ReturnDocument
 import json
 
 router = APIRouter(
@@ -31,7 +32,7 @@ async def generate_strategy(project_id: str):
         strategy = StrategyModule(Model.GPT3)
         forWho = project["for_who"]
         doingWhat = project["doing_what"]
-        content = strategy.get_content(forWho, doingWhat)
+        content = strategy.get_content(forWho, doingWhat, False)
         data = json.loads(content.choices[0].message.content)
         strategy_model = StrategyModel(**data)
         project["strategy"] = strategy_model.dict()

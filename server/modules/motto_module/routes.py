@@ -18,10 +18,6 @@ class MottoModule(modules.Module):
         response = utils.sendAIRequest(self.Model, messages, "json", 4000)
         return response
 
-    async def get_content(self, forWho, doingWhat):
+    def get_content(self, forWho, doingWhat, isMock, **kwargs):
         text_response_for_motto = self.make_ai_call(query_for_who + " " + forWho + " " + query_doing_what + " " + doingWhat + " " + query_expectations, {"type": "json_object"});
-        
-        with open('motto.json', 'w') as file:
-            file.write(text_response_for_motto.choices[0].message.content)
-
         return text_response_for_motto

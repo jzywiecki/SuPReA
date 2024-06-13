@@ -4,6 +4,7 @@ from server.models import ProjectScheduleModel
 from server.database import project_collection
 from server.modules.project_schedule.routes import ScheduleModule
 from server.utils.openaiUtils import Model
+from pymongo import ReturnDocument
 import json
 
 router = APIRouter(
@@ -31,7 +32,7 @@ async def generate_project_schedule(project_id: str):
         project_schedule = ScheduleModule(Model.GPT3)
         forWho = project["for_who"]
         doingWhat = project["doing_what"]
-        content = project_schedule.get_content(forWho, doingWhat)
+        content = project_schedule.get_content(forWho, doingWhat, False)
         data = json.loads(content.choices[0].message.content)
         project_schedule_model = ProjectScheduleModel(**data)
         project["project_schedule"] = project_schedule_model.dict()

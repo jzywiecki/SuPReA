@@ -4,6 +4,8 @@ from server.models import TitleModel
 from server.database import project_collection
 from server.modules.title.routes import TitleModule
 from server.utils.openaiUtils import Model
+from bson.json_util import dumps
+from pymongo import ReturnDocument
 import json
 
 router = APIRouter(
@@ -31,7 +33,7 @@ async def generate_title(project_id: str):
         title = TitleModule(Model.GPT3)
         forWho = project["for_who"]
         doingWhat = project["doing_what"]
-        content = title.get_content(forWho, doingWhat)
+        content = title.get_content(forWho, doingWhat, False)
         data = json.loads(content.choices[0].message.content)
         title_model = TitleModel(**data)
         project["title"] = title_model.dict()
