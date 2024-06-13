@@ -1,4 +1,3 @@
-
 import os
 import uuid
 import server.modules.module.module as modules
@@ -14,12 +13,13 @@ import string
 from datetime import datetime
 
 logger = logging.getLogger("logo")
-dirname =  os.path.dirname(__file__)
+dirname = os.path.dirname(__file__)
+
 
 # ----------------------------------------UTILS
 def random_name():
     current_time = datetime.now().strftime("%Y%m%d%H%M%S")
-    random_suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+    random_suffix = "".join(random.choices(string.ascii_uppercase + string.digits, k=5))
     return f"Z{current_time}_{random_suffix}"
 
 
@@ -34,6 +34,7 @@ additional_details4 = "The logo should be funny. The whole background should be 
 model = "dall-e-3"
 n = 1
 
+
 async def fetch_logo(client, prompt, details, additional_details, model, n, path):
     response = client.images.generate(
         model=model,
@@ -46,27 +47,28 @@ async def fetch_logo(client, prompt, details, additional_details, model, n, path
         image_url = response.data[i].url
         image_response = requests.get(image_url)
         image = Image.open(BytesIO(image_response.content))
-        path = os.path.join(path,f"{random_name()}{model}.png")
+        path = os.path.join(path, f"{random_name()}{model}.png")
         image.save(path)
 
 
 # ----------------------------------------ROUTES
 async def generate_logo(client):
-        random_uuid = uuid.uuid4()
-        path = os.path.join(dirname,'data','gen',str(random_uuid))
-        os.mkdir(path)
-        await asyncio.gather(
-            fetch_logo(client, prompt, details, additional_details1, model, n,path),
-            # fetch_logo(client, prompt, details, additional_details2, model, n,path),
-            # fetch_logo(client, prompt, details, additional_details3, model, n,path),
-            # fetch_logo(client, prompt, details, additional_details4, model, n,path),
-        )
-        # images = kwargs.get("images")
-        # tasks = []
-        # for _ in range(images):
-        #     task = asyncio.create_task(fetch_logo(client, prompt, details, additional_details1, model, n))
-        #     tasks.append(task)
-        # await asyncio.gather(*tasks)
+    random_uuid = uuid.uuid4()
+    path = os.path.join(dirname, "data", "gen", str(random_uuid))
+    os.mkdir(path)
+    await asyncio.gather(
+        fetch_logo(client, prompt, details, additional_details1, model, n, path),
+        # fetch_logo(client, prompt, details, additional_details2, model, n,path),
+        # fetch_logo(client, prompt, details, additional_details3, model, n,path),
+        # fetch_logo(client, prompt, details, additional_details4, model, n,path),
+    )
+    # images = kwargs.get("images")
+    # tasks = []
+    # for _ in range(images):
+    #     task = asyncio.create_task(fetch_logo(client, prompt, details, additional_details1, model, n))
+    #     tasks.append(task)
+    # await asyncio.gather(*tasks)
+
 
 class LogoModule(modules.Module):
     def __init__(self, model):

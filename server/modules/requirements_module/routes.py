@@ -1,24 +1,30 @@
-import utils.openaiUtils as utils
+import server.utils.openaiUtils as utils
 import json
-import modules.module.module as modules
+import server.modules.module.module as modules
 
-requirements_schema_json = '''
+requirements_schema_json = """
     "functional_requirements": [
         {
             "name": "string",
-            "description": "string"
+            "description": "string",
+            "priority": "string"
         }
     ], 
     "non_functional_requirements": [
         {
             "name": "string",
-            "description": "string"
+            "description": "string",
+            "priority": "string"
         }
     ]
-'''
-query_for_who = "Wypisz po 10 wymagań funkcjonalnych i niefunkcjonalnych dla"
-query_doing_what = "tworzacego aplikacje do"
-query_expectations = "Wynik przedstaw w postaci tablicy json zgodnie ze schematem " + requirements_schema_json + ", wartości pól uzupełnij w języku polskim."
+"""
+query_for_who = "Write 10 functional and 10 non-functional requirements for"
+query_doing_what = "creating app for"
+query_expectations = (
+    "Priority should be one of: Must, Should, Could. Results should be in json format according to the schema: "
+    + requirements_schema_json
+)
+
 
 class RequirementsModule(modules.Module):
     def __init__(self, model):
@@ -29,10 +35,17 @@ class RequirementsModule(modules.Module):
         response = utils.sendAIRequest(self.Model, messages, "json", 4000)
         return response
 
-    async def get_content(self, forWho, doingWhat):
-        text_response_for_requirements = self.make_ai_call(query_for_who + " " + forWho + " " + query_doing_what + " " + doingWhat + " " + query_expectations, {"type": "json_object"});
-        
-        with open('requirements.json', 'w') as file:
-            file.write(text_response_for_requirements.choices[0].message.content)
-
+    def get_content(self, forWho, doingWhat, isMock, **kwargs):
+        text_response_for_requirements = self.make_ai_call(
+            query_for_who
+            + " "
+            + forWho
+            + " "
+            + query_doing_what
+            + " "
+            + doingWhat
+            + " "
+            + query_expectations,
+            {"type": "json_object"},
+        )
         return text_response_for_requirements
