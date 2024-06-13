@@ -1,0 +1,273 @@
+.namelist-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: 100%;
+}
+
+.namelist-list {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.namelist-cardcontent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 0;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+
+.namelist-priority {
+    position: absolute;
+    bottom: 0;
+    right: 5px;
+    color: gray;
+}
+
+.motiondiv {
+    margin: 0.5rem;
+    padding: 0rem;
+    background-color: transparent;
+    border-radius: none;
+    transition-property: transform;
+    transition-duration: 0.3s;
+    transform: scale(1);
+    cursor: pointer;
+}
+
+.motiondiv:hover {
+    transform: scale(1.05);
+}
+
+.namelist-title {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 1.4em;
+    position: absolute;
+    top: 0;
+
+}
+
+/* ------------------------------------ */
+.checkbox-container {
+    position: relative;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.checkbox-container>h2 {
+    margin-top: 60px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.checkbox {
+    width: 223px;
+    height: 20px;
+    background-color: #d0d0d0;
+    border-radius: 30px;
+    position: absolute;
+    color: white;
+    overflow: hidden;
+
+}
+
+#checkbox_toggle {
+    display: none;
+}
+
+.checkbox .toggle {
+    width: 100px;
+    height: 15px;
+    position: absolute;
+    border-radius: 30px;
+    left: 5px;
+    cursor: pointer;
+    background: #0a1929;
+    transition: 0.4s;
+
+}
+
+.checkbox .slide {
+    width: 230px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    cursor: pointer;
+}
+
+.checkbox .slide .text {
+    font-size: 16px;
+    font-weight: 700;
+    z-index: 100;
+    cursor: pointer;
+}
+
+input.check:checked+.slide .toggle {
+    transform: translateX(113px);
+}
+
+
+
+.requirements-container {
+    position: relative;
+    overflow-y: hidden;
+    height: calc(100vh - 64px);
+    display: flex;
+    justify-content: start;
+    flex-direction: column;
+    align-items: center;
+}
+
+.requirements-list {
+    list-style-type: none;
+    padding: 0;
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: start;
+}
+
+.requirement-item {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    transition: box-shadow 0.2s;
+    width: 100%;
+}
+
+.requirement-item:hover {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.risks-container {
+    position: relative;
+    overflow-y: hidden;
+    height: calc(100vh - 64px);
+    display: flex;
+    width: 100%;
+    justify-content: start;
+    flex-direction: column;
+    align-items: center;
+}
+
+.risk-list {
+    list-style-type: none;
+    padding: 0;
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: start;
+}
+
+.risk-item {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    transition: box-shadow 0.2s;
+    width: 100%;
+}
+
+.riskList-container {
+    padding: 10px 0 0 0;
+
+}
+
+.riskList-container>h2 {
+    width: 100%;
+    text-align: center;
+    margin: 10px 0;
+    font-size: 1.3em;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+
+
+.actor-card {
+    margin-bottom: 1.5rem;
+    padding: 0rem;
+    width: 70%;
+    border-radius: 5px;
+    border-top-left-radius: 2rem;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.15s ease-in-out;
+    border: 1px solid rgb(223, 223, 223);
+    overflow: hidden;
+    position: relative;
+
+    &:hover {
+        cursor: pointer;
+        box-shadow: 1px 1px 1px 2px rgba(0, 0, 0, 0.20);
+    }
+
+}
+
+.actor-background {
+    background: rgb(163, 163, 163);
+    background: radial-gradient(circle, rgb(219, 219, 219) 0%, rgba(249, 249, 249, 1) 100%);
+    width: 100%;
+    height: 80px;
+    border-radius: 5px;
+    border-top-left-radius: 2rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-bottom: 0px;
+    border-bottom: 1px solid rgb(157, 157, 157);
+}
+
+.actor-icon {
+    aspect-ratio: 1/1;
+    width: 100px;
+    border: 4px solid rgb(255, 255, 255);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    position: absolute;
+    background-color: rgb(233, 233, 233);
+    box-shadow: 0px 0px 2px 3px rgba(0, 0, 0, 0.15);
+    top: 35px;
+    left: 30px;
+    color: black;
+}
+
+.actor-description {
+    padding: 1.5rem;
+}
+
+.actor-description>h2 {
+    width: 80%;
+    text-align: end;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.actor-description>p {
+    color: rgb(60, 60, 60)
+}
