@@ -4,16 +4,17 @@ from server.models import ProjectModel, ProjectCollection
 from server.database import project_collection
 
 router = APIRouter(
-    tags=["projects"],    
+    tags=["projects"],
     prefix="/projects",
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.post(
     "/",
     response_model=ProjectModel,
     status_code=status.HTTP_201_CREATED,
-    response_model_by_alias=False
+    response_model_by_alias=False,
 )
 async def create_project(project: ProjectModel = Body(...)):
     new_project = await project_collection.insert_one(
@@ -24,21 +25,23 @@ async def create_project(project: ProjectModel = Body(...)):
     )
     return created_project
 
+
 @router.get(
     "/",
     response_model=ProjectCollection,
     status_code=status.HTTP_200_OK,
-    response_model_by_alias=False
+    response_model_by_alias=False,
 )
 async def get_projects():
     projects = await project_collection.find().to_list(length=None)
     return ProjectCollection(projects=projects)
 
+
 @router.get(
     "/{project_id}",
     response_model=ProjectModel,
     status_code=status.HTTP_200_OK,
-    response_model_by_alias=False
+    response_model_by_alias=False,
 )
 async def get_project(project_id: str):
     if (
@@ -47,11 +50,12 @@ async def get_project(project_id: str):
         return project
     raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
 
+
 @router.put(
     "/{project_id}",
     response_model=ProjectModel,
     status_code=status.HTTP_200_OK,
-    response_model_by_alias=False
+    response_model_by_alias=False,
 )
 async def update_project(project_id: str, project: ProjectModel = Body(...)):
     project = {
@@ -66,10 +70,16 @@ async def update_project(project_id: str, project: ProjectModel = Body(...)):
         if update_result is not None:
             return update_result
         else:
-            raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
-    if project := await project_collection.find_one({"_id": ObjectId(project_id)}) is not None:
+            raise HTTPException(
+                status_code=404, detail=f"Project {project_id} not found"
+            )
+    if (
+        project := await project_collection.find_one({"_id": ObjectId(project_id)})
+        is not None
+    ):
         return project
     raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
 
 @router.delete(
     "/{project_id}",

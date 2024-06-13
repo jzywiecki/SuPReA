@@ -4,7 +4,7 @@ import server.utils.openaiUtils as utils
 import logging
 from server.utils.data import write_to_file
 
-business_json = '''
+business_json = """
     {
         "business_scenario": {
             "title": "string",
@@ -14,11 +14,15 @@ business_json = '''
             ]
         }
     }
-'''
+"""
 
-query_for_who = "Zaproponuj scenariusz biznesowy dla"
-query_doing_what = "planującego założenie startupu IT skupiającego się na"
-query_expectations = "Przedstaw go z krótkim opisem. Skup się na części biznesowej projektu. Wynik zwróć w postaci json zgodnie ze schematem: " + business_json + ", wartości pól uzupełnij w języku polskim."
+query_for_who = "Suggest a business scenario for "
+query_doing_what = "creating app for"
+query_expectations = (
+    "Show it with short description and features. Return the result in json format according to the schema:"
+    + business_json
+)
+
 
 class BusinessModule(modules.Module):
     def __init__(self, model):
@@ -30,6 +34,17 @@ class BusinessModule(modules.Module):
         return response
 
     def get_content(self, forWho, doingWhat, isMock, **kwargs):
-        content = self.make_ai_call(query_for_who + " " + forWho + " " + query_doing_what + " " + doingWhat + " " + query_expectations, {"type": "json_object"})
+        content = self.make_ai_call(
+            query_for_who
+            + " "
+            + forWho
+            + " "
+            + query_doing_what
+            + " "
+            + doingWhat
+            + " "
+            + query_expectations,
+            {"type": "json_object"},
+        )
         print(content)
         return content

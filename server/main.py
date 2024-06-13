@@ -1,5 +1,12 @@
 from fastapi import FastAPI
-from server.routers import project, actors, business_scenarios, elevator_speech, motto, project_schedule
+from server.routers import (
+    project,
+    actors,
+    business_scenarios,
+    elevator_speech,
+    motto,
+    project_schedule,
+)
 from server.routers import requirement, risk, specifications, strategy, title
 
 app = FastAPI()

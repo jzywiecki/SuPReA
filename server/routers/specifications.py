@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from bson import ObjectId
-from server.models import SpecificationsModel 
+from server.models import SpecificationsModel
 from server.database import project_collection
 from server.modules.specifications_module.routes import SpecificationsModule
 from server.utils.openaiUtils import Model
@@ -14,6 +14,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get(
     "/{project_id}",
 )
@@ -25,6 +26,7 @@ async def get_specifications(project_id: str):
         return specifications
     else:
         raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
 
 @router.post("/generate/{project_id}")
 async def generate_specifications(project_id: str):

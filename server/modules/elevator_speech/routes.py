@@ -6,13 +6,17 @@ import logging
 from server.utils.data import write_to_file
 from server.utils.validation import validate_json
 
-elevator_speech_json = '''
+elevator_speech_json = """
     "content": "string"
-'''
+"""
 
-query_for_who = "Napisz elevator speech dla"
-query_doing_what = "tworzącego aplikację do"
-query_expectations = "Przedstaw ich z krótkim opisem. Wynik zwróć w postaci json zgodnie ze schematem: " + elevator_speech_json + ", wartości pól uzupełnij w języku polskim."
+query_for_who = "Make a elevator pitch for"
+query_doing_what = "creating app for"
+query_expectations = (
+    "Show it with short description. Return the result in json format according to the schema:"
+    + elevator_speech_json
+)
+
 
 class ElevatorSpeechModule(modules.Module):
     def __init__(self, model):
@@ -24,5 +28,16 @@ class ElevatorSpeechModule(modules.Module):
         return response
 
     def get_content(self, forWho, doingWhat, isMock, **kwargs):
-        text_response = self.make_ai_call(query_for_who + " " + forWho + " " + query_doing_what + " " + doingWhat + " " + query_expectations, {"type": "json_object"})
+        text_response = self.make_ai_call(
+            query_for_who
+            + " "
+            + forWho
+            + " "
+            + query_doing_what
+            + " "
+            + doingWhat
+            + " "
+            + query_expectations,
+            {"type": "json_object"},
+        )
         return text_response

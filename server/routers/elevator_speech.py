@@ -8,10 +8,11 @@ from pymongo import ReturnDocument
 import json
 
 router = APIRouter(
-    tags = ["elevator_speech"],
-    prefix = "/elevator_speech",
-    responses = {404: {"description": "Not found"}},
+    tags=["elevator_speech"],
+    prefix="/elevator_speech",
+    responses={404: {"description": "Not found"}},
 )
+
 
 @router.get(
     "/{project_id}",
@@ -24,6 +25,7 @@ async def get_elevator_speeches(project_id: str):
         return elevator_speeches
     else:
         raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
 
 @router.post("/generate/{project_id}")
 async def generate_elevator_speech(project_id: str):

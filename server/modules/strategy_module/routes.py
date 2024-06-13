@@ -2,13 +2,16 @@ import server.utils.openaiUtils as utils
 import json
 import server.modules.module.module as modules
 
-marketing_strategy_schema_json = '''
+marketing_strategy_schema_json = """
     "strategy": "string"
-'''
+"""
 
-query_for_who = "Opracuj strategie marketingową dla"
-query_doing_what = "tworzacego aplikacje do"
-query_expectations = "Wynik zwróć w postaci json zgodnie ze schematem  " + marketing_strategy_schema_json + ", wartości pól uzupełnij w języku polskim."
+query_for_who = "Design marketing strategy for"
+query_doing_what = "creating app for"
+query_expectations = (
+    "Result return according to provided json schema: " + marketing_strategy_schema_json
+)
+
 
 class StrategyModule(modules.Module):
     def __init__(self, model):
@@ -20,5 +23,16 @@ class StrategyModule(modules.Module):
         return response
 
     def get_content(self, forWho, doingWhat, isMock, **kwargs):
-        text_response_for_specifications = self.make_ai_call(query_for_who + " " + forWho + " " + query_doing_what + " " + doingWhat + " " + query_expectations, {"type": "json_object"});
+        text_response_for_specifications = self.make_ai_call(
+            query_for_who
+            + " "
+            + forWho
+            + " "
+            + query_doing_what
+            + " "
+            + doingWhat
+            + " "
+            + query_expectations,
+            {"type": "json_object"},
+        )
         return text_response_for_specifications

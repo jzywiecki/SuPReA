@@ -13,6 +13,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.get(
     "/{project_id}",
 )
@@ -24,6 +25,7 @@ async def get_business_scenarios(project_id: str):
         return business_scenarios
     else:
         raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+
 
 @router.post("/generate/{project_id}")
 async def generate_business_scenarios(project_id: str):

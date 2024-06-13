@@ -6,70 +6,92 @@ from pydantic.functional_validators import BeforeValidator
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
+
 class ActorModel(BaseModel):
     name: str
     description: str
 
+
 class ActorsModel(BaseModel):
     actors: List[ActorModel]
+
 
 class FeatureModel(BaseModel):
     feature_name: str
     description: str
+
 
 class BusinessScenarioModel(BaseModel):
     title: str
     description: str
     features: List[FeatureModel]
 
+
 class BusinessScenariosModel(BaseModel):
-    business_scenario: BusinessScenarioModel 
+    business_scenario: BusinessScenarioModel
+
 
 class ElevatorSpeechModel(BaseModel):
     content: str
 
+
 class MottoModel(BaseModel):
     motto: str
+
 
 class MilestoneModel(BaseModel):
     name: str
     description: str
     duration: str
 
+
 class ProjectScheduleModel(BaseModel):
     milestones: List[MilestoneModel]
+
 
 class FunctionalRequirementModel(BaseModel):
     name: str
     description: str
+    priority: str
+
 
 class NonFunctionalRequirementModel(BaseModel):
     name: str
     description: str
+    priority: str
+
 
 class RequirementsModel(BaseModel):
     functional_requirements: List[FunctionalRequirementModel]
     non_functional_requirements: List[NonFunctionalRequirementModel]
 
+
 class RiskModel(BaseModel):
     risk: str
     description: str
+    prevention: str
+
 
 class RisksModel(BaseModel):
     risks: List[RiskModel]
+
 
 class SpecificationModel(BaseModel):
     name: str
     description: str
 
+
 class SpecificationsModel(BaseModel):
     specifications: List[SpecificationModel]
+
 
 class StrategyModel(BaseModel):
     strategy: str
 
+
 class TitleModel(BaseModel):
     names: List[str]
+
 
 class ProjectModel(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
@@ -94,6 +116,7 @@ class ProjectModel(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
 
 class ProjectCollection(BaseModel):
     projects: List[ProjectModel]

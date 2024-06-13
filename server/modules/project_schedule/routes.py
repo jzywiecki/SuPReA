@@ -6,7 +6,7 @@ import logging
 from server.utils.data import write_to_file
 from server.utils.validation import validate_json
 
-harmonogram_json = '''
+harmonogram_json = """
     "milestones": [
         {
             "name": "string",
@@ -14,11 +14,15 @@ harmonogram_json = '''
             "duration": "string"
         }
     ]
-'''
+"""
 
-query_for_who = "Zaproponuj harmonogram pracy dla"
-query_doing_what = "tworzącego aplikację do"
-query_expectations = "Przedstaw go z krótkim opisem. Skup się na części biznesowej projektu. Wynik zwróć w postaci json zgodnie ze schematem: " + harmonogram_json + ", wartości pól uzupełnij w języku polskim."
+query_for_who = "Suggest a work schedule for"
+query_doing_what = "creating app for"
+query_expectations = (
+    "Show it with milestones. Focus on business site of a schedule. Return the result in json format according to the schema:"
+    + harmonogram_json
+)
+
 
 class ScheduleModule(modules.Module):
     def __init__(self, model):
@@ -30,5 +34,16 @@ class ScheduleModule(modules.Module):
         return response
 
     def get_content(self, forWho, doingWhat, isMock, **kwargs):
-        content = self.make_ai_call(query_for_who + " " + forWho + " " + query_doing_what + " " + doingWhat + " " + query_expectations, {"type": "json_object"})
+        content = self.make_ai_call(
+            query_for_who
+            + " "
+            + forWho
+            + " "
+            + query_doing_what
+            + " "
+            + doingWhat
+            + " "
+            + query_expectations,
+            {"type": "json_object"},
+        )
         return content
