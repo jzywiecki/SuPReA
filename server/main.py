@@ -9,7 +9,18 @@ from server.routers import (
 )
 from server.routers import requirement, risk, specifications, strategy, title
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins="*",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(project.router)
 app.include_router(actors.router)
