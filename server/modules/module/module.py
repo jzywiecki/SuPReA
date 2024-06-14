@@ -18,6 +18,6 @@ class Module(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_content(self, forWho, doingWhat, isMock, **kwargs):
-        """Get content for given forWho and doingWhat and return the response"""
+    def get_content(self, for_who, doing_what, is_mock, additional_info, **kwargs):
+        """Get content for given for_who and doing_what and return the response"""
         raise NotImplementedError

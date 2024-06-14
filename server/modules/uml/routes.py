@@ -45,7 +45,7 @@ class UmlModule(modules.Module):
         response = utils.sendAIRequest(self.Model, messages, msg_type, 4000)
         return response.choices[0].message.content
 
-    async def get_content(self, forWho, doingWhat, **kwargs):
+    async def get_content(self, for_who, doing_what, **kwargs):
         is_mock = True if kwargs.get("is_mock") else False
         if kwargs.get("uml_list") is True:
             return await generate_uml_list(self.make_ai_call, is_mock=is_mock)

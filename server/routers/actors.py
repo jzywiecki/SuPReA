@@ -33,9 +33,10 @@ async def generate_actors(project_id: str):
     project = await project_collection.find_one({"_id": ObjectId(project_id)})
     if project:
         actors = ActorsModule(Model.GPT3)
-        forWho = project["for_who"]
-        doingWhat = project["doing_what"]
-        content = actors.get_content(forWho, doingWhat, False)
+        for_who = project["for_who"]
+        doing_what = project["doing_what"]
+        additional_info = project["additional_info"]
+        content = actors.get_content(for_who, doing_what, additional_info, False)
         data = json.loads(content.choices[0].message.content)
         actors_model = ActorsModel(**data)
         project["actors"] = actors_model.dict()

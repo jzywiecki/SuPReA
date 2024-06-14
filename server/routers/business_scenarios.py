@@ -32,9 +32,12 @@ async def generate_business_scenarios(project_id: str):
     project = await project_collection.find_one({"_id": ObjectId(project_id)})
     if project:
         business_scenarios = BusinessModule(Model.GPT3)
-        forWho = project["for_who"]
-        doingWhat = project["doing_what"]
-        content = business_scenarios.get_content(forWho, doingWhat, False)
+        for_who = project["for_who"]
+        doing_what = project["doing_what"]
+        additional_info = project["additional_info"]
+        content = business_scenarios.get_content(
+            for_who, doing_what, additional_info, False
+        )
         data = json.loads(content.choices[0].message.content)
         business_scenarios_model = BusinessScenariosModel(**data)
         project["business_scenarios"] = business_scenarios_model.dict()

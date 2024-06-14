@@ -34,7 +34,7 @@ class DatabaseSchemaModule(modules.Module):
         response = utils.sendAIRequest(self.Model, messages, msg_type, 4000)
         return response.choices[0].message.content
 
-    async def get_content(self, forWho, doingWhat, **kwargs):
+    async def get_content(self, for_who, doing_what, **kwargs):
         is_mock = True if kwargs.get("is_mock") else False
         chromedriverpath = kwargs.get("driver")
         return await generate_database_schema(
