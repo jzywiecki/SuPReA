@@ -4,37 +4,38 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import axios from 'axios'
 
 
 const NewProjectInput = () => {
 
     const [usedAi, setUsedAi] = useState<boolean>(true);
 
-    const [titleFieldError, setTitleFieldError] = useState<string>("");
+    const [nameFieldError, setNameFieldError] = useState<string>("");
     const [forWhoFieldError, setForWhoFieldError] = useState<string>("");
     const [doingWhatFieldError, setDoingWhatFieldError] = useState<string>("");
     const [additionalInfoFieldError, setAdditionalInfoFieldError] = useState<string>("");
 
-    const titleFieldRef = useRef<HTMLInputElement>(null);
+    const nameFieldRef = useRef<HTMLInputElement>(null);
     const forWhoFieldRef = useRef<HTMLTextAreaElement>(null);
     const doingWhatFieldRef = useRef<HTMLTextAreaElement>(null);
     const additionalInfoFieldRef = useRef<HTMLTextAreaElement>(null);
 
     /**
-     * check if the title field is valid
-     * @returns true if the title field is valid, false otherwise
+     * check if the name field is valid
+     * @returns true if the name field is valid, false otherwise
      */
-    const validateTitleField = (): boolean => {
-        const title = titleFieldRef.current?.value || '';
+    const validateNameField = (): boolean => {
+        const name = nameFieldRef.current?.value || '';
 
-        if (!title) {
-            setTitleFieldError("Error: title cannot be empty.");
+        if (!name) {
+            setNameFieldError("Error: name cannot be empty.");
             return false;
-        } else if (title.length > 50) {
-            setTitleFieldError("Error: max title length is 50 characters.");
+        } else if (name.length > 50) {
+            setNameFieldError("Error: max name length is 50 characters.");
             return false;
         } else {
-            setTitleFieldError("");
+            setNameFieldError("");
         }
 
         return true;
@@ -107,14 +108,40 @@ const NewProjectInput = () => {
     // TO DO:
     const submitButton = (): void => {
 
-        const isCorrectTitle = validateTitleField();
+        const isCorrectName = validateNameField();
         const isCorrectForWhoField = validateForWhoField();
         const isCorrectDoingWhatField = validateDoingWhatField();
         const isCorrectAdditionalInformationField = validateAdditionalInfoField();
 
-        if (!isCorrectTitle || !isCorrectForWhoField || !isCorrectDoingWhatField || !isCorrectAdditionalInformationField) {
+        if (!isCorrectName || !isCorrectForWhoField || !isCorrectDoingWhatField || !isCorrectAdditionalInformationField) {
             return;
         }
+
+        // send api request to server
+        const request = {
+            name: nameFieldRef.current?.value,
+            for_who: forWhoFieldRef.current?.value,
+            doing_what: doingWhatFieldRef.current?.value,
+            additional_info: additionalInfoFieldRef.current?.value,
+        }        
+
+
+        axios.post('http://localhost:8000/projects/create', null, {
+            params: {
+                name: nameFieldRef.current?.value,
+                for_who: forWhoFieldRef.current?.value,
+                doing_what: doingWhatFieldRef.current?.value,
+                additional_info: additionalInfoFieldRef.current?.value,
+        }, headers: {
+            'Content-Type': 'application/json'
+        }
+        }
+        ).then(response => {
+            console.log(response.data);
+        }).catch(error => {
+            console.error('Error creating project:', error);
+        });
+
 
         alert("ok.");
     }
@@ -144,11 +171,11 @@ const NewProjectInput = () => {
 
                     <div className="sm:col-span-2">
                         <label htmlFor="company" className="block text-sm font-semibold leading-6 text-gray-900">
-                            Title
+                            Name
                         </label>
                         <div className="mt-2.5">
-                            <Input type="email" ref={titleFieldRef} onChange={() => validateTitleField()} />
-                            {titleFieldError && <p className='text-xs mt-1 text-red-500	'>{titleFieldError}</p>}
+                            <Input type="email" ref={nameFieldRef} onChange={() => validateNameField()} />
+                            {nameFieldError && <p className='text-xs mt-1 text-red-500	'>{nameFieldError}</p>}
                         </div>
                     </div>
 

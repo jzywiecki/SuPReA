@@ -1,11 +1,10 @@
-
 import json
 import logging
 import os
 from .util import extract_schema_from_messeage
 
 logger = logging.getLogger("database_schema")
-dirname =  os.path.dirname(__file__)
+dirname = os.path.dirname(__file__)
 
 prompt = "Generate database schema for application for car sharing"
 details = """It will be mermaid erDiagram. Use single words! You are not allowed to use commas or quotas. Remember about table relationships (eg. Walks ||--o{ Bookings : part). Use this as and examplary diagram: 
@@ -86,5 +85,19 @@ details = """It will be mermaid erDiagram. Use single words! You are not allowed
 Use only single words! DO NOT use commas or quotas.
     """
 
+
 async def fetch_database_schema(make_ai_call, is_mock=True):
-    return json.load(open( os.path.join(dirname,'data','test','database_schema.json'),encoding='utf8')) if is_mock else json.loads(extract_schema_from_messeage(make_ai_call(prompt + " details: " + details,"json")))
+    return (
+        json.load(
+            open(
+                os.path.join(dirname, "data", "test", "database_schema.json"),
+                encoding="utf8",
+            )
+        )
+        if is_mock
+        else json.loads(
+            extract_schema_from_messeage(
+                make_ai_call(prompt + " details: " + details, "json")
+            )
+        )
+    )
