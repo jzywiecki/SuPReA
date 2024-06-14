@@ -2,6 +2,7 @@ from fastapi import APIRouter, Body, HTTPException, status, Response
 from bson import ObjectId
 from server.models import ProjectModel, ProjectCollection
 from server.database import project_collection
+from datetime import datetime
 
 router = APIRouter(
     tags=["projects"],
@@ -20,6 +21,46 @@ async def create_project(project: ProjectModel = Body(...)):
     new_project = await project_collection.insert_one(
         project.model_dump(by_alias=True, exclude=["id"])
     )
+    created_project = await project_collection.find_one(
+        {"_id": new_project.inserted_id}
+    )
+    return created_project
+
+
+@router.post(
+    "/create",
+    response_model=ProjectModel,
+    status_code=status.HTTP_201_CREATED,
+    response_model_by_alias=False,
+)
+async def create_project(
+    name: str, for_who: str, doing_what: str, additional_info: str
+):
+    new_project = ProjectModel(
+        name=name,
+        for_who=for_who,
+        doing_what=doing_what,
+        additional_info=additional_info,
+        owner="test@devx.com",
+        members=[],
+        description="",
+        created_at=datetime.now(),
+        actors=None,
+        business_scenarios=None,
+        elevator_speech=None,
+        motto=None,
+        project_schedule=None,
+        requirements=None,
+        risks=None,
+        specifications=None,
+        strategy=None,
+        title=None,
+    )
+
+    new_project = await project_collection.insert_one(
+        new_project.model_dump(by_alias=True, exclude=["id"])
+    )
+
     created_project = await project_collection.find_one(
         {"_id": new_project.inserted_id}
     )
