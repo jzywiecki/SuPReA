@@ -33,9 +33,10 @@ async def generate_requirements(project_id: str):
     project = await project_collection.find_one({"_id": ObjectId(project_id)})
     if project:
         requirements = RequirementsModule(Model.GPT3)
-        forWho = project["for_who"]
-        doingWhat = project["doing_what"]
-        content = requirements.get_content(forWho, doingWhat, False)
+        for_who = project["for_who"]
+        doing_what = project["doing_what"]
+        additional_info = project["additional_info"]
+        content = requirements.get_content(for_who, doing_what, additional_info, False)
         data = json.loads(content.choices[0].message.content)
         requirements_model = RequirementsModel(**data)
         project["requirements"] = requirements_model.dict()

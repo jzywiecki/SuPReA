@@ -100,7 +100,7 @@ class ProjectModel(BaseModel):
     owner: EmailStr
     for_who: str
     doing_what: str
-    additional_info: Optional[str] = None
+    additional_info: str
     members: List[EmailStr]
     created_at: datetime = Field(default=datetime.now())
     actors: Optional[ActorsModel] = None

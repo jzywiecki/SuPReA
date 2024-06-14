@@ -79,7 +79,7 @@ class LogoModule(modules.Module):
         response = utils.sendAIRequest(self.Model, messages, msg_type, 4000)
         return response.choices[0].message.content
 
-    async def get_content(self, forWho, doingWhat, **kwargs):
+    async def get_content(self, for_who, doing_what, **kwargs):
         api_key = kwargs.get("api_key")
         client = OpenAI(api_key=api_key)
         await generate_logo(client)

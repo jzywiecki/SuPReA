@@ -27,17 +27,19 @@ class SpecificationsModule(modules.Module):
         response = utils.sendAIRequest(self.Model, messages, "json", 4000)
         return response
 
-    def get_content(self, forWho, doingWhat, isMock, **kwargs):
+    def get_content(self, for_who, doing_what, additional_info, is_mock, **kwargs):
         text_response_for_specifications = self.make_ai_call(
             query_for_who
             + " "
-            + forWho
+            + for_who
             + " "
             + query_doing_what
             + " "
-            + doingWhat
+            + doing_what
             + " "
-            + query_expectations,
+            + query_expectations
+            + " "
+            + additional_info,
             {"type": "json_object"},
         )
         return text_response_for_specifications
