@@ -28,7 +28,7 @@ class RiskModule(modules.Module):
         response = utils.sendAIRequest(self.Model, messages, "json", 4000)
         return response
 
-    def get_content(self, for_who, doing_what, is_mock, additional_info, **kwargs):
+    def get_content(self, for_who, doing_what, additional_info, is_mock, **kwargs):
         text_response_for_risk = self.make_ai_call(
             query_for_who
             + " "
