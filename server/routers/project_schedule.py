@@ -29,22 +29,27 @@ async def get_project_schedule(project_id: str):
 
 @router.post("/generate/{project_id}")
 async def generate_project_schedule(project_id: str):
+    print(f"Generating project schedule for project {project_id}")
     project = await project_collection.find_one({"_id": ObjectId(project_id)})
     if project:
-        project_schedule = ScheduleModule(Model.GPT3)
-        for_who = project["for_who"]
-        doing_what = project["doing_what"]
-        additional_info = project["additional_info"]
-        content = project_schedule.get_content(
-            for_who, doing_what, additional_info, False
-        )
-        data = json.loads(content.choices[0].message.content)
-        project_schedule_model = ProjectScheduleModel(**data)
-        project["project_schedule"] = project_schedule_model.dict()
-        await project_collection.find_one_and_update(
-            {"_id": ObjectId(project_id)},
-            {"$set": project},
-            return_document=ReturnDocument.AFTER,
-        )
-        return project_schedule_model
+        try:
+            project_schedule = ScheduleModule(Model.GPT3)
+            for_who = project["for_who"]
+            doing_what = project["doing_what"]
+            additional_info = project["additional_info"]
+            content = project_schedule.get_content(
+                for_who, doing_what, additional_info, False
+            )
+            data = json.loads(content.choices[0].message.content)
+            project_schedule_model = ProjectScheduleModel(**data)
+            project["project_schedule"] = project_schedule_model.dict()
+            await project_collection.find_one_and_update(
+                {"_id": ObjectId(project_id)},
+                {"$set": project},
+                return_document=ReturnDocument.AFTER,
+            )
+            return project_schedule_model
+        except Exception as e:
+            print("Error in generating project schedule!")
+            return
     raise HTTPException(status_code=404, detail=f"Project {project_id} not found")

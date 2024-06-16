@@ -3,7 +3,9 @@ import json
 import server.modules.module.module as modules
 
 marketing_strategy_schema_json = """
+{
     "strategy": "string"
+}
 """
 
 query_for_who = "Design marketing strategy for"

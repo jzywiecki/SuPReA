@@ -6,6 +6,8 @@ import { RiFunctionAddLine } from "react-icons/ri";
 import { RiRefundLine } from "react-icons/ri";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import "./styles.css";
+import { useParams } from "react-router-dom";
+import axios from 'axios';
 
 
 interface Requirement {
@@ -48,105 +50,25 @@ const DraggableRequirement: React.FC<{ requirement: Requirement, index: number, 
 };
 
 const RequirementsList: React.FC = () => {
+    const { projectID } = useParams();
     const [functionalRequirements, setFunctionalRequirements] = useState<Requirement[]>([]);
     const [nonFunctionalRequirements, setNonFunctionalRequirements] = useState<Requirement[]>([]);
     const [showFunctional, setShowFunctional] = useState<boolean>(true);
 
     useEffect(() => {
-        const mockedData = {
-            functional_requirements: [
-                {
-                    name: "Rejestracja użytkowników",
-                    description: "Możliwość rejestracji właścicieli psów w aplikacji"
-                },
-                {
-                    name: "Tworzenie profilu psa",
-                    description: "Możliwość dodawania informacji o psie do profilu, takich jak rasa, wiek, preferencje żywieniowe"
-                },
-                {
-                    name: "Planowanie spacerów",
-                    description: "Funkcja umożliwiająca ustalanie terminów i tras spacerów dla psów"
-                },
-                {
-                    name: "Powiadomienia o spacerach",
-                    description: "System powiadomień przypominających o zbliżającym się spacerze"
-                },
-                {
-                    name: "Ocena spacerów",
-                    description: "Możliwość oceniania przebiegu spacerów i opiekunów psów"
-                },
-                {
-                    name: "Mapa tras spacerów",
-                    description: "Wyświetlanie tras spacerów na interaktywnej mapie"
-                },
-                {
-                    name: "Zarządzanie grupami spacerowymi",
-                    description: "Możliwość tworzenia grup spacerowych i dołączania do istniejących"
-                },
-                {
-                    name: "Chat w aplikacji",
-                    description: "Funkcja umożliwiająca komunikację między użytkownikami przed lub po spacerze"
-                },
-                {
-                    name: "Historia spacerów",
-                    description: "Możliwość przeglądania historii poprzednich spacerów wraz z ocenami i komentarzami"
-                },
-                {
-                    name: "Zarządzanie kontem",
-                    description: "Możliwość edycji danych osobowych i ustawień konta"
-                }
-            ],
-            non_functional_requirements: [
-                {
-                    name: "Wydajność",
-                    description: "Aplikacja powinna działać płynnie i bez opóźnień, nawet przy dużej liczbie użytkowników"
-                },
-                {
-                    name: "Bezpieczeństwo danych",
-                    description: "Zabezpieczenie danych użytkowników, szczególnie informacji dotyczących zwierząt"
-                },
-                {
-                    name: "Intuicyjny interfejs",
-                    description: "Prosty i łatwy w obsłudze interfejs użytkownika, zapewniający wygodne korzystanie z aplikacji"
-                },
-                {
-                    name: "Dostępność na różne platformy",
-                    description: "Aplikacja powinna być dostępna zarówno na urządzenia mobilne z systemem Android, jak i iOS"
-                },
-                {
-                    name: "Personalizacja profili",
-                    description: "Możliwość dostosowania profilu psa oraz preferencji spacerów do indywidualnych potrzeb użytkownika"
-                },
-                {
-                    name: "System oceniania",
-                    description: "Precyzyjny system oceniania spacerów i opiekunów psów, aby zapewnić wysoką jakość usług"
-                },
-                {
-                    name: "Geolokalizacja",
-                    description: "Wykorzystanie funkcji geolokalizacji do precyzyjnego określania lokalizacji użytkowników i tras spacerów"
-                },
-                {
-                    name: "Backup danych",
-                    description: "Regularne tworzenie kopii zapasowych danych użytkowników, aby uniknąć ich utraty"
-                },
-                {
-                    name: "Szybkość ładowania",
-                    description: "Minimalizacja czasu ładowania aplikacji i jej funkcji, aby zapewnić szybką reakcję na działania użytkownika"
-                },
-                {
-                    name: "Utrzymanie zgodności z przepisami",
-                    description: "Zapewnienie zgodności z prawem dotyczącym zbierania danych osobowych oraz regulacji dotyczących usług dla zwierząt"
-                }
-            ]
-        };
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/requirements/${projectID}`);
+                setFunctionalRequirements(response.data.functional_requirements);
+                setNonFunctionalRequirements(response.data.non_functional_requirements);
+                console.log(response.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        fetchData();
 
-        const timeout = setTimeout(() => {
-            setFunctionalRequirements(mockedData.functional_requirements);
-            setNonFunctionalRequirements(mockedData.non_functional_requirements);
-        }, 0);
-
-        return () => clearTimeout(timeout);
-    }, []);
+    }, [projectID]);
 
 
     const moveRequirement = (dragIndex: number, hoverIndex: number, items: Requirement[], setItems: React.Dispatch<React.SetStateAction<Requirement[]>>) => {

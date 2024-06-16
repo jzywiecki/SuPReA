@@ -7,21 +7,25 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
-const MottoList = () => {
-    const [motto, setMotto] = useState(" ");
+const MottoList: React.FC = () => {
+    const { projectID } = useParams();
+    const [motto, setMotto] = useState("");
 
     useEffect(() => {
-        const mockedData = {
-            motto: "Spacer z psem to najlepszy sposób na poprawę nastroju i zdrowia!",
-        };
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/motto/${projectID}`);
+                setMotto(response.data.motto);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        fetchData();
 
-        const timeout = setTimeout(() => {
-            setMotto(mockedData.motto);
-        }, 0);
-
-        return () => clearTimeout(timeout);
-    }, []);
+    }, [projectID]);
 
     return (
         <Card className="max-w-lg mx-auto my-8">

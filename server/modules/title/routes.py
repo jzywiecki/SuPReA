@@ -7,7 +7,9 @@ from server.utils.data import write_to_file
 from server.utils.validation import validate_json
 
 title_json = """
-    "names": ["string"]
+{
+    "names": [string],
+}
 """
 
 query_for_who = "Suggest 10 names for"

@@ -2,50 +2,48 @@ import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import Xarrow, { Xwrapper, useXarrow } from "react-xarrows";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 interface Feature {
     feature_name: string;
     description: string;
 }
 
-const BusinessScenario = () => {
+const BusinessScenario: React.FC = () => {
+    const { projectID } = useParams();
     const [title, setTitle] = useState<string>("");
     const [description, setDescription] = useState<string>("");
     const [features, setFeatures] = useState<Feature[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
     const updateXarrow = useXarrow();
+    const [isLoading, setIsLoading] = useState(true);
+    // FIXME: @Krzysiek Wysocki
 
     useEffect(() => {
-        const mockedData = {
-            business_scenario: {
-                title: "On-demand dog walking service in urban areas",
-                description: "Our app provides a platform for busy urban pet owners to easily schedule and pay for dog walking services at their convenience.",
-                features: [
-                    {
-                        feature_name: "User profiles",
-                        description: "Users can create profiles for their pets, set preferences for walks, and provide instructions for dog walkers."
-                    },
-                    {
-                        feature_name: "Real-time GPS tracking",
-                        description: "Pet owners can track their dog's walk in real-time and receive updates on the route taken and duration of the walk."
-                    },
-                    {
-                        feature_name: "Real-time GPS tracking",
-                        description: "Pet owners can track their dog's walk in real-time and receive updates on the route taken and duration of the walk."
-                    }
-                ]
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/business_scenarios/${projectID}`);
+                setTitle(response.data.title);
+                setDescription(response.data.description);
+                setFeatures(response.data.features);
+                console.log(response.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
             }
-        };
+
+            setIsLoading(false);
+        }
+        fetchData();
 
         const timeout = setTimeout(() => {
-            setTitle(mockedData.business_scenario.title);
-            setDescription(mockedData.business_scenario.description);
-            setFeatures(mockedData.business_scenario.features);
             updateXarrow();
         }, 0);
 
         return () => clearTimeout(timeout);
-    }, [updateXarrow]);
+
+    }, [projectID, updateXarrow]);
+
 
     useEffect(() => {
         const handleScroll = () => {
@@ -75,7 +73,7 @@ const BusinessScenario = () => {
 
         return () => clearTimeout(timeout);
     }, []);
-    return (
+    return ( isLoading ? <div>Loading...</div> :
         <ScrollArea style={{ height: 'calc(100vh - 24px)' }} className="max-w-lg mx-auto my-8 p-4 border rounded-lg shadow-md">
             <div className="mb-4" id="title-description">
                 <h1 className="text-2xl font-bold">{title}</h1>
