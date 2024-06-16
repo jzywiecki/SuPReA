@@ -271,3 +271,10 @@ input.check:checked+.slide .toggle {
 .actor-description>p {
     color: rgb(60, 60, 60)
 }
+
+.uml-title {
+    text-transform: uppercase;
+    font-weight: 650;
+    font-size: 1.4em;
+    margin: 20px 0;
+}

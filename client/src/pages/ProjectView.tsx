@@ -7,19 +7,21 @@ import NameList from './projectPages/NameList';
 import UMLDiagrams from './projectPages/umlDiagrams';
 import RequirementsList from './projectPages/RequirementsList';
 import RiskList from './projectPages/RisksList';
-
-
-import {
-    ResizableHandle,
-    ResizablePanel,
-    ResizablePanelGroup,
-} from "@/components/ui/resizable"
 import MottoList from './projectPages/MottoList';
 import SpecificationsList from './projectPages/SpecificationsList';
 import StrategyList from './projectPages/StrategyList';
 import ActorList from './projectPages/ActorsList';
 import ElevatorSpeech from './projectPages/ElevatorSpeech';
 import BusinessScenario from './projectPages/BusinesScenario';
+
+import {
+    ResizableHandle,
+    ResizablePanel,
+    ResizablePanelGroup,
+} from "@/components/ui/resizable"
+import ProjectTimeline from './projectPages/ProjectTimeline';
+import DatabaseDiagram from './projectPages/DatabaseDiagram';
+
 
 
 const ProjectView = ({ }) => {
@@ -73,10 +75,11 @@ const ProjectView = ({ }) => {
                     {/* <StrategyList /> */}
                     {/* <ActorList /> */}
                     {/* <ElevatorSpeech /> */}
-                    <BusinessScenario />
+                    {/* <BusinessScenario /> */}
 
-                    {/* <UMLDiagrams /> //TODO: */}
-
+                    {/* <UMLDiagrams /> */}
+                    {/* <ProjectTimeline /> */}
+                    <DatabaseDiagram />
 
                 </ResizablePanel>
                 <ResizableHandle />
