@@ -3,6 +3,8 @@ import Chat from '../components/Chat';
 import { Button } from '@/components/ui/button';
 import { MenuIcon } from 'lucide-react';
 import { useState } from 'react';
+
+const ProjectView = ({ }) => {
 import { Outlet } from 'react-router-dom';
 import RegenerateProjectButton from '@/components/RegenerateProjectButton';
 
@@ -62,6 +64,7 @@ const ProjectView: React.FC = () => {
                 </ResizablePanel>
                 <ResizableHandle />
                 <ResizablePanel defaultSize={50} style={{ position: 'relative' }}>
+
                     <Outlet />
                 </ResizablePanel>
                 <ResizableHandle />
