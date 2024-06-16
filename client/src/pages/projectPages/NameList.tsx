@@ -7,6 +7,8 @@ import {
     CardContent,
 } from '@/components/ui/card';
 import './styles.css';
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 interface DataStructure {
     names: string[];
@@ -86,27 +88,26 @@ const DraggableCard: React.FC<DraggableCardProps> = ({ name, index, moveCard, in
 };
 
 const NameList: React.FC = () => {
+    const { projectID } = useParams();
     const [names, setNames] = useState<string[]>([]);
     const [priorities, setPriorities] = useState<number[]>([]);
 
     useEffect(() => {
-        const data: DataStructure = {
-            names: [
-                "PawPals",
-                "WalkWoof",
-                "DoggoStride",
-                "LeashLink",
-                "TailTrail",
-                "WagWalker",
-                "BarkTrek",
-                "HappyHounds",
-                "PoochPacer",
-                "PuppyPath"
-            ]
-        };
-        setNames(data.names);
-        setPriorities(new Array(data.names.length).fill(1));
-    }, []);
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/title/${projectID}`);
+                setNames(response.data.names);
+                console.log(response.data);
+                setPriorities(new Array(response.data.title.length).fill(1));
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        fetchData();
+
+
+
+    }, [projectID]);
 
     const moveCard = (dragIndex: number, hoverIndex: number) => {
         const dragCard = names[dragIndex];

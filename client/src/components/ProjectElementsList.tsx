@@ -13,7 +13,11 @@ interface ProjectElementsListProps {
     isCollapsed: boolean;
 }
 
+
+
 const ProjectElementsList: React.FC<ProjectElementsListProps> = ({ elements, isCollapsed }) => {
+     
+
     return (
         <ScrollArea className="h-full">
         <div className=''>

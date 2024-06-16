@@ -10,6 +10,8 @@ import {
   } from "@/components/ui/card"
 import 'tailwindcss/tailwind.css';
 import { Button } from "@/components/ui/button";
+import { Link } from 'react-router-dom';
+
 type Project = {
     id: string;
     name: string;
@@ -91,7 +93,9 @@ const ProjectsView = () => {
                         </CardContent>
                         <CardFooter className="flex justify-between">
                             <Button variant="outline">Settings</Button>
-                            <Button>Show project</Button>
+                            <Link to={`/projects/${project.id}`}>
+                                <Button>Show project</Button>
+                            </Link>
                         </CardFooter>
                     </Card>
             ))}
