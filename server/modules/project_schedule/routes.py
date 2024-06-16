@@ -1,4 +1,3 @@
-
 import json
 import os
 import server.modules.module.module as modules
@@ -7,42 +6,23 @@ import logging
 from server.utils.data import write_to_file
 from server.utils.validation import validate_json
 
-logger = logging.getLogger("schedule")
-dirname =  os.path.dirname(__file__)
-
-prompt = "A project schedule for an application to walking dogs."
-details = """Let the plan show the development of the application from the programming and business side. results should be a json in format: 
-{milestones: [
-    {name: '', description: '', duration: ''},
-    ]}"""
-
-required_schema =   {
-    "type": "object",
-    "properties": {
-        "milestones": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string", "minLength": 1},
-                    "description": {"type": "string", "minLength": 1},
-                    "duration": {"type": "string", "minLength": 1}
-                },
-                "required": ["name", "description", "duration"]
-            }
+harmonogram_json = """
+    "milestones": [
+        {
+            "name": "string",
+            "description": "string",
+            "duration": "string"
         }
-    },
-    "required": ["milestones"]
-}
-async def generate_schedule(make_ai_call, is_mock=True):
-    try:
-        schedule_json = json.load(open( os.path.join(dirname,'data','test','schedule.json'),encoding='utf8')) if is_mock else json.loads(make_ai_call(prompt + " details: " + details,"json"))
-        data =  None if not validate_json(schedule_json,required_schema ) else schedule_json        
-        write_to_file(os.path.join(dirname,'data','gen','schedule.txt'), str(data))
-        return data
-    except Exception as e:
-        logger.error(f"Error generating schedule: {e}")
-        raise Exception(f"Error generating schedule: {e}")
+    ]
+"""
+
+query_for_who = "Suggest a work schedule for"
+query_doing_what = "creating app for"
+query_expectations = (
+    "Show it with milestones. Focus on business site of a schedule. Return the result in json format according to the schema:"
+    + harmonogram_json
+)
+
 
 class ScheduleModule(modules.Module):
     def __init__(self, model):
@@ -51,8 +31,21 @@ class ScheduleModule(modules.Module):
     def make_ai_call(self, message, msg_type):
         messages = [{"role": "system", "content": message}]
         response = utils.sendAIRequest(self.Model, messages, msg_type, 4000)
-        return response.choices[0].message.content
+        return response
 
-    async def get_content(self, forWho, doingWhat, **kwargs):
-        is_mock = True if kwargs.get('is_mock') else False
-        return await generate_schedule(self.make_ai_call, is_mock=is_mock)
+    def get_content(self, for_who, doing_what, additional_info, is_mock, **kwargs):
+        content = self.make_ai_call(
+            query_for_who
+            + " "
+            + for_who
+            + " "
+            + query_doing_what
+            + " "
+            + doing_what
+            + " "
+            + query_expectations
+            + " "
+            + additional_info,
+            {"type": "json_object"},
+        )
+        return content

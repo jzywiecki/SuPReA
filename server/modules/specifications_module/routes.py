@@ -1,19 +1,22 @@
-import utils.openaiUtils as utils
+import server.utils.openaiUtils as utils
 import json
-import modules.module.module as modules
+import server.modules.module.module as modules
 
-specifications_schema_json = '''
+specifications_schema_json = """
     "specifications": [
         {
             "name": "string",
             "description": "string"
         }
     ]
-'''
+"""
 
-query_for_who = "Napisz specyfikacje dla"
-query_doing_what = "tworzacego aplikacje do"
-query_expectations = "Wynik zwróć w postaci json zgodnie ze schematem  " + specifications_schema_json + ", wartości pól uzupełnij w języku polskim."
+query_for_who = "Write specifications for"
+query_doing_what = "creating app for"
+query_expectations = (
+    "Result return according to provided json schema: " + specifications_schema_json
+)
+
 
 class SpecificationsModule(modules.Module):
     def __init__(self, model):
@@ -24,10 +27,19 @@ class SpecificationsModule(modules.Module):
         response = utils.sendAIRequest(self.Model, messages, "json", 4000)
         return response
 
-    async def get_content(self, forWho, doingWhat):
-        text_response_for_specifications = self.make_ai_call(query_for_who + " " + forWho + " " + query_doing_what + " " + doingWhat + " " + query_expectations, {"type": "json_object"});
-        
-        with open('specifications.json', 'w') as file:
-            file.write(text_response_for_specifications.choices[0].message.content)
-
+    def get_content(self, for_who, doing_what, additional_info, is_mock, **kwargs):
+        text_response_for_specifications = self.make_ai_call(
+            query_for_who
+            + " "
+            + for_who
+            + " "
+            + query_doing_what
+            + " "
+            + doing_what
+            + " "
+            + query_expectations
+            + " "
+            + additional_info,
+            {"type": "json_object"},
+        )
         return text_response_for_specifications
