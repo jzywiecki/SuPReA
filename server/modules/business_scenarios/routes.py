@@ -48,5 +48,4 @@ class BusinessModule(modules.Module):
             + additional_info,
             {"type": "json_object"},
         )
-        print(content)
         return content

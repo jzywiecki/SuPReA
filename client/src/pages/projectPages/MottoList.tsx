@@ -12,13 +12,13 @@ import axios from "axios";
 
 const MottoList: React.FC = () => {
     const { projectID } = useParams();
-    const [motto, setMotto] = useState(" ");
+    const [motto, setMotto] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/elevator_speech/${projectID}`);
-                setMotto(response.data);
+                const response = await axios.get(`http://localhost:8000/motto/${projectID}`);
+                setMotto(response.data.motto);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }

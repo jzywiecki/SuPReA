@@ -30,20 +30,25 @@ async def get_risks(project_id: str):
 
 @router.post("/generate/{project_id}")
 async def generate_risks(project_id: str):
+    print(f"Generating risks for project {project_id}")
     project = await project_collection.find_one({"_id": ObjectId(project_id)})
     if project:
-        risks = RiskModule(Model.GPT3)
-        for_who = project["for_who"]
-        doing_what = project["doing_what"]
-        additional_info = project["additional_info"]
-        content = risks.get_content(for_who, doing_what, additional_info, False)
-        data = json.loads(content.choices[0].message.content)
-        risks_model = RisksModel(**data)
-        project["risks"] = risks_model.dict()
-        await project_collection.find_one_and_update(
-            {"_id": ObjectId(project_id)},
-            {"$set": project},
-            return_document=ReturnDocument.AFTER,
-        )
-        return risks_model
+        try:
+            risks = RiskModule(Model.GPT3)
+            for_who = project["for_who"]
+            doing_what = project["doing_what"]
+            additional_info = project["additional_info"]
+            content = risks.get_content(for_who, doing_what, additional_info, False)
+            data = json.loads(content.choices[0].message.content)
+            risks_model = RisksModel(**data)
+            project["risks"] = risks_model.dict()
+            await project_collection.find_one_and_update(
+                {"_id": ObjectId(project_id)},
+                {"$set": project},
+                return_document=ReturnDocument.AFTER,
+            )
+            return risks_model
+        except Exception as e:
+            print("Error in generating risks!")
+            return
     raise HTTPException(status_code=404, detail=f"Project {project_id} not found")

@@ -3,6 +3,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion } from "framer-motion";
 import { FaBone, FaCat, FaDog, FaPaw, FaUserTie } from "react-icons/fa";
 import './styles.css'
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 interface Actor {
     name: string;
@@ -22,41 +24,29 @@ const getRandomIcon = () => {
     const randomIndex = Math.floor(Math.random() * icons.length);
     return icons[randomIndex];
 };
-const ActorList = () => {
-    const initialActors: Actor[] = [
-        {
-            name: "Właściciel psa",
-            description: "Osoba posiadająca psa, która korzysta z aplikacji do wyprowadzania pupila. Może dodawać informacje o swoim psie, planować spacery oraz monitorować aktywność fizyczną zwierzęcia.",
-            icon: <FaDog size={40} className=" text-blue-500" />
-        },
-        {
-            name: "Opiekun psa",
-            description: "Osoba zatrudniona do wyprowadzania psów przez właścicieli, korzystająca z aplikacji do zarządzania trasami spacerów oraz komunikowania się z właścicielami w razie potrzeby.",
-            icon: <FaUserTie size={40} className=" text-green-500" />
-        }
-    ];
-
+const ActorList: React.FC = () => {
+    const { projectID } = useParams();
     const [actors, setActors] = useState<Actor[]>([]);
 
     useEffect(() => {
-        const timeout = setTimeout(() => {
-            setActors(initialActors);
-        }, 0);
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/actors/${projectID}`);
 
-        return () => clearTimeout(timeout);
-    }, []);
+                const actorsWithIcons = response.data.actors.map((actor: Actor) => ({
+                    ...actor,
+                    icon: getRandomIcon()
+                }));
 
-    useEffect(() => {
-        const actorsWithIcons = initialActors.map(actor => ({
-            ...actor,
-            icon: getRandomIcon()
-        }));
-        const timeout = setTimeout(() => {
-            setActors(actorsWithIcons);
-        }, 0);
+                setActors(actorsWithIcons);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        fetchData();
 
-        return () => clearTimeout(timeout);
-    }, []);
+    }, [projectID]);
+
     return (
 
         <ScrollArea style={{ height: 'calc(100vh - 24px)', width: "100%", padding: "5%", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>

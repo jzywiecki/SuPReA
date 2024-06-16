@@ -8,21 +8,27 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
-const StrategyList = () => {
+const StrategyList:React.FC = () => {
+    const { projectID } = useParams();
     const [strategy, setStrategy] = useState(" ");
 
     useEffect(() => {
-        const mockedData = {
-            strategy: "Nasza strategia marketingowa skupia się na promowaniu naszej aplikacji do wyprowadzania psów poprzez wykorzystanie mediów społecznościowych oraz kampanii influencerskich. Naszym celem jest dotarcie do właścicieli psów poprzez tworzenie angażującej treści, konkursów i materiałów edukacyjnych na temat zdrowia i zachowań psów. Dodatkowo planujemy współpracować z influencerami z branży zoologicznej oraz trenerami psów, aby zwiększyć świadomość naszej aplikacji i budować zaufanie do naszej marki. Pragniemy również organizować eventy oraz warsztaty dla właścicieli psów, aby rozbudować społeczność użytkowników naszej aplikacji. Naszym celem jest stworzenie pozytywnego wizerunku naszej marki oraz zwiększenie liczby pobrań naszej aplikacji."
-        };
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/strategy/${projectID}`);
+                setStrategy(response.data.strategy);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        fetchData();
 
-        const timeout = setTimeout(() => {
-            setStrategy(mockedData.strategy);
-        }, 0);
 
-        return () => clearTimeout(timeout);
-    }, []);
+
+    }, [projectID]);
 
     return (
         <Card className="max-w-lg mx-auto my-8">

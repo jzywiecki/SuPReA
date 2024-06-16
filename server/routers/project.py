@@ -3,6 +3,17 @@ from bson import ObjectId
 from server.models import ProjectModel, ProjectCollection
 from server.database import project_collection
 from datetime import datetime
+from server.routers.actors import generate_actors
+from server.routers.business_scenarios import generate_business_scenarios
+from server.routers.elevator_speech import generate_elevator_speech
+from server.routers.motto import generate_motto
+from server.routers.project_schedule import generate_project_schedule
+from server.routers.requirement import generate_requirements
+from server.routers.risk import generate_risks
+from server.routers.specifications import generate_specifications
+from server.routers.strategy import generate_strategy
+from server.routers.title import generate_title
+from fastapi import BackgroundTasks
 
 router = APIRouter(
     tags=["projects"],
@@ -34,7 +45,7 @@ async def create_project(project: ProjectModel = Body(...)):
     response_model_by_alias=False,
 )
 async def create_project(
-    name: str, for_who: str, doing_what: str, additional_info: str
+    name: str, for_who: str, doing_what: str, additional_info: str, background_tasks: BackgroundTasks,
 ):
     new_project = ProjectModel(
         name=name,
@@ -64,6 +75,20 @@ async def create_project(
     created_project = await project_collection.find_one(
         {"_id": new_project.inserted_id}
     )
+
+    # run generation in the background
+    background_tasks.add_task(generate_actors, str(created_project["_id"]))
+    background_tasks.add_task(generate_business_scenarios, str(created_project["_id"]))
+    background_tasks.add_task(generate_elevator_speech, str(created_project["_id"]))
+    background_tasks.add_task(generate_motto, str(created_project["_id"]))
+    background_tasks.add_task(generate_project_schedule, str(created_project["_id"]))
+    background_tasks.add_task(generate_requirements, str(created_project["_id"]))
+    background_tasks.add_task(generate_risks, str(created_project["_id"]))
+    background_tasks.add_task(generate_specifications, str(created_project["_id"]))
+    background_tasks.add_task(generate_strategy, str(created_project["_id"]))
+    background_tasks.add_task(generate_title, str(created_project["_id"]))
+
+
     return created_project
 
 
