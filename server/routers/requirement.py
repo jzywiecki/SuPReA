@@ -38,7 +38,9 @@ async def generate_requirements(project_id: str):
             for_who = project["for_who"]
             doing_what = project["doing_what"]
             additional_info = project["additional_info"]
-            content = requirements.get_content(for_who, doing_what, additional_info, False)
+            content = requirements.get_content(
+                for_who, doing_what, additional_info, False
+            )
             data = json.loads(content.choices[0].message.content)
             requirements_model = RequirementsModel(**data)
             project["requirements"] = requirements_model.dict()

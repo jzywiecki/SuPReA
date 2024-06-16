@@ -45,7 +45,11 @@ async def create_project(project: ProjectModel = Body(...)):
     response_model_by_alias=False,
 )
 async def create_project(
-    name: str, for_who: str, doing_what: str, additional_info: str, background_tasks: BackgroundTasks,
+    name: str,
+    for_who: str,
+    doing_what: str,
+    additional_info: str,
+    background_tasks: BackgroundTasks,
 ):
     new_project = ProjectModel(
         name=name,
@@ -87,7 +91,6 @@ async def create_project(
     background_tasks.add_task(generate_specifications, str(created_project["_id"]))
     background_tasks.add_task(generate_strategy, str(created_project["_id"]))
     background_tasks.add_task(generate_title, str(created_project["_id"]))
-
 
     return created_project
 
