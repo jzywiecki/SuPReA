@@ -3,21 +3,17 @@ import Chat from '../components/Chat';
 import { Button } from '@/components/ui/button';
 import { MenuIcon } from 'lucide-react';
 import { useState } from 'react';
-
-const ProjectView = ({ }) => {
-import { Outlet } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router-dom';
 import RegenerateProjectButton from '@/components/RegenerateProjectButton';
-
-
 import {
     ResizableHandle,
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
-import { useParams } from 'react-router-dom';
 
-    
-const ProjectView: React.FC = () => {
+const ProjectView = ({ }) => {
+
+
     const { projectID } = useParams();
     const [isCollapsedLeft, setIsCollapsedLeft] = useState(true);
     const [isCollapsedRight, setIsCollapsedRight] = useState(true);
