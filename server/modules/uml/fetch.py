@@ -9,7 +9,7 @@ logger = logging.getLogger("umlModule")
 dirname = os.path.dirname(__file__)
 
 
-async def fetch_uml_list(ai_call_func, is_mock=False):
+def fetch_uml_list(ai_call_func, is_mock=False):
     required_schema = {
         "type": "object",
         "properties": {
@@ -73,7 +73,7 @@ async def fetch_uml_list(ai_call_func, is_mock=False):
         raise Exception(f"Error occurred while fetching UML diagrams list: {e}")
 
 
-async def fetch_uml_fragments(diagramsListJson, ai_call_func, is_mock=False):
+def fetch_uml_fragments(diagramsListJson, ai_call_func, is_mock=False):
     uml_diagrams = []
     if diagramsListJson is not None:
         try:

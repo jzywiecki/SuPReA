@@ -6,6 +6,7 @@ from server.routers import (
     elevator_speech,
     motto,
     project_schedule,
+    uml,
 )
 from server.routers import requirement, risk, specifications, strategy, title
 
@@ -33,3 +34,4 @@ app.include_router(risk.router)
 app.include_router(specifications.router)
 app.include_router(strategy.router)
 app.include_router(title.router)
+app.include_router(uml.router)
