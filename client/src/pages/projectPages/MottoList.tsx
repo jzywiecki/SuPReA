@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
     Card,
     CardContent,
@@ -9,23 +9,33 @@ import {
 } from "@/components/ui/card";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import RegenerateContext from "@/components/contexts/RegenerateContext";
 
 const MottoList: React.FC = () => {
     const { projectID } = useParams();
     const [motto, setMotto] = useState("");
+    const { regenerate, setProjectRegenerateID, setComponentRegenerate } = useContext(RegenerateContext);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8000/motto/${projectID}`);
-                setMotto(response.data.motto);
-            } catch (error) {
-                console.error('Error fetching data:', error);
+    function getComponentName() {
+        return "motto";
+    }
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/motto/${projectID}`);
+            setMotto(response.data.motto);
+            if (projectID) {
+                setProjectRegenerateID(projectID);
             }
+            setComponentRegenerate(getComponentName())
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
+    }
+    useEffect(() => {
+
         fetchData();
 
-    }, [projectID]);
+    }, [projectID, regenerate]);
 
     return (
         <Card className="max-w-lg mx-auto my-8">

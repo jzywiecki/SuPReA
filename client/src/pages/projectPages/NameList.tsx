@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { motion } from "framer-motion";
@@ -9,10 +9,7 @@ import {
 import './styles.css';
 import axios from "axios";
 import { useParams } from "react-router-dom";
-
-interface DataStructure {
-    names: string[];
-}
+import RegenerateContext from '@/components/contexts/RegenerateContext';
 
 interface DraggableCardProps {
     name: string;
@@ -91,23 +88,31 @@ const NameList: React.FC = () => {
     const { projectID } = useParams();
     const [names, setNames] = useState<string[]>([]);
     const [priorities, setPriorities] = useState<number[]>([]);
+    const { regenerate, setProjectRegenerateID, setComponentRegenerate } = useContext(RegenerateContext);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8000/title/${projectID}`);
-                setNames(response.data.names);
-                console.log(response.data);
-                setPriorities(new Array(response.data.title.length).fill(1));
-            } catch (error) {
-                console.error('Error fetching data:', error);
+    function getComponentName() {
+        return "title";
+    }
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/title/${projectID}`);
+            setNames(response.data.names);
+            if (projectID) {
+                setProjectRegenerateID(projectID);
             }
+            setComponentRegenerate(getComponentName())
+            setPriorities(new Array(response.data.names.length).fill(1));
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
+    }
+    useEffect(() => {
+
         fetchData();
 
 
 
-    }, [projectID]);
+    }, [projectID, regenerate]);
 
     const moveCard = (dragIndex: number, hoverIndex: number) => {
         const dragCard = names[dragIndex];

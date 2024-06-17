@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { motion, AnimatePresence } from "framer-motion";
@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import "./styles.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import RegenerateContext from '@/components/contexts/RegenerateContext';
 
 interface Risk {
     risk: string;
@@ -42,7 +43,7 @@ const DraggableRisk: React.FC<{ risk: Risk, index: number, moveRisk: (dragIndex:
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
         >
-            <strong>{risk.risk}:</strong> {risk.description} <br/>
+            <strong>{risk.risk}:</strong> {risk.description} <br />
             <strong>How to prevent it?: </strong>{risk.prevention}
         </motion.li>
     );
@@ -52,20 +53,28 @@ const DraggableRisk: React.FC<{ risk: Risk, index: number, moveRisk: (dragIndex:
 const RiskList: React.FC = () => {
     const { projectID } = useParams();
     const [risks, setRisks] = useState<Risk[]>([]);
+    const { regenerate, setProjectRegenerateID, setComponentRegenerate } = useContext(RegenerateContext);
+
+    function getComponentName() {
+        return "risks";
+    }
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/risks/${projectID}`);
+            setRisks(response.data.risks);
+            if (projectID) {
+                setProjectRegenerateID(projectID);
+            }
+            setComponentRegenerate(getComponentName())
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8000/risks/${projectID}`);
-                console.log(response.data.risks);
-                setRisks(response.data.risks);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
         fetchData();
-
-    }, [projectID]);
+    }, [projectID, regenerate]);
 
     const moveRisk = (dragIndex: number, hoverIndex: number) => {
         const updatedRisks = Array.from(risks);
