@@ -18,48 +18,24 @@ const BusinessScenario: React.FC = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const updateXarrow = useXarrow();
     const [isLoading, setIsLoading] = useState(true);
-    // FIXME: @Krzysiek Wysocki
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get(`http://localhost:8000/business_scenarios/${projectID}`);
-                setTitle(response.data.title);
-                setDescription(response.data.description);
-                setFeatures(response.data.features);
-                console.log(response.data);
+                setTitle(response.data.business_scenario.title);
+                setDescription(response.data.business_scenario.description);
+                setFeatures(response.data.business_scenario.features);
+                console.log(response.data.business_scenario);
             } catch (error) {
                 console.error('Error fetching data:', error);
+            } finally {
+                setIsLoading(false);
+                updateXarrow();
             }
-
-            setIsLoading(false);
         }
         fetchData();
-
-        const timeout = setTimeout(() => {
-            updateXarrow();
-        }, 0);
-
-        return () => clearTimeout(timeout);
-
     }, [projectID, updateXarrow]);
-
-
-    useEffect(() => {
-        const handleScroll = () => {
-            updateXarrow();
-        };
-
-        if (containerRef.current) {
-            containerRef.current.addEventListener('scroll', handleScroll);
-        }
-
-        return () => {
-            if (containerRef.current) {
-                containerRef.current.removeEventListener('scroll', handleScroll);
-            }
-        };
-    }, [updateXarrow]);
 
     const midIndex = Math.ceil(features.length / 2);
     const firstColumnFeatures = features.slice(0, midIndex);
@@ -67,13 +43,32 @@ const BusinessScenario: React.FC = () => {
     const [showXarrows, setShowXarrows] = useState(false);
 
     useEffect(() => {
+        const handleScroll = () => {
+            updateXarrow();
+        };
+
+        const container = containerRef.current;
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+        }
+
+        return () => {
+            if (container) {
+                container.removeEventListener('scroll', handleScroll);
+            }
+        };
+    }, [updateXarrow]);
+
+    useEffect(() => {
         const timeout = setTimeout(() => {
             setShowXarrows(true);
-        }, 2);
+            updateXarrow();
+        }, 0);
 
         return () => clearTimeout(timeout);
-    }, []);
-    return ( isLoading ? <div>Loading...</div> :
+    }, [updateXarrow]);
+
+    return (isLoading ? <div>Loading...</div> :
         <ScrollArea style={{ height: 'calc(100vh - 24px)' }} className="max-w-lg mx-auto my-8 p-4 border rounded-lg shadow-md">
             <div className="mb-4" id="title-description">
                 <h1 className="text-2xl font-bold">{title}</h1>
@@ -102,7 +97,6 @@ const BusinessScenario: React.FC = () => {
                                             startAnchor="bottom"
                                             endAnchor="top"
                                             color="black"
-
                                         />
                                     )}
                                 </div>
@@ -134,22 +128,24 @@ const BusinessScenario: React.FC = () => {
                             ))}
                         </div>
                     </div>
-                    {showXarrows && <Xarrow
-                        start="title-description"
-                        end={`feature-0`}
-                        startAnchor="bottom"
-                        endAnchor="top"
-                        color="black"
-
-                    />}
-                    {showXarrows && <Xarrow
-                        start="title-description"
-                        end={`feature-${midIndex}`}
-                        startAnchor="bottom"
-                        endAnchor="top"
-                        color="black"
-
-                    />}
+                    {showXarrows && (
+                        <>
+                            <Xarrow
+                                start="title-description"
+                                end={`feature-0`}
+                                startAnchor="bottom"
+                                endAnchor="top"
+                                color="black"
+                            />
+                            <Xarrow
+                                start="title-description"
+                                end={`feature-${midIndex}`}
+                                startAnchor="bottom"
+                                endAnchor="top"
+                                color="black"
+                            />
+                        </>
+                    )}
                 </Xwrapper>
             </div>
             <div className="flex justify-end mt-4">
