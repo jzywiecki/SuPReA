@@ -35,6 +35,12 @@ const BusinessScenario: React.FC = () => {
             }
         }
         fetchData();
+    }, [projectID]);
+    useEffect(() => {
+        if (!isLoading) {
+            updateXarrow();
+
+        }
     }, [projectID, updateXarrow]);
 
     const midIndex = Math.ceil(features.length / 2);
