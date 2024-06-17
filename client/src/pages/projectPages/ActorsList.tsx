@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion } from "framer-motion";
-import { FaBone, FaCat, FaDog, FaPaw, FaUserTie } from "react-icons/fa";
+import { FaAnglesUp, FaArrowsToEye, FaBoxesStacked, FaBraille, FaCloudsmith } from "react-icons/fa6";
 import './styles.css'
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import RegenerateContext from "@/components/contexts/RegenerateContext";
 
 interface Actor {
     name: string;
@@ -13,11 +14,11 @@ interface Actor {
 }
 // kolory text-blue-500
 const icons = [
-    <FaDog size={40} className="text-black-500" />,
-    <FaUserTie size={40} className="text-black-500" />,
-    <FaCat size={40} className="text-black-500" />,
-    <FaPaw size={40} className="text-black-500" />,
-    <FaBone size={40} className="text-black-500" />
+    <FaAnglesUp size={40} className="text-black-500" />,
+    <FaCloudsmith size={40} className="text-black-500" />,
+    <FaBoxesStacked size={40} className="text-black-500" />,
+    <FaBraille size={40} className="text-black-500" />,
+    <FaArrowsToEye size={40} className="text-black-500" />
 ];
 
 const getRandomIcon = () => {
@@ -27,25 +28,34 @@ const getRandomIcon = () => {
 const ActorList: React.FC = () => {
     const { projectID } = useParams();
     const [actors, setActors] = useState<Actor[]>([]);
+    const { regenerate, setProjectRegenerateID, setComponentRegenerate } = useContext(RegenerateContext);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8000/actors/${projectID}`);
+    function getComponentName() {
+        return "actors";
+    }
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/actors/${projectID}`);
 
-                const actorsWithIcons = response.data.actors.map((actor: Actor) => ({
-                    ...actor,
-                    icon: getRandomIcon()
-                }));
+            const actorsWithIcons = response.data.actors.map((actor: Actor) => ({
+                ...actor,
+                icon: getRandomIcon()
+            }));
 
-                setActors(actorsWithIcons);
-            } catch (error) {
-                console.error('Error fetching data:', error);
+            setActors(actorsWithIcons);
+            if (projectID) {
+                setProjectRegenerateID(projectID);
             }
+            setComponentRegenerate(getComponentName())
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
+    }
+    useEffect(() => {
+
         fetchData();
 
-    }, [projectID]);
+    }, [projectID, regenerate]);
 
     return (
 

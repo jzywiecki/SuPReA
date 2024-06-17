@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from 'react';
 import {
     Card,
     CardContent,
@@ -10,25 +10,33 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import RegenerateContext from '@/components/contexts/RegenerateContext';
 
 const ElevatorSpeech: React.FC = () => {
     const { projectID } = useParams();
     const [content, setContent] = useState(" ");
+    const { regenerate, setProjectRegenerateID, setComponentRegenerate } = useContext(RegenerateContext);
+
+    function getComponentName() {
+        return "elevator_speech";
+    }
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/elevator_speech/${projectID}`);
+            setContent(response.data.content);
+            if (projectID) {
+                setProjectRegenerateID(projectID);
+            }
+            setComponentRegenerate(getComponentName())
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8000/elevator_speech/${projectID}`);
-                setContent(response.data.content);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
         fetchData();
-
-
-
-    }, [projectID]);
+    }, [projectID, regenerate]);
 
     return (
         <Card className="max-w-lg mx-auto my-8">

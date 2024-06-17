@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import "./styles.css";
 import { useParams } from "react-router-dom";
 import axios from 'axios';
+import RegenerateContext from '@/components/contexts/RegenerateContext';
 
 
 interface Requirement {
@@ -54,21 +55,30 @@ const RequirementsList: React.FC = () => {
     const [functionalRequirements, setFunctionalRequirements] = useState<Requirement[]>([]);
     const [nonFunctionalRequirements, setNonFunctionalRequirements] = useState<Requirement[]>([]);
     const [showFunctional, setShowFunctional] = useState<boolean>(true);
+    const { regenerate, setProjectRegenerateID, setComponentRegenerate } = useContext(RegenerateContext);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8000/requirements/${projectID}`);
-                setFunctionalRequirements(response.data.functional_requirements);
-                setNonFunctionalRequirements(response.data.non_functional_requirements);
-                console.log(response.data);
-            } catch (error) {
-                console.error('Error fetching data:', error);
+    function getComponentName() {
+        return "requirements";
+    }
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/requirements/${projectID}`);
+            setFunctionalRequirements(response.data.functional_requirements);
+            setNonFunctionalRequirements(response.data.non_functional_requirements);
+            if (projectID) {
+                setProjectRegenerateID(projectID);
             }
+            setComponentRegenerate(getComponentName())
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
+    }
+    useEffect(() => {
+
         fetchData();
 
-    }, [projectID]);
+    }, [projectID, regenerate]);
 
 
     const moveRequirement = (dragIndex: number, hoverIndex: number, items: Requirement[], setItems: React.Dispatch<React.SetStateAction<Requirement[]>>) => {

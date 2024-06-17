@@ -19,11 +19,13 @@ import StrategyList from './pages/projectPages/StrategyList';
 import ActorList from './pages/projectPages/ActorsList';
 import ElevatorSpeech from './pages/projectPages/ElevatorSpeech';
 import BusinessScenario from './pages/projectPages/BusinesScenario';
+import { RegenerateProvider } from './components/contexts/RegenerateContext';
 
 
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <RegenerateProvider>
         <div className='h-screen'>
           <Navbar />
           <Routes>
@@ -46,7 +48,7 @@ function App() {
             <Route path="*" element={<ErrorPage />} />
           </Routes>
         </div>
-
+      </RegenerateProvider>
     </ThemeProvider>
   );
 }
