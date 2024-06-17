@@ -19,33 +19,34 @@ import StrategyList from './pages/projectPages/StrategyList';
 import ActorList from './pages/projectPages/ActorsList';
 import ElevatorSpeech from './pages/projectPages/ElevatorSpeech';
 import BusinessScenario from './pages/projectPages/BusinesScenario';
+import Hero from './components/Hero';
 
 
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <div className='h-screen'>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<></>} />
-            <Route path="/projects" element={<ProjectsView />} />
-            <Route path="/projects/:projectID" element={<ProjectView />}>
-              <Route path="name" element={<NameList />} />
-              <Route path="requirements" element={<RequirementsList />} />
-              <Route path="risk" element={<RiskList />} />
-              <Route path="motto" element={<MottoList />} />
-              <Route path="specifications" element={<SpecificationsList />} />
-              <Route path="strategy" element={<StrategyList />} />
-              <Route path="actors" element={<ActorList />} />
-              <Route path="elevator-speech" element={<ElevatorSpeech />} />
-              <Route path="business-scenario" element={<BusinessScenario />} />
-            </Route>
-            <Route path="/create-project" element={<CreateProject />} />
-            <Route path="/profile/:id" element={<Profile />} />
-            <Route path="/collaborators" element={<Collaborators />} />
-            <Route path="*" element={<ErrorPage />} />
-          </Routes>
-        </div>
+      <div className='h-screen'>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Hero />} />
+          <Route path="/projects" element={<ProjectsView />} />
+          <Route path="/projects/:projectID" element={<ProjectView />}>
+            <Route path="name" element={<NameList />} />
+            <Route path="requirements" element={<RequirementsList />} />
+            <Route path="risk" element={<RiskList />} />
+            <Route path="motto" element={<MottoList />} />
+            <Route path="specifications" element={<SpecificationsList />} />
+            <Route path="strategy" element={<StrategyList />} />
+            <Route path="actors" element={<ActorList />} />
+            <Route path="elevator-speech" element={<ElevatorSpeech />} />
+            <Route path="business-scenario" element={<BusinessScenario />} />
+          </Route>
+          <Route path="/create-project" element={<CreateProject />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/collaborators" element={<Collaborators />} />
+          <Route path="*" element={<ErrorPage />} />
+        </Routes>
+      </div>
 
     </ThemeProvider>
   );
