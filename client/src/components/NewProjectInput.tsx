@@ -123,7 +123,7 @@ const NewProjectInput = () => {
             for_who: forWhoFieldRef.current?.value,
             doing_what: doingWhatFieldRef.current?.value,
             additional_info: additionalInfoFieldRef.current?.value,
-        }        
+        }
 
 
         axios.post('http://localhost:8000/projects/create', null, {
@@ -132,9 +132,9 @@ const NewProjectInput = () => {
                 for_who: forWhoFieldRef.current?.value,
                 doing_what: doingWhatFieldRef.current?.value,
                 additional_info: additionalInfoFieldRef.current?.value,
-        }, headers: {
-            'Content-Type': 'application/json'
-        }
+            }, headers: {
+                'Content-Type': 'application/json'
+            }
         }
         ).then(response => {
             console.log(response.data);
