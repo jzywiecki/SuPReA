@@ -21,6 +21,7 @@ import ElevatorSpeech from './pages/projectPages/ElevatorSpeech';
 import BusinessScenario from './pages/projectPages/BusinesScenario';
 import { RegenerateProvider } from './components/contexts/RegenerateContext';
 import Hero from './components/Hero';
+import UMLDiagrams from './pages/projectPages/umlDiagrams';
 
 
 

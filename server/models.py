@@ -93,6 +93,15 @@ class TitleModel(BaseModel):
     names: List[str]
 
 
+class UmlModel(BaseModel):
+    code: str
+    title: str
+
+
+class UmlsModel(BaseModel):
+    umls: List[UmlModel]
+
+
 class ProjectModel(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     name: str
@@ -113,6 +122,7 @@ class ProjectModel(BaseModel):
     specifications: Optional[SpecificationsModel] = None
     strategy: Optional[StrategyModel] = None
     title: Optional[TitleModel] = None
+    umls: Optional[UmlsModel] = None
 
     class Config:
         arbitrary_types_allowed = True
