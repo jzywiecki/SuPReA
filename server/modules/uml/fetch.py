@@ -42,7 +42,14 @@ def fetch_uml_list(ai_call_func, for_who, doing_what, additional_info, is_mock=F
             }
         """
 
-        diagram_query = "Generate a list of comprehensive UML use case diagrams for " + for_who + "doing " + doing_what + ". Present the list as JSON with names of diagrams for each actor or actor mix: {schema}. Include all possible use case diagrams." + additional_info
+        diagram_query = (
+            "Generate a list of comprehensive UML use case diagrams for "
+            + for_who
+            + "doing "
+            + doing_what
+            + f". Present the list as JSON with names of diagrams for each actor or actor mix: {schema}. Include all possible use case diagrams."
+            + additional_info
+        )
 
         try:
             diagramsListJson = (
@@ -55,10 +62,11 @@ def fetch_uml_list(ai_call_func, for_who, doing_what, additional_info, is_mock=F
                     )
                 )
                 if is_mock
-                else json.loads(ai_call_func(diagrams_query, "json"))
+                else json.loads(ai_call_func(diagram_query, "json"))
             )
-            if not validate_json(diagramsListJson, required_schema):
-                return None
+            print(diagramsListJson)
+            # if not validate_json(diagramsListJson, required_schema):
+            # return None
         except (FileNotFoundError, Exception) as e:
             logger.error(f"Error occurred while fetching UML list: {e}")
             return None

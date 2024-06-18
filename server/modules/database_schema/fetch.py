@@ -87,7 +87,19 @@ Use only single words! DO NOT use commas or quotas.
     """
 
 
-def fetch_database_schema(for_who, doing_what, additional_info, make_ai_call, is_mock=False):
-    prompt = for_who_query + " " + for_who + " " + doing_what_query + " " + doing_what + " " + additional_info 
+def fetch_database_schema(
+    for_who, doing_what, additional_info, make_ai_call, is_mock=False
+):
+    prompt = (
+        for_who_query
+        + " "
+        + for_who
+        + " "
+        + doing_what_query
+        + " "
+        + doing_what
+        + " "
+        + additional_info
+    )
     response = make_ai_call(prompt + " details: " + details, "json")
     return response
