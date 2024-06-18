@@ -205,10 +205,7 @@ const UMLDiagrams: React.FC = () => {
         try {
             const response = await axios.get(`http://localhost:8000/uml/${projectID}`);
             console.log(response.data)
-            if (projectID) {
-                setProjectRegenerateID(projectID);
-            }
-            setComponentRegenerate(getComponentName())
+
 
             if (response.data.umls) {
                 setPlantUMLCodes(response.data.umls);
@@ -225,9 +222,11 @@ const UMLDiagrams: React.FC = () => {
         }
     }
     useEffect(() => {
-
+        if (projectID) {
+            setProjectRegenerateID(projectID);
+        }
+        setComponentRegenerate(getComponentName())
         fetchData();
-
     }, [projectID, regenerate]);
 
     return (plantUMLCodes ?

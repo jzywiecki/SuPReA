@@ -23,18 +23,17 @@ const MottoList: React.FC = () => {
         try {
             const response = await axios.get(`http://localhost:8000/motto/${projectID}`);
             setMotto(response.data.motto);
-            if (projectID) {
-                setProjectRegenerateID(projectID);
-            }
-            setComponentRegenerate(getComponentName())
+
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
     useEffect(() => {
-
+        if (projectID) {
+            setProjectRegenerateID(projectID);
+        }
+        setComponentRegenerate(getComponentName())
         fetchData();
-
     }, [projectID, regenerate]);
 
     return (

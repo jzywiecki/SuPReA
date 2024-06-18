@@ -24,16 +24,17 @@ const StrategyList: React.FC = () => {
         try {
             const response = await axios.get(`http://localhost:8000/strategy/${projectID}`);
             setStrategy(response.data.strategy);
-            if (projectID) {
-                setProjectRegenerateID(projectID);
-            }
-            setComponentRegenerate(getComponentName())
+
 
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
     useEffect(() => {
+        if (projectID) {
+            setProjectRegenerateID(projectID);
+        }
+        setComponentRegenerate(getComponentName())
         fetchData();
     }, [projectID, regenerate]);
 

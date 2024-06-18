@@ -29,10 +29,7 @@ const BusinessScenario: React.FC = () => {
             setTitle(response.data.business_scenario.title);
             setDescription(response.data.business_scenario.description);
             setFeatures(response.data.business_scenario.features);
-            if (projectID) {
-                setProjectRegenerateID(projectID);
-            }
-            setComponentRegenerate(getComponentName())
+
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
@@ -41,7 +38,10 @@ const BusinessScenario: React.FC = () => {
         }
     }
     useEffect(() => {
-
+        if (projectID) {
+            setProjectRegenerateID(projectID);
+        }
+        setComponentRegenerate(getComponentName())
         fetchData();
     }, [projectID, regenerate]);
     useEffect(() => {

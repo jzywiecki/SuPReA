@@ -46,7 +46,7 @@ function App() {
               <Route path="actors" element={<ActorList />} />
               <Route path="elevator-speech" element={<ElevatorSpeech />} />
               <Route path="business-scenario" element={<BusinessScenario />} />
-              <Route path="umls" element={<UMLDiagrams />} />
+              <Route path="uml" element={<UMLDiagrams />} />
               <Route path="schedule" element={<ProjectTimeline />} />
               <Route path="database-diagram" element={<DatabaseDiagram />} />
             </Route>

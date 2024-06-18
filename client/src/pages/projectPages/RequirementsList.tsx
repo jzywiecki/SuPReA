@@ -66,18 +66,17 @@ const RequirementsList: React.FC = () => {
             const response = await axios.get(`http://localhost:8000/requirements/${projectID}`);
             setFunctionalRequirements(response.data.functional_requirements);
             setNonFunctionalRequirements(response.data.non_functional_requirements);
-            if (projectID) {
-                setProjectRegenerateID(projectID);
-            }
-            setComponentRegenerate(getComponentName())
+
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
     useEffect(() => {
-
+        if (projectID) {
+            setProjectRegenerateID(projectID);
+        }
+        setComponentRegenerate(getComponentName())
         fetchData();
-
     }, [projectID, regenerate]);
 
 
