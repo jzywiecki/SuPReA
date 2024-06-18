@@ -25,7 +25,7 @@ def generate_uml_images(ai_call_func, is_mock=False):
     # os.mkdir(path)
     try:
         returned_list = []
-        uml_list = fetch_uml_list(ai_call_func, is_mock)
+        uml_list = fetch_uml_list(ai_call_func, for_who, doing_what, additional_info, is_mock)
         uml_fragments = fetch_uml_fragments(uml_list, ai_call_func, is_mock)
 
         for actor, fragment in uml_fragments:
@@ -54,5 +54,5 @@ class UmlModule(modules.Module):
             return generate_uml_list(self.make_ai_call, is_mock=is_mock)
         else:
             # uml_list = generate_uml_list(self.make_ai_call, is_mock=is_mock)
-            uml_code = generate_uml_images(self.make_ai_call, is_mock=is_mock)
+            uml_code = generate_uml_images(self.make_ai_call, for_who, doing_what, additional_info, is_mock=is_mock)
         return uml_code

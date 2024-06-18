@@ -13,6 +13,7 @@ from server.routers.risk import generate_risks
 from server.routers.specifications import generate_specifications
 from server.routers.strategy import generate_strategy
 from server.routers.title import generate_title
+from server.routers.database_schema import generate_database_schema
 from fastapi import BackgroundTasks
 
 router = APIRouter(
@@ -91,6 +92,7 @@ async def create_project(
     background_tasks.add_task(generate_specifications, str(created_project["_id"]))
     background_tasks.add_task(generate_strategy, str(created_project["_id"]))
     background_tasks.add_task(generate_title, str(created_project["_id"]))
+    background_tasks.add_task(generate_database_schema, str(created_project["_id"]))
 
     return created_project
 

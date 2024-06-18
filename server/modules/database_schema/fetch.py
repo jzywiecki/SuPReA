@@ -6,7 +6,8 @@ from .util import extract_schema_from_messeage
 logger = logging.getLogger("database_schema")
 dirname = os.path.dirname(__file__)
 
-prompt = "Generate database schema for application for car sharing"
+for_who_query = "Generate database schema for application for "
+doing_what_query = " doing "
 details = """It will be mermaid erDiagram. Use single words! You are not allowed to use commas or quotas. Remember about table relationships (eg. Walks ||--o{ Bookings : part). Use this as and examplary diagram: 
 ```mermaid_erDiagram
 {
@@ -86,6 +87,7 @@ Use only single words! DO NOT use commas or quotas.
     """
 
 
-def fetch_database_schema(make_ai_call, is_mock=False):
+def fetch_database_schema(for_who, doing_what, additional_info, make_ai_call, is_mock=False):
+    prompt = for_who_query + " " + for_who + " " + doing_what_query + " " + doing_what + " " + additional_info 
     response = make_ai_call(prompt + " details: " + details, "json")
     return response
