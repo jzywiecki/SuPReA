@@ -20,6 +20,7 @@ import ActorList from './pages/projectPages/ActorsList';
 import ElevatorSpeech from './pages/projectPages/ElevatorSpeech';
 import BusinessScenario from './pages/projectPages/BusinesScenario';
 import Hero from './components/Hero';
+import UMLDiagrams from './pages/projectPages/umlDiagrams';
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
             <Route path="actors" element={<ActorList />} />
             <Route path="elevator-speech" element={<ElevatorSpeech />} />
             <Route path="business-scenario" element={<BusinessScenario />} />
+            <Route path="uml" element={<UMLDiagrams />} />
           </Route>
           <Route path="/create-project" element={<CreateProject />} />
           <Route path="/profile/:id" element={<Profile />} />

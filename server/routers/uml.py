@@ -5,7 +5,7 @@ from server.database import project_collection
 from server.modules.uml.routes import UmlModule
 from server.utils.openaiUtils import Model
 from pymongo import ReturnDocument
-
+from server.models import UmlsModel
 router = APIRouter(
     tags=["uml"],
     prefix="/uml",
@@ -19,6 +19,7 @@ async def get_uml(project_id: str):
     if (
         project := await project_collection.find_one({"_id": ObjectId(project_id)})
     ) is not None:
+        
         uml = project["umls"]
         return uml
     else:
@@ -40,7 +41,7 @@ async def generate_uml(project_id: str):
         print(content)
 
         data = json.loads(content)
-        uml_model = UmlModule(**data)
+        uml_model = UmlsModel(**data)
         project["umls"] = uml_model.dict()
         await project_collection.find_one_and_update(
             {"_id": ObjectId(project_id)},

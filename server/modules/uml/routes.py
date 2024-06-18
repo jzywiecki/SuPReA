@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import uuid
@@ -23,32 +24,20 @@ def generate_uml_images(ai_call_func, is_mock=False):
     # path = os.path.join(dirname, "data", "gen", str(random_uuid))
     # os.mkdir(path)
     try:
-        returned_list = ""
+        returned_list = []
         uml_list = fetch_uml_list(ai_call_func, is_mock)
         uml_fragments = fetch_uml_fragments(uml_list, ai_call_func, is_mock)
-        # for actor, fragment in uml_fragments:
-            # convert_to_uml_imageFile(
-                # os.path.join(path, f"{actor}.uml"),
-                # os.path.join(path, f"{actor}.png"),
-                # fragment,
-            # )
+ 
         for actor, fragment in uml_fragments:
-            returned_list += f"""
-                {{
-                    "actor": "{actor}",
-                    "uml": "{fragment}"
-                }},
-            """
-        
-        returned_list = f"""
-            {{
-                "umls": [
-                    {returned_list}
-                ]
-            }}
-        """
-            
-        return returned_list
+            entry = {
+                "title": actor,
+                "code": fragment
+            }
+            returned_list.append(entry)
+        obj ={}
+        obj["umls"] = returned_list
+        return json.dumps(obj, indent=4)
+    
     except Exception as e:
         logger.error(f"Error generating UML images: {e}")
         raise Exception(f"Error generating UML images: {e}")
@@ -67,6 +56,6 @@ class UmlModule(modules.Module):
         if kwargs.get("uml_list") is True:
             return generate_uml_list(self.make_ai_call, is_mock=is_mock)
         else:
-            uml_list = generate_uml_list(self.make_ai_call, is_mock=is_mock)
+            # uml_list = generate_uml_list(self.make_ai_call, is_mock=is_mock)
             uml_code = generate_uml_images(self.make_ai_call, is_mock=is_mock)
         return uml_code

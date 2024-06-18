@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/carousel"
 import plantumlEncoder from "plantuml-encoder";
 import './styles.css'
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 interface UMLDiagram {
     code: string;
@@ -27,15 +29,20 @@ interface UMLDiagram {
 
 interface PlantUMLCarouselProps {
     diagrams: UMLDiagram[];
+    isLoading: boolean;
 }
 
-const PlantUMLCarousel: React.FC<PlantUMLCarouselProps> = ({ diagrams }) => {
-    //FIXME: dac w useffect zeby po fetchu przeladowal zdjecia
-    const [currentTab, setCurrentTab] = useState<'uml' | 'code'>('uml');
+const PlantUMLCarousel: React.FC<PlantUMLCarouselProps> = ({ diagrams, isLoading }) => {
+
+    if (isLoading) {
+        return (<div>Loading</div>)
+    }
+    const [currentTab, setCurrentTab] = useState<'uml' | 'code'>('code');
     const [currentDiagramIndex, setCurrentDiagramIndex] = useState(0);
     const [umlCodes, setUmlCodes] = useState<string[]>(diagrams.map(diagram => diagram.code));
     const [urls, setUrls] = useState<string[]>(diagrams.map(diagram => ''));
     const [imageLoaded, setImageLoaded] = useState<boolean[]>(diagrams.map(diagram => false));
+    const [regenerate, setRegenerate] = useState(false);
 
     const handleTabChange = (value: 'uml' | 'code') => {
         setCurrentTab(value);
@@ -53,8 +60,10 @@ const PlantUMLCarousel: React.FC<PlantUMLCarouselProps> = ({ diagrams }) => {
     }, []);
 
     useEffect(() => {
-        updateUrls();
-    }, [umlCodes]);
+        if (!isLoading) {
+            updateUrls();
+        }
+    }, [umlCodes, isLoading]);
 
     const updateUrls = () => {
         diagrams.forEach((_, index) => updateUrl(index, umlCodes[index]));
@@ -78,8 +87,23 @@ const PlantUMLCarousel: React.FC<PlantUMLCarouselProps> = ({ diagrams }) => {
         });
     };
 
+    const handleRegen = (index: number) => {
+        const updatedCodes = [...umlCodes];
+        updatedCodes[index] = updatedCodes[index] + "";
+        setUmlCodes(updatedCodes);
+        updateUrl(index, updatedCodes[index]);
+    };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            diagrams.forEach((_, index) => handleRegen(index));
+            console.log("meh")
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
-        <div style={{ height: 'calc(100vh - 84px)' }} className="w-[100%] flex justify-center items-center">
+        (!isLoading && <div style={{ height: 'calc(100vh - 84px)' }} className="w-[100%] flex justify-center items-center">
             <Carousel className="w-11/12 flex justify-center items-center">
                 <CarouselContent className=" ">
                     {diagrams.map((diagram, index) => (
@@ -117,62 +141,82 @@ const PlantUMLCarousel: React.FC<PlantUMLCarouselProps> = ({ diagrams }) => {
                 <CarouselNext className='m-8' />
             </Carousel>
         </div>
+        )
     );
 };
 
-
 const UMLDiagrams: React.FC = () => {
-    const plantUMLCodes = [
-        { code: 'Alice -> Bob : Hi', title: "Simple Greeting" },
-        {
-            code: `@startuml
-            left to right direction
-            actor Uzytkownik as User
-            actor SystemZewnetrzny as ExternalSystem
-            
-            package "System Powiadomień" {
-                usecase (Wysyłanie powiadomień o rezerwacji) as UC1
-                usecase (Wysyłanie przypomnień o nadchodzących wydarzeniach) as UC2
-                usecase (Wysyłanie alertów systemowych) as UC3
-                usecase (Wysyłanie powiadomień o nowych wiadomościach) as UC4
-            }
-            
-            User --> UC1
-            User --> UC2
-            User --> UC4
-            ExternalSystem --> UC3
-            
-            note right of UC1
-              Powiadomienia rezerwacyjne mogą być wysyłane
-              poprzez email, SMS czy in-app notifications.
-            end note
-            
-            note right of UC2
-              Przypomnienia zawierają kalendarzowe alerty
-              przed nadchodzącymi wydarzeniami oraz
-              potencjalnie informacje o zmianach.
-            end note
-            
-            note right of UC3
-              Alert systemowy może być wywołany przez
-              zasilanie awaryjne, błędy systemu,
-              lub inne krytyczne alerty.
-            end note
-            
-            note right of UC4
-              Nowe wiadomości mogą dotyczyć komunikacji
-              użytkownika z użytkownikiem lub
-              systemem komunikatów.
-            end note
-            
-            @enduml`, title: "Payment System"
-        },
+    // const plantUMLCodes = [
+    //     { code: 'Alice -> Bob : Hi', title: "Simple Greeting" },
+    //     {
+    //         code: `@startuml
+    //         left to right direction
+    //         actor Uzytkownik as User
+    //         actor SystemZewnetrzny as ExternalSystem
 
-    ];
+    //         package "System Powiadomień" {
+    //             usecase (Wysyłanie powiadomień o rezerwacji) as UC1
+    //             usecase (Wysyłanie przypomnień o nadchodzących wydarzeniach) as UC2
+    //             usecase (Wysyłanie alertów systemowych) as UC3
+    //             usecase (Wysyłanie powiadomień o nowych wiadomościach) as UC4
+    //         }
+
+    //         User --> UC1
+    //         User --> UC2
+    //         User --> UC4
+    //         ExternalSystem --> UC3
+
+    //         note right of UC1
+    //           Powiadomienia rezerwacyjne mogą być wysyłane
+    //           poprzez email, SMS czy in-app notifications.
+    //         end note
+
+    //         note right of UC2
+    //           Przypomnienia zawierają kalendarzowe alerty
+    //           przed nadchodzącymi wydarzeniami oraz
+    //           potencjalnie informacje o zmianach.
+    //         end note
+
+    //         note right of UC3
+    //           Alert systemowy może być wywołany przez
+    //           zasilanie awaryjne, błędy systemu,
+    //           lub inne krytyczne alerty.
+    //         end note
+
+    //         note right of UC4
+    //           Nowe wiadomości mogą dotyczyć komunikacji
+    //           użytkownika z użytkownikiem lub
+    //           systemem komunikatów.
+    //         end note
+
+    //         @enduml`, title: "Payment System"
+    //     },
+
+    // ];
+    const { projectID } = useParams();
+    const [plantUMLCodes, setPlantUMLCodes] = useState("");
+    const [isLoading, setIsLoading] = useState(true)
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/uml/${projectID}`);
+                console.log(response.data)
+
+                setPlantUMLCodes(response.data.umls);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        fetchData();
+
+    }, [projectID]);
 
     return (
         <div className="App">
-            <PlantUMLCarousel diagrams={plantUMLCodes} />
+            <PlantUMLCarousel diagrams={plantUMLCodes} isLoading={isLoading} />
         </div>
     );
 };
