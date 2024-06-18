@@ -9,7 +9,7 @@ logger = logging.getLogger("umlModule")
 dirname = os.path.dirname(__file__)
 
 
-def fetch_uml_list(ai_call_func, is_mock=False):
+def fetch_uml_list(ai_call_func, for_who, doing_what, additional_info, is_mock=False):
     required_schema = {
         "type": "object",
         "properties": {
@@ -41,12 +41,15 @@ def fetch_uml_list(ai_call_func, is_mock=False):
 
             }
         """
-        diagrams_query = f"""
-            Generate a list of comprehensive UML use case diagrams for a startup creating a dog walking application, 
-            considering all actors in the system. 
-            Present the list as JSON with names of diagrams for each actor or actor mix: {schema}. 
-            Include all possible use case diagrams.
-        """
+
+        diagram_query = (
+            "Generate a list of comprehensive UML use case diagrams for "
+            + for_who
+            + "doing "
+            + doing_what
+            + f". Present the list as JSON with names of diagrams for each actor or actor mix: {schema}. Include all possible use case diagrams."
+            + additional_info
+        )
 
         try:
             diagramsListJson = (
@@ -59,10 +62,11 @@ def fetch_uml_list(ai_call_func, is_mock=False):
                     )
                 )
                 if is_mock
-                else json.loads(ai_call_func(diagrams_query, "json"))
+                else json.loads(ai_call_func(diagram_query, "json"))
             )
-            if not validate_json(diagramsListJson, required_schema):
-                return None
+            print(diagramsListJson)
+            # if not validate_json(diagramsListJson, required_schema):
+            # return None
         except (FileNotFoundError, Exception) as e:
             logger.error(f"Error occurred while fetching UML list: {e}")
             return None
