@@ -39,6 +39,7 @@ const ProjectView = ({ }) => {
         { id: 12, name: "Business scenario", description: "Business scenario for your project" },
         { id: 13, name: "UML", description: "UML diagrams" },
         { id: 14, name: "Schedule", description: "Estimate project schedule" },
+        { id: 15, name: "Database diagram", description: "Draw initial database diagram" },
     ]
 
     return (

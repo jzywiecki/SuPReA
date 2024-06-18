@@ -23,6 +23,7 @@ import { RegenerateProvider } from './components/contexts/RegenerateContext';
 import Hero from './components/Hero';
 import UMLDiagrams from './pages/projectPages/umlDiagrams';
 import ProjectTimeline from './pages/projectPages/ProjectTimeline';
+import DatabaseDiagram from './pages/projectPages/DatabaseDiagram';
 
 
 
@@ -47,6 +48,7 @@ function App() {
               <Route path="business-scenario" element={<BusinessScenario />} />
               <Route path="umls" element={<UMLDiagrams />} />
               <Route path="schedule" element={<ProjectTimeline />} />
+              <Route path="database-diagram" element={<DatabaseDiagram />} />
             </Route>
             <Route path="/create-project" element={<CreateProject />} />
             <Route path="/profile/:id" element={<Profile />} />

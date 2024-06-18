@@ -210,7 +210,13 @@ const UMLDiagrams: React.FC = () => {
             }
             setComponentRegenerate(getComponentName())
 
-            setPlantUMLCodes(response.data.umls);
+            if (response.data.umls) {
+                setPlantUMLCodes(response.data.umls);
+            }
+            else {
+                setPlantUMLCodes(null)
+            }
+
 
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -224,10 +230,12 @@ const UMLDiagrams: React.FC = () => {
 
     }, [projectID, regenerate]);
 
-    return (
+    return (plantUMLCodes ?
         <div className="App">
             <PlantUMLCarousel diagrams={plantUMLCodes} isLoading={isLoading} />
         </div>
+        :
+        <div>Error </div>
     );
 };
 
