@@ -7,6 +7,7 @@ from server.routers import (
     motto,
     project_schedule,
     uml,
+    database_schema,
 )
 from server.routers import requirement, risk, specifications, strategy, title
 
@@ -35,3 +36,4 @@ app.include_router(specifications.router)
 app.include_router(strategy.router)
 app.include_router(title.router)
 app.include_router(uml.router)
+app.include_router(database_schema.router)

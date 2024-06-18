@@ -86,18 +86,6 @@ Use only single words! DO NOT use commas or quotas.
     """
 
 
-async def fetch_database_schema(make_ai_call, is_mock=True):
-    return (
-        json.load(
-            open(
-                os.path.join(dirname, "data", "test", "database_schema.json"),
-                encoding="utf8",
-            )
-        )
-        if is_mock
-        else json.loads(
-            extract_schema_from_messeage(
-                make_ai_call(prompt + " details: " + details, "json")
-            )
-        )
-    )
+def fetch_database_schema(make_ai_call, is_mock=False):
+    response = make_ai_call(prompt + " details: " + details, "json")
+    return response

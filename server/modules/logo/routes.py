@@ -12,15 +12,10 @@ import random
 import string
 from datetime import datetime
 
-logger = logging.getLogger("logo")
-dirname = os.path.dirname(__file__)
-
-
-# ----------------------------------------UTILS
-def random_name():
-    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
-    random_suffix = "".join(random.choices(string.ascii_uppercase + string.digits, k=5))
-    return f"Z{current_time}_{random_suffix}"
+# def random_name():
+#     current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+#     random_suffix = "".join(random.choices(string.ascii_uppercase + string.digits, k=5))
+#     return f"Z{current_time}_{random_suffix}"
 
 
 # ----------------------------------------FETCH
@@ -54,20 +49,20 @@ async def fetch_logo(client, prompt, details, additional_details, model, n, path
 # ----------------------------------------ROUTES
 async def generate_logo(client):
     random_uuid = uuid.uuid4()
-    path = os.path.join(dirname, "data", "gen", str(random_uuid))
-    os.mkdir(path)
     await asyncio.gather(
         fetch_logo(client, prompt, details, additional_details1, model, n, path),
         # fetch_logo(client, prompt, details, additional_details2, model, n,path),
         # fetch_logo(client, prompt, details, additional_details3, model, n,path),
         # fetch_logo(client, prompt, details, additional_details4, model, n,path),
     )
-    # images = kwargs.get("images")
-    # tasks = []
-    # for _ in range(images):
-    #     task = asyncio.create_task(fetch_logo(client, prompt, details, additional_details1, model, n))
-    #     tasks.append(task)
-    # await asyncio.gather(*tasks)
+    images = kwargs.get("images")
+    tasks = []
+    for _ in range(images):
+        task = asyncio.create_task(
+            fetch_logo(client, prompt, details, additional_details1, model, n)
+        )
+        tasks.append(task)
+    await asyncio.gather(*tasks)
 
 
 class LogoModule(modules.Module):
@@ -79,8 +74,8 @@ class LogoModule(modules.Module):
         response = utils.sendAIRequest(self.Model, messages, msg_type, 4000)
         return response.choices[0].message.content
 
-    async def get_content(self, for_who, doing_what, **kwargs):
-        api_key = kwargs.get("api_key")
-        client = OpenAI(api_key=api_key)
+    async def get_content(
+        self, for_who, doing_what, additional_info, is_mock, **kwargs
+    ):
         await generate_logo(client)
         return None
