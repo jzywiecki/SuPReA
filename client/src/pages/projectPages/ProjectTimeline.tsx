@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Scheduler, SchedulerData } from '@bitnoi.se/react-scheduler';
 import '@bitnoi.se/react-scheduler/dist/style.css';
+import { useParams } from 'react-router-dom';
+import RegenerateContext from '@/components/contexts/RegenerateContext';
+import axios from 'axios';
 
 interface Milestone {
     name: string;
@@ -11,40 +14,33 @@ interface Milestone {
 const initialMilestones: Milestone[] = [
     {
         name: 'Project Kickoff',
-        description: 'Gather requirements, define project scope, and set goals',
+        description: 'startup',
         duration: '1 week',
     },
     {
-        name: 'Design Wireframes',
-        description: "Create wireframes for the application's user interface",
+        name: 'Development',
+        description: "development",
         duration: '2 weeks',
-    },
-    {
-        name: 'Develop Backend',
-        description: 'Set up database, develop server-side logic, and API endpoints',
-        duration: '4 weeks',
-    },
-    {
-        name: 'Develop Frontend',
-        description: 'Implement user interface based on wireframes, integrate with backend',
-        duration: '4 weeks',
-    },
-    {
-        name: 'Testing',
-        description: 'Conduct unit tests, integration tests, and user acceptance tests',
-        duration: '3 weeks',
-    },
-    {
-        name: 'Deployment',
-        description: 'Deploy the application to production environment',
-        duration: '1 week',
-    },
-    {
-        name: 'Marketing and Launch',
-        description: 'Plan marketing strategies, launch the application, and acquire users',
-        duration: 'ongoing',
-    },
+    }
+
 ];
+
+const validateMilestones = (milestones: Milestone[]): boolean => {
+    const durationRegex = /^\d+\s(week|weeks)$/;
+
+    for (const milestone of milestones) {
+        if (typeof milestone.name !== 'string' || milestone.name.trim() === '') {
+            return false;
+        }
+        if (typeof milestone.description !== 'string' || milestone.description.trim() === '') {
+            return false;
+        }
+        if (!durationRegex.test(milestone.duration)) {
+            return false;
+        }
+    }
+    return true;
+};
 
 const convertMilestonesToSchedulerData = (milestones: Milestone[]): SchedulerData[] => {
     const today = new Date();
@@ -84,8 +80,40 @@ const convertMilestonesToSchedulerData = (milestones: Milestone[]): SchedulerDat
 };
 
 const ProjectTimeline: React.FC = () => {
+    const { projectID } = useParams();
+
+    const { regenerate, setProjectRegenerateID, setComponentRegenerate } = useContext(RegenerateContext);
     const [milestones, setMilestones] = useState<Milestone[]>(initialMilestones);
     const [schedulerData, setSchedulerData] = useState<SchedulerData[]>(convertMilestonesToSchedulerData(initialMilestones));
+
+    function getComponentName() {
+        return "project_schedule";
+    }
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/project_schedule/${projectID}`);
+            const fetchedMilestones = response.data.milestones;
+
+            if (validateMilestones(fetchedMilestones)) {
+                setMilestones(fetchedMilestones);
+                setSchedulerData(convertMilestonesToSchedulerData(fetchedMilestones));
+
+            } else {
+                console.error('Fetched data is not valid');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (projectID) {
+            setProjectRegenerateID(projectID);
+        }
+        setComponentRegenerate(getComponentName());
+        fetchData();
+    }, [projectID, regenerate]);
 
     useEffect(() => {
         setSchedulerData(convertMilestonesToSchedulerData(milestones));

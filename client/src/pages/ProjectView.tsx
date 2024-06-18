@@ -38,6 +38,7 @@ const ProjectView = ({ }) => {
         { id: 11, name: "Elevator speech", description: "Content for pitching idea" },
         { id: 12, name: "Business scenario", description: "Business scenario for your project" },
         { id: 13, name: "UML", description: "UML diagrams" },
+        { id: 14, name: "Schedule", description: "Estimate project schedule" },
     ]
 
     return (

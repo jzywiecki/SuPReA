@@ -22,6 +22,7 @@ import BusinessScenario from './pages/projectPages/BusinesScenario';
 import { RegenerateProvider } from './components/contexts/RegenerateContext';
 import Hero from './components/Hero';
 import UMLDiagrams from './pages/projectPages/umlDiagrams';
+import ProjectTimeline from './pages/projectPages/ProjectTimeline';
 
 
 
@@ -44,11 +45,13 @@ function App() {
               <Route path="actors" element={<ActorList />} />
               <Route path="elevator-speech" element={<ElevatorSpeech />} />
               <Route path="business-scenario" element={<BusinessScenario />} />
+              <Route path="umls" element={<UMLDiagrams />} />
+              <Route path="schedule" element={<ProjectTimeline />} />
             </Route>
             <Route path="/create-project" element={<CreateProject />} />
             <Route path="/profile/:id" element={<Profile />} />
             <Route path="/collaborators" element={<Collaborators />} />
-            <Route path="*" element={<ErrorPage />} />
+            {/* <Route path="*" element={<ErrorPage />} /> */}
           </Routes>
         </div>
       </RegenerateProvider>
