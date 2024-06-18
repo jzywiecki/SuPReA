@@ -30,14 +30,19 @@ const validateMilestones = (milestones: Milestone[]): boolean => {
 
     for (const milestone of milestones) {
         if (typeof milestone.name !== 'string' || milestone.name.trim() === '') {
+            console.log("timelineerror >=-> name")
             return false;
         }
         if (typeof milestone.description !== 'string' || milestone.description.trim() === '') {
+            console.log("timelineerror >=-> dsc")
+
             return false;
         }
-        if (!durationRegex.test(milestone.duration)) {
-            return false;
-        }
+        // if (!durationRegex.test(milestone.duration)) {
+        //     console.log("timelineerror >=-> duration")
+
+        //     return false;
+        // }
     }
     return true;
 };
