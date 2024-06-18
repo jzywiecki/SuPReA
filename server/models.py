@@ -92,9 +92,11 @@ class StrategyModel(BaseModel):
 class TitleModel(BaseModel):
     names: List[str]
 
+
 class UmlModel(BaseModel):
     code: str
-    title: str 
+    title: str
+
 
 class UmlsModel(BaseModel):
     umls: List[UmlModel]

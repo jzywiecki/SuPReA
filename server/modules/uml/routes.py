@@ -27,17 +27,14 @@ def generate_uml_images(ai_call_func, is_mock=False):
         returned_list = []
         uml_list = fetch_uml_list(ai_call_func, is_mock)
         uml_fragments = fetch_uml_fragments(uml_list, ai_call_func, is_mock)
- 
+
         for actor, fragment in uml_fragments:
-            entry = {
-                "title": actor,
-                "code": fragment
-            }
+            entry = {"title": actor, "code": fragment}
             returned_list.append(entry)
-        obj ={}
+        obj = {}
         obj["umls"] = returned_list
         return json.dumps(obj, indent=4)
-    
+
     except Exception as e:
         logger.error(f"Error generating UML images: {e}")
         raise Exception(f"Error generating UML images: {e}")
