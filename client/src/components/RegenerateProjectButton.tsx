@@ -1,16 +1,16 @@
-// RegenerateProjectButton.tsx
-
-import React from 'react';
+import React, { useContext } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import RegenerateContext from './contexts/RegenerateContext';
 
 const RegenerateProjectButton: React.FC = () => {
-  const { projectID, component } = useParams();
+  const { triggerRegenerate, projectRegenerateID, componentRegenerate } = useContext(RegenerateContext);
 
   const handleClick = async () => {
     try {
-      await axios.post(`http://localhost:8000/${component}/${projectID}`);
-      console.log(`Successfully regenerated ${component} for project ${projectID}`);
+      console.log(`Regenerating for ${componentRegenerate}/${projectRegenerateID}...`);
+      await axios.post(`http://localhost:8000/${componentRegenerate}/generate/${projectRegenerateID}`);
+      console.log(`Successfully regenerated ${componentRegenerate} for project ${projectRegenerateID}`);
+      triggerRegenerate();
     } catch (error) {
       console.error('Error regenerating project:', error);
     }
