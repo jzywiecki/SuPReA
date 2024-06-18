@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import {
     Card,
@@ -21,6 +21,7 @@ import plantumlEncoder from "plantuml-encoder";
 import './styles.css'
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import RegenerateContext from '@/components/contexts/RegenerateContext';
 
 interface UMLDiagram {
     code: string;
@@ -97,7 +98,6 @@ const PlantUMLCarousel: React.FC<PlantUMLCarouselProps> = ({ diagrams, isLoading
     useEffect(() => {
         const timer = setTimeout(() => {
             diagrams.forEach((_, index) => handleRegen(index));
-            console.log("meh")
         }, 2000);
         return () => clearTimeout(timer);
     }, []);
@@ -109,7 +109,7 @@ const PlantUMLCarousel: React.FC<PlantUMLCarouselProps> = ({ diagrams, isLoading
                     {diagrams.map((diagram, index) => (
                         <CarouselItem key={index} className=" flex justify-center items-center flex-col" onClick={() => setCurrentDiagramIndex(index)}>
                             <h2 className='uml-title'>{diagram.title}</h2>
-                            <Tabs defaultValue="uml" className="w-11/12" style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+                            <Tabs defaultValue="code" className="w-11/12" style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
                                 <TabsList className="grid w-[40%] grid-cols-2">
                                     <TabsTrigger value="uml" onClick={() => handleTabChange('uml')}>UML</TabsTrigger>
                                     <TabsTrigger value="code" onClick={() => handleTabChange('code')}>Code</TabsTrigger>
@@ -196,23 +196,33 @@ const UMLDiagrams: React.FC = () => {
     const { projectID } = useParams();
     const [plantUMLCodes, setPlantUMLCodes] = useState("");
     const [isLoading, setIsLoading] = useState(true)
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8000/uml/${projectID}`);
-                console.log(response.data)
+    const { regenerate, setProjectRegenerateID, setComponentRegenerate } = useContext(RegenerateContext);
 
-                setPlantUMLCodes(response.data.umls);
-
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            } finally {
-                setIsLoading(false);
+    function getComponentName() {
+        return "uml";
+    }
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/uml/${projectID}`);
+            console.log(response.data)
+            if (projectID) {
+                setProjectRegenerateID(projectID);
             }
+            setComponentRegenerate(getComponentName())
+
+            setPlantUMLCodes(response.data.umls);
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setIsLoading(false);
         }
+    }
+    useEffect(() => {
+
         fetchData();
 
-    }, [projectID]);
+    }, [projectID, regenerate]);
 
     return (
         <div className="App">

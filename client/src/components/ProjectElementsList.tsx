@@ -16,19 +16,19 @@ interface ProjectElementsListProps {
 
 
 const ProjectElementsList: React.FC<ProjectElementsListProps> = ({ elements, isCollapsed }) => {
-     
+
 
     return (
-        <ScrollArea className="h-full">
-        <div className=''>
-            {isCollapsed && (
-                <div>
-                    {elements.map((element) => (
-                        <ProjectElement key={element.id} element={element} />
-                    ))}
-                </div>
-            )}
-        </div>
+        <ScrollArea style={{ height: 'calc(100vh - 124px)' }}>
+            <div className=''>
+                {isCollapsed && (
+                    <div>
+                        {elements.map((element) => (
+                            <ProjectElement key={element.id} element={element} />
+                        ))}
+                    </div>
+                )}
+            </div>
         </ScrollArea>
     );
 };
