@@ -102,6 +102,11 @@ class UmlsModel(BaseModel):
     umls: List[UmlModel]
 
 
+class DatabaseSchemaModel(BaseModel):
+    schema: List[dict[str, dict[str, str]]]
+    relationships: List[str]
+
+
 class ProjectModel(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     name: str
@@ -123,6 +128,7 @@ class ProjectModel(BaseModel):
     strategy: Optional[StrategyModel] = None
     title: Optional[TitleModel] = None
     umls: Optional[UmlsModel] = None
+    database_schema: Optional[DatabaseSchemaModel] = None
 
     class Config:
         arbitrary_types_allowed = True
