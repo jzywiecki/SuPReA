@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useContext, useEffect } from 'react';
 import ReactFlow, {
     addEdge,
     Background,
@@ -13,7 +13,10 @@ import ReactFlow, {
     useViewport
 } from 'react-flow-renderer';
 import { v4 as uuidv4 } from 'uuid';
-import 'reactflow/dist/style.css';
+// import 'reactflow/dist/style.css';
+import { useParams } from 'react-router-dom';
+import RegenerateContext from '@/components/contexts/RegenerateContext';
+import axios from 'axios';
 
 const initialSchema = {
     "schema": [
@@ -25,40 +28,17 @@ const initialSchema = {
                 "password": "VARCHAR(100)"
             }
         },
-        {
-            "Cars": {
-                "car_id": "INT PK",
-                "brand": "VARCHAR(50)",
-                "model": "VARCHAR(50)",
-                "year": "INT",
-                "color": "VARCHAR(20)",
-                "seats": "INT"
-            }
-        },
-        {
-            "Locations": {
-                "location_id": "INT PK",
-                "name": "VARCHAR(100)",
-                "address": "VARCHAR(255)"
-            }
-        },
+
         {
             "Bookings": {
-                "booking_id": "INT PK",
-                "car_id": "INT FK",
                 "user_id": "INT FK",
-                "pickup_location_id": "INT FK",
-                "dropoff_location_id": "INT FK",
                 "date": "DATE",
-                "status": "ENUM(Pending_Confirmed_Completed_Cancelled)"
+                "status": "ENUM()"
             }
         }
     ],
     "relationships": [
         "Users ||--o{ Bookings : books",
-        "Cars ||--o{ Bookings : reserved",
-        "Locations ||--o{ Bookings : pickup",
-        "Locations ||--o{ Bookings : dropoff"
     ]
 };
 
@@ -141,6 +121,38 @@ const DatabaseDiagram = () => {
     const reactFlowWrapper = useRef(null);
     const connectingNodeId = useRef(null);
     const { x, y, zoom } = useViewport();
+
+    const { projectID } = useParams();
+    const { regenerate, setProjectRegenerateID, setComponentRegenerate } = useContext(RegenerateContext);
+
+    function getComponentName() {
+        return "database_schema";
+    }
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/database_schema/${projectID}`);
+            console.log(response.data);
+            const { nodes: initialNodes, edges: initialEdges } = generateFlowElements(response.data);
+            setNodes(initialNodes);
+            setEdges(initialEdges);
+
+            // setContent(response.data.content);
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (projectID) {
+            setProjectRegenerateID(projectID);
+        }
+        setComponentRegenerate(getComponentName())
+        fetchData();
+    }, [projectID, regenerate]);
+
+
 
     const onConnect = useCallback(
         (params) => {
