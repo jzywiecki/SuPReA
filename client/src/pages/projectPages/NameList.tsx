@@ -97,21 +97,18 @@ const NameList: React.FC = () => {
         try {
             const response = await axios.get(`http://localhost:8000/title/${projectID}`);
             setNames(response.data.names);
-            if (projectID) {
-                setProjectRegenerateID(projectID);
-            }
-            setComponentRegenerate(getComponentName())
+
             setPriorities(new Array(response.data.names.length).fill(1));
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
     useEffect(() => {
-
+        if (projectID) {
+            setProjectRegenerateID(projectID);
+        }
+        setComponentRegenerate(getComponentName())
         fetchData();
-
-
-
     }, [projectID, regenerate]);
 
     const moveCard = (dragIndex: number, hoverIndex: number) => {

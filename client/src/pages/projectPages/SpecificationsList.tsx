@@ -28,16 +28,16 @@ const SpecificationsList: React.FC = () => {
         try {
             const response = await axios.get(`http://localhost:8000/specifications/${projectID}`);
             setSpecifications(response.data.specifications);
-            if (projectID) {
-                setProjectRegenerateID(projectID);
-            }
-            setComponentRegenerate(getComponentName())
+
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
     useEffect(() => {
-
+        if (projectID) {
+            setProjectRegenerateID(projectID);
+        }
+        setComponentRegenerate(getComponentName())
         fetchData();
 
     }, [projectID, regenerate]);

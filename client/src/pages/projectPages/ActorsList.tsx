@@ -43,18 +43,17 @@ const ActorList: React.FC = () => {
             }));
 
             setActors(actorsWithIcons);
-            if (projectID) {
-                setProjectRegenerateID(projectID);
-            }
-            setComponentRegenerate(getComponentName())
+
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
     useEffect(() => {
-
+        if (projectID) {
+            setProjectRegenerateID(projectID);
+        }
+        setComponentRegenerate(getComponentName())
         fetchData();
-
     }, [projectID, regenerate]);
 
     return (

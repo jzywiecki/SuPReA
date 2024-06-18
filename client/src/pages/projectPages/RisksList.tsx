@@ -63,9 +63,7 @@ const RiskList: React.FC = () => {
         try {
             const response = await axios.get(`http://localhost:8000/risks/${projectID}`);
             setRisks(response.data.risks);
-            if (projectID) {
-                setProjectRegenerateID(projectID);
-            }
+
             setComponentRegenerate(getComponentName())
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -73,6 +71,9 @@ const RiskList: React.FC = () => {
     }
 
     useEffect(() => {
+        if (projectID) {
+            setProjectRegenerateID(projectID);
+        }
         fetchData();
     }, [projectID, regenerate]);
 
