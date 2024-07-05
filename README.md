@@ -2,9 +2,14 @@
 
 # Setup:
 #### Install python: https://www.python.org/downloads/windows/
+#### It is recommended to use venv
 #### Install required libraries: `pip install -r requirements.txt`
-#### Setup your OpenAI API key: https://platform.openai.com/docs/quickstart
-#### Run in ./server:	`python server.py`
+#### Setup your OpenAI API key and set is as environment variable: https://platform.openai.com/docs/quickstart 
+#### Set MONGODB_URL environment variable (you can generate the URL using mongo atlas)
+#### Run in ./server:	`fastapi dev main.py`
+
+#### Run in ./client: `npm install`
+#### Run in ./client: `npm run dev`
 
 #  Libraries:
 ### Making requests to OpenAI api: openai 1.28.1:
