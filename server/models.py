@@ -111,11 +111,11 @@ class ProjectModel(BaseModel):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
     name: str
     description: str
-    owner: EmailStr
+    owner: Optional[PyObjectId]
     for_who: str
     doing_what: str
     additional_info: str
-    members: List[EmailStr]
+    members: List[PyObjectId]
     created_at: datetime = Field(default=datetime.now())
     actors: Optional[ActorsModel] = None
     business_scenarios: Optional[BusinessScenariosModel] = None
@@ -129,6 +129,8 @@ class ProjectModel(BaseModel):
     title: Optional[TitleModel] = None
     umls: Optional[UmlsModel] = None
     database_schema: Optional[DatabaseSchemaModel] = None
+    chat: Optional[PyObjectId] = None
+    ai_chat: Optional[PyObjectId] = None
 
     class Config:
         arbitrary_types_allowed = True
