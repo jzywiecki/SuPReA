@@ -9,7 +9,7 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
-      origin: ["https://admin.socket.io"],
+      origin: ["*"],
       credentials: true
     }
   });
@@ -37,7 +37,7 @@ io.use(async (socket, next) => {
         }
 
         //TODO: Check if user is authorized.
-        const isMemberPromise = db.isUserProjectMember(
+        const isMemberPromise = db.isUserIsProjectMember(
             new ObjectId(projectId), 
             new ObjectId(userId)
         ); 
@@ -78,8 +78,8 @@ io.on('connection', async (socket) => {
     let discussionChatId;
     let aiChatId;
     try {
-        discussionChatId = await db.getGeneralChatIdFromProject(projectId);
-        aiChatId      = await db.getAiChatIdFromProject(projectId);
+        discussionChatId = await db.getDiscussionChatIdFromProject(projectId);
+        aiChatId         = await db.getAiChatIdFromProject(projectId);
         
         if (!discussionChatId || !aiChatId) {
             throw new Error('Chat does not exist.');
@@ -91,21 +91,20 @@ io.on('connection', async (socket) => {
         socket.disconnect();
     }
 
-    retransmitLostData(socket, discussionChatId, aiChatId);
+    transmitDataOnConnection(socket, discussionChatId, aiChatId);
 
     socket.join(socket.projectId);
 
     socket.onAny(async (eventName, ...args) => {
         try {
-            // check if user is still a member of the project
-            const isMember = await db.isUserProjectMember(projectId, userId);
+            const isMember = await db.isUserIsProjectMember(projectId, userId);
 
             if (!isMember) {
                 console.log("[INFO] Disconnect user which is not a member of the project now.")
                 socket.disconnect();
             }
         } catch (error) {
-            console.log(`[ERROR] Cannot check if user is a member of the project.`);
+            console.log(`[ERROR] Cannot check if user is still a member of the project.`);
             console.log(`[ERROR DETAILS] ${error.message}`);
             socket.emit('error', 'INTERNAL SERVER ERROR');
             socket.disconnect();
@@ -113,65 +112,35 @@ io.on('connection', async (socket) => {
     });
 
 
-    async function handleSendMessage(socket, chatId, text, eventToEmit) {
-        if (!text || typeof text !== 'string' || text.length > 1000) {
-            socket.emit('error', 'Invalid message format.');
-            return;
-        }
-
-        try {
-            const message = await db.addMessage(projectId, chatId, text, userId);
-            if (!message) {
-                throw new Error('Message not added.');
-            }
-
-            io.to(socket.projectId).emit(eventToEmit, message);
-            
-        } catch (error) {
-            console.log(`[ERROR] Cannot add message to chat ${chatId}.`);
-            console.log(`[ERROR DETAILS] ${error.message}`);
-            socket.emit('error', 'INTERNAL SERVER ERROR');
-            socket.disconnect();
-        }
-    }
-
-
     socket.on('send-message-to-discussion-chat', (text) => {
-        handleSendMessage(socket, discussionChatId, text, 'receive-message-from-discussion-chat');
+        handleSendMessage(socket, projectId, userId, discussionChatId, text, 'receive-message-from-discussion-chat');
     });
 
 
     socket.on('send-message-to-ai-chat', (text) => {
-        handleSendMessage(socket, aiChatId, text, 'receive-message-from-ai-chat');
-    });
+        handleSendMessage(socket, projectId, userId, aiChatId, text, 'receive-message-from-ai-chat');
+    }); 
 
 
-    async function handleGetOlderMessages(socket, chatId, lastMessageId, eventToEmit) {
-        if (!lastMessageId || typeof lastMessageId !== 'number' || lastMessageId < 0) {
-            console.log("[INFO] User requested older messages with wrong last message id.")
-            socket.emit('error', 'Invalid parameters');
-            return;
-        }
-    
-        try {
-            const messages = await db.getOlderMessages(chatId, lastMessageId, 10);
-            socket.emit(eventToEmit, messages);
-        } catch (error) {
-            console.log(`[ERROR] Cannot get older messages from chat ${chatId}.`)
-            console.log(`[ERROR DETAILS] ${error.message}`);
-            socket.emit('error', 'INTERNAL SERVER ERROR');
-            socket.disconnect();
-        }
-    }
-
-
-    socket.on('get-older-messages-from-general-chat', (lastMessageId) => {
-        handleGetOlderMessages(socket, discussionChatId, lastMessageId, 'receive-older-messages-from-general-chat');
+    socket.on('get-older-messages-from-discussion-chat', (lastMessageId) => {
+        handleGetOlderMessages(
+            socket, 
+            discussionChatId, 
+            lastMessageId, 
+            'receive-message-from-discussion-chat',
+            'receive-is-more-older-messages-on-discussion-chat'
+        );
     });
 
 
     socket.on('get-older-messages-from-ai-chat', (lastMessageId) => {
-        handleGetOlderMessages(socket, aiChatId, lastMessageId, 'receive-older-messages-from-ai-chat');
+        handleGetOlderMessages(
+            socket, 
+            aiChatId, 
+            lastMessageId, 
+            'receive-message-from-ai-chat',
+            'receive-is-more-older-messages-on-ai-chat'
+        );
     });
 
 
@@ -187,28 +156,42 @@ io.on('connect_error', (error) => {
 });
 
 
-const retransmitLostData = async (socket, discussionChatId, aiChatId) => {
+const transmitDataOnConnection = async (socket, discussionChatId, aiChatId) => {
+    const initConnectionMessageQuantity = 15;
+
     try {
         const discussionChatOffset = socket.handshake.auth.discussionChatOffset || 0;
         const aiChatOffset = socket.handshake.auth.aiChatOffset || 0;
     
 
-        if (discussionChatOffset > 0) {
+        if (discussionChatOffset > 0) { // reconnection case
             const messages = await db.getNewerMessages(discussionChatId, discussionChatOffset);
             socket.emit('receive-message-from-discussion-chat', messages);
         }
-        else {
-            const messages = await db.getNewestMessages(discussionChatId, 15);
+        else { //init connection case
+            const messages = await db.getNewestMessages(discussionChatId, initConnectionMessageQuantity);
             socket.emit('receive-message-from-discussion-chat', messages);
+
+            if (messages.length < initConnectionMessageQuantity) {
+                socket.emit('receive-is-more-older-messages-on-discussion-chat', false);
+            } else {
+                socket.emit('receive-is-more-older-messages-on-discussion-chat', true);
+            }
         }
 
-        if (aiChatOffset > 0) {
+        if (aiChatOffset > 0) { // reconnection case
             const messages = await db.getNewerMessages(aiChatId, aiChatOffset);
             socket.emit('receive-message-from-ai-chat', messages);
         }
-        else {
-            const messages = await db.getNewestMessages(aiChatId, 15);
+        else { //init connection case
+            const messages = await db.getNewestMessages(aiChatId, initConnectionMessageQuantity);
             socket.emit('receive-message-from-ai-chat', messages);
+
+            if (messages.length < initConnectionMessageQuantity) {
+                socket.emit('receive-is-more-older-messages-on-ai-chat', false);
+            } else {
+                socket.emit('receive-is-more-older-messages-on-ai-chat', true);
+            }
         }
     } catch (error) {
         console.log(`[ERROR] Cannot retransmit lost data.`);
@@ -219,6 +202,57 @@ const retransmitLostData = async (socket, discussionChatId, aiChatId) => {
 };
 
 
+const handleGetOlderMessages = async (socket, chatId, lastMessageId, sendEvent, olderMessageEvent) => {
+    if (!lastMessageId || typeof lastMessageId !== 'number' || lastMessageId < 0) {
+        console.log("[INFO] User requested older messages with wrong last message id.")
+        socket.emit('error', 'Invalid parameters');
+        return;
+    }
+
+    const olderMessagesQuantity = 10;
+
+    try {
+        const messages = await db.getOlderMessages(chatId, lastMessageId, olderMessagesQuantity);
+        socket.emit(sendEvent, messages);
+        
+        if (messages.length < olderMessagesQuantity) {
+            socket.emit(olderMessageEvent, false);
+        } else {
+            socket.emit(olderMessageEvent, true);
+        }
+
+    } catch (error) {
+        console.log(`[ERROR] Cannot get older messages from chat ${chatId}.`)
+        console.log(`[ERROR DETAILS] ${error.message}`);
+        socket.emit('error', 'INTERNAL SERVER ERROR');
+        socket.disconnect();
+    }
+}
+
+
+const handleSendMessage = async (socket, projectId, userId, chatId, text, eventToEmit) => {
+    if (!text || typeof text !== 'string' || text.length > 1000) {
+        socket.emit('error', 'Invalid message format.');
+        return;
+    }
+
+    try {
+        const message = await db.addMessage(projectId, chatId, text, userId);
+        if (!message) {
+            throw new Error('Message not added.');
+        }
+
+        io.to(socket.projectId).emit(eventToEmit, message);
+
+    } catch (error) {
+        console.log(`[ERROR] Cannot add message to chat ${chatId}.`);
+        console.log(`[ERROR DETAILS] ${error.message}`);
+        socket.emit('error', 'INTERNAL SERVER ERROR');
+        socket.disconnect();
+    }
+}
+
+
 server.listen(3000, () => {
-  console.log('server running at http://localhost:3000');
+    console.log('server running at http://localhost:3000');
 });

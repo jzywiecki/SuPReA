@@ -21,6 +21,10 @@ class Database {
     }
 
 
+    /*
+    * The database should run in replication mode to enable transactions. 
+    * To enable transactions during sending messages uncomment the code in the following method.
+    */
     async addMessage(projectId, chatId, text, senderId) {
         //const session = this.client.startSession();
         let result = null;
@@ -86,7 +90,8 @@ class Database {
         return result;
     }
 
-    async isUserProjectMember(projectId, userId) {
+
+    async isUserIsProjectMember(projectId, userId) {
         
         const project = await this.projectCollection.findOne({
             _id: projectId,
@@ -164,7 +169,7 @@ class Database {
     }
 
 
-    async getGeneralChatIdFromProject(projectId) {
+    async getDiscussionChatIdFromProject(projectId) {
         const result = await this.projectCollection
             .findOne({ _id: projectId }, { projection: { _id: 0, chat_id: 1 } });
     
@@ -178,7 +183,6 @@ class Database {
     
         return result ? result.ai_chat_id : null;
     }
-
 }
 
 export default Database;
