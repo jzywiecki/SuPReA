@@ -23,6 +23,9 @@ export interface Message {
 }
 
 
+export type LoadOlderMessages = 'display-load-button' | 'loading' | 'none';
+
+
 const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps) => {
 
     const [connected, setConnected] = useState<boolean>(false);
@@ -32,6 +35,9 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
 
     const [messagesAiChat, setMessagesAiChat] = useState<Message[]>([]);
     const [messagesDiscussionChat, setMessagesDiscussionChat] = useState<Message[]>([]);
+
+    const [loadOlderMessagesAiChat, setLoadOlderMessagesAiChat] = useState<LoadOlderMessages>('none');
+    const [loadOlderMessagesDiscussionChat, setLoadOlderMessagesDiscussionChat] = useState<LoadOlderMessages>('none');
 
     type ActiveTab = "ai" | "discussion";
     const [activeTab, setActiveTab] = useState<ActiveTab>("ai");
@@ -86,11 +92,31 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
         }
 
 
+        function handleOlderMessagesOnDiscussionChat(moreMessage: boolean): void {
+            if (moreMessage) {
+                setLoadOlderMessagesDiscussionChat('display-load-button');
+            } else {
+                setLoadOlderMessagesDiscussionChat('none');
+            }
+        }
+
+
+        function handleOlderMessagesOnAiChat(moreMessage: boolean): void {
+            if (moreMessage) {
+                setLoadOlderMessagesAiChat('display-load-button')
+            } else {
+                setLoadOlderMessagesAiChat('none');
+            }
+        }
+
+
         socketChats.on('connect', onConnect);
         socketChats.on('disconnect', onDisconnect);
         socketChats.on('connect_error', onConnectionError);
         socketChats.on('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
         socketChats.on('receive-message-from-ai-chat', onReceiveMessagesFromAiChat);
+        socketChats.on('receive-is-more-older-messages-on-discussion-chat', handleOlderMessagesOnDiscussionChat);
+        socketChats.on('receive-is-more-older-messages-on-ai-chat', handleOlderMessagesOnAiChat);
         socketChats.on('error', onError);
 
         return () => {
@@ -99,6 +125,8 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
             socketChats.off('connect_error', onConnectionError);
             socketChats.off('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
             socketChats.off('receive-message-from-ai-chat', onReceiveMessagesFromAiChat);
+            socketChats.off('receive-is-more-older-messages-on-discussion-chat', handleOlderMessagesOnAiChat);
+            socketChats.off('receive-is-more-older-messages-on-ai-chat', handleOlderMessagesOnDiscussionChat);
             socketChats.disconnect();
         };
     }, []);
@@ -173,6 +201,25 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
     };
 
 
+    const onLoadMoreMessagesDiscussionChat = () => {
+        setLoadOlderMessagesDiscussionChat('loading');
+        const oldestMessage = getTheOldestMessage(messagesDiscussionChat);
+        socketChats.emit('get-older-messages-from-discussion-chat', oldestMessage.message_id);
+    }
+
+
+    const onLoadMoreMessagesAiChat = () => {
+        setLoadOlderMessagesAiChat('loading');
+        const oldestMessage = getTheOldestMessage(messagesAiChat);
+        socketChats.emit('get-older-messages-from-ai-chat', oldestMessage.message_id);
+    }
+
+
+    const getTheOldestMessage = (messages : Message[]) : Message => {
+        return messages.reduce((prev, current) => (prev.message_id < current.message_id) ? prev : current);
+    }
+
+
     return (
         <div className="h-full w-full flex-col justify-center">
             {isCollapsed && (
@@ -184,11 +231,11 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
                         </TabsList>
 
                         <TabsContent value="ai">
-                            <ChatTab key="ai-chat" userNick={userNick} messages={messagesAiChat} unconfirmedMessages={unconfirmedMessagesAiChat} />
+                            <ChatTab key="ai-chat" userNick={userNick} messages={messagesAiChat} unconfirmedMessages={unconfirmedMessagesAiChat} loadOlderMessages={loadOlderMessagesAiChat} onLoadMoreMessages={onLoadMoreMessagesAiChat} />
                         </TabsContent>
 
                         <TabsContent value="discussion">
-                            <ChatTab key="discussion-chat" userNick={userNick} messages={messagesDiscussionChat} unconfirmedMessages={unconfirmedMessagesDiscussionChat} />
+                            <ChatTab key="discussion-chat" userNick={userNick} messages={messagesDiscussionChat} unconfirmedMessages={unconfirmedMessagesDiscussionChat} loadOlderMessages={loadOlderMessagesDiscussionChat} onLoadMoreMessages={onLoadMoreMessagesDiscussionChat} />
                         </TabsContent>
                     </Tabs>
                     <div className="w-full flex items-center bg-muted ">
