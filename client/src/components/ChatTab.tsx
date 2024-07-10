@@ -1,14 +1,21 @@
 import ChatMessage from "@/components/ChatMessage";
 import * as ScrollArea from '@radix-ui/react-scroll-area';
-import { useState, useEffect, useRef } from "react";
-import { socketChats } from '@/sockets';
+import { useState, useEffect, useRef, MutableRefObject } from "react";
+import { Message } from "@/components/Chat";
 
 
-const ChatTab = ({ messages, unconfirmedMessages, userNick }) => {
+interface ChatTabProps {
+    messages: Message[];
+    unconfirmedMessages: string[];
+    userNick: string;
+}
 
-    const [scrollHeight, setScrollHeight] = useState(0);
-    const [scrollTop, setScrollCTop] = useState(0);
-    const [clientHeight, setClientHeight] = useState(0);
+
+const ChatTab = ({ messages, unconfirmedMessages, userNick }: ChatTabProps) => {
+
+    const [scrollHeight, setScrollHeight] = useState<number>(0);
+    const [scrollTop, setScrollCTop] = useState<number>(0);
+    const [clientHeight, setClientHeight] = useState<number>(0);
 
     function useChatScroll<T>(deps: T): MutableRefObject<HTMLDivElement> {
         const ref = useRef<HTMLDivElement>(null);
@@ -38,11 +45,11 @@ const ChatTab = ({ messages, unconfirmedMessages, userNick }) => {
                     }}
                 >
                     {messages.map((message, index) => {
-                        const styleId = message.author === userNick ? 2 : 1;
-                        return <ChatMessage key={index} text={message.text} sender={message.author} date={message.date} styleId={styleId} confirmed={true} />;
+                        const messageType = message.author === userNick ? "user" : "other";
+                        return <ChatMessage key={index} text={message.text} sender={message.author} date={message.date} messageType={messageType} confirmed={true} />;
                     })}
                     {unconfirmedMessages.map((message, index) => {
-                        return <ChatMessage key={index} text={message} styleId={2} confirmed={false} date={null} sender={userNick}/>;
+                        return <ChatMessage key={index} text={message} sender={userNick} date={undefined} messageType="user" confirmed={false}   />;
                     })}
                 </ScrollArea.Viewport>
                 <ScrollArea.Scrollbar className="scroll-area-scrollbar" orientation="vertical">

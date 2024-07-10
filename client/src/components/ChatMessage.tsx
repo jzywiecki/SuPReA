@@ -2,14 +2,26 @@ import {
     Avatar,
     AvatarFallback,
     AvatarImage,
-  } from "@/components/ui/avatar"
+} from "@/components/ui/avatar"
 
 
-const ChatMessage = ({ text, sender, date, confirmed, styleId }) => {
+type MessageType = "user" | "other";
+
+
+interface ChatMessageProps {
+    text: string;
+    sender: string;
+    date?: string;
+    confirmed: boolean;
+    messageType: MessageType;
+}
+
+
+const ChatMessage = ({ text, sender, date, confirmed, messageType } : ChatMessageProps) => {
 
 
     return (
-        <div className={`flex p-3 ${styleId % 2 == 1 ? 'justify-start bg-accent' : 'justify-end bg-background'}`}>
+        <div className={`flex p-3 ${messageType === "other" ? 'justify-start bg-accent' : 'justify-end bg-background'}`}>
             <Avatar className="m-2">
                 <AvatarImage src="" alt="@shadcn" />
                 <AvatarFallback>?</AvatarFallback>

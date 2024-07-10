@@ -6,26 +6,44 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "./ui/button";
 
 
-const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }) => {
+interface ChatProps {
+    isCollapsed: boolean;
+    projectId: string;
+    userId: string;
+    userNick: string;
+    authToken: string;
+}
 
-    const [connected, setConnected] = useState(false);
 
-    const [unconfirmedMessagesAiChat, setUnconfirmedMessagesAiChat] = useState([]);
-    const [unconfirmedMessagesDiscussionChat, setUnconfirmedMessagesDiscussionChat] = useState([]);
+export interface Message {
+    author: string;
+    text: string;
+    date: string;
+    message_id: number;
+}
 
-    const [messagesAiChat, setMessagesAiChat] = useState([]);
-    const [messagesDiscussionChat, setMessagesDiscussionChat] = useState([]);
 
-    const [activeTab, setActiveTab] = useState("ai");
+const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps) => {
 
-    const [messageInput, setMessageInput] = useState("");
+    const [connected, setConnected] = useState<boolean>(false);
+
+    const [unconfirmedMessagesAiChat, setUnconfirmedMessagesAiChat] = useState<string[]>([]);
+    const [unconfirmedMessagesDiscussionChat, setUnconfirmedMessagesDiscussionChat] = useState<string[]>([]);
+
+    const [messagesAiChat, setMessagesAiChat] = useState<Message[]>([]);
+    const [messagesDiscussionChat, setMessagesDiscussionChat] = useState<Message[]>([]);
+
+    type ActiveTab = "ai" | "discussion";
+    const [activeTab, setActiveTab] = useState<ActiveTab>("ai");
+
+    const [messageInput, setMessageInput] = useState<string>("");
 
 
     useEffect(() => {
         socketChats.auth = {
             projectId: projectId,
             userId: userId,
-            token: 1,
+            token: authToken,
             discussionChatOffset: 0,
             aiChatOffset: 0
         };
@@ -33,40 +51,36 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }) => {
         socketChats.connect();
 
 
-        function onConnect() {
+        function onConnect(): void {
             console.log("Connected to server.");
             setConnected(true);
         }
 
 
-        function onDisconnect() {
+        function onDisconnect(): void {
             console.log("Disconnected from server.");
             setConnected(false);
         }
 
 
-        function onConnectionError(err) {
+        function onConnectionError(err: string): void {
             setConnected(false);
             console.log("[CONNECTION ERROR] " + err);
         }
 
 
-        function onError(err) {
+        function onError(err: string): void {
             console.log("[ERROR] " + err);
         }
 
-        
-        function onReceiveMessagesFromDiscussionChat(messages) {
-            console.log("RECEIVED");
-            console.log(messages);
+
+        function onReceiveMessagesFromDiscussionChat(messages: Message[]): void {
             handleReceivedMessage(messages, setMessagesDiscussionChat, setUnconfirmedMessagesDiscussionChat);
             updateOffset(messages, "discussion");
         }
 
 
-        function onReceiveMessagesFromAiChat(messages) {
-            console.log("RECEIVED AI");
-            console.log(messages);
+        function onReceiveMessagesFromAiChat(messages: Message[]): void {
             handleReceivedMessage(messages, setMessagesAiChat, setUnconfirmedMessagesAiChat);
             updateOffset(messages, "ai");
         }
@@ -83,13 +97,15 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }) => {
             socketChats.off('connect', onConnect);
             socketChats.off('disconnect', onDisconnect);
             socketChats.off('connect_error', onConnectionError);
+            socketChats.off('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
+            socketChats.off('receive-message-from-ai-chat', onReceiveMessagesFromAiChat);
             socketChats.disconnect();
         };
     }, []);
 
 
     const handleSendMessage = () => {
-        if (!messageInput || messageInput.trim() === "")  return;
+        if (!messageInput || messageInput.trim() === "") return;
 
         if (activeTab === "ai") {
             unconfirmedMessagesAiChat.push(messageInput);
@@ -104,20 +120,25 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }) => {
     };
 
 
-    const handleReceivedMessage = (receivedMessages, setMessages, setUnconfirmedMessages) => {
-        setMessages(prevMessages => {
+    const handleReceivedMessage = (
+        receivedMessages: Message[],
+        setMessagesFun: React.Dispatch<React.SetStateAction<Message[]>>,
+        setUnconfirmedMessagesFun: React.Dispatch<React.SetStateAction<string[]>>
+    ) => {
+
+        setMessagesFun(prevMessages => {
             const existingMessageIds = new Set(prevMessages.map(message => message.message_id));
-    
+
             const newMessages = receivedMessages.filter(message => !existingMessageIds.has(message.message_id));
-    
+
             if (newMessages.length === 0) {
                 return prevMessages;
             }
-    
+
             const updatedMessages = [...prevMessages, ...newMessages];
             updatedMessages.sort((a, b) => a.message_id - b.message_id);
-    
-            setUnconfirmedMessages(prevUnconfirmed => {
+
+            setUnconfirmedMessagesFun(prevUnconfirmed => {
                 const updatedUnconfirmed = [...prevUnconfirmed];
                 newMessages.forEach(receivedMessage => {
                     const index = updatedUnconfirmed.indexOf(receivedMessage.text);
@@ -127,13 +148,13 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }) => {
                 });
                 return updatedUnconfirmed;
             });
-    
+
             return updatedMessages;
         });
     };
 
 
-    const updateOffset = (messages, type) => {    
+    const updateOffset = (messages: Message[], type: ActiveTab) => {
         const maxMessageId = messages.reduce((maxId, message) => {
             return message.message_id > maxId ? message.message_id : maxId;
         }, 0);
@@ -145,11 +166,18 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }) => {
     };
 
 
+    const handleSetActiveTab = (value: string) => {
+        if (value === "ai" || value === "discussion") {
+            setActiveTab(value as ActiveTab);
+        }
+    };
+
+
     return (
         <div className="h-full w-full flex-col justify-center">
             {isCollapsed && (
                 <>
-                    <Tabs defaultValue="ai" onValueChange={setActiveTab}>
+                    <Tabs defaultValue="ai" onValueChange={handleSetActiveTab}>
                         <TabsList className="grid w-full grid-cols-2 h-10">
                             <TabsTrigger value="ai">AI Chat</TabsTrigger>
                             <TabsTrigger value="discussion">Discussion</TabsTrigger>
