@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { socketChats } from '@/sockets';
 
 
-const ChatTab = ({ messages, unconfirmedMessages }) => {
+const ChatTab = ({ messages, unconfirmedMessages, userNick }) => {
 
     const [scrollHeight, setScrollHeight] = useState(0);
     const [scrollTop, setScrollCTop] = useState(0);
@@ -38,10 +38,11 @@ const ChatTab = ({ messages, unconfirmedMessages }) => {
                     }}
                 >
                     {messages.map((message, index) => {
-                        return <ChatMessage text="siema" styleId={1} confirmed={true} />;
+                        const styleId = message.author === userNick ? 2 : 1;
+                        return <ChatMessage key={index} text={message.text} sender={message.author} date={message.date} styleId={styleId} confirmed={true} />;
                     })}
                     {unconfirmedMessages.map((message, index) => {
-                        return <ChatMessage text={message} styleId={2} confirmed={false} />;
+                        return <ChatMessage key={index} text={message} styleId={2} confirmed={false} date={null} sender={userNick}/>;
                     })}
                 </ScrollArea.Viewport>
                 <ScrollArea.Scrollbar className="scroll-area-scrollbar" orientation="vertical">

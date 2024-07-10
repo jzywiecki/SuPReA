@@ -1,8 +1,10 @@
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient } from 'mongodb';
+import 'dotenv/config'
 
 
-const URL = 'mongodb://localhost:27017';
-const DATABASE_NAME = 'test-inzynierka';
+const URL = process.env.MONGODB_URL;
+const DATABASE_NAME = process.env.DATABASE_NAME;
+
 
 class Database {
     
@@ -71,9 +73,9 @@ class Database {
 
             //await session.commitTransaction();
         
-            result = {
+            result = [
                 newMessage
-            };
+            ];
         } catch (error) {
             //await session.abortTransaction();
             throw error;
@@ -87,8 +89,8 @@ class Database {
     async isUserProjectMember(projectId, userId) {
         
         const project = await this.projectCollection.findOne({
-            _id: ObjectId(projectId),
-            members: { $elemMatch: { $eq: ObjectId(userId) } }
+            _id: projectId,
+            members: { $elemMatch: { $eq: userId } }
         });
     
         return project !== null;
@@ -163,14 +165,18 @@ class Database {
 
 
     async getGeneralChatIdFromProject(projectId) {
-        return await this.projectCollection
-            .findOne({ _id: projectId }, {projection:{ _id: 0, chat_id: 1 }})
+        const result = await this.projectCollection
+            .findOne({ _id: projectId }, { projection: { _id: 0, chat_id: 1 } });
+    
+        return result ? result.chat_id : null;
     }
-
-
+    
+    
     async getAiChatIdFromProject(projectId) {
-        return await this.projectCollection
-            .findOne({ _id: projectId }, {projection:{ _id: 0, ai_chat_id: 1 }})
+        const result = await this.projectCollection
+            .findOne({ _id: projectId }, { projection: { _id: 0, ai_chat_id: 1 } });
+    
+        return result ? result.ai_chat_id : null;
     }
 
 }
