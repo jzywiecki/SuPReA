@@ -1,7 +1,7 @@
 # How to run?
 
 ## Step 1
-Create a .env file in the root directory of your project and fill it with the following information:
+Create a .env file in the root directory of project and fill it with the following information:
 ```
 MONGODB_URL=mongodb+srv://your_url
 DATABASE_NAME=database_name
