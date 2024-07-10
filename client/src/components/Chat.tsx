@@ -4,9 +4,11 @@ import { Button } from "./ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import * as ScrollArea from '@radix-ui/react-scroll-area';
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { socketChats } from '@/sockets';
 
-const Chat = ({ isCollapsed, projectId, senderId }) => {
+
+const Chat = ({ isCollapsed, projectId, userId, authToken }) => {
 
     const [connected, setConnected] = useState(false);
     
@@ -62,6 +64,85 @@ const Chat = ({ isCollapsed, projectId, senderId }) => {
         }
         setMessageInput("");
     };
+
+
+    useEffect(() => {
+        socketChats.auth = { 
+            projectId: projectId, 
+            userId: userId, 
+            token: 1,
+        };
+
+        socketChats.connect();
+        
+
+        function onConnect() {
+            console.log("Connected to server.");
+            setConnected(true);
+        }
+    
+
+        function onDisconnect() {
+            console.log("Disconnected from server.");
+            setConnected(false);
+        }
+    
+
+        function onConnectionError(err) {
+            setConnected(false);
+            console.log("[CONNECTION ERROR] " + err);
+        }
+
+        function onError(err) {
+            console.log("[ERROR] " + err);
+        }
+
+
+        function onReceiveMessageFromChat(receivedMessages) {
+
+            const newMessages = receivedMessages.map((message) => {
+                return { ...message, confirmed: true };
+            });
+
+            
+        }
+
+
+        function onReceiveMessageFromAiChat(message) {
+            //TODO
+        }
+
+
+        function onReceiveOlderMessagesFromChat(messages) {
+            //TODO
+        }
+
+
+        function onReceiveOlderMessagesFromAiChat(messages) {
+            //TODO
+        }
+
+    
+        socketChats.on('connect', onConnect);
+        socketChats.on('disconnect', onDisconnect);
+        socketChats.on('connect_error', onConnectionError);
+        socketChats.on('error', onError);
+        socketChats.on('receive-message-from-general-chat', onReceiveMessageFromChat);
+        socketChats.on('receive-message-from-ai-chat', onReceiveMessageFromAiChat);
+        socketChats.on('receive-older-messages-from-general-chat', onReceiveOlderMessagesFromChat);
+        socketChats.on('receive-older-messages-from-ai-chat', onReceiveOlderMessagesFromAiChat)
+    
+        return () => {
+          socketChats.off('connect', onConnect);
+          socketChats.off('disconnect', onDisconnect);
+          socketChats.off('connect_error', onConnectionError);
+          socketChats.off('receive-message-from-general-chat', onReceiveMessageFromChat);
+          socketChats.off('receive-message-from-ai-chat', onReceiveMessageFromAiChat);
+          socketChats.off('receive-older-messages-from-general-chat', onReceiveOlderMessagesFromChat);
+          socketChats.off('receive-older-messages-from-ai-chat', onReceiveOlderMessagesFromAiChat);
+          socketChats.disconnect();
+        };
+      }, []);
 
 
     return (

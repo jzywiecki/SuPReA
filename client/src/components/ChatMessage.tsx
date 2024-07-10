@@ -15,8 +15,8 @@ const ChatMessage = ({ message, id }) => {
                 <AvatarFallback>?</AvatarFallback>
             </Avatar>
             <div className="flex-col">
-            <div className="font-bold">{message.user}</div>
-            <div className="">{message.content}</div>
+            <div className="font-bold">{message.sender}</div>
+            <div className="">{message.text}</div>
             {!message.confirmed ? (
                     <div className="text-sm text-gray-500">Sending...</div>
             ) : null}
