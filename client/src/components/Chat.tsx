@@ -63,7 +63,7 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
         }
 
 
-        function onConnectionError(err: string): void {
+        function onConnectionError(err: Error): void {
             setConnected(false);
             console.log("[CONNECTION ERROR] " + err);
         }

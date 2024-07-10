@@ -29,9 +29,11 @@ io.use(async (socket, next) => {
     const projectId = socket.handshake.auth.projectId;
   
     try {
-        if (!token || !userId || !projectId) {
-            console.log("[INFO] Rejecting invalid handshake auth parameters.")
-            next(new Error("Invalid handshake auth parameters"));
+        if (!token || typeof token !== 'string' || !token.trim() ||
+        !userId || typeof userId !== 'string' || !userId.trim() ||
+        !projectId || typeof projectId !== 'string' || !projectId.trim()) {
+            console.log("[INFO] Rejecting invalid handshake auth parameters.");
+            return next(new Error("Invalid handshake auth parameters"));
         }
 
         //TODO: Check if user is authorized.
@@ -72,11 +74,12 @@ io.on('connection', async (socket) => {
 
     const projectId = new ObjectId(socket.projectId);
     const userId = new ObjectId(socket.userId);
+
     let discussionChatId;
     let aiChatId;
     try {
-        discussionChatId = await db.getGeneralChatIdFromProject(new ObjectId(socket.projectId));
-        aiChatId      = await db.getAiChatIdFromProject(new ObjectId(socket.projectId)); 
+        discussionChatId = await db.getGeneralChatIdFromProject(projectId);
+        aiChatId      = await db.getAiChatIdFromProject(projectId);
         
         if (!discussionChatId || !aiChatId) {
             throw new Error('Chat does not exist.');
@@ -117,12 +120,13 @@ io.on('connection', async (socket) => {
         }
 
         try {
-            const message = await db.addMessage(projectId, chatId, text, new ObjectId(userId));
+            const message = await db.addMessage(projectId, chatId, text, userId);
             if (!message) {
                 throw new Error('Message not added.');
             }
 
             io.to(socket.projectId).emit(eventToEmit, message);
+            
         } catch (error) {
             console.log(`[ERROR] Cannot add message to chat ${chatId}.`);
             console.log(`[ERROR DETAILS] ${error.message}`);
