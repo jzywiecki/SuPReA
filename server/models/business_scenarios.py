@@ -23,10 +23,6 @@ class BusinessScenariosModel(BaseModel):
 
 
 @ray.remote
-def generate_business_scenarios(for_who: str, doing_what: str, additional_info: str) -> BusinessScenariosModel:
-    return generate_model(BusinessModule, for_who, doing_what, additional_info, BusinessScenariosModel)
-
-
-@ray.remote
-def save_business_scenarios_to_database(project_id: str, collection, model: BusinessScenariosModel):
-    save_model_to_database(project_id, collection, "business_scenarios", model)
+def generate_business_scenarios(for_who: str, doing_what: str, additional_info: str, project_id: str, collection):
+    business_scenarios = generate_model(BusinessModule, for_who, doing_what, additional_info, BusinessScenariosModel)
+    save_model_to_database(project_id, collection, "business_scenarios", business_scenarios)

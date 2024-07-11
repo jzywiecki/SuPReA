@@ -18,10 +18,6 @@ class RisksModel(BaseModel):
 
 
 @ray.remote
-def generate_risks(for_who: str, doing_what: str, additional_info: str) -> RiskModel:
-    return generate_model(RiskModule, for_who, doing_what, additional_info, RiskModel)
-
-
-@ray.remote
-def save_risks_to_database(project_id: str, collection, model: RiskModel):
-    save_model_to_database(project_id, collection, "risks", model)
+def generate_risks(for_who: str, doing_what: str, additional_info: str, project_id: str, collection):
+    risks = generate_model(RiskModule, for_who, doing_what, additional_info, RisksModel)
+    save_model_to_database(project_id, collection, "risks", risks)

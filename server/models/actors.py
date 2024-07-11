@@ -17,10 +17,6 @@ class ActorsModel(BaseModel):
 
 
 @ray.remote
-def generate_actors(for_who: str, doing_what: str, additional_info: str) -> ActorsModel:
-    return generate_model(ActorsModule, for_who, doing_what, additional_info, ActorsModel)
-
-
-@ray.remote
-def save_actors_to_database(project_id, collection, model: ActorsModel):
-    save_model_to_database(project_id, collection, "actors", model)
+def generate_actors(for_who: str, doing_what: str, additional_info: str, project_id: str, collection):
+    actors = generate_model(ActorsModule, for_who, doing_what, additional_info, ActorsModel)
+    save_model_to_database(project_id, collection, "actors", actors)

@@ -25,10 +25,6 @@ class RequirementsModel(BaseModel):
 
 
 @ray.remote
-def generate_requirements(for_who: str, doing_what: str, additional_info: str) -> RequirementsModel:
-    return generate_model(RequirementsModule, for_who, doing_what, additional_info, RequirementsModel)
-
-
-@ray.remote
-def save_requirements_to_database(project_id: str, collection, model: RequirementsModel):
-    save_model_to_database(project_id, collection, "requirements", model)
+def generate_requirements(for_who: str, doing_what: str, additional_info: str, project_id: str, collection):
+    requirements = generate_model(RequirementsModule, for_who, doing_what, additional_info, RequirementsModel)
+    save_model_to_database(project_id, collection, "requirements", requirements)

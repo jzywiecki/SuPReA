@@ -11,10 +11,6 @@ class MottoModel(BaseModel):
 
 
 @ray.remote
-def generate_motto(for_who: str, doing_what: str, additional_info: str) -> MottoModel:
-    return generate_model(MottoModule, for_who, doing_what, additional_info, MottoModel)
-
-
-@ray.remote
-def save_motto_to_database(project_id: str, collection, model: MottoModel):
-    save_model_to_database(project_id, collection, "motto", model)
+def generate_motto(for_who: str, doing_what: str, additional_info: str, project_id: str, collection):
+    motto = generate_model(MottoModule, for_who, doing_what, additional_info, MottoModel)
+    save_model_to_database(project_id, collection, "motto", motto)

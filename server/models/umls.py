@@ -16,10 +16,6 @@ class UmlsModel(BaseModel):
 
 
 @ray.remote
-def generate_umls(for_who: str, doing_what: str, additional_info: str) -> UmlsModel:
-    return generate_model(UmlModule, for_who, doing_what, additional_info, UmlsModel)
-
-
-@ray.remote
-def save_umls_to_database(project_id: str, collection, model: UmlsModel):
-    save_model_to_database(project_id, collection, "umls", model)
+def generate_umls(for_who: str, doing_what: str, additional_info: str, project_id: str, collection):
+    umls = generate_model(UmlModule, for_who, doing_what, additional_info, UmlsModel)
+    save_model_to_database(project_id, collection, "umls", umls)

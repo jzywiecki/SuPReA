@@ -17,10 +17,6 @@ class SpecificationsModel(BaseModel):
 
 
 @ray.remote
-def generate_specification(for_who: str, doing_what: str, additional_info: str) -> SpecificationsModel:
-    return generate_model(SpecificationModule, for_who, doing_what, additional_info, SpecificationsModel)
-
-
-@ray.remote
-def save_specifications_to_database(project_id: str, collection, model: SpecificationsModel):
-    save_model_to_database(project_id, collection, "specifications", model)
+def generate_specifications(for_who: str, doing_what: str, additional_info: str, project_id: str, collection):
+    specifications = generate_model(SpecificationModule, for_who, doing_what, additional_info, SpecificationsModel)
+    save_model_to_database(project_id, collection, "specifications", specifications)

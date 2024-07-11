@@ -57,69 +57,75 @@ class ProjectCollection(BaseModel):
 
 
 @ray.remote
-class SimpleProjectGenerator():
-    def __init__(self, project_id: str, for_who: str, doing_what: str, additional_info: str, collection):
-        self.project_id = project_id
+async def create_empty_project(collection, project_name, ownerId):
+    new_project = ProjectModel(
+        name=project_name,
+        for_who="",
+        doing_what="",
+        additional_info="",
+        owner=ownerId,
+        members=[ownerId],
+        description="",
+        created_at=datetime.now(),
+        actors=None,
+        business_scenarios=None,
+        elevator_speech=None,
+        motto=None,
+        project_schedule=None,
+        requirements=None,
+        risks=None,
+        specifications=None,
+        strategy=None,
+        title=None,
+    )
+
+    result = await collection.insert_one(
+        new_project.model_dump(by_alias=True, exclude=["id"])
+    )
+
+    return result.inserted_id
+
+
+
+@ray.remote
+class ProjectGenerator():
+    def __init__(self, project_name : str, owner_id : str, for_who: str, doing_what: str, additional_info: str, collection):
+        self.project_id = None
+        self.project_name = project_name
+        self.owner_id = owner_id
         self.for_who = for_who
         self.doing_what = doing_what
         self.additional_info = additional_info
         self.collection = collection
 
-        self.actors = None
-        self.business_scenarios = None
-        self.elevator_speech = None
-        self.motto : MottoModel = None
-        self.project_schedule = None
-        self.requirements = None
-        self.risks : RisksModel = None
-        self.specifications  = None
-        self.strategy = None
-        self.title = None
-        self.umls = None
-        self.database_schema = None
 
+    def generate_project_by_ai(self):
+        try:
+            self.project_id = create_empty_project.remote(self.collection, self.project_name, self.owner_id)
+        except Exception as e:
+            print(f"[ERROR]: Failed to init project {self.project_name}")
+            print(e)
+            return
 
-    def generate_project(self):
-        self.actors = generate_actors(self.for_who, self.doing_what, self.additional_info)
-        self.business_scenarios = generate_business_scenarios(self.for_who, self.doing_what, self.additional_info)
-        self.elevator_speech = generate_elevator_speech(self.for_who, self.doing_what, self.additional_info)
-        self.motto = generate_motto(self.for_who, self.doing_what, self.additional_info)
-        self.project_schedule = generate_project_schedule(self.for_who, self.doing_what, self.additional_info)
-        self.requirements = generate_requirements(self.for_who, self.doing_what, self.additional_info)
-        self.risks = generate_risks(self.for_who, self.doing_what, self.additional_info)
-        self.specifications = generate_specification(self.for_who, self.doing_what, self.additional_info)
-        self.strategy = generate_strategy(self.for_who, self.doing_what, self.additional_info)
-        self.title = generate_title(self.for_who, self.doing_what, self.additional_info)
-        self.umls = generate_umls(self.for_who, self.doing_what, self.additional_info)
-        self.database_schema = generate_database_schema(self.for_who, self.doing_what, self.additional_info)
+        ref_list = [
+            generate_actors.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection),
+            generate_business_scenarios.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection),
+            generate_elevator_speech.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection),
+            generate_motto.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection),
+            generate_project_schedule.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection),
+            generate_requirements.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection),
+            generate_risks.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection),
+            generate_specification.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection),
+            generate_strategy.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection),
+            generate_title.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection),
+            generate_umls.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection),
+            generate_database_schema.remote(self.for_who, self.doing_what, self.additional_info, self.project_id, self.collection)
+        ]
 
-        ray.wait([
-            self.actors,
-            self.business_scenarios,
-            self.elevator_speech,
-            self.motto,
-            self.project_schedule,
-            self.requirements,
-            self.risks,
-            self.specifications,
-            self.strategy,
-            self.title,
-            self.umls,
-            self.database_schema
-        ])
-        
-
-    def save_project_to_database(self):
-        save_actors_to_database(self.project_id, self.collection, self.actors)
-        save_business_scenarios_to_database(self.project_id, self.collection, self.business_scenarios)
-        save_elevator_speech_to_database(self.project_id, self.collection, self.elevator_speech)
-        save_motto_to_database(self.project_id, self.collection, self.motto)
-        save_project_schedule_to_database(self.project_id, self.collection, self.project_schedule)
-        save_requirements_to_database(self.project_id, self.collection, self.requirements)
-        save_risks_to_database(self.project_id, self.collection, self.risks)
-        save_specifications_to_database(self.project_id, self.collection, self.specifications)
-        save_strategy_to_database(self.project_id, self.collection, self.strategy)
-        save_title_to_database(self.project_id, self.collection, self.title)
-        save_umls_to_database(self.project_id, self.collection, self.umls)
-        save_database_schema_to_database(self.project_id, self.collection, self.database_schema)
-        
+        for ref in ref_list:
+            try:
+                ray.get(ref)
+            except Exception as e:
+                print(f"[ERROR]: Failed to generate {ref}")
+                print(e)
+                return
