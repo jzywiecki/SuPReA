@@ -78,7 +78,13 @@ const ProjectView = ({ }) => {
                         </Button>
                     </div>
                     <RegenerateProjectButton />
-                    <Chat isCollapsed={isCollapsedRight} />
+                    <Chat 
+                        isCollapsed={isCollapsedRight} 
+                        projectId={ projectID } 
+                        userId="6671f67b1964c25bba263ec1" 
+                        userNick="6671f67b1964c25bba263ec1"
+                        authToken="1"
+                    />
                 </ResizablePanel>
             </ResizablePanelGroup>
 
