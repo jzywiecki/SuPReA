@@ -6,18 +6,18 @@ from datetime import datetime
 from typing_extensions import Annotated
 from pydantic.functional_validators import BeforeValidator
 
-from server.models.actors import ActorsModel, generate_actors, save_actors_to_database
-from server.models.business_scenarios import BusinessScenariosModel, generate_business_scenarios, save_business_scenarios_to_database
-from server.models.elevator_speech import ElevatorSpeechModel, generate_elevator_speech, save_elevator_speech_to_database
-from server.models.motto import MottoModel, generate_motto, save_motto_to_database
-from server.models.project_schedule import ProjectScheduleModel, generate_project_schedule, save_project_schedule_to_database
-from server.models.requirements import RequirementsModel, generate_requirements, save_requirements_to_database
-from server.models.risks import RisksModel, generate_risks, save_risks_to_database
-from server.models.specifications import SpecificationsModel, generate_specification, save_specifications_to_database
-from server.models.strategy import StrategyModel, generate_strategy, save_strategy_to_database
-from server.models.title import TitleModel, generate_title, save_title_to_database
-from server.models.umls import UmlsModel, generate_umls, save_umls_to_database
-from server.models.database_schema import DatabaseSchemaModel, generate_database_schema, save_database_schema_to_database
+from server.models.actors import ActorsModel, generate_actors
+from server.models.business_scenarios import BusinessScenariosModel, generate_business_scenarios
+from server.models.elevator_speech import ElevatorSpeechModel, generate_elevator_speech
+from server.models.motto import MottoModel, generate_motto
+from server.models.project_schedule import ProjectScheduleModel, generate_project_schedule
+from server.models.requirements import RequirementsModel, generate_requirements
+from server.models.risks import RisksModel, generate_risks
+from server.models.specifications import SpecificationsModel, generate_specification
+from server.models.strategy import StrategyModel, generate_strategy
+from server.models.title import TitleModel, generate_title
+from server.models.umls import UmlsModel, generate_umls
+from server.models.database_schema import DatabaseSchemaModel, generate_database_schema
 
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
@@ -57,14 +57,14 @@ class ProjectCollection(BaseModel):
 
 
 @ray.remote
-async def create_empty_project(collection, project_name, ownerId):
+async def create_empty_project(collection, project_name, owner_id):
     new_project = ProjectModel(
         name=project_name,
         for_who="",
         doing_what="",
         additional_info="",
-        owner=ownerId,
-        members=[ownerId],
+        owner=owner_id,
+        members=[owner_id],
         description="",
         created_at=datetime.now(),
         actors=None,
