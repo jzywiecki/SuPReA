@@ -1,4 +1,16 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jwt.exceptions import InvalidTokenError
+from passlib.context import CryptContext
+from pydantic import BaseModel
+from typing import List, Union
+from datetime import datetime, timedelta
+import jwt
+from fastapi.security import OAuth2PasswordBearer
+from typing_extensions import Annotated
+from .models import User, Token, TokenData, UserInDB
+# from .routers import authorization
+
 from server.routers import (
     project,
     actors,
@@ -10,10 +22,13 @@ from server.routers import (
     database_schema,
 )
 from server.routers import requirement, risk, specifications, strategy, title
-
 from fastapi.middleware.cors import CORSMiddleware
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 app = FastAPI()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Add CORS middleware
 app.add_middleware(
@@ -37,3 +52,4 @@ app.include_router(strategy.router)
 app.include_router(title.router)
 app.include_router(uml.router)
 app.include_router(database_schema.router)
+# app.include_router(authorization.router)

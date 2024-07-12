@@ -1,10 +1,8 @@
 // App.tsx
 
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import { ThemeProvider } from "@/components/ThemeProvider";
-import ErrorPage from "./pages/ErrorPage";
 import ProjectsView from './pages/ProjectsView';
 import CreateProject from './pages/CreateProject';
 import Profile from './pages/Profile';
@@ -50,6 +48,7 @@ function App() {
               <Route path="schedule" element={<ProjectTimeline />} />
               <Route path="database-diagram" element={<DatabaseDiagram />} />
             </Route>
+            <Route path="profile/:userID" element={<Profile/ >} />
             <Route path="/create-project" element={<CreateProject />} />
             <Route path="/profile/:id" element={<Profile />} />
             <Route path="/collaborators" element={<Collaborators />} />

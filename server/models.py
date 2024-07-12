@@ -3,9 +3,28 @@ from typing import List, Optional
 from datetime import datetime
 from typing_extensions import Annotated
 from pydantic.functional_validators import BeforeValidator
+from bson import ObjectId
+from typing import Union
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
+class User(BaseModel):
+    username: str
+    email: Union[str, None] = None
+    full_name: Union[str, None] = None
+    disabled: Union[bool, None] = None
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Union[str, None] = None
+
+class UserInDB(User):
+    hashed_password: str
 
 class ActorModel(BaseModel):
     name: str

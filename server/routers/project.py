@@ -109,6 +109,21 @@ async def get_projects():
 
 
 @router.get(
+    "/{owner_mail}",
+    response_model=ProjectCollection,
+    status_code=status.HTTP_200_OK,
+    response_model_by_alias=False, 
+)
+async def get_owned_projects():
+    if (
+        projects := await project_collection.find(
+            {"owner": owner_mail}
+        ).to_list(length=None)
+    ) is not None:
+        return projects
+    raise HTTPException(status_code=404, detail=f"User {owner_mail} not found")
+
+@router.get(
     "/{project_id}",
     response_model=ProjectModel,
     status_code=status.HTTP_200_OK,
