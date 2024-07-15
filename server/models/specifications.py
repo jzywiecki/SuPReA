@@ -3,20 +3,20 @@ import ray
 from typing import List
 from pydantic import BaseModel
 
-from server.models.models import generate_model, save_model_to_database
-from server.modules.specifications_module import SpecificationModule
+from models.model import generate_model, save_model_to_database
+from modules.specifications_module.routes import SpecificationsModule
 
 
-class SpecificationModel(BaseModel):
+class Specification(BaseModel):
     name: str
     description: str
 
 
-class SpecificationsModel(BaseModel):
-    specifications: List[SpecificationModel]
+class Specifications(BaseModel):
+    specifications: List[Specification]
 
 
 @ray.remote
-def generate_specifications(for_who: str, doing_what: str, additional_info: str, project_id: str, collection):
-    specifications = generate_model(SpecificationModule, for_who, doing_what, additional_info, SpecificationsModel)
-    save_model_to_database(project_id, collection, "specifications", specifications)
+def generate_specifications(for_who: str, doing_what: str, additional_info: str, project_id: str):
+    specifications = generate_model(SpecificationsModule, for_who, doing_what, additional_info, Specifications)
+    save_model_to_database(project_id, "specifications", specifications)
