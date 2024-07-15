@@ -1,14 +1,19 @@
 from typing import List
 from pydantic import BaseModel, Field
 from bson import ObjectId
-from database import PyObjectId
 
 
 class Message(BaseModel):
-    author: PyObjectId
+    author: ObjectId
     text: str
     date: str
     message_id: int
+
+    class Config:
+        arbitrary_types_allowed = True
+        json_encoders = {
+            ObjectId: str,
+        }
 
 
 class Chat(BaseModel):

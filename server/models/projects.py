@@ -6,7 +6,6 @@ from typing import List, Optional
 
 from datetime import datetime
 from database import project_collection, chats_collection
-from database import PyObjectId
 
 from models.chat import Chat
 from models.actors import Actors, generate_actors
