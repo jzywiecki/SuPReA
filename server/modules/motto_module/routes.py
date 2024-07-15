@@ -1,6 +1,6 @@
-import server.utils.openaiUtils as utils
+import utils.openaiUtils as utils
 import json
-import server.modules.module.module as modules
+import modules.module.module as modules
 
 motto_schema_json = """
  "motto": "string"

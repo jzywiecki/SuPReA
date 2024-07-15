@@ -1,7 +1,7 @@
 import os
 import uuid
-import server.modules.module.module as modules
-import server.utils.openaiUtils as utils
+import modules.module.module as modules
+import utils.openaiUtils as utils
 import logging
 from openai import OpenAI
 import asyncio

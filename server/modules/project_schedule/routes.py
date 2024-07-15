@@ -1,10 +1,10 @@
 import json
 import os
-import server.modules.module.module as modules
-import server.utils.openaiUtils as utils
+import modules.module.module as modules
+import utils.openaiUtils as utils
 import logging
-from server.utils.data import write_to_file
-from server.utils.validation import validate_json
+from utils.data import write_to_file
+from utils.validation import validate_json
 
 harmonogram_json = """
     "milestones": [
