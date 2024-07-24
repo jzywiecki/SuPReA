@@ -12,7 +12,7 @@ type Route struct {
 }
 
 type Service struct {
-	Url    string  `mapstructure:"url"`
+	URL    string  `mapstructure:"url"`
 	Routes []Route `mapstructure:"routes"`
 }
 

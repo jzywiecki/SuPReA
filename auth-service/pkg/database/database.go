@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	DATABASE_URL string
+	DatabaseUrl string
 )
 
 type Database interface {
@@ -26,13 +26,13 @@ func init() {
 		log.Panic("could not load env file")
 	}
 
-	DATABASE_URL = os.Getenv("DATABASE_URL")
+	DatabaseUrl = os.Getenv("DATABASE_URL")
 }
 
 func ConnectDBClient() *mongo.Client {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(DATABASE_URL))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(DatabaseUrl))
 	if err != nil {
 		log.Fatal(err)
 	}

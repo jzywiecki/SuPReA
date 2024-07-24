@@ -42,7 +42,7 @@ func ProxyRequest(w http.ResponseWriter, r *http.Request, serviceName string, ro
 		return
 	}
 
-	target := serviceDetails.Url
+	target := serviceDetails.URL
 	targetURL, err := url.Parse(target)
 	if err != nil {
 		panic(err)
