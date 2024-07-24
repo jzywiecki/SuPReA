@@ -29,7 +29,7 @@ func init() {
 	DATABASE_URL = os.Getenv("DATABASE_URL")
 }
 
-func ConnectDBClient() {
+func ConnectDBClient() *mongo.Client {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(DATABASE_URL))
@@ -43,4 +43,18 @@ func ConnectDBClient() {
 		log.Fatal(err)
 	}
 	log.Default().Println("connected to database")
+
+	return client
+}
+
+func GetCollection(client *mongo.Client, dbName string, collectionName string) *mongo.Collection {
+	return client.Database(dbName).Collection(collectionName)
+}
+
+func Disconnect(client *mongo.Client) {
+	err := client.Disconnect(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Default().Println("disconnected from database")
 }
