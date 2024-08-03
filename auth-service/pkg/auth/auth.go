@@ -22,10 +22,21 @@ type Claims struct {
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+	var registerRequest models.RegisterRequest
+	if err := json.NewDecoder(r.Body).Decode(&registerRequest); err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
+	}
+
+	if err := registerRequest.Validate(); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user := models.User{
+		Username: registerRequest.Username,
+		Email:    registerRequest.Email,
+		Password: registerRequest.Password,
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -104,15 +115,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Authenticate(r *http.Request) bool {
-	cookie, err := r.Cookie("token")
-	if err != nil {
-		if err == http.ErrNoCookie {
-			return false
-		}
-		return false
-	}
+	cookie := r.Header.Get("Authorization")
 
-	tokenStr := cookie.Value
+	tokenStr := cookie
 	claims := &Claims{}
 
 	tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {

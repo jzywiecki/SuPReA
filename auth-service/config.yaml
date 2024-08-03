@@ -1,0 +1,7 @@
+rateLimitTimeWindow: 60
+rateLimitCount: 100
+services:
+  server:
+    url: http://localhost:8000
+    routes:
+      - path: /docs

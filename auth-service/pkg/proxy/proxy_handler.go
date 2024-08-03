@@ -42,11 +42,11 @@ func ProxyRequest(w http.ResponseWriter, r *http.Request, serviceName string, ro
 		return
 	}
 
-	target := serviceDetails.URL
-	targetURL, err := url.Parse(target)
+	targetURL, err := url.Parse(serviceDetails.URL)
 	if err != nil {
 		panic(err)
 	}
+	r.URL.Path = route.Path
 
 	log.Printf("Proxying request to: %s", targetURL)
 	proxy := httputil.NewSingleHostReverseProxy(targetURL)
