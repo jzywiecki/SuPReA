@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -15,6 +16,9 @@ import (
 var (
 	DatabaseUrl string
 )
+
+var lock = &sync.Mutex{}
+var clientInstance *mongo.Client
 
 type Database interface {
 	ConnectDbClient()
@@ -29,7 +33,7 @@ func init() {
 	DatabaseUrl = os.Getenv("DATABASE_URL")
 }
 
-func ConnectDBClient() *mongo.Client {
+func connectDBClient() *mongo.Client {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(DatabaseUrl))
@@ -51,10 +55,31 @@ func GetCollection(client *mongo.Client, dbName string, collectionName string) *
 	return client.Database(dbName).Collection(collectionName)
 }
 
-func Disconnect(client *mongo.Client) {
+func disconnect(client *mongo.Client) {
 	err := client.Disconnect(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Default().Println("disconnected from database")
+}
+
+func GetDatabaseConnection() *mongo.Client {
+	if clientInstance == nil {
+		lock.Lock()
+		defer lock.Unlock()
+		if clientInstance == nil {
+			clientInstance = connectDBClient()
+		}
+	}
+
+	return clientInstance
+}
+
+func CloseDatabaseConnection() {
+	if clientInstance != nil {
+		lock.Lock()
+		defer lock.Unlock()
+		disconnect(clientInstance)
+		clientInstance = nil
+	}
 }

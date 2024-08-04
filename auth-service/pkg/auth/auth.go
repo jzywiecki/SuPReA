@@ -15,6 +15,7 @@ import (
 )
 
 var jwtKey = []byte(os.Getenv("JWT_SECRET"))
+var refreshJwtKey = []byte(os.Getenv("REFRESH_JWT_SECRET"))
 
 type Claims struct {
 	Email string `json:"email"`
@@ -46,8 +47,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	user.Password = string(hashedPassword)
 
-	client := database.ConnectDBClient()
-	defer database.Disconnect(client)
+	client := database.GetDatabaseConnection()
 
 	collection := database.GetCollection(client, "authDB", "users")
 
@@ -78,8 +78,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client := database.ConnectDBClient()
-	defer database.Disconnect(client)
+	client := database.GetDatabaseConnection()
 
 	var user models.User
 	collection := database.GetCollection(client, "authDB", "users")
@@ -95,34 +94,156 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expirationTime := time.Now().Add(15 * time.Minute)
-	claims := &Claims{
+	accessExpirationTime := time.Now().Add(15 * time.Minute)
+	accessClaims := &Claims{
 		Email: loginReq.Email,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
+			ExpiresAt: accessExpirationTime.Unix(),
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
+	accessTokenString, err := accessToken.SignedString(jwtKey)
 	if err != nil {
 		http.Error(w, "Error generating token", http.StatusInternalServerError)
 		return
 	}
 
+	refreshExpirationTime := time.Now().Add(7 * 24 * time.Hour)
+	refreshClaims := &Claims{
+		Email: loginReq.Email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: refreshExpirationTime.Unix(),
+		},
+	}
+
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims)
+	refreshTokenString, err := refreshToken.SignedString(refreshJwtKey)
+	if err != nil {
+		http.Error(w, "Error generating refresh token", http.StatusInternalServerError)
+		return
+	}
+
+	// Update user tokens in the database
+	_, err = collection.UpdateOne(context.Background(), bson.M{"email": loginReq.Email}, bson.M{"$set": bson.M{"token": accessTokenString, "refresh_token": refreshTokenString}})
+	if err != nil {
+		http.Error(w, "Error updating tokens", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(models.LoginResponse{Token: tokenString})
+	json.NewEncoder(w).Encode(map[string]string{
+		"access_token":  accessTokenString,
+		"refresh_token": refreshTokenString,
+	})
 }
 
 func Authenticate(r *http.Request) bool {
-	cookie := r.Header.Get("Authorization")
+	tokenStr := r.Header.Get("Authorization")
+	if tokenStr == "" {
+		return false
+	}
 
-	tokenStr := cookie
 	claims := &Claims{}
-
 	tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
 
-	return err == nil && tkn.Valid
+	if err != nil || !tkn.Valid {
+		return false
+	}
+
+	client := database.GetDatabaseConnection()
+
+	var user models.User
+	collection := database.GetCollection(client, "authDB", "users")
+	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email, "token": tokenStr}).Decode(&user)
+
+	return err == nil
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	tokenStr := r.Header.Get("Authorization")
+	if tokenStr == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	claims := &Claims{}
+	tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+
+	if err != nil || !tkn.Valid {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	client := database.GetDatabaseConnection()
+
+	collection := database.GetCollection(client, "authDB", "users")
+	_, err = collection.UpdateOne(context.Background(), bson.M{"email": claims.Email}, bson.M{"$set": bson.M{"token": ""}})
+	if err != nil {
+		http.Error(w, "Error logging out", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		RefreshToken string `json:"refresh_token"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	refreshClaims := &Claims{}
+	refreshToken, err := jwt.ParseWithClaims(request.RefreshToken, refreshClaims, func(token *jwt.Token) (interface{}, error) {
+		return refreshJwtKey, nil
+	})
+
+	if err != nil || !refreshToken.Valid {
+		http.Error(w, "Invalid refresh token", http.StatusUnauthorized)
+		return
+	}
+
+	client := database.GetDatabaseConnection()
+
+	var user models.User
+	collection := database.GetCollection(client, "authDB", "users")
+	err = collection.FindOne(context.Background(), bson.M{"email": refreshClaims.Email, "refresh_token": request.RefreshToken}).Decode(&user)
+	if err != nil {
+		http.Error(w, "Invalid refresh token", http.StatusUnauthorized)
+		return
+	}
+
+	accessExpirationTime := time.Now().Add(15 * time.Minute)
+	accessClaims := &Claims{
+		Email: refreshClaims.Email,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: accessExpirationTime.Unix(),
+		},
+	}
+
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, accessClaims)
+	accessTokenString, err := accessToken.SignedString(jwtKey)
+	if err != nil {
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+
+	// Update user access token in the database
+	_, err = collection.UpdateOne(context.Background(), bson.M{"email": refreshClaims.Email}, bson.M{"$set": bson.M{"token": accessTokenString}})
+	if err != nil {
+		http.Error(w, "Error updating token", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"access_token": accessTokenString,
+	})
 }

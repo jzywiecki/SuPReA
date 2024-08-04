@@ -15,12 +15,10 @@ import (
 )
 
 func main() {
+	defer database.CloseDatabaseConnection()
+
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-
-	_ = r
-
-	database.ConnectDBClient()
 
 	config, err := config.LoadConfig("config", "yaml", ".")
 
@@ -32,6 +30,8 @@ func main() {
 
 	r.Post("/login", auth.LoginHandler)
 	r.Post("/register", auth.RegisterHandler)
+	r.Post("/logout", auth.LogoutHandler)
+	r.Post("/refresh", auth.RefreshTokenHandler)
 
 	service.SetServices(r, config, cache)
 
