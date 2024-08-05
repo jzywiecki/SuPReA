@@ -109,7 +109,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	refreshExpirationTime := time.Now().Add(7 * 24 * time.Hour)
+	refreshExpirationTime := time.Now().Add(24 * time.Hour)
 	refreshClaims := &Claims{
 		Email: loginReq.Email,
 		StandardClaims: jwt.StandardClaims{
