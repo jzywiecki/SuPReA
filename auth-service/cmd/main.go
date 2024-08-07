@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -20,8 +21,17 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	config, err := config.LoadConfig("config", "yaml", ".")
+	// Configure CORS
+	corsConfig := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+	})
+	r.Use(corsConfig.Handler)
 
+	config, err := config.LoadConfig("config", "yaml", ".")
 	if err != nil {
 		log.Fatalf("error in reading configuration.")
 	}
