@@ -1,10 +1,6 @@
-// App.tsx
-
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import { ThemeProvider } from "@/components/ThemeProvider";
-import ErrorPage from "./pages/ErrorPage";
 import ProjectsView from './pages/ProjectsView';
 import CreateProject from './pages/CreateProject';
 import Profile from './pages/Profile';
@@ -24,6 +20,8 @@ import Hero from './components/Hero';
 import UMLDiagrams from './pages/projectPages/umlDiagrams';
 import ProjectTimeline from './pages/projectPages/ProjectTimeline';
 import DatabaseDiagram from './pages/projectPages/DatabaseDiagram';
+import RegisterView from './pages/RegisterView';
+import LoginView from './pages/LoginView';
 
 
 
@@ -35,6 +33,8 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Hero />} />
+            <Route path="register" element={<RegisterView />} />
+            <Route path="login" element={<LoginView />} />
             <Route path="/projects" element={<ProjectsView />} />
             <Route path="/projects/:projectID" element={<ProjectView />}>
               <Route path="name" element={<NameList />} />
