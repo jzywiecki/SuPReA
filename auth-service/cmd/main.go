@@ -5,6 +5,7 @@ import (
 	"auth-service/pkg/config"
 	"auth-service/pkg/database"
 	"auth-service/pkg/service"
+	"auth-service/pkg/users"
 	"log"
 	"net/http"
 	"time"
@@ -42,6 +43,7 @@ func main() {
 	r.Post("/register", auth.RegisterHandler)
 	r.Post("/logout", auth.LogoutHandler)
 	r.Post("/refresh", auth.RefreshTokenHandler)
+	r.Mount("/users", users.NewUsersRouter())
 
 	service.SetServices(r, config, cache)
 

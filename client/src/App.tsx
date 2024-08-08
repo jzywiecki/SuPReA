@@ -4,7 +4,6 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import ProjectsView from './pages/ProjectsView';
 import CreateProject from './pages/CreateProject';
 import Profile from './pages/Profile';
-import Collaborators from './pages/Collaborators';
 import ProjectView from './pages/ProjectView';
 import NameList from './pages/projectPages/NameList';
 import RequirementsList from './pages/projectPages/RequirementsList';
@@ -23,6 +22,7 @@ import DatabaseDiagram from './pages/projectPages/DatabaseDiagram';
 import RegisterView from './pages/RegisterView';
 import LoginView from './pages/LoginView';
 import { UserProvider } from './components/UserProvider';
+import SearchAndAddFriends from './pages/SearchAndAddFriends';
 
 function App() {
   return (
@@ -52,7 +52,7 @@ function App() {
               </Route>
               <Route path="/create-project" element={<CreateProject />} />
               <Route path="/profile/:id" element={<Profile />} />
-              <Route path="/collaborators" element={<Collaborators />} />
+              <Route path="/collaborators" element={<SearchAndAddFriends />} />
               {/* <Route path="*" element={<ErrorPage />} /> */}
             </Routes>
           </div>

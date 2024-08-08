@@ -133,6 +133,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
+		"id":            user.ID.Hex(),
 		"access_token":  accessTokenString,
 		"refresh_token": refreshTokenString,
 		"username":      user.Username,
