@@ -2,7 +2,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Avatar, { genConfig } from 'react-nice-avatar';
 import { Button } from "@/components/ui/button";
 
-export default function UserCard({ user, addFriend }) {
+export default function UserCard({ user }) {
     return (
         <Card className="flex justify-between shadow-md rounded-lg h-48">
             <CardContent className="flex items-center space-x-4">
