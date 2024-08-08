@@ -22,42 +22,43 @@ import ProjectTimeline from './pages/projectPages/ProjectTimeline';
 import DatabaseDiagram from './pages/projectPages/DatabaseDiagram';
 import RegisterView from './pages/RegisterView';
 import LoginView from './pages/LoginView';
-
-
+import { UserProvider } from './components/UserProvider';
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <RegenerateProvider>
-        <div className='h-screen'>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Hero />} />
-            <Route path="register" element={<RegisterView />} />
-            <Route path="login" element={<LoginView />} />
-            <Route path="/projects" element={<ProjectsView />} />
-            <Route path="/projects/:projectID" element={<ProjectView />}>
-              <Route path="name" element={<NameList />} />
-              <Route path="requirements" element={<RequirementsList />} />
-              <Route path="risk" element={<RiskList />} />
-              <Route path="motto" element={<MottoList />} />
-              <Route path="specifications" element={<SpecificationsList />} />
-              <Route path="strategy" element={<StrategyList />} />
-              <Route path="actors" element={<ActorList />} />
-              <Route path="elevator-speech" element={<ElevatorSpeech />} />
-              <Route path="business-scenario" element={<BusinessScenario />} />
-              <Route path="uml" element={<UMLDiagrams />} />
-              <Route path="schedule" element={<ProjectTimeline />} />
-              <Route path="database-diagram" element={<DatabaseDiagram />} />
-            </Route>
-            <Route path="/create-project" element={<CreateProject />} />
-            <Route path="/profile/:id" element={<Profile />} />
-            <Route path="/collaborators" element={<Collaborators />} />
-            {/* <Route path="*" element={<ErrorPage />} /> */}
-          </Routes>
-        </div>
-      </RegenerateProvider>
-    </ThemeProvider>
+    <UserProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <RegenerateProvider>
+          <div className='h-screen'>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Hero />} />
+              <Route path="register" element={<RegisterView />} />
+              <Route path="login" element={<LoginView />} />
+              <Route path="/projects" element={<ProjectsView />} />
+              <Route path="/projects/:projectID" element={<ProjectView />}>
+                <Route path="name" element={<NameList />} />
+                <Route path="requirements" element={<RequirementsList />} />
+                <Route path="risk" element={<RiskList />} />
+                <Route path="motto" element={<MottoList />} />
+                <Route path="specifications" element={<SpecificationsList />} />
+                <Route path="strategy" element={<StrategyList />} />
+                <Route path="actors" element={<ActorList />} />
+                <Route path="elevator-speech" element={<ElevatorSpeech />} />
+                <Route path="business-scenario" element={<BusinessScenario />} />
+                <Route path="uml" element={<UMLDiagrams />} />
+                <Route path="schedule" element={<ProjectTimeline />} />
+                <Route path="database-diagram" element={<DatabaseDiagram />} />
+              </Route>
+              <Route path="/create-project" element={<CreateProject />} />
+              <Route path="/profile/:id" element={<Profile />} />
+              <Route path="/collaborators" element={<Collaborators />} />
+              {/* <Route path="*" element={<ErrorPage />} /> */}
+            </Routes>
+          </div>
+        </RegenerateProvider>
+      </ThemeProvider>
+    </UserProvider>
   );
 }
 

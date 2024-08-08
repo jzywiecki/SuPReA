@@ -4,6 +4,7 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar"
+import { useUser } from './UserProvider';
 
 import {
     DropdownMenu,
@@ -16,6 +17,7 @@ import {
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
+    const { user, logout } = useUser();
 
     return (
         <nav className="flex items-center justify-between px-6 py-4 h-16 z-50 relative">
@@ -39,13 +41,26 @@ const Navbar = () => {
                             </Avatar>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Profile</DropdownMenuItem>
-                            <DropdownMenuItem>Billing</DropdownMenuItem>
-                            <DropdownMenuItem>Team</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                        {user ? (
+                                <>
+                                    <DropdownMenuLabel>{user.username}</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                                    <DropdownMenuItem>Billing</DropdownMenuItem>
+                                    <DropdownMenuItem>Team</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                                </>
+                            ) : (
+                                <>
+                                    <DropdownMenuItem>
+                                        <Link to="/login">Login</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Link to="/register">Register</Link>
+                                    </DropdownMenuItem>
+                                </>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </li>
