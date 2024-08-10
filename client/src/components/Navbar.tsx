@@ -46,8 +46,6 @@ const Navbar = () => {
                                     <DropdownMenuLabel>{user.username}</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem>Profile</DropdownMenuItem>
-                                    <DropdownMenuItem>Billing</DropdownMenuItem>
-                                    <DropdownMenuItem>Team</DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
                                 </>

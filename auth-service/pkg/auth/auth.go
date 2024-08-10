@@ -38,6 +38,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		Username: registerRequest.Username,
 		Email:    registerRequest.Email,
 		Password: registerRequest.Password,
+		Friends:  []models.Friend{},
+		Projects: []int{},
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)

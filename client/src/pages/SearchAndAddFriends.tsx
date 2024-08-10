@@ -19,7 +19,7 @@ const SearchAndAddFriends: React.FC = () => {
         if (!searchQuery) return;
 
         try {
-            const response = await axios.get<User[]>(`http://localhost:3333/users`);
+            const response = await axios.get<User[]>(`http://localhost:3333/users/filter?filter=${searchQuery}`);
             setSearchResults(response.data);
         } catch (error) {
             console.error('Error searching users:', error);
@@ -28,6 +28,7 @@ const SearchAndAddFriends: React.FC = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
+        
             <div className="mb-6">
                 <label htmlFor="search" className="block text-sm font-semibold leading-6">
                     Search Users
