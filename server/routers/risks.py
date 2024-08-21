@@ -3,8 +3,8 @@ from routers.projects import get_module
 
 
 router = APIRouter(
-    tags=["database_schema"],
-    prefix="/database_schema",
+    tags=["risks"],
+    prefix="/risks",
     responses={404: {"description": "Not found"}},
 )
 
@@ -12,5 +12,5 @@ router = APIRouter(
 @router.get(
     "/{project_id}",
 )
-async def get_database_schema(project_id: str):
-    return await get_module(project_id, "database_schema")
+async def get_risks(project_id: str):
+    return await get_module(project_id, "risks")

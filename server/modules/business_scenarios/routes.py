@@ -1,8 +1,8 @@
 import os
-import server.modules.module.module as modules
-import server.utils.openaiUtils as utils
+import modules.module.module as modules
+import utils.openaiUtils as utils
 import logging
-from server.utils.data import write_to_file
+from utils.data import write_to_file
 
 business_json = """
     {

@@ -123,23 +123,20 @@ const NewProjectInput = () => {
             for_who: forWhoFieldRef.current?.value,
             doing_what: doingWhatFieldRef.current?.value,
             additional_info: additionalInfoFieldRef.current?.value,
+            owner_id: "6671f67b1964c25bba263ec1"
         }
 
 
-        axios.post('http://localhost:8000/projects/create', null, {
-            params: {
-                name: nameFieldRef.current?.value,
-                for_who: forWhoFieldRef.current?.value,
-                doing_what: doingWhatFieldRef.current?.value,
-                additional_info: additionalInfoFieldRef.current?.value,
-            }, headers: {
+        axios.post('http://localhost:8000/projects/create', request, {
+            headers: {
                 'Content-Type': 'application/json'
             }
-        }
-        ).then(response => {
-            console.log(response.data);
-        }).catch(error => {
-            console.error('Error creating project:', error);
+        })
+        .then(response => {
+            console.log('Response:', response.data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
 
 

@@ -1,7 +1,7 @@
 import logging
 import re
 import plantuml
-from server.utils.data import write_to_file
+from utils.data import write_to_file
 
 umlGenerator = plantuml.PlantUML(
     url="http://www.plantuml.com/plantuml/img/",

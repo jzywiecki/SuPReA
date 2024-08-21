@@ -1,17 +1,21 @@
 from fastapi import FastAPI
-from server.routers import (
-    project,
+from routers import (
     actors,
     business_scenarios,
     elevator_speech,
     motto,
     project_schedule,
-    uml,
     database_schema,
+    specifications,
+    strategy,
+    title,
+    projects,
+    requirements,
+    risks,
+    umls
 )
-from server.routers import requirement, risk, specifications, strategy, title
-
 from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
 
@@ -24,16 +28,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(project.router)
+app.include_router(projects.router)
 app.include_router(actors.router)
 app.include_router(business_scenarios.router)
 app.include_router(elevator_speech.router)
 app.include_router(motto.router)
 app.include_router(project_schedule.router)
-app.include_router(requirement.router)
-app.include_router(risk.router)
+app.include_router(requirements.router)
+app.include_router(risks.router)
 app.include_router(specifications.router)
 app.include_router(strategy.router)
 app.include_router(title.router)
-app.include_router(uml.router)
+app.include_router(umls.router)
 app.include_router(database_schema.router)
