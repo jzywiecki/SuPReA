@@ -6,8 +6,9 @@ from pymongo import ReturnDocument
 from models.projects import ProjectModel, ProjectCollection
 from database import project_collection
 from models.projects import generate_models_by_ai
-
 from models.projects import create_project
+
+from ai.open_ai import GPT35Turbo, DallE3
 
 router = APIRouter(
     tags=["projects"],
@@ -57,7 +58,7 @@ async def create(request: ProjectCreateRequest):
         print(e)
         raise HTTPException(status_code=400, detail="INTERNAL SERVER ERROR")
 
-    generate_models_by_ai.remote(new_project_id, request.for_who, request.doing_what, request.additional_info)
+    generate_models_by_ai.remote(new_project_id, request.for_who, request.doing_what, request.additional_info, DallE3, GPT35Turbo)
 
     return new_project_id
 

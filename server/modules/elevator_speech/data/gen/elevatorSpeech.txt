@@ -1,1 +1,0 @@
-{'content': 'Our dog walking app connects pet owners with reliable and loving dog walkers in their area. With just a few clicks, users can easily schedule walks for their furry friends and track them in real-time. Our goal is to provide a safe and convenient solution for busy pet owners, ensuring their dogs get the exercise and attention they deserve.'}

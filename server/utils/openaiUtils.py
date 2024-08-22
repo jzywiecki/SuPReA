@@ -13,3 +13,5 @@ def sendAIRequest(Model, messages, response_format, maxTokens):
     chat_completion = client.chat.completions.create(**params)
 
     return chat_completion
+
+

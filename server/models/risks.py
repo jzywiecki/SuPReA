@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from typing import List
 
 from models.model import generate_model, save_model_to_database
-from modules.risk_module.routes import RiskModule
-
+from modules.risks import RiskModule
+from ai.ai import AI
 
 class Risk(BaseModel):
     risk: str
@@ -18,6 +18,6 @@ class Risks(BaseModel):
 
 
 @ray.remote
-def generate_risks(for_who: str, doing_what: str, additional_info: str, project_id: str):
-    risks = generate_model(RiskModule, for_who, doing_what, additional_info, Risks)
+def generate_risks(for_who: str, doing_what: str, additional_info: str, project_id: str, model_ai: type[AI]):
+    risks = generate_model(RiskModule, for_who, doing_what, additional_info, Risks, model_ai)
     save_model_to_database(project_id, "risks", risks)

@@ -6,6 +6,7 @@ from typing import List, Optional
 
 from datetime import datetime
 from database import project_collection, chats_collection
+from ai.ai import AI
 
 from models.chat import Chat
 from models.actors import Actors, generate_actors
@@ -20,7 +21,7 @@ from models.strategy import Strategy, generate_strategy
 from models.title import Title, generate_title
 from models.umls import Umls, generate_umls
 from models.database_schema import DatabaseSchema, generate_database_schema
-
+from models.logo import Logo, generate_logo
 
 
 class ProjectModel(BaseModel):
@@ -45,6 +46,7 @@ class ProjectModel(BaseModel):
     title: Optional[Title] = None
     umls: Optional[Umls] = None
     database_schema: Optional[DatabaseSchema] = None
+    logo: Optional[Logo] = None
     chat_id: Optional[ObjectId] = None
     ai_chat_id: Optional[ObjectId] = None
 
@@ -101,21 +103,22 @@ async def create_project(project_name, owner_id, for_who: str, doing_what: str, 
 
 
 @ray.remote
-def generate_models_by_ai(project_id: str, for_who: str, doing_what: str, additional_info: str):
+def generate_models_by_ai(project_id: str, for_who: str, doing_what: str, additional_info: str, image_model_ai: type[AI], text_model_ai: type[AI]):
     try:
         ref_list = [
-            generate_actors.remote(for_who, doing_what, additional_info, project_id),
-            generate_business_scenarios.remote(for_who, doing_what, additional_info, project_id),
-            generate_elevator_speech.remote(for_who, doing_what, additional_info, project_id),    
-            generate_motto.remote(for_who, doing_what, additional_info, project_id),
-            generate_project_schedule.remote(for_who, doing_what, additional_info, project_id),
-            generate_requirements.remote(for_who, doing_what, additional_info, project_id),
-            generate_risks.remote(for_who, doing_what, additional_info, project_id),
-            generate_specifications.remote(for_who, doing_what, additional_info, project_id),
-            generate_strategy.remote(for_who, doing_what, additional_info, project_id),
-            generate_title.remote(for_who, doing_what, additional_info, project_id),
-            generate_umls.remote(for_who, doing_what, additional_info, project_id),
-            generate_database_schema.remote(for_who, doing_what, additional_info, project_id)
+            generate_actors.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
+            generate_business_scenarios.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
+            generate_database_schema.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
+            generate_elevator_speech.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
+            #generate_logo.remote(for_who, doing_what, additional_info, project_id, image_model_ai),
+            generate_motto.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
+            generate_project_schedule.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
+            generate_requirements.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
+            generate_risks.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
+            generate_specifications.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
+            generate_strategy.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
+            generate_title.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
+            generate_umls.remote(for_who, doing_what, additional_info, project_id, text_model_ai),
         ]
     except Exception as e:
         print(f"[ERROR]: Failed to init generate module task for project: {project_id}")

@@ -3,14 +3,14 @@ import ray
 from pydantic import BaseModel
 
 from models.model import generate_model, save_model_to_database
-from modules.motto_module.routes import MottoModule
-
+from modules.motto import MottoModule
+from ai.ai import AI
 
 class Motto(BaseModel):
     motto: str
 
 
 @ray.remote
-def generate_motto(for_who: str, doing_what: str, additional_info: str, project_id: str):
-    motto = generate_model(MottoModule, for_who, doing_what, additional_info, Motto)
+def generate_motto(for_who: str, doing_what: str, additional_info: str, project_id: str, model_ai: type[AI]):
+    motto = generate_model(MottoModule, for_who, doing_what, additional_info, Motto, model_ai)
     save_model_to_database(project_id, "motto", motto)
