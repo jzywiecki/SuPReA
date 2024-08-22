@@ -11,8 +11,8 @@ title_json = """
 query_for_who = "Suggest 10 names for "
 query_doing_what = " creating app for "
 query_expectations = (
-        " Result return EXACTLY according to provided JSON schema (do not change the convention from the given json): "
-        + title_json
+    " Result return EXACTLY according to provided JSON schema (do not change the convention from the given json): "
+    + title_json
 )
 
 

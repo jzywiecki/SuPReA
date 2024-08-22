@@ -4,6 +4,7 @@ from ai.ai import AI
 
 client = OpenAI()
 
+
 class GPT35Turbo(AI):
     def generate(self, request):
         messages = [{"role": "system", "content": request, "type": "json_object"}]
@@ -14,6 +15,12 @@ class GPT35Turbo(AI):
 
 class DallE3(AI):
     def generate(self, request):
-        params = {"model": "dall-e-3", "prompt": request, "size": "1024x1024", "quality": "standard", "n": 1}
+        params = {
+            "model": "dall-e-3",
+            "prompt": request,
+            "size": "1024x1024",
+            "quality": "standard",
+            "n": 1,
+        }
         response = client.images.generate(**params)
         return response.data[0].url

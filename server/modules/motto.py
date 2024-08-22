@@ -16,7 +16,6 @@ class MottoModule(modules.Module):
     def __init__(self, model):
         self.model = model
 
-
     def get_content(self, for_who, doing_what, additional_info, is_mock, **kwargs):
         request = (
             query_for_who

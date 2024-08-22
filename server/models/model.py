@@ -11,8 +11,15 @@ from ai.ai import AI
 
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
-def generate_model(module_class: type[Module], for_who: str, doing_what: str, additional_info: str,
-                   model_class: type[BaseModel], model_ai: type[AI]):
+
+def generate_model(
+    module_class: type[Module],
+    for_who: str,
+    doing_what: str,
+    additional_info: str,
+    model_class: type[BaseModel],
+    model_ai: type[AI],
+):
     ai = model_ai()
     module = module_class(ai)
     content = module.get_content(for_who, doing_what, additional_info, False)
@@ -24,6 +31,5 @@ def generate_model(module_class: type[Module], for_who: str, doing_what: str, ad
 
 def save_model_to_database(project_id: str, field_name: str, model):
     collection.update_one(
-        {"_id": ObjectId(project_id)},
-        {"$set": {field_name: model.dict()}}
+        {"_id": ObjectId(project_id)}, {"$set": {field_name: model.dict()}}
     )

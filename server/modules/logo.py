@@ -18,17 +18,17 @@ class LogoModule(modules.Module):
 
     def make_query(self, for_who, doing_what, additional_info, details):
         request = (
-                query_for_who
-                + " "
-                + for_who
-                + " "
-                + query_doing_what
-                + " "
-                + doing_what
-                + " "
-                + details
-                + " "
-                + additional_info
+            query_for_who
+            + " "
+            + for_who
+            + " "
+            + query_doing_what
+            + " "
+            + doing_what
+            + " "
+            + details
+            + " "
+            + additional_info
         )
         return self.model.generate(request)
 
@@ -36,12 +36,10 @@ class LogoModule(modules.Module):
         tasks = [
             self.make_query(for_who, doing_what, additional_info, additional_details1),
             self.make_query(for_who, doing_what, additional_info, additional_details2),
-            #self.make_query(for_who, doing_what, additional_info, additional_details3),
-            #self.make_query(for_who, doing_what, additional_info, additional_details4)
+            # self.make_query(for_who, doing_what, additional_info, additional_details3),
+            # self.make_query(for_who, doing_what, additional_info, additional_details4)
         ]
 
         content = json.dumps({"logo_urls": tasks})
 
         return content
-
-

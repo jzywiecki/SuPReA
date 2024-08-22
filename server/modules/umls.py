@@ -86,5 +86,6 @@ class UmlModule(modules.Module):
         self.model = model
 
     def get_content(self, for_who, doing_what, additional_info, is_mock, **kwargs):
-        return generate_uml_images(self.model.generate, for_who, doing_what, additional_info)
-
+        return generate_uml_images(
+            self.model.generate, for_who, doing_what, additional_info
+        )
