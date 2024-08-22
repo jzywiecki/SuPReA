@@ -10,26 +10,25 @@ interface User {
     nickname: string;
     email: string;
     avatar_id: string;
+    status: string;
 }
 
 const SearchAndAddFriends: React.FC = () => {
-    const { user } = useUser(); // Retrieve the logged-in user's info
+    const { user } = useUser(); 
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [searchResults, setSearchResults] = useState<User[]>([]);
     const [friends, setFriends] = useState<User[]>([]);
 
     if (!user) {
-        return <div>Loading...</div>; // or redirect to login if user is null
+        return <div>You are not logged in!</div>; 
     }
 
-
     useEffect(() => {
-        if (user) { // Ensure user is defined before fetching friends
+        if (user) { 
             console.log(user)
             fetchFriends();
-            // fetchInvitations();
         }
-    }, [user]); // Re-run the effect when user changes
+    }, [user]); 
 
     const fetchFriends = async () => {
         try {
@@ -45,7 +44,7 @@ const SearchAndAddFriends: React.FC = () => {
         if (!searchQuery) return;
 
         try {
-            const response = await axios.get<User[]>(`http://localhost:3333/users/filter?filter=${searchQuery}`);
+            const response = await axios.get<User[]>(`http://localhost:3333/users/filter?user_id=${user?.id}&filter=${searchQuery}`);
             setSearchResults(response.data);
         } catch (error) {
             console.error('Error searching users:', error);
@@ -57,8 +56,8 @@ const SearchAndAddFriends: React.FC = () => {
             console.log(user?.id)
             const url = `http://localhost:3333/users/friends/add?user_id=${encodeURIComponent(user.id)}&friend_id=${encodeURIComponent(friend_id)}`;
 
-            await axios.post(url);  // No request body needed
-            fetchFriends(); // Refresh the friends list
+            await axios.post(url);  
+            fetchFriends(); 
         } catch (error) {
             console.error('Error adding friend:', error);
         }
@@ -67,7 +66,7 @@ const SearchAndAddFriends: React.FC = () => {
     const handleAcceptInvitation = async (friendId: string) => {
         try {
             await axios.post(`http://localhost:3333/users/friends/accept`, { userId: user?.id, friendId });
-            fetchFriends(); // Refresh the friends list
+            fetchFriends(); 
         } catch (error) {
             console.error('Error accepting invitation:', error);
         }
@@ -83,8 +82,8 @@ const SearchAndAddFriends: React.FC = () => {
 
     const handleRemoveFriend = async (friendId: string) => {
         try {
-            await axios.post(`http://localhost:3333/users/friends/remove`, { userId: user?.id, friendId });
-            fetchFriends(); // Refresh the friends list
+            await axios.post(`http://localhost:3333/users/friends/remove`, { user_id: user?.id, friend_id: friendId });
+            fetchFriends(); 
         } catch (error) {
             console.error('Error removing friend:', error);
         }
@@ -96,7 +95,7 @@ const SearchAndAddFriends: React.FC = () => {
                 <h3 className="text-lg font-semibold mb-4">Your friends</h3>
                 {friends.length > 0 ? (
                     <ul className="space-y-4">
-                        {friends.map(friend => (
+                        {friends.filter(friend => friend.status == "accepted").map(friend => (
                             <UserCard 
                                 key={friend.id} 
                                 user={friend} 
@@ -110,8 +109,38 @@ const SearchAndAddFriends: React.FC = () => {
                 )}
             </div>
             <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-4">Invitations</h3>
-
+                <h3 className="text-lg font-semibold mb-4">Pending Invitations</h3>
+                {friends.length > 0 ? (
+                    <ul className="space-y-4">
+                        {friends.filter(friend => friend.status == "invited_by_friend").map(friend => (
+                            <UserCard 
+                                key={friend.id} 
+                                user={friend} 
+                                actionType="acceptInvitation" 
+                                onAction={() => handleAcceptInvitation(friend.id)} 
+                            />
+                        ))}
+                    </ul>
+                ) : (
+                    <p>You have no pending invitations.</p>
+                )}
+            </div>
+            <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-4">Sent Invitations</h3>
+                {friends.length > 0 ? (
+                    <ul className="space-y-4">
+                        {friends.filter(friend => friend.status == "invited_by_user").map(friend => (
+                            <UserCard 
+                                key={friend.id} 
+                                user={friend} 
+                                actionType="rejectInvitation" 
+                                onAction={() => handleRejectInvitation(friend.id)} 
+                            />
+                        ))}
+                    </ul>
+                ) : (
+                    <p>You have no sent invitations.</p>
+                )}
             </div>
             <div className="mb-6">
                 <label htmlFor="search" className="block text-sm font-semibold leading-6">

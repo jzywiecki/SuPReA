@@ -5,6 +5,7 @@ import (
 	"auth-service/pkg/database"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -301,7 +302,7 @@ func RejectUserToFriends(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "Friend request rejected"})
 }
 
-func RemoveFriendRequest(w http.ResponseWriter, r *http.Request) {
+func RemoveFriend(w http.ResponseWriter, r *http.Request) {
 	// if !auth.Authenticate(r) {
 	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	// 	return
@@ -343,20 +344,21 @@ func RemoveFriendRequest(w http.ResponseWriter, r *http.Request) {
 
 	// Remove the friend relationship from both users
 	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": userObjID}, bson.M{
-		"$pull": bson.M{"friends": bson.M{"id": friendObjID}},
+		"$pull": bson.M{"friends": bson.M{"_id": friendObjID}},
 	})
 	if err != nil {
 		http.Error(w, "Error removing friend", http.StatusInternalServerError)
 		return
 	}
 
-	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": friendObjID}, bson.M{
-		"$pull": bson.M{"friends": bson.M{"id": userObjID}},
+	a, err := collection.UpdateOne(context.Background(), bson.M{"_id": friendObjID}, bson.M{
+		"$pull": bson.M{"friends": bson.M{"_id": userObjID}},
 	})
 	if err != nil {
 		http.Error(w, "Error updating friend's friend list", http.StatusInternalServerError)
 		return
 	}
+	fmt.Println(a)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

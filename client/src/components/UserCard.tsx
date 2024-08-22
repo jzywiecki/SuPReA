@@ -3,13 +3,12 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Avatar, { genConfig } from 'react-nice-avatar';
 import { Button } from "@/components/ui/button";
 
-// Typ akcji, która będzie wykonywana przez przyciski
 type UserCardAction = 'addFriend' | 'acceptInvitation' | 'rejectInvitation' | 'removeFriend';
 
 interface UserCardProps {
     user: User;
-    actionType: UserCardAction;  // Typ akcji, którą ma obsłużyć karta
-    onAction: (user: User) => void;  // Callback dla danej akcji
+    actionType: UserCardAction;  
+    onAction: (user: User) => void;  
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
@@ -35,6 +34,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
                 <div>
                     <p className="text-lg font-semibold">{user.nickname}</p>
                     <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <p className='text-sm text-muted-foreground'>{user.status}</p>
                 </div>
             </CardContent>
             <CardFooter className="space-x-2">

@@ -6,7 +6,6 @@ import (
 	"auth-service/view"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"regexp"
 
@@ -25,7 +24,7 @@ func NewUsersRouter() *chi.Mux {
 	r.Post("/friends/add", AddUserToFriends)
 	r.Post("/friends/accept", AcceptUserToFriends)
 	r.Post("/friends/reject", RejectUserToFriends)
-	r.Post("/friends/remove", RemoveFriendRequest)
+	r.Post("/friends/remove", RemoveFriend)
 	r.Get("/filter", GetUsersWithFilterQuery)
 	return r
 }
@@ -131,8 +130,9 @@ func GetUsersWithFilterQuery(w http.ResponseWriter, r *http.Request) {
 
 	client := database.GetDatabaseConnection()
 
+	userID := r.URL.Query().Get("user_id")
+
 	filter := r.URL.Query().Get("filter")
-	fmt.Println(filter)
 
 	var users []models.User
 	collection := database.GetCollection(client, "Users", "users")
@@ -170,6 +170,9 @@ func GetUsersWithFilterQuery(w http.ResponseWriter, r *http.Request) {
 
 	usersView := make([]view.User, 0, len(users))
 	for _, user := range users {
+		if userID != "" && user.ID.Hex() == userID {
+			continue
+		}
 		usersView = append(usersView, view.User{
 			ID:        user.ID.Hex(),
 			Username:  user.Username,
