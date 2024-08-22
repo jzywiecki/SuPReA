@@ -3,7 +3,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Avatar, { genConfig } from 'react-nice-avatar';
 import { Button } from "@/components/ui/button";
 
-type UserCardAction = 'addFriend' | 'acceptInvitation' | 'rejectInvitation' | 'removeFriend';
+type UserCardAction = 'addFriend' | 'acceptInvitation' | 'rejectInvitation' | 'withdrawInvitation' | 'removeFriend';
 
 interface UserCardProps {
     user: User;
@@ -20,6 +20,8 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
                 return 'Accept Invitation';
             case 'rejectInvitation':
                 return 'Reject Invitation';
+            case 'withdrawInvitation':
+                return 'Withdraw Invitation';
             case 'removeFriend':
                 return 'Remove Friend';
             default:
@@ -46,7 +48,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
                         {getButtonLabel()}
                     </Button>
                 )}
-                {actionType === 'rejectInvitation' && (
+                {actionType === 'rejectInvitation' || actionType === 'withdrawInvitation' && (
                     <Button
                         onClick={() => onAction(user)}
                         className="bg-red-600 text-white hover:bg-red-700 rounded-md"
@@ -54,7 +56,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
                         {getButtonLabel()}
                     </Button>
                 )}
-                {actionType !== 'acceptInvitation' && actionType !== 'rejectInvitation' && (
+                {actionType !== 'acceptInvitation' && actionType !== 'rejectInvitation' && actionType !== 'withdrawInvitation' && (
                     <Button
                         onClick={() => onAction(user)}
                         className="bg-green-600 text-white hover:bg-green-700 rounded-md"

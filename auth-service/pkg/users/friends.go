@@ -219,7 +219,7 @@ func AcceptUserToFriends(w http.ResponseWriter, r *http.Request) {
 	collection := database.GetCollection(client, "Users", "users")
 
 	// Update the friend relationship to accepted for both users
-	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": userObjID, "friends.id": friendObjID}, bson.M{
+	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": userObjID, "friends._id": friendObjID}, bson.M{
 		"$set": bson.M{"friends.$.status": models.Accepted},
 	})
 	if err != nil {
@@ -227,7 +227,7 @@ func AcceptUserToFriends(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": friendObjID, "friends.id": userObjID}, bson.M{
+	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": friendObjID, "friends._id": userObjID}, bson.M{
 		"$set": bson.M{"friends.$.status": models.Accepted},
 	})
 	if err != nil {
@@ -282,7 +282,7 @@ func RejectUserToFriends(w http.ResponseWriter, r *http.Request) {
 
 	// Remove the friend request from both users
 	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": userObjID}, bson.M{
-		"$pull": bson.M{"friends": bson.M{"id": friendObjID}},
+		"$pull": bson.M{"friends": bson.M{"_id": friendObjID}},
 	})
 	if err != nil {
 		http.Error(w, "Error rejecting friend request", http.StatusInternalServerError)
@@ -290,7 +290,7 @@ func RejectUserToFriends(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": friendObjID}, bson.M{
-		"$pull": bson.M{"friends": bson.M{"id": userObjID}},
+		"$pull": bson.M{"friends": bson.M{"_id": userObjID}},
 	})
 	if err != nil {
 		http.Error(w, "Error updating friend's friend list", http.StatusInternalServerError)

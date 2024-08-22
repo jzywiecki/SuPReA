@@ -65,7 +65,7 @@ const SearchAndAddFriends: React.FC = () => {
 
     const handleAcceptInvitation = async (friendId: string) => {
         try {
-            await axios.post(`http://localhost:3333/users/friends/accept`, { userId: user?.id, friendId });
+            await axios.post(`http://localhost:3333/users/friends/accept`, { user_id: user?.id, friend_id: friendId });
             fetchFriends(); 
         } catch (error) {
             console.error('Error accepting invitation:', error);
@@ -74,7 +74,8 @@ const SearchAndAddFriends: React.FC = () => {
 
     const handleRejectInvitation = async (friendId: string) => {
         try {
-            await axios.post(`http://localhost:3333/users/friends/reject`, { userId: user?.id, friendId });
+            await axios.post(`http://localhost:3333/users/friends/reject`, { user_id: user?.id, friend_id: friendId });
+            fetchFriends();
         } catch (error) {
             console.error('Error rejecting invitation:', error);
         }
@@ -133,7 +134,7 @@ const SearchAndAddFriends: React.FC = () => {
                             <UserCard 
                                 key={friend.id} 
                                 user={friend} 
-                                actionType="rejectInvitation" 
+                                actionType="withdrawInvitation" 
                                 onAction={() => handleRejectInvitation(friend.id)} 
                             />
                         ))}
@@ -168,7 +169,7 @@ const SearchAndAddFriends: React.FC = () => {
                 <div>
                     <h3 className="text-lg font-semibold mb-4">Search Results</h3>
                     <ul className="space-y-4">
-                        {searchResults.map(user => (
+                        {searchResults.filter(result => user.id !== result.id && !friends.flatMap(friend => friend.id).includes(result.id)).map(user => (
                             <UserCard 
                                 key={user.id} 
                                 user={user} 

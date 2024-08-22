@@ -130,8 +130,6 @@ func GetUsersWithFilterQuery(w http.ResponseWriter, r *http.Request) {
 
 	client := database.GetDatabaseConnection()
 
-	userID := r.URL.Query().Get("user_id")
-
 	filter := r.URL.Query().Get("filter")
 
 	var users []models.User
@@ -170,9 +168,6 @@ func GetUsersWithFilterQuery(w http.ResponseWriter, r *http.Request) {
 
 	usersView := make([]view.User, 0, len(users))
 	for _, user := range users {
-		if userID != "" && user.ID.Hex() == userID {
-			continue
-		}
 		usersView = append(usersView, view.User{
 			ID:        user.ID.Hex(),
 			Username:  user.Username,
