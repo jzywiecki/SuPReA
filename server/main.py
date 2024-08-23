@@ -12,7 +12,7 @@ from routers import (
     projects,
     requirements,
     risks,
-    umls
+    umls,
 )
 from fastapi.middleware.cors import CORSMiddleware
 

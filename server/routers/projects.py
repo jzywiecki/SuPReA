@@ -6,8 +6,9 @@ from pymongo import ReturnDocument
 from models.projects import ProjectModel, ProjectCollection
 from database import project_collection
 from models.projects import generate_models_by_ai
-
 from models.projects import create_project
+
+from ai.open_ai import GPT35Turbo, DallE3
 
 router = APIRouter(
     tags=["projects"],
@@ -28,7 +29,9 @@ class EmptyProjectCreateRequest(BaseModel):
 )
 async def create_empty(request: EmptyProjectCreateRequest):
     try:
-        new_project_id = await create_project(request.name, request.owner_id, "", "", "")
+        new_project_id = await create_project(
+            request.name, request.owner_id, "", "", ""
+        )
     except Exception as e:
         raise HTTPException(status_code=400, detail="INTERNAL SERVER ERROR")
 
@@ -50,14 +53,26 @@ class ProjectCreateRequest(BaseModel):
 )
 async def create(request: ProjectCreateRequest):
     try:
-        new_project_id = await create_project(request.name, request.owner_id, request.for_who, request.doing_what,
-                                              request.additional_info)
+        new_project_id = await create_project(
+            request.name,
+            request.owner_id,
+            request.for_who,
+            request.doing_what,
+            request.additional_info,
+        )
     except Exception as e:
         print("ERROR IN CREATE PROJECT. DETAILS:")
         print(e)
         raise HTTPException(status_code=400, detail="INTERNAL SERVER ERROR")
 
-    generate_models_by_ai.remote(new_project_id, request.for_who, request.doing_what, request.additional_info)
+    generate_models_by_ai.remote(
+        new_project_id,
+        request.for_who,
+        request.doing_what,
+        request.additional_info,
+        DallE3,
+        GPT35Turbo,
+    )
 
     return new_project_id
 
@@ -112,8 +127,8 @@ async def update_project(project_id: str, project: ProjectModel = Body(...)):
                 status_code=404, detail=f"Project {project_id} not found"
             )
     if (
-            project := await project_collection.find_one({"_id": ObjectId(project_id)})
-                       is not None
+        project := await project_collection.find_one({"_id": ObjectId(project_id)})
+        is not None
     ):
         return project
     raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
@@ -130,7 +145,9 @@ async def delete_project(project_id: str):
 
 
 async def get_module(project_id: str, module_name: str):
-    project = await project_collection.find_one({"_id": ObjectId(project_id)}, {module_name: 1})
+    project = await project_collection.find_one(
+        {"_id": ObjectId(project_id)}, {module_name: 1}
+    )
 
     if project and module_name in project:
         return project[module_name]
