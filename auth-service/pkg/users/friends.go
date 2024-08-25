@@ -5,11 +5,11 @@ import (
 	"auth-service/pkg/database"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	mongo "go.mongodb.org/mongo-driver/mongo"
 )
 
 func GetUserFriends(w http.ResponseWriter, r *http.Request) {
@@ -309,12 +309,18 @@ func RemoveFriend(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	client := database.GetDatabaseConnection()
+	session, err := client.StartSession()
+	if err != nil {
+		http.Error(w, "Cannot start session", http.StatusInternalServerError)
+		return
+	}
+	defer session.EndSession(context.Background())
 
 	var requestBody struct {
 		UserID   string `json:"user_id"`
 		FriendID string `json:"friend_id"`
 	}
-	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	err = json.NewDecoder(r.Body).Decode(&requestBody)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
@@ -342,25 +348,57 @@ func RemoveFriend(w http.ResponseWriter, r *http.Request) {
 
 	collection := database.GetCollection(client, "Users", "users")
 
-	// Remove the friend relationship from both users
-	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": userObjID}, bson.M{
-		"$pull": bson.M{"friends": bson.M{"_id": friendObjID}},
-	})
-	if err != nil {
-		http.Error(w, "Error removing friend", http.StatusInternalServerError)
-		return
-	}
+	// Start the transaction
+	err = mongo.WithSession(context.Background(), session, func(sc mongo.SessionContext) error {
+		err := session.StartTransaction()
+		if err != nil {
+			return err
+		}
 
-	a, err := collection.UpdateOne(context.Background(), bson.M{"_id": friendObjID}, bson.M{
-		"$pull": bson.M{"friends": bson.M{"_id": userObjID}},
+		result, err := collection.UpdateOne(sc, bson.M{"_id": userObjID}, bson.M{
+			"$pull": bson.M{"friends": bson.M{"_id": friendObjID}},
+		})
+
+		if result.ModifiedCount == 0 {
+			session.AbortTransaction(sc)
+			http.Error(w, "Friend not found", http.StatusNotFound)
+			return nil
+		}
+		
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		result, err = collection.UpdateOne(sc, bson.M{"_id": friendObjID}, bson.M{
+			"$pull": bson.M{"friends": bson.M{"_id": userObjID}},
+		})
+		
+		if result.ModifiedCount == 0 {
+			session.AbortTransaction(sc)
+			http.Error(w, "Friend not found", http.StatusNotFound)
+			return nil
+		}
+
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		err = session.CommitTransaction(sc)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		return nil
 	})
+
 	if err != nil {
-		http.Error(w, "Error updating friend's friend list", http.StatusInternalServerError)
+		http.Error(w, "Transaction failed", http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(a)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Friend removed"})
 }
