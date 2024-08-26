@@ -13,6 +13,7 @@ from routers import (
     requirements,
     risks,
     umls,
+    download
 )
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -41,3 +42,4 @@ app.include_router(strategy.router)
 app.include_router(title.router)
 app.include_router(umls.router)
 app.include_router(database_schema.router)
+app.include_router(download.router)
