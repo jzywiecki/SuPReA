@@ -34,9 +34,8 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
             <CardContent className="flex items-center space-x-4">
                 <Avatar className="w-16 h-16" {...genConfig(user.email)} />
                 <div>
-                    <p className="text-lg font-semibold">{user.nickname}</p>
+                    <p className="text-lg font-semibold">{user.username}</p>
                     <p className="text-sm text-muted-foreground">{user.email}</p>
-                    <p className='text-sm text-muted-foreground'>{user.status}</p>
                 </div>
             </CardContent>
             <CardFooter className="space-x-2">
