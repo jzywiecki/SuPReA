@@ -20,8 +20,8 @@ async def download_pdf(project_id: str):
     pdf_buffer = generate_pdf(project)
 
     headers = {
-        'Content-Disposition': f'attachment; filename="{project["name"]}.pdf"',
-        'Content-Type': 'application/pdf'
+        "Content-Disposition": f'attachment; filename="{project["name"]}.pdf"',
+        "Content-Type": "application/pdf",
     }
 
-    return Response(content=pdf_buffer, headers=headers, media_type='application/pdf')
+    return Response(content=pdf_buffer, headers=headers, media_type="application/pdf")

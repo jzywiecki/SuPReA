@@ -13,7 +13,7 @@ from routers import (
     requirements,
     risks,
     umls,
-    download
+    download,
 )
 from fastapi.middleware.cors import CORSMiddleware
 
