@@ -26,7 +26,8 @@ def generate_project_schedule(
     project_id: str,
     model_ai: type[AI],
 ):
+    project_schedule_module = ScheduleModule(model=model_ai())
     project_schedule = generate_model(
-        ScheduleModule, for_who, doing_what, additional_info, ProjectSchedule, model_ai
+        project_schedule_module, for_who, doing_what, additional_info, ProjectSchedule,
     )
     save_model_to_database(project_id, "project_schedule", project_schedule)

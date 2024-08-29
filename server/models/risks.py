@@ -26,7 +26,8 @@ def generate_risks(
     project_id: str,
     model_ai: type[AI],
 ):
+    risk_module = RiskModule(model=model_ai())
     risks = generate_model(
-        RiskModule, for_who, doing_what, additional_info, Risks, model_ai
+        risk_module, for_who, doing_what, additional_info, Risks,
     )
     save_model_to_database(project_id, "risks", risks)

@@ -20,7 +20,8 @@ def generate_logo(
     project_id: str,
     model_ai: type[AI],
 ):
+    logo_module = LogoModule(model=model_ai())
     motto = generate_model(
-        LogoModule, for_who, doing_what, additional_info, Logo, model_ai
+        logo_module, for_who, doing_what, additional_info, Logo,
     )
     save_model_to_database(project_id, "logo", motto)

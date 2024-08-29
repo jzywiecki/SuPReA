@@ -19,7 +19,6 @@ from models.risks import Risks, generate_risks
 from models.specifications import Specifications, generate_specifications
 from models.strategy import Strategy, generate_strategy
 from models.title import Title, generate_title
-from models.umls import Umls, generate_umls
 from models.database_schema import DatabaseSchema, generate_database_schema
 from models.logo import Logo, generate_logo
 
@@ -139,9 +138,6 @@ def generate_models_by_ai(
                 for_who, doing_what, additional_info, project_id, text_model_ai
             ),
             generate_title.remote(
-                for_who, doing_what, additional_info, project_id, text_model_ai
-            ),
-            generate_umls.remote(
                 for_who, doing_what, additional_info, project_id, text_model_ai
             ),
         ]

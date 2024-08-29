@@ -19,7 +19,8 @@ def generate_motto(
     project_id: str,
     model_ai: type[AI],
 ):
+    motto_module = MottoModule(model=model_ai())
     motto = generate_model(
-        MottoModule, for_who, doing_what, additional_info, Motto, model_ai
+        motto_module, for_who, doing_what, additional_info, Motto,
     )
     save_model_to_database(project_id, "motto", motto)

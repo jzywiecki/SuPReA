@@ -40,12 +40,12 @@ def generate_database_schema(
     project_id: str,
     model_ai: type[AI],
 ):
+    database_schema_module = DatabaseSchemaModule(model=model_ai())
     database_schema = generate_model(
-        DatabaseSchemaModule,
+        database_schema_module,
         for_who,
         doing_what,
         additional_info,
         DatabaseSchema,
-        model_ai,
     )
     save_model_to_database(project_id, "database_schema", database_schema)

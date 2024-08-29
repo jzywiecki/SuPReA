@@ -25,7 +25,8 @@ def generate_actors(
     project_id: str,
     model_ai: type[AI],
 ):
+    actors_module = ActorsModule(model=model_ai())
     actors = generate_model(
-        ActorsModule, for_who, doing_what, additional_info, Actors, model_ai
+        actors_module, for_who, doing_what, additional_info, Actors,
     )
     save_model_to_database(project_id, "actors", actors)

@@ -33,7 +33,8 @@ def generate_requirements(
     project_id: str,
     model_ai: type[AI],
 ):
+    requirements_module = RequirementsModule(model=model_ai())
     requirements = generate_model(
-        RequirementsModule, for_who, doing_what, additional_info, Requirements, model_ai
+        requirements_module, for_who, doing_what, additional_info, Requirements,
     )
     save_model_to_database(project_id, "requirements", requirements)

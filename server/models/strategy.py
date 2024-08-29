@@ -19,7 +19,8 @@ def generate_strategy(
     project_id: str,
     model_ai: type[AI],
 ):
+    strategy_module = StrategyModule(model=model_ai())
     strategy = generate_model(
-        StrategyModule, for_who, doing_what, additional_info, Strategy, model_ai
+        strategy_module, for_who, doing_what, additional_info, Strategy,
     )
     save_model_to_database(project_id, "strategy", strategy)

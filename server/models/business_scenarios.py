@@ -31,12 +31,12 @@ def generate_business_scenarios(
     project_id: str,
     model_ai: type[AI],
 ):
+    business_scenarios_module = BusinessScenariosModule(model=model_ai())
     business_scenarios = generate_model(
-        BusinessScenariosModule,
+        business_scenarios_module,
         for_who,
         doing_what,
         additional_info,
         BusinessScenarios,
-        model_ai,
     )
     save_model_to_database(project_id, "business_scenarios", business_scenarios)

@@ -25,12 +25,12 @@ def generate_specifications(
     project_id: str,
     model_ai: type[AI],
 ):
+    specifications_module = SpecificationsModule(model=model_ai())
     specifications = generate_model(
-        SpecificationsModule,
+        specifications_module,
         for_who,
         doing_what,
         additional_info,
         Specifications,
-        model_ai,
     )
     save_model_to_database(project_id, "specifications", specifications)

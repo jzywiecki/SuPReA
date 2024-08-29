@@ -19,12 +19,12 @@ def generate_elevator_speech(
     project_id: str,
     model_ai: type[AI],
 ):
+    elevator_speech_module = ElevatorSpeechModule(model=model_ai())
     elevator_speech = generate_model(
-        ElevatorSpeechModule,
+        elevator_speech_module,
         for_who,
         doing_what,
         additional_info,
         ElevatorSpeech,
-        model_ai,
     )
     save_model_to_database(project_id, "elevator_speech", elevator_speech)
