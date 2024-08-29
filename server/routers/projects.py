@@ -142,14 +142,3 @@ async def delete_project(project_id: str):
     if delete_result.deleted_count == 1:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
-
-
-async def get_module(project_id: str, module_name: str):
-    project = await project_collection.find_one(
-        {"_id": ObjectId(project_id)}, {module_name: 1}
-    )
-
-    if project and module_name in project:
-        return project[module_name]
-    else:
-        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
