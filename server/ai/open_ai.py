@@ -1,10 +1,12 @@
 from openai import OpenAI
+from utils.singleton import singleton
 
 from ai.ai import AI
 
 client = OpenAI()
 
 
+@singleton
 class GPT35Turbo(AI):
     def generate(self, request):
         messages = [{"role": "system", "content": request, "type": "json_object"}]
@@ -13,6 +15,7 @@ class GPT35Turbo(AI):
         return response.choices[0].message.content
 
 
+@singleton
 class DallE3(AI):
     def generate(self, request):
         params = {
@@ -24,3 +27,4 @@ class DallE3(AI):
         }
         response = client.images.generate(**params)
         return response.data[0].url
+
