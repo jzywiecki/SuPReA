@@ -54,9 +54,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	collection := database.GetCollection(client, "Users", "users")
 
 	var existingUser models.User
-	err = collection.FindOne(context.Background(), models.User{Email: user.Email}).Decode(&existingUser)
+	err = collection.FindOne(context.Background(), bson.M{"email": user.Email}).Decode(&existingUser)
 	if err == nil {
 		http.Error(w, "User already exists", http.StatusConflict)
+		return
 	}
 
 	_, err = collection.InsertOne(context.Background(), user)

@@ -64,9 +64,11 @@ const LoginForm: React.FC = () => {
                 id: response.data.id,
             };
             login(userData);
+            alert('Logged in!');
         })
         .catch(error => {
             console.error('Error logging in:', error);
+            alert('Error logging in. Please try again.');
         });
     };
  

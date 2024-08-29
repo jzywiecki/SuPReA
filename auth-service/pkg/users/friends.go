@@ -364,7 +364,7 @@ func RemoveFriend(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Friend not found", http.StatusNotFound)
 			return nil
 		}
-		
+
 		if err != nil {
 			session.AbortTransaction(sc)
 			return err
@@ -373,7 +373,7 @@ func RemoveFriend(w http.ResponseWriter, r *http.Request) {
 		result, err = collection.UpdateOne(sc, bson.M{"_id": friendObjID}, bson.M{
 			"$pull": bson.M{"friends": bson.M{"_id": userObjID}},
 		})
-		
+
 		if result.ModifiedCount == 0 {
 			session.AbortTransaction(sc)
 			http.Error(w, "Friend not found", http.StatusNotFound)

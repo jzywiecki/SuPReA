@@ -23,6 +23,8 @@ const Navbar = () => {
         <nav className="flex items-center justify-between px-6 py-4 h-16 z-50 relative">
             <Link to="/" className="text-xl font-semibold">Visio</Link>
             <ul className="flex items-center gap-6 font-medium">
+                {user ? (
+                    <>
                 <li>
                     <Link to="/create-project">New Project</Link>
                 </li>
@@ -32,6 +34,12 @@ const Navbar = () => {
                 <li>
                     <Link to="/collaborators">Collaborators</Link>
                 </li>
+                </>
+                ) : (
+                    <li>
+                        Example
+                    </li>
+                )}
                 <li>
                     <DropdownMenu>
                         <DropdownMenuTrigger>
@@ -47,7 +55,9 @@ const Navbar = () => {
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem>Profile</DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={logout}>
+                                        <Link to="/">Logout</Link>
+                                        </DropdownMenuItem>
                                 </>
                             ) : (
                                 <>
