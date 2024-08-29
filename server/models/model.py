@@ -18,7 +18,7 @@ def generate_model(
     additional_info: str,
     model_class: type[BaseModel],
 ):
-    content = module.get_content(for_who, doing_what, additional_info, False)
+    content = module.create_model_json(for_who, doing_what, additional_info, False)
     data = json.loads(content)
     result = model_class(**data)
 

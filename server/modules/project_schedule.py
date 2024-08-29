@@ -10,8 +10,11 @@ harmonogram_json = """
         }
     ]
 """
-query_for_who = "Suggest a work schedule for "
-query_doing_what = " creating app for "
+
+for_who_sentence = "Suggest a work schedule for "
+
+doing_what_sentence = " creating app for "
+
 query_expectations = (
     "Show it with milestones. Focus on business site of a schedule. Result return EXACTLY according to provided json schema (do not change the convention from the given json): "
     + harmonogram_json
@@ -22,18 +25,15 @@ class ScheduleModule(modules.Module):
     def __init__(self, model):
         self.model = model
 
-    def get_content(self, for_who, doing_what, additional_info, is_mock, **kwargs):
-        request = (
-            query_for_who
-            + " "
-            + for_who
-            + " "
-            + query_doing_what
-            + " "
-            + doing_what
-            + " "
-            + query_expectations
-            + " "
-            + additional_info
+    def create_model_json(
+        self, for_who_input, doing_what_input, additional_info_input, is_mock, **kwargs
+    ):
+        request = self.model.build_create_query(
+            for_who_input,
+            doing_what_input,
+            additional_info_input,
+            for_who_sentence,
+            doing_what_sentence,
+            query_expectations,
         )
         return self.model.generate(request)
