@@ -20,7 +20,7 @@ additional_details4 = " The logo should be funny. The whole background should be
 @ray.remote
 class LogoModule(modules.Module):
     def __init__(self):
-        super().__init__(Logo, "logo", expected_format, ProjectFields.LOGO)
+        super().__init__(Logo, "logo", expected_format, ProjectFields.LOGO.value)
 
     @override
     def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):

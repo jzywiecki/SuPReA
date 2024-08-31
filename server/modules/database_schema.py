@@ -34,7 +34,7 @@ expected_format = """ Don't return the same values in the database! just be insp
 @ray.remote
 class DatabaseSchemaModule(modules.Module):
     def __init__(self):
-        super().__init__(DatabaseSchema, "database schema", expected_format, ProjectFields.DATABASE_SCHEMA)
+        super().__init__(DatabaseSchema, "database schema", expected_format, ProjectFields.DATABASE_SCHEMA.value)
 
     @override
     def update_by_ai(self, ai_model, changes_request):

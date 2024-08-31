@@ -15,4 +15,4 @@ expected_format = """
 @ray.remote
 class StrategyModule(modules.Module):
     def __init__(self):
-        super().__init__(Strategy, "strategy", expected_format, ProjectFields.STRATEGY)
+        super().__init__(Strategy, "strategy", expected_format, ProjectFields.STRATEGY.value)

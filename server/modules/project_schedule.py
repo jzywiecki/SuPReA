@@ -19,4 +19,4 @@ expected_format = """
 @ray.remote
 class ProjectScheduleModule(modules.Module):
     def __init__(self):
-        super().__init__(ProjectSchedule, "project schedule", expected_format, ProjectFields.PROJECT_SCHEDULE)
+        super().__init__(ProjectSchedule, "project schedule", expected_format, ProjectFields.PROJECT_SCHEDULE.value)

@@ -26,5 +26,5 @@ expected_format = """
 @ray.remote
 class RequirementsModule(modules.Module):
     def __init__(self):
-        super().__init__(Requirements, "requirements", expected_format, ProjectFields.REQUIREMENTS)
+        super().__init__(Requirements, "requirements", expected_format, ProjectFields.REQUIREMENTS.value)
 

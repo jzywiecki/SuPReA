@@ -17,4 +17,4 @@ expected_format = """
 @ray.remote
 class TitleModule(modules.Module):
     def __init__(self):
-        super().__init__(Title, "title", expected_format, ProjectFields.TITLE)
+        super().__init__(Title, "title", expected_format, ProjectFields.TITLE.value)

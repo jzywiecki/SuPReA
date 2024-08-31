@@ -13,4 +13,4 @@ expected_format = """
 @ray.remote
 class MottoModule(modules.Module):
     def __init__(self):
-        super().__init__(Motto, "motto", expected_format, ProjectFields.MOTTO)
+        super().__init__(Motto, "motto", expected_format, ProjectFields.MOTTO.value)

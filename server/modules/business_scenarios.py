@@ -18,4 +18,4 @@ expected_format = """
 @ray.remote
 class BusinessScenariosModule(modules.Module):
     def __init__(self):
-        super().__init__(BusinessScenarios, "business scenario", expected_format, ProjectFields.BUSINESS_SCENARIOS)
+        super().__init__(BusinessScenarios, "business scenario", expected_format, ProjectFields.BUSINESS_SCENARIOS.value)
