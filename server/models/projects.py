@@ -1,20 +1,20 @@
 from bson import ObjectId
 from pydantic import BaseModel, Field
 from typing import List, Optional
-
 from datetime import datetime
-from models.actors import Actors
-from models.business_scenarios import BusinessScenarios
-from models.elevator_speech import ElevatorSpeech
-from models.motto import Motto
-from models.project_schedule import ProjectSchedule
-from models.requirements import Requirements
-from models.risks import Risks
-from models.specifications import Specifications
-from models.strategy import Strategy
-from models.title import Title
-from models.database_schema import DatabaseSchema
-from models.logo import Logo
+
+from models import Actors
+from models import BusinessScenarios
+from models import ElevatorSpeech
+from models import Motto
+from models import ProjectSchedule
+from models import Requirements
+from models import Risks
+from models import Specifications
+from models import Strategy
+from models import Title
+from models import DatabaseSchema
+from models import Logo
 
 
 class Project(BaseModel):
