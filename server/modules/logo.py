@@ -1,68 +1,76 @@
-import json
+import ray
 
 import modules.module as modules
+from models.logo import Logo
+from utils.decorators import override
+from ai.ai import ai_call_remote
+
+expected_format = """
+    The image is a single logo with no additional content! Don't put additional content on picture instead of logo.
+"""
+
+additional_details1 = " The logo should be simple and colorful. The whole background should be white."
+additional_details2 = " The logo should be simple and not colorful. The whole background should be white."
+additional_details3 = " The logo should be for children. The whole background should be white. "
+additional_details4 = " The logo should be funny. The whole background should be white. "
 
 
-query_for_who = "Make logo for "
-
-query_doing_what = "creating app for "
-
-additional_details1 = " The logo should be simple and colorful. The whole background should be white. The image is a single logo with no additional content. "
-additional_details2 = " The logo should be simple and not colorful. The whole background should be white. Don't put additional content on picture instead of logo. The image is a single logo with no additional content. "
-additional_details3 = " The logo should be for children. The whole background should be white. Don't put additional content on picture instead of logo. The image is a single logo with no additional content. "
-additional_details4 = " The logo should be funny. The whole background should be white. Don't put additional content on picture instead of logo. The image is a single logo with no additional content. "
-
-
+@ray.remote
 class LogoModule(modules.Module):
-    def __init__(self, model):
-        self.model = model
+    def __init__(self):
+        super().__init__(Logo, "logo", expected_format)
 
-    def build_create_query(self, for_who, doing_what, additional_info, details):
-        request = (
-            query_for_who
-            + " "
-            + for_who
-            + " "
-            + query_doing_what
-            + " "
-            + doing_what
-            + " "
-            + details
-            + " "
-            + additional_info
-        )
-        return self.model.generate(request)
+    @override
+    def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
+        """Specify implementation for generating a model using the AI image-model."""
+        try:
+            request1 = ai_model.parse_generate_query(
+                self.name, for_what, doing_what, additional_details1, self.expected_format
+            )
+            request2 = ai_model.parse_generate_query(
+                self.name, for_what, doing_what, additional_details2, self.expected_format
+            )
+            request3 = ai_model.parse_generate_query(
+                self.name, for_what, doing_what, additional_details3, self.expected_format
+            )
+            request4 = ai_model.parse_generate_query(
+                self.name, for_what, doing_what, additional_details4, self.expected_format
+            )
 
-    def create_model_json(
-        self, for_who_input, doing_what_input, additional_info_input, is_mock, **kwargs
-    ):
-        tasks = [
-            self.build_create_query(
-                for_who_input,
-                doing_what_input,
-                additional_info_input,
-                additional_details1,
-            ),
-            self.build_create_query(
-                for_who_input,
-                doing_what_input,
-                additional_info_input,
-                additional_details2,
-            ),
-            self.build_create_query(
-                for_who_input,
-                doing_what_input,
-                additional_info_input,
-                additional_details3,
-            ),
-            self.build_create_query(
-                for_who_input,
-                doing_what_input,
-                additional_info_input,
-                additional_details4,
-            ),
-        ]
+            list_value = process_ai_requests(ai_model, request1, request2, request3, request4)
+            self.value = self.make_model_from_reply(list_value)
 
-        content = json.dumps({"logo_urls": tasks})
+        except Exception as e:
+            self.exception = e
+            self.status = f"model:{self.name} error:generate_by_ai"
+            self.value = None
 
-        return content
+    @override
+    def update_by_ai(self, ai_model, changes_request):
+        """Update a model using the AI model."""
+        try:
+            request1 = ai_model.parse_update_query(self.name, "", changes_request, self.expected_format)
+            request2 = ai_model.parse_update_query(self.name, "", changes_request, self.expected_format)
+            request3 = ai_model.parse_update_query(self.name, "", changes_request, self.expected_format)
+            request4 = ai_model.parse_update_query(self.name, "", changes_request, self.expected_format)
+
+            list_value = process_ai_requests(ai_model, request1, request2, request3, request4)
+            self.value = self.make_model_from_reply(list_value)
+
+        except Exception as e:
+            self.exception = e
+            self.status = f"model:{self.name} error:update_by_ai"
+
+    @override
+    def make_model_from_reply(self, reply):
+        return self.model_class(logo_urls=reply)
+
+
+def process_ai_requests(ai_model, *requests):
+    replies = []
+    for request in requests:
+        replies.append(ai_call_remote.remote(ai_model, request))
+        break
+
+    results = ray.get(replies)
+    return results

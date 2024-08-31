@@ -7,3 +7,7 @@ def singleton(class_):
         return instances[class_]
 
     return getinstance
+
+
+def override(f):
+    return f

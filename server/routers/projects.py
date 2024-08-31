@@ -3,7 +3,7 @@ from bson import ObjectId
 from pydantic import BaseModel, Field
 from pymongo import ReturnDocument
 
-from models.projects import ProjectModel, ProjectCollection
+from models.projects import Project, Projects
 from database import project_collection
 from models.projects import generate_models_by_ai
 from models.projects import create_project
@@ -79,19 +79,19 @@ async def create(request: ProjectCreateRequest):
 
 @router.get(
     "/",
-    response_model=ProjectCollection,
+    response_model=Projects,
     status_code=status.HTTP_200_OK,
     response_model_by_alias=False,
 )
 async def get_projects():
     projects = await project_collection.find().to_list(length=None)
-    projects_collection = ProjectCollection(projects=projects)
+    projects_collection = Projects(projects=projects)
     return projects_collection
 
 
 @router.get(
     "/{project_id}",
-    response_model=ProjectModel,
+    response_model=Project,
     status_code=status.HTTP_200_OK,
     response_model_by_alias=False,
 )
@@ -106,11 +106,11 @@ async def get_project(project_id: str):
 
 @router.put(
     "/{project_id}",
-    response_model=ProjectModel,
+    response_model=Project,
     status_code=status.HTTP_200_OK,
     response_model_by_alias=False,
 )
-async def update_project(project_id: str, project: ProjectModel = Body(...)):
+async def update_project(project_id: str, project: Project = Body(...)):
     project = {
         k: v for k, v in project.model_dump(by_alias=True).items() if v is not None
     }

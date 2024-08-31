@@ -1,38 +1,19 @@
+import ray
+
 import modules.module as modules
+from models.specifications import Specifications
 
-
-specifications_schema_json = """
+expected_format = """
     "specifications": [
         {
-            "name": "string",
+            "specification": "string",
             "description": "string"
         }
     ]
 """
 
-for_who_sentence = "Write specifications for "
 
-doing_what_sentence = " creating app for "
-
-query_expectations = (
-    " Result return EXACTLY according to provided json schema (do not change the convention from the given json): "
-    + specifications_schema_json
-)
-
-
+@ray.remote
 class SpecificationsModule(modules.Module):
-    def __init__(self, model):
-        self.model = model
-
-    def create_model_json(
-        self, for_who_input, doing_what_input, additional_info_input, is_mock, **kwargs
-    ):
-        request = self.model.build_create_query(
-            for_who_input,
-            doing_what_input,
-            additional_info_input,
-            for_who_sentence,
-            doing_what_sentence,
-            query_expectations,
-        )
-        return self.model.generate(request)
+    def __init__(self):
+        super().__init__(Specifications, "specifications", expected_format)

@@ -141,10 +141,10 @@ def generate_pdf(project):
                 "Database Schema",
             )
 
-        if project["actors"]:
+        if project["modules"]:
             add_two_elements_list(
                 pdf_elements,
-                project["actors"]["actors"],
+                project["modules"]["modules"],
                 "Actors",
                 "name",
                 "description",

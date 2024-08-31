@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from database import get_module
+from database import get_model
 
 
 router = APIRouter(
@@ -13,4 +13,4 @@ router = APIRouter(
     "/{project_id}",
 )
 async def get_elevator_speeches(project_id: str):
-    return await get_module(project_id, "elevator_speech")
+    return await get_model(project_id, "elevator_speech")

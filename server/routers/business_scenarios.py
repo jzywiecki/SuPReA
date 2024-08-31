@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from database import get_module
+from database import get_model
 
 
 router = APIRouter(
@@ -13,4 +13,4 @@ router = APIRouter(
     "/{project_id}",
 )
 async def get_business_scenarios(project_id: str):
-    return await get_module(project_id, "business_scenarios")
+    return await get_model(project_id, "business_scenarios")
