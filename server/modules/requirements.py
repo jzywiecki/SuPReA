@@ -1,7 +1,7 @@
 import ray
 
 import modules.module as modules
-from models.requirements import Requirements
+from models import Requirements
 
 expected_format = """
     "functional_requirements": [

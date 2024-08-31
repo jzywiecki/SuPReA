@@ -1,7 +1,7 @@
 import ray
 
 import modules.module as modules
-from models.specifications import Specifications
+from models import Specifications
 
 expected_format = """
     "specifications": [

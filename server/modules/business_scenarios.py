@@ -1,7 +1,7 @@
 import ray
 
 import modules.module as modules
-from models.business_scenarios import BusinessScenarios
+from models import BusinessScenarios
 
 expected_format = """
     "business_scenario": {

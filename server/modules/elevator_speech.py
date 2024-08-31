@@ -1,7 +1,7 @@
 import ray
 
 import modules.module as modules
-from models.elevator_speech import ElevatorSpeech
+from models import ElevatorSpeech
 
 expected_format = """
     "content": "string"

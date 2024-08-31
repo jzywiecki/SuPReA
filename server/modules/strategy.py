@@ -1,7 +1,7 @@
 import ray
 
 import modules.module as modules
-from models.strategy import Strategy
+from models import Strategy
 
 expected_format = """
 {

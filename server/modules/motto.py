@@ -1,7 +1,7 @@
 import ray
 
 import modules.module as modules
-from models.motto import Motto
+from models import Motto
 
 expected_format = """
  "motto": "string"

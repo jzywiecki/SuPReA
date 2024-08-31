@@ -1,7 +1,7 @@
 import ray
 
 import modules.module as modules
-from models.logo import Logo
+from models import Logo
 from utils.decorators import override
 from ai import ai_call_remote
 

@@ -1,7 +1,7 @@
 import ray
 
 import modules.module as modules
-from models.project_schedule import ProjectSchedule
+from models import ProjectSchedule
 
 expected_format = """
     "milestones": [

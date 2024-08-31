@@ -1,7 +1,7 @@
 import ray
 
 import modules.module as modules
-from models.risks import Risks
+from models import Risks
 
 expected_format = """
     "risks": [

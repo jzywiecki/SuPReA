@@ -1,7 +1,7 @@
 import ray
 
 import modules.module as modules
-from models.title import Title
+from models import Title
 
 expected_format = """
     "names": [

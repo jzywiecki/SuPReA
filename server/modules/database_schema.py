@@ -2,7 +2,7 @@ import ray
 import json
 
 import modules.module as modules
-from models.database_schema import DatabaseSchema
+from models import DatabaseSchema
 from utils.decorators import override
 from modules.module import extract_json
 

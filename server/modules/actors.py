@@ -1,7 +1,7 @@
 import ray
 
 import modules.module as modules
-from models.actors import Actors
+from models import Actors
 
 expected_format = """
 "actors": [
