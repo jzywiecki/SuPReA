@@ -1,16 +1,13 @@
 from fastapi import APIRouter
-from database import get_model
-
+from .common import get_module
+from models import ProjectFields
 
 router = APIRouter(
     tags=["modules"],
     prefix="/modules",
-    responses={404: {"description": "Not found"}},
 )
 
 
-@router.get(
-    "/{project_id}",
-)
-async def get_actors(project_id: str):
-    return await get_model(project_id, "modules")
+@router.get("/actors/{project_id}")
+def get_actors(project_id: str):
+    return get_module(project_id, ProjectFields.ACTORS.value)

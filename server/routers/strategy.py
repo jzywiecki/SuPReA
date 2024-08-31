@@ -1,16 +1,13 @@
 from fastapi import APIRouter
-from database import get_model
-
+from .common import get_module
+from models import ProjectFields
 
 router = APIRouter(
-    tags=["strategy"],
-    prefix="/strategy",
-    responses={404: {"description": "Not found"}},
+    tags=["modules"],
+    prefix="/modules",
 )
 
 
-@router.get(
-    "/{project_id}",
-)
-async def get_strategy(project_id: str):
-    return await get_model(project_id, "strategy")
+@router.get("/strategy/{project_id}")
+def get_strategy(project_id: str):
+    return get_module(project_id, ProjectFields.STRATEGY.value)
