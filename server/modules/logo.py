@@ -3,7 +3,7 @@ import ray
 import modules.module as modules
 from models.logo import Logo
 from utils.decorators import override
-from ai.ai import ai_call_remote
+from ai import ai_call_remote
 
 expected_format = """
     The image is a single logo with no additional content! Don't put additional content on picture instead of logo.

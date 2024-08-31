@@ -1,6 +1,6 @@
 import abc
 import json
-from database import save_model, get_model
+from database import projects_dao
 
 
 class Module(metaclass=abc.ABCMeta):
@@ -66,7 +66,7 @@ class Module(metaclass=abc.ABCMeta):
     def save_to_database(self, project_id):
         """Save the provided/generated model to the database for project with id={project_id}."""
         try:
-            save_model(project_id, self.name, self.value)
+            projects_dao.update_project_component(project_id, self.name, self.value)
         except Exception as e:
             self.exception = e
             self.status = f"model:{self.name} error:save_to_database"
@@ -74,7 +74,7 @@ class Module(metaclass=abc.ABCMeta):
     def fetch_from_database(self, project_id):
         """Fetch the model from project with id={project_id} from the database."""
         try:
-            self.value = get_model(project_id, self.name)
+            self.value = projects_dao.get_project_component(project_id, self.name)
             if self.value is None:
                 raise ValueError("value is None")
         except Exception as e:
