@@ -5,6 +5,8 @@ import modules.module as modules
 from models import DatabaseSchema
 from utils.decorators import override
 from modules.module import extract_json
+from models import ProjectFields
+
 
 expected_format = """ Don't return the same values in the database! just be inspired by it!
   "tables": [
@@ -32,13 +34,13 @@ expected_format = """ Don't return the same values in the database! just be insp
 @ray.remote
 class DatabaseSchemaModule(modules.Module):
     def __init__(self):
-        super().__init__(DatabaseSchema, "database_schema", expected_format)
+        super().__init__(DatabaseSchema, "database schema", expected_format, ProjectFields.DATABASE_SCHEMA)
 
     @override
     def update_by_ai(self, ai_model, changes_request):
         try:
             json_val_format = json.dumps(self.value, default=lambda x: x.__dict__)
-            request = ai_model.parse_update_query(self.name, json_val_format, changes_request, self.expected_format)
+            request = ai_model.parse_update_query(self.what, json_val_format, changes_request, self.expected_format)
 
             reply = ai_model.make_ai_call(request)
             reply_json_str = extract_json(reply)
@@ -47,4 +49,4 @@ class DatabaseSchemaModule(modules.Module):
         except Exception as e:
             print(e)
             self.exception = e
-            self.status = f"model:{self.name} error:update_by_ai"
+            self.status = f"model:{self.what} error:update_by_ai"

@@ -4,6 +4,8 @@ import modules.module as modules
 from models import Logo
 from utils.decorators import override
 from ai import ai_call_remote
+from models import ProjectFields
+
 
 expected_format = """
     The image is a single logo with no additional content! Don't put additional content on picture instead of logo.
@@ -18,23 +20,23 @@ additional_details4 = " The logo should be funny. The whole background should be
 @ray.remote
 class LogoModule(modules.Module):
     def __init__(self):
-        super().__init__(Logo, "logo", expected_format)
+        super().__init__(Logo, "logo", expected_format, ProjectFields.LOGO)
 
     @override
     def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
         """Specify implementation for generating a model using the AI image-model."""
         try:
             request1 = ai_model.parse_generate_query(
-                self.name, for_what, doing_what, additional_details1, self.expected_format
+                self.what, for_what, doing_what, additional_details1, self.expected_format
             )
             request2 = ai_model.parse_generate_query(
-                self.name, for_what, doing_what, additional_details2, self.expected_format
+                self.what, for_what, doing_what, additional_details2, self.expected_format
             )
             request3 = ai_model.parse_generate_query(
-                self.name, for_what, doing_what, additional_details3, self.expected_format
+                self.what, for_what, doing_what, additional_details3, self.expected_format
             )
             request4 = ai_model.parse_generate_query(
-                self.name, for_what, doing_what, additional_details4, self.expected_format
+                self.what, for_what, doing_what, additional_details4, self.expected_format
             )
 
             list_value = process_ai_requests(ai_model, request1, request2, request3, request4)
@@ -42,24 +44,24 @@ class LogoModule(modules.Module):
 
         except Exception as e:
             self.exception = e
-            self.status = f"model:{self.name} error:generate_by_ai"
+            self.status = f"model:{self.what} error:generate_by_ai"
             self.value = None
 
     @override
     def update_by_ai(self, ai_model, changes_request):
         """Update a model using the AI model."""
         try:
-            request1 = ai_model.parse_update_query(self.name, "", changes_request, self.expected_format)
-            request2 = ai_model.parse_update_query(self.name, "", changes_request, self.expected_format)
-            request3 = ai_model.parse_update_query(self.name, "", changes_request, self.expected_format)
-            request4 = ai_model.parse_update_query(self.name, "", changes_request, self.expected_format)
+            request1 = ai_model.parse_update_query(self.what, "", changes_request, self.expected_format)
+            request2 = ai_model.parse_update_query(self.what, "", changes_request, self.expected_format)
+            request3 = ai_model.parse_update_query(self.what, "", changes_request, self.expected_format)
+            request4 = ai_model.parse_update_query(self.what, "", changes_request, self.expected_format)
 
             list_value = process_ai_requests(ai_model, request1, request2, request3, request4)
             self.value = self.make_model_from_reply(list_value)
 
         except Exception as e:
             self.exception = e
-            self.status = f"model:{self.name} error:update_by_ai"
+            self.status = f"model:{self.what} error:update_by_ai"
 
     @override
     def make_model_from_reply(self, reply):

@@ -8,7 +8,7 @@ class Module(metaclass=abc.ABCMeta):
     Represents a abstraction layer that can be used to generate, update a model and save it to the database.
     Derived AI models can override this method to provide a custom requirements.
     """
-    def __init__(self, model_class, name, expected_format):
+    def __init__(self, model_class, name, expected_format, db_field_name):
         """
         Initializes the module with the model class, name, and expected format.
 
@@ -26,17 +26,18 @@ class Module(metaclass=abc.ABCMeta):
             exception: The last occurred exception.
         """
         self.model_class = model_class
-        self.name = name
+        self.what = name
         self.expected_format = expected_format
         self.value = None
         self.status = None
         self.exception = None
+        self.db_field_name = db_field_name
 
     def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
         """Generates a model using the AI model."""
         try:
             request = ai_model.parse_generate_query(
-                self.name, for_what, doing_what, additional_info, self.expected_format
+                self.what, for_what, doing_what, additional_info, self.expected_format
             )
 
             reply = ai_model.make_ai_call(request)
@@ -46,40 +47,40 @@ class Module(metaclass=abc.ABCMeta):
         except Exception as e:
             print(e)
             self.exception = e
-            self.status = f"model:{self.name} error:generate_by_ai"
+            self.status = f"model:{self.what} error:generate_by_ai"
             self.value = None
 
     def update_by_ai(self, ai_model, changes_request):
         """Update a model using the AI model."""
         try:
-            request = ai_model.parse_update_query(self.name, self.value, changes_request, self.expected_format)
+            request = ai_model.parse_update_query(self.what, self.value, changes_request, self.expected_format)
 
             reply = ai_model.make_ai_call(request)
-            reply_json_str = self.extract_json(reply)
+            reply_json_str = extract_json(reply)
             self.value = self.make_model_from_reply(reply_json_str)
 
         except Exception as e:
             print(e)
             self.exception = e
-            self.status = f"model:{self.name} error:update_by_ai"
+            self.status = f"model:{self.what} error:update_by_ai"
 
     def save_to_database(self, project_id):
         """Save the provided/generated model to the database for project with id={project_id}."""
         try:
-            projects_dao.update_project_component(project_id, self.name, self.value)
+            projects_dao.update_project_component(project_id, self.db_field_name, self.value)
         except Exception as e:
             self.exception = e
-            self.status = f"model:{self.name} error:save_to_database"
+            self.status = f"model:{self.what} error:save_to_database"
 
     def fetch_from_database(self, project_id):
         """Fetch the model from project with id={project_id} from the database."""
         try:
-            self.value = projects_dao.get_project_component(project_id, self.name)
+            self.value = projects_dao.get_project_component(project_id, self.db_field_name)
             if self.value is None:
                 raise ValueError("value is None")
         except Exception as e:
             self.exception = e
-            self.status = f"model:{self.name} error:fetch_from_database"
+            self.status = f"model:{self.what} error:fetch_from_database"
 
     def update(self, new_val):
         """Update the model with a new value. Value must be of the correct type."""
@@ -90,7 +91,7 @@ class Module(metaclass=abc.ABCMeta):
 
         except Exception as e:
             self.exception = e
-            self.status = f"model:{self.name} error:update"
+            self.status = f"model:{self.what} error:update"
             self.value = None
 
     def check_errors(self):

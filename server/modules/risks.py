@@ -2,6 +2,8 @@ import ray
 
 import modules.module as modules
 from models import Risks
+from models import ProjectFields
+
 
 expected_format = """
     "risks": [
@@ -17,4 +19,4 @@ expected_format = """
 @ray.remote
 class RiskModule(modules.Module):
     def __init__(self):
-        super().__init__(Risks, "risks", expected_format)
+        super().__init__(Risks, "risks", expected_format, ProjectFields.RISKS)

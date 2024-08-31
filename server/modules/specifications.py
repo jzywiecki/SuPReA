@@ -2,6 +2,8 @@ import ray
 
 import modules.module as modules
 from models import Specifications
+from models import ProjectFields
+
 
 expected_format = """
     "specifications": [
@@ -16,4 +18,4 @@ expected_format = """
 @ray.remote
 class SpecificationsModule(modules.Module):
     def __init__(self):
-        super().__init__(Specifications, "specifications", expected_format)
+        super().__init__(Specifications, "specifications", expected_format, ProjectFields.SPECIFICATIONS)

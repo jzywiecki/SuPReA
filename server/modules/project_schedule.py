@@ -2,6 +2,8 @@ import ray
 
 import modules.module as modules
 from models import ProjectSchedule
+from models import ProjectFields
+
 
 expected_format = """
     "milestones": [
@@ -17,4 +19,4 @@ expected_format = """
 @ray.remote
 class ProjectScheduleModule(modules.Module):
     def __init__(self):
-        super().__init__(ProjectSchedule, "schedule", expected_format)
+        super().__init__(ProjectSchedule, "project schedule", expected_format, ProjectFields.PROJECT_SCHEDULE)
