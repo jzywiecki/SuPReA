@@ -2,9 +2,10 @@ import pymongo
 import os
 import certifi
 
-from database.projects import ProjectsDAO
+from .projects import ProjectsDAO
+from .chats import ChatsDAO
 
-mongo_client = pymongo.MongoClient (
+mongo_client = pymongo.MongoClient(
     os.environ["MONGODB_URL"],
     tls=True,
     tlsCAFile=certifi.where()
@@ -17,3 +18,4 @@ if db_name_env is not None:
     db_name = db_name_env
 
 projects_dao = ProjectsDAO(mongo_client, db_name)
+chats_dao = ChatsDAO(mongo_client, db_name)

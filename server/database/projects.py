@@ -54,7 +54,7 @@ class ProjectsDAO:
             {"$set": {component_name: component.dict()}}
         )
 
-    def create_project(self, project):
+    def save_project(self, project):
         """Saves a project."""
         return self.collection.insert_one(project.dict(exclude={"id"}))
 
