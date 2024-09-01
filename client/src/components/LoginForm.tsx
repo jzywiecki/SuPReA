@@ -2,8 +2,10 @@ import React, { useState, useRef } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from 'axios';
+import { useUser } from './UserProvider';
 
 const LoginForm: React.FC = () => {
+    const { login } = useUser();
     const [emailFieldError, setEmailFieldError] = useState<string>("");
     const [passwordFieldError, setPasswordFieldError] = useState<string>("");
 
@@ -55,14 +57,21 @@ const LoginForm: React.FC = () => {
         })
         .then(response => {
             console.log(response.data);
+            const userData = {
+                email: response.data.email,
+                username: response.data.username,
+                avatar_url: response.data.avatar_url,
+                id: response.data.id,
+            };
+            login(userData);
+            alert('Logged in!');
         })
         .catch(error => {
             console.error('Error logging in:', error);
+            alert('Error logging in. Please try again.');
         });
-
-        alert("Login successful.");
     };
-
+ 
     return (
         <div className="isolate px-6 py-24 sm:py-32 lg:px-8">
             <div

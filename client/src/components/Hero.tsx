@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Hero = () => {
     return (
-        <div className="bg-white">
+        <div>
             <div className="relative isolate px-6 pt-14 lg:px-8">
                 <div
                     className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -21,7 +21,7 @@ const Hero = () => {
                     <div className="hidden sm:mb-8 sm:flex sm:justify-center">
                     </div>
                     <div className="text-center">
-                        <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+                        <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
                             Intelligent creation and support of project requirements.
                         </h1>
                         <p className="mt-6 text-lg leading-8 text-gray-600">
@@ -35,7 +35,7 @@ const Hero = () => {
 
                                 Get started
                             </Link>
-                            <div onClick={() => { }} className="text-sm font-semibold leading-6 text-gray-900">
+                            <div onClick={() => { }} className="text-sm font-semibold leading-6">
                                 Learn more <span aria-hidden="true">→</span>
                             </div>
                         </div>

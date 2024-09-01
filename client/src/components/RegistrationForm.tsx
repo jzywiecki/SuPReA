@@ -88,6 +88,7 @@ const RegisterForm: React.FC = () => {
         })
         .then(response => {
             console.log(response.data);
+            alert("Registration successful.");
         })
         .catch(error => {
             console.error('Error registering:', error);
@@ -95,7 +96,6 @@ const RegisterForm: React.FC = () => {
             return;
         });
 
-        alert("Registration successful.");
     };
 
     return (

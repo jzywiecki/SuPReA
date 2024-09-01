@@ -38,6 +38,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		Username: registerRequest.Username,
 		Email:    registerRequest.Email,
 		Password: registerRequest.Password,
+		Friends:  []models.Friend{},
+		Projects: []int{},
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -49,12 +51,13 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	client := database.GetDatabaseConnection()
 
-	collection := database.GetCollection(client, "authDB", "users")
+	collection := database.GetCollection(client, "Users", "users")
 
 	var existingUser models.User
-	err = collection.FindOne(context.Background(), models.User{Email: user.Email}).Decode(&existingUser)
+	err = collection.FindOne(context.Background(), bson.M{"email": user.Email}).Decode(&existingUser)
 	if err == nil {
 		http.Error(w, "User already exists", http.StatusConflict)
+		return
 	}
 
 	_, err = collection.InsertOne(context.Background(), user)
@@ -81,7 +84,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	client := database.GetDatabaseConnection()
 
 	var user models.User
-	collection := database.GetCollection(client, "authDB", "users")
+	collection := database.GetCollection(client, "Users", "users")
 	err := collection.FindOne(context.Background(), bson.M{"email": loginReq.Email}).Decode(&user)
 	if err != nil {
 		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
@@ -133,8 +136,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
+		"id":            user.ID.Hex(),
 		"access_token":  accessTokenString,
 		"refresh_token": refreshTokenString,
+		"username":      user.Username,
+		"email":         user.Email,
+		"avatar_url":    user.AvatarURL,
 	})
 }
 
@@ -156,7 +163,7 @@ func Authenticate(r *http.Request) bool {
 	client := database.GetDatabaseConnection()
 
 	var user models.User
-	collection := database.GetCollection(client, "authDB", "users")
+	collection := database.GetCollection(client, "Users", "users")
 	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email, "token": tokenStr}).Decode(&user)
 
 	return err == nil
@@ -181,7 +188,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	client := database.GetDatabaseConnection()
 
-	collection := database.GetCollection(client, "authDB", "users")
+	collection := database.GetCollection(client, "Users", "users")
 	_, err = collection.UpdateOne(context.Background(), bson.M{"email": claims.Email}, bson.M{"$set": bson.M{"token": ""}})
 	if err != nil {
 		http.Error(w, "Error logging out", http.StatusInternalServerError)
@@ -213,7 +220,7 @@ func RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	client := database.GetDatabaseConnection()
 
 	var user models.User
-	collection := database.GetCollection(client, "authDB", "users")
+	collection := database.GetCollection(client, "Users", "users")
 	err = collection.FindOne(context.Background(), bson.M{"email": refreshClaims.Email, "refresh_token": request.RefreshToken}).Decode(&user)
 	if err != nil {
 		http.Error(w, "Invalid refresh token", http.StatusUnauthorized)
