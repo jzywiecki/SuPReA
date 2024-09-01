@@ -1,6 +1,6 @@
 import abc
 import json
-from database import projects_dao
+import database.projects as projects_dao
 from utils import logger_ai, logger_db
 
 
@@ -43,6 +43,9 @@ class Module(metaclass=abc.ABCMeta):
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name, "component": self.what})
 
+        except json.JSONDecodeError as e:
+            logger_ai.error(f"{e}, reply={reply}", extra={"ai_model": ai_model.name, "component": self.what})
+            raise e
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
             raise e
@@ -58,6 +61,9 @@ class Module(metaclass=abc.ABCMeta):
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name, "component": self.what})
 
+        except json.JSONDecodeError as e:
+            logger_ai.error(f"{e}, reply={reply}", extra={"ai_model": ai_model.name, "component": self.what})
+            raise e
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
             raise e
@@ -110,7 +116,7 @@ def extract_json(text):
     if start_index != -1 and end_index != -1 and start_index < end_index:
         return text[start_index:end_index + 1]
 
-    return None
+    return text
 
 
 def make_model_from_reply(model_class, reply):

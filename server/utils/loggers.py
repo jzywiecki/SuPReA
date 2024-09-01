@@ -20,11 +20,11 @@ ai_logger_formatter = logging.Formatter(
     "%(asctime)s - %(levelname)s - %(funcName)s - [AI Model: %(ai_model)s] - [Component: %(component)s] - %(message)s"
 )
 logger_ai = logging.getLogger("AI")
-configure_logging(logger_ai, logging.INFO, "log_ai", ai_logger_formatter, 1024, 2)
+configure_logging(logger_ai, logging.INFO, "log_ai", ai_logger_formatter, 1024, 0)
 
 
 database_logger_formatter = logging.Formatter(
     "%(asctime)s - %(levelname)s - %(funcName)s - [ProjectId: %(project_id)s] - [Field: %(field)s] - %(message)s"
 )
 logger_db = logging.getLogger("DB")
-configure_logging(logger_ai, logging.INFO, "log_db", ai_logger_formatter, 1024, 2)
+configure_logging(logger_db, logging.INFO, "log_db", database_logger_formatter, 1024, 0)

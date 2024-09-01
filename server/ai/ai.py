@@ -42,7 +42,8 @@ class AI(metaclass=abc.ABCMeta):
 
         return f"""
             Generate {what} for {for_who} creating app for {doing_what}.
-            Result return EXACTLY according to provided below json schema (do not change the convention from the given json): 
+            Result return EXACTLY according to provided below json schema (do NOT CHANGE the convention from the given json! 
+            DO NOT generate Bulleted List! GENERATE JSON): 
             {expected_answer_format}.
             Additional information: {additional_info}
         """
@@ -61,8 +62,8 @@ class AI(metaclass=abc.ABCMeta):
         return f"""
             Update {what} from: {previous_val}.
             making the following changes: {changes_request}.
-            Please ensure that the result adheres STRICTLY to the provided JSON schema (dont change the convention, but 
-            changes the values): 
+            Result return EXACTLY according to provided below json schema (do NOT CHANGE the convention from the given json! 
+            DO NOT generate Bulleted List! GENERATE JSON): 
             {expected_answer_format}.
         """
 

@@ -1,14 +1,11 @@
-from fastapi import APIRouter, Body, HTTPException, status, Response
-from bson import ObjectId
-from pydantic import BaseModel, Field
-from pymongo import ReturnDocument
+from fastapi import APIRouter, HTTPException, status, Response
+from pydantic import BaseModel
+from models import Project
+import database.projects as projects_dao
+from modules.project import ProjectAIGenerationActor
+from bson.errors import InvalidId
 
-from models.projects import Project, Projects
-from database import project_collection
-from models.projects import generate_models_by_ai
-from models.projects import create_project
-
-from ai.open_ai import GPT35Turbo, DallE3
+from ai.open_ai import GPT35TurboInstance, DallE3Instance
 
 router = APIRouter(
     tags=["projects"],
@@ -27,15 +24,13 @@ class EmptyProjectCreateRequest(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create_empty(request: EmptyProjectCreateRequest):
+def create_empty(request: EmptyProjectCreateRequest):
     try:
-        new_project_id = await create_project(
-            request.name, request.owner_id, "", "", ""
-        )
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="INTERNAL SERVER ERROR")
+        new_project_id = projects_dao.create_project(request.name, request.owner_id, "", "", "", "")
+        return new_project_id
 
-    return new_project_id
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
 
 
 class ProjectCreateRequest(BaseModel):
@@ -51,42 +46,26 @@ class ProjectCreateRequest(BaseModel):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-async def create(request: ProjectCreateRequest):
+def create(request: ProjectCreateRequest):
     try:
-        new_project_id = await create_project(
+        new_project_id = projects_dao.create_project(
             request.name,
             request.owner_id,
+            "",
             request.for_who,
             request.doing_what,
             request.additional_info,
         )
+
+        project_ai_generator = ProjectAIGenerationActor.remote()
+        project_ai_generator.generate_components_by_ai.remote(GPT35TurboInstance, DallE3Instance, request.for_who,
+                                                              request.doing_what, request.additional_info)
+        project_ai_generator.save_components_to_database.remote(new_project_id)
+
+        return new_project_id
     except Exception as e:
-        print("ERROR IN CREATE PROJECT. DETAILS:")
         print(e)
-        raise HTTPException(status_code=400, detail="INTERNAL SERVER ERROR")
-
-    generate_models_by_ai.remote(
-        new_project_id,
-        request.for_who,
-        request.doing_what,
-        request.additional_info,
-        DallE3,
-        GPT35Turbo,
-    )
-
-    return new_project_id
-
-
-@router.get(
-    "/",
-    response_model=Projects,
-    status_code=status.HTTP_200_OK,
-    response_model_by_alias=False,
-)
-async def get_projects():
-    projects = await project_collection.find().to_list(length=None)
-    projects_collection = Projects(projects=projects)
-    return projects_collection
+        raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
 
 
 @router.get(
@@ -95,50 +74,30 @@ async def get_projects():
     status_code=status.HTTP_200_OK,
     response_model_by_alias=False,
 )
-async def get_project(project_id: str):
-    project = await project_collection.find_one({"_id": ObjectId(project_id)})
-
-    if project:
-        return project
-    else:
-        raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
-
-
-@router.put(
-    "/{project_id}",
-    response_model=Project,
-    status_code=status.HTTP_200_OK,
-    response_model_by_alias=False,
-)
-async def update_project(project_id: str, project: Project = Body(...)):
-    project = {
-        k: v for k, v in project.model_dump(by_alias=True).items() if v is not None
-    }
-    if len(project) >= 1:
-        update_result = await project_collection.find_one_and_update(
-            {"_id": ObjectId(project_id)},
-            {"$set": project},
-            return_document=ReturnDocument.AFTER,
-        )
-        if update_result is not None:
-            return update_result
+def get_project(project_id: str):
+    try:
+        project = projects_dao.get_project(project_id)
+        if project:
+            return project
         else:
-            raise HTTPException(
-                status_code=404, detail=f"Project {project_id} not found"
-            )
-    if (
-        project := await project_collection.find_one({"_id": ObjectId(project_id)})
-        is not None
-    ):
-        return project
-    raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="INVALID PROJECT ID")
+    except Exception:
+        raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
 
 
 @router.delete(
     "/{project_id}",
 )
 async def delete_project(project_id: str):
-    delete_result = await project_collection.delete_one({"_id": ObjectId(project_id)})
-    if delete_result.deleted_count == 1:
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-    raise HTTPException(status_code=404, detail=f"Project {project_id} not found")
+    try:
+        delete_result = projects_dao.delete_project(project_id)
+        if delete_result.deleted_count == 1:
+            return Response(status_code=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="INVALID PROJECT ID")
+    except Exception:
+        raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")

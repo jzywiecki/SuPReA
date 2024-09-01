@@ -1,3 +1,5 @@
+import ray
+
 from fastapi import FastAPI
 from routers import (
     actors,
@@ -12,11 +14,11 @@ from routers import (
     projects,
     requirements,
     risks,
-    umls,
-    download,
+    #download,
 )
 from fastapi.middleware.cors import CORSMiddleware
 
+ray.init()
 
 app = FastAPI()
 
@@ -40,6 +42,5 @@ app.include_router(risks.router)
 app.include_router(specifications.router)
 app.include_router(strategy.router)
 app.include_router(title.router)
-app.include_router(umls.router)
 app.include_router(database_schema.router)
-app.include_router(download.router)
+#app.include_router(download.router)

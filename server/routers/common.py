@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from bson.errors import InvalidId
-from database import projects_dao
+import database.projects as projects_dao
 
 
 def get_module(project_id: str, module_name):
