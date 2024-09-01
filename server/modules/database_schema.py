@@ -5,6 +5,7 @@ import modules.module as modules
 from models import DatabaseSchema
 from utils.decorators import override
 from modules.module import extract_json
+from modules.module import make_model_from_reply
 from models import ProjectFields
 
 
@@ -44,9 +45,8 @@ class DatabaseSchemaModule(modules.Module):
 
             reply = ai_model.make_ai_call(request)
             reply_json_str = extract_json(reply)
-            self.value = super(DatabaseSchemaModule, self).make_model_from_reply(reply_json_str)
+            self.value = make_model_from_reply(self.model_class, reply_json_str)
 
         except Exception as e:
-            print(e)
-            self.exception = e
-            self.status = f"model:{self.what} error:update_by_ai"
+            #TODO: log this excepton
+            raise e

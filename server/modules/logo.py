@@ -40,12 +40,11 @@ class LogoModule(modules.Module):
             )
 
             list_value = process_ai_requests(ai_model, request1, request2, request3, request4)
-            self.value = self.make_model_from_reply(list_value)
+            self.value = make_model_from_reply(self.model_class, list_value)
 
         except Exception as e:
-            self.exception = e
-            self.status = f"model:{self.what} error:generate_by_ai"
-            self.value = None
+            #TODO: log this excepton
+            raise e
 
     @override
     def update_by_ai(self, ai_model, changes_request):
@@ -57,15 +56,11 @@ class LogoModule(modules.Module):
             request4 = ai_model.parse_update_query(self.what, "", changes_request, self.expected_format)
 
             list_value = process_ai_requests(ai_model, request1, request2, request3, request4)
-            self.value = self.make_model_from_reply(list_value)
+            self.value = make_model_from_reply(self.model_class, list_value)
 
         except Exception as e:
-            self.exception = e
-            self.status = f"model:{self.what} error:update_by_ai"
-
-    @override
-    def make_model_from_reply(self, reply):
-        return self.model_class(logo_urls=reply)
+            #TOOD: log this excepton
+            raise e
 
 
 def process_ai_requests(ai_model, *requests):
@@ -76,3 +71,7 @@ def process_ai_requests(ai_model, *requests):
 
     results = ray.get(replies)
     return results
+
+
+def make_model_from_reply(model_class, reply):
+    return model_class(logo_urls=reply)

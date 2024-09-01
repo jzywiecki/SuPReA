@@ -22,15 +22,12 @@ class Module(metaclass=abc.ABCMeta):
 
         Attributes:
             value: The model object.
-            status: The last status of the model (can be used to send status messages).
             exception: The last occurred exception.
         """
         self.model_class = model_class
         self.what = name
         self.expected_format = expected_format
         self.value = None
-        self.status = None
-        self.exception = None
         self.db_field_name = db_field_name
 
     def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
@@ -42,13 +39,11 @@ class Module(metaclass=abc.ABCMeta):
 
             reply = ai_model.make_ai_call(request)
             reply_json_str = extract_json(reply)
-            self.value = self.make_model_from_reply(reply_json_str)
+            self.value = make_model_from_reply(self.model_class, reply_json_str)
 
         except Exception as e:
-            print(e)
-            self.exception = e
-            self.status = f"model:{self.what} error:generate_by_ai"
-            self.value = None
+            #TODO: log this excepton
+            raise e
 
     def update_by_ai(self, ai_model, changes_request):
         """Update a model using the AI model."""
@@ -57,20 +52,19 @@ class Module(metaclass=abc.ABCMeta):
 
             reply = ai_model.make_ai_call(request)
             reply_json_str = extract_json(reply)
-            self.value = self.make_model_from_reply(reply_json_str)
+            self.value = make_model_from_reply(self.model_class, reply_json_str)
 
         except Exception as e:
-            print(e)
-            self.exception = e
-            self.status = f"model:{self.what} error:update_by_ai"
+            #TODO :log this excepton
+            raise e
 
     def save_to_database(self, project_id):
         """Save the provided/generated model to the database for project with id={project_id}."""
         try:
             projects_dao.update_project_component(project_id, self.db_field_name, self.value)
         except Exception as e:
-            self.exception = e
-            self.status = f"model:{self.what} error:save_to_database"
+            #TODO: log this excepton
+            raise e
 
     def fetch_from_database(self, project_id):
         """Fetch the model from project with id={project_id} from the database."""
@@ -79,33 +73,23 @@ class Module(metaclass=abc.ABCMeta):
             if self.value is None:
                 raise ValueError("value is None")
         except Exception as e:
-            self.exception = e
-            self.status = f"model:{self.what} error:fetch_from_database"
+            #TODO: log this excepton
+            raise e
 
     def update(self, new_val):
         """Update the model with a new value. Value must be of the correct type."""
         try:
             if not isinstance(new_val, self.model_class):
-                raise ValueError("new_val is not of the correct type")
+                raise ValueError("new val is not of the correct type")
             self.value = new_val
 
         except Exception as e:
-            self.exception = e
-            self.status = f"model:{self.what} error:update"
-            self.value = None
-
-    def check_errors(self):
-        """Returns the status and exception if there is any."""
-        return self.status, self.exception
+            #TODO: log this excepton
+            raise e
 
     def get_value(self):
         """Returns the value of the model."""
         return self.value
-
-    def make_model_from_reply(self, reply):
-        """Creates a model object from the ai reply"""
-        data = json.loads(reply)
-        return self.model_class(**data)
 
 
 def extract_json(text):
@@ -121,3 +105,8 @@ def extract_json(text):
 
     return None
 
+
+def make_model_from_reply(model_class, reply):
+    """Creates a model object from the ai reply"""
+    data = json.loads(reply)
+    return model_class(**data)
