@@ -8,6 +8,10 @@ client = OpenAI()
 
 class GPT35Turbo(AI):
     @override
+    def name(self):
+        return "GPT-3.5 Turbo"
+
+    @override
     def make_ai_call(self, query):
         messages = [{"role": "system", "content": query, "type": "json_object"}]
         params = {"model": "gpt-3.5-turbo", "messages": messages, "max_tokens": 4000}
@@ -16,6 +20,10 @@ class GPT35Turbo(AI):
 
 
 class DallE3(AI):
+    @override
+    def name(self):
+        return "DALL-E 3"
+
     @override
     def make_ai_call(self, query):
         params = {

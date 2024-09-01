@@ -6,6 +6,10 @@ class AI(metaclass=abc.ABCMeta):
     """
     Abstract class represents AI models.
     """
+    @abc.abstractmethod
+    def name(self):
+        """Returns the name of the AI model."""
+        raise NotImplementedError
 
     @abc.abstractmethod
     def make_ai_call(self, query):
