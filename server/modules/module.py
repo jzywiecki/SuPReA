@@ -41,13 +41,13 @@ class Module(metaclass=abc.ABCMeta):
             reply_json_str = extract_json(reply)
             self.value = make_model_from_reply(self.model_class, reply_json_str)
 
-            logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name, "component": self.what})
+            logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
 
         except json.JSONDecodeError as e:
-            logger_ai.error(f"{e}, reply={reply}", extra={"ai_model": ai_model.name, "component": self.what})
+            logger_ai.error(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
             raise e
         except Exception as e:
-            logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
+            logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
             raise e
 
     def update_by_ai(self, ai_model, changes_request):
@@ -59,13 +59,13 @@ class Module(metaclass=abc.ABCMeta):
             reply_json_str = extract_json(reply)
             self.value = make_model_from_reply(self.model_class, reply_json_str)
 
-            logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name, "component": self.what})
+            logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
 
         except json.JSONDecodeError as e:
-            logger_ai.error(f"{e}, reply={reply}", extra={"ai_model": ai_model.name, "component": self.what})
+            logger_ai.error(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
             raise e
         except Exception as e:
-            logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
+            logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
             raise e
 
     def save_to_database(self, project_id):

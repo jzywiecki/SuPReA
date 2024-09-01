@@ -43,10 +43,10 @@ class LogoModule(modules.Module):
             list_value = process_ai_requests(ai_model, request1, request2, request3, request4)
             self.value = make_model_from_reply(self.model_class, list_value)
 
-            logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name, "component": self.what})
+            logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
 
         except Exception as e:
-            logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
+            logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
             raise e
 
     @override
@@ -61,10 +61,10 @@ class LogoModule(modules.Module):
             list_value = process_ai_requests(ai_model, request1, request2, request3, request4)
             self.value = make_model_from_reply(self.model_class, list_value)
 
-            logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name, "component": self.what})
+            logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
 
         except Exception as e:
-            logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
+            logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
             raise e
 
 
