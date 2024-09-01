@@ -1,4 +1,8 @@
 from bson import ObjectId
+from datetime import datetime
+
+from models import Chat, Project
+from .database import chats_dao
 
 
 class ProjectsDAO:
@@ -68,3 +72,32 @@ class ProjectsDAO:
     def delete_project(self, project_id: str):
         """Deletes a project."""
         return self.collection.delete_one({"_id": ObjectId(project_id)})
+
+    # TODO: below method should be a transaction.
+    def create_empty_project(
+            self, project_name, owner_id, description: str, for_who: str, doing_what: str, additional_info: str
+    ):
+        """Creates new empty project with the specified details and returns the project id.
+        Also creates two chats for the project: discussion_chat and ai_chat."""
+
+        discussion_chat = Chat(last_message_id=0, messages=[])
+        ai_chat = Chat(last_message_id=0, messages=[])
+
+        discussion_chat_id = chats_dao.save_chat(discussion_chat).inserted_id
+        ai_chat_id = chats_dao.save_chat(ai_chat).inserted_id
+
+        new_project = Project(
+            name=project_name,
+            for_who=for_who,
+            doing_what=doing_what,
+            additional_info=additional_info,
+            description=description,
+            owner=ObjectId(owner_id),
+            members=[ObjectId(owner_id)],
+            created_at=datetime.now(),
+            chat_id=ObjectId(discussion_chat_id),
+            ai_chat_id=ObjectId(ai_chat_id),
+        )
+
+        result = self.save_project(new_project)
+        return str(result.inserted_id)
