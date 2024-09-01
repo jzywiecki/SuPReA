@@ -7,6 +7,7 @@ from utils.decorators import override
 from modules.module import extract_json
 from modules.module import make_model_from_reply
 from models import ProjectFields
+from utils import logger_ai
 
 
 expected_format = """ Don't return the same values in the database! just be inspired by it!
@@ -47,6 +48,8 @@ class DatabaseSchemaModule(modules.Module):
             reply_json_str = extract_json(reply)
             self.value = make_model_from_reply(self.model_class, reply_json_str)
 
+            logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name, "component": self.what})
+
         except Exception as e:
-            #TODO: log this excepton
+            logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
             raise e

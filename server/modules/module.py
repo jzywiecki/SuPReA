@@ -1,6 +1,7 @@
 import abc
 import json
 from database import projects_dao
+from utils import logger_ai
 
 
 class Module(metaclass=abc.ABCMeta):
@@ -22,7 +23,6 @@ class Module(metaclass=abc.ABCMeta):
 
         Attributes:
             value: The model object.
-            exception: The last occurred exception.
         """
         self.model_class = model_class
         self.what = name
@@ -41,8 +41,10 @@ class Module(metaclass=abc.ABCMeta):
             reply_json_str = extract_json(reply)
             self.value = make_model_from_reply(self.model_class, reply_json_str)
 
+            logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name, "component": self.what})
+
         except Exception as e:
-            #TODO: log this excepton
+            logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
             raise e
 
     def update_by_ai(self, ai_model, changes_request):
@@ -54,8 +56,10 @@ class Module(metaclass=abc.ABCMeta):
             reply_json_str = extract_json(reply)
             self.value = make_model_from_reply(self.model_class, reply_json_str)
 
+            logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name, "component": self.what})
+
         except Exception as e:
-            #TODO :log this excepton
+            logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
             raise e
 
     def save_to_database(self, project_id):
