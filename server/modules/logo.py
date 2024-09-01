@@ -72,7 +72,6 @@ def process_ai_requests(ai_model, *requests):
     replies = []
     for request in requests:
         replies.append(ai_call_remote.remote(ai_model, request))
-        break
 
     results = ray.get(replies)
     return results
