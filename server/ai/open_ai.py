@@ -46,3 +46,7 @@ class DallE3(AI):
     def parse_update_query(self, what, previous_val, changes_request, expected_answer_format):
         """specific query for DallE3 to update a picture"""
         return f"Create a {what} making: {changes_request} expected format: {expected_answer_format}"
+
+
+GPT35TurboInstance = GPT35Turbo()
+DallE3Instance = DallE3()
