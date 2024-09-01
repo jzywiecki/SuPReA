@@ -1,9 +1,10 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { FaPencilAlt, FaSave, FaUser, FaEnvelope, FaGlobe, FaBuilding, FaMapMarkerAlt, FaFileAlt, FaUserTag } from 'react-icons/fa';
+import { FaPencilAlt, FaSave, FaUser, FaGlobe, FaBuilding, FaMapMarkerAlt } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import Modal from 'react-modal';
+import rehypeRaw from 'rehype-raw';
 
 interface User {
   id: string;
@@ -50,6 +51,19 @@ function Profile() {
     }
   };
 
+  const handleResetAvatar = () => {
+    axios.post(`http://localhost:3333/users/${id}/reset-avatar`)
+      .then(response => {
+        alert("Avatar reset successfully!");
+        setPreviewAvatar(response.data.avatar_url);
+        setIsAvatarModalOpen(false);
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.error("There was an error resetting the avatar!", error);
+      });
+  }
+
   const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -70,14 +84,13 @@ function Profile() {
     const formData = new FormData();
     formData.append(field, (user as any)[field]);
 
-    axios.put(`http://localhost:3333/api/users/${id}`, formData, {
+    axios.patch(`http://localhost:3333/users/${id}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
       },
     })
     .then(response => {
       alert(`${field} updated successfully!`);
-      setUser(response.data);
       setIsEditing({ ...isEditing, [field]: false });
     })
     .catch(error => {
@@ -113,47 +126,54 @@ function Profile() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-10">
+    <div className="max-w-5xl mt-6 mx-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-10">
       {user && (
         <>
           <div>
             <div className="text-center mb-4">
               <img 
-                src={previewAvatar || "https://via.placeholder.com/300"}
+                src={user.avatar_url}
                 alt="Profile Avatar"
                 className="w-96 h-96 rounded-full object-cover mx-auto cursor-pointer border-1 border-gray-300"
                 onClick={() => setIsAvatarModalOpen(true)}
               />
+              
             </div>
             <div className="space-y-0 border-b-2">
               <h2 className="text-2xl font-bold">{user.username}</h2>
               <p className="text-gray-500">{user.email}</p>
+              {user.avatar_url}
               <div className='space-y-0'>
               {[
                 { field: 'description'},
               ].map(({ field }) => (
                 <div key="description" className="relative flex items-center">
                   <div className="relative mt-2 flex-1">
-                    <input 
-                      type={field === 'email' ? 'email' : 'text'} 
-                      id={field} 
-                      name={field} 
-                      value={user[field as keyof User]} 
-                      disabled={!isEditMode || !isEditing[field as keyof User]}
-                      onChange={handleInputChange} 
-                      className={`w-full px-4 py-2 rounded-md ${isEditMode && isEditing[field as keyof User] ? 'border border-gray-300' : 'border-none'}`}
-                    />
+        <textarea
+        id={field}
+        name={field}
+        role="textbox"
+        value={user[field as keyof User]}
+        disabled={!isEditMode || !isEditing[field as keyof User]}
+        onChange={handleInputChange}
+        className={`w-full px-4 py-2 rounded-md resize-none overflow-y-auto overflow-x-auto ${
+          isEditMode && isEditing[field as keyof User]
+            ? 'border border-gray-300'
+            : 'border-none bg-white dark:bg-inherit'
+        }`}
+        rows={3} 
+      />
                     {isEditMode && (
                       <>
-                        {isEditing[field as keyof User] ? (
+                        {isEditing["description" as keyof User] ? (
                           <FaSave 
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                            onClick={() => handleFieldSubmit(field as keyof User)}
+                            onClick={() => handleFieldSubmit("description" as keyof User)}
                           />
                         ) : (
                           <FaPencilAlt 
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                            onClick={() => setIsEditing({ ...isEditing, [field]: true })}
+                            onClick={() => setIsEditing({ ...isEditing, ["description"]: true })}
                           />
                         )}
                       </>
@@ -163,16 +183,17 @@ function Profile() {
               ))}
               </div>
             </div>
+            <div className="flex justify-center mt-4">
             <button
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
-                onClick={toggleEditMode}
-              >
-                {isEditMode ? 'Cancel Edit' : 'Edit Profile'}
-              </button>
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
+              onClick={toggleEditMode}
+            >
+              {isEditMode ? 'Cancel Edit' : 'Edit Profile'}
+            </button>
+          </div>
             <div className="space-y-0">
               {[
                 { field: 'name', icon: FaUser },
-                { field: 'description', icon: FaFileAlt },
                 { field: 'organization', icon: FaBuilding },
                 { field: 'location', icon: FaMapMarkerAlt },
                 { field: 'website', icon: FaGlobe },
@@ -187,7 +208,7 @@ function Profile() {
                       value={user[field as keyof User]} 
                       disabled={!isEditMode || !isEditing[field as keyof User]}
                       onChange={handleInputChange} 
-                      className={`w-full px-4 py-2 rounded-md ${isEditMode && isEditing[field as keyof User] ? 'border border-gray-300' : 'border-none'}`}
+                      className={`w-full px-4 py-2 rounded-md ${isEditMode && isEditing[field as keyof User] ? 'border border-gray-300' : 'border-none bg-white  dark:bg-inherit'}`}
                     />
                     {isEditMode && (
                       <>
@@ -228,7 +249,7 @@ function Profile() {
               ) : (
                 <div className="relative">
                   {user.username}/about the user
-                  <ReactMarkdown className="prose">
+                  <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose">
                     
                     {user.readme}
                   </ReactMarkdown>
@@ -250,8 +271,8 @@ function Profile() {
         isOpen={isAvatarModalOpen}
         onRequestClose={() => setIsAvatarModalOpen(false)}
         contentLabel="Upload Avatar"
-        className="absolute inset-0 flex items-center justify-center"
-        overlayClassName="fixed inset-0 bg-opacity-75"
+        className="absolute inset-0 flex items-center justify-center bg-white dark:bg-inherit"
+        overlayClassName="fixed inset-0"
       >
         <div className="p-6 rounded-lg shadow-lg max-w-md w-full">
           <h2 className="text-xl font-bold mb-4">Upload New Avatar</h2>
@@ -269,6 +290,12 @@ function Profile() {
             />
           )}
           <div className="flex justify-end">
+          <button
+              className="px-4 py-2 bg-red-600 text-white rounded-lg cursor-pointer"
+              onClick={handleResetAvatar}
+            >
+              Reset avatar
+            </button>
             <button
               className="mr-4 px-4 py-2  text-white rounded-lg cursor-pointer"
               onClick={() => setIsAvatarModalOpen(false)}

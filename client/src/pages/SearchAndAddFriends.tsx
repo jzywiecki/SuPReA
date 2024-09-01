@@ -94,7 +94,7 @@ const SearchAndAddFriends: React.FC = () => {
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-4">Your friends</h3>
-                {friends.length > 0 ? (
+                {friends && friends.length > 0 ? (
                     <ul className="space-y-4">
                         {friends.filter(friend => friend.status == "accepted").map(friend => (
                             <UserCard 
@@ -111,7 +111,7 @@ const SearchAndAddFriends: React.FC = () => {
             </div>
             <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-4">Pending Invitations</h3>
-                {friends.length > 0 ? (
+                {friends && friends.length > 0 ? (
                     <ul className="space-y-4">
                         {friends.filter(friend => friend.status == "invited_by_friend").map(friend => (
                             <UserCard 
@@ -128,7 +128,7 @@ const SearchAndAddFriends: React.FC = () => {
             </div>
             <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-4">Sent Invitations</h3>
-                {friends.length > 0 ? (
+                {friends && friends.length > 0 ? (
                     <ul className="space-y-4">
                         {friends.filter(friend => friend.status == "invited_by_user").map(friend => (
                             <UserCard 
