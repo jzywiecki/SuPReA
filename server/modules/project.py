@@ -52,7 +52,11 @@ class ProjectAIGenerationActor:
     def save_components_to_database(self, project_id):
         for actor in self.actors:
             value_ref = actor.get_value.remote()
-            value = ray.get(value_ref)
-            if value is not None:
-                break
-            actor.save_to_database.remote(project_id)
+            try:     # TEMPORARY EXCEPTION HANDLING
+                value = ray.get(value_ref)
+                if value is not None:
+                    continue
+                actor.save_to_database.remote(project_id)
+            except Exception as e:
+                print("Exception in save_components_to_database: ", e)
+                continue
