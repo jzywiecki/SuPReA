@@ -91,91 +91,117 @@ func AddUserToFriends(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	client := database.GetDatabaseConnection()
-
-	userId := r.URL.Query().Get("user_id")
-	if userId == "" {
-		http.Error(w, "User ID is required", http.StatusBadRequest)
-		return
-	}
-
-	friendId := r.URL.Query().Get("friend_id")
-	if friendId == "" {
-		http.Error(w, "Friend ID is required", http.StatusBadRequest)
-		return
-	}
-
-	if userId == friendId {
-		http.Error(w, "User cannot be friends with themselves", http.StatusBadRequest)
-		return
-	}
-
-	objID, err := primitive.ObjectIDFromHex(userId)
+	session, err := client.StartSession()
 	if err != nil {
-		http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+		http.Error(w, "Cannot start session", http.StatusInternalServerError)
 		return
 	}
+	defer session.EndSession(context.Background())
 
-	friendObjID, err := primitive.ObjectIDFromHex(friendId)
-	if err != nil {
-		http.Error(w, "Invalid friend ID format", http.StatusBadRequest)
-		return
-	}
-
-	if objID == friendObjID {
-		http.Error(w, "User cannot be friends with themselves", http.StatusBadRequest)
-		return
-	}
-
-	collection := database.GetCollection(client, "Users", "users")
-
-	// Check if user and friend exist
-	var user models.User
-	err = collection.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&user)
-	if err != nil {
-		http.Error(w, "Error retrieving user", http.StatusInternalServerError)
-		return
-	}
-
-	var friend models.User
-	err = collection.FindOne(context.Background(), bson.M{"_id": friendObjID}).Decode(&friend)
-	if err != nil {
-		http.Error(w, "Error retrieving friend", http.StatusInternalServerError)
-		return
-	}
-
-	// Check if user is already friends with the friend
-	for _, friend := range user.Friends {
-		if friend.ID == friendObjID {
-			http.Error(w, "User is already friends with this user", http.StatusBadRequest)
-			return
+	err = mongo.WithSession(context.Background(), session, func(sc mongo.SessionContext) error {
+		if err := session.StartTransaction(); err != nil {
+			return err
 		}
-	}
 
-	// Add friend to user's friends list
-	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": objID}, bson.M{
-		"$push": bson.M{"friends": bson.M{
-			"_id":    friendObjID,
-			"status": models.InvitedByUser,
-		}},
+		userId := r.URL.Query().Get("user_id")
+		if userId == "" {
+			http.Error(w, "User ID is required", http.StatusBadRequest)
+			return nil
+		}
+
+		friendId := r.URL.Query().Get("friend_id")
+		if friendId == "" {
+			http.Error(w, "Friend ID is required", http.StatusBadRequest)
+			return nil
+		}
+
+		if userId == friendId {
+			http.Error(w, "User cannot be friends with themselves", http.StatusBadRequest)
+			return nil
+		}
+
+		objID, err := primitive.ObjectIDFromHex(userId)
+		if err != nil {
+			http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+			return nil
+		}
+
+		friendObjID, err := primitive.ObjectIDFromHex(friendId)
+		if err != nil {
+			http.Error(w, "Invalid friend ID format", http.StatusBadRequest)
+			return nil
+		}
+
+		if objID == friendObjID {
+			http.Error(w, "User cannot be friends with themselves", http.StatusBadRequest)
+			return nil
+		}
+
+		collection := database.GetCollection(client, "Users", "users")
+
+		// Check if user and friend exist
+		var user models.User
+		err = collection.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&user)
+		if err != nil {
+			http.Error(w, "Error retrieving user", http.StatusInternalServerError)
+			return nil
+		}
+
+		var friend models.User
+		err = collection.FindOne(context.Background(), bson.M{"_id": friendObjID}).Decode(&friend)
+		if err != nil {
+			http.Error(w, "Error retrieving friend", http.StatusInternalServerError)
+			return nil
+		}
+
+		// Check if user is already friends with the friend
+		for _, friend := range user.Friends {
+			if friend.ID == friendObjID {
+				http.Error(w, "User is already friends with this user", http.StatusBadRequest)
+				return nil
+			}
+		}
+
+		// Add friend to user's friends list
+		_, err = collection.UpdateOne(context.Background(), bson.M{"_id": objID}, bson.M{
+			"$push": bson.M{"friends": bson.M{
+				"_id":    friendObjID,
+				"status": models.InvitedByUser,
+			}},
+		})
+		if err != nil {
+			http.Error(w, "Error adding friend to user's friends list", http.StatusInternalServerError)
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		// Add user to friend's friends list
+		_, err = collection.UpdateOne(context.Background(), bson.M{"_id": friendObjID}, bson.M{
+			"$push": bson.M{"friends": bson.M{
+				"_id":    objID,
+				"status": models.InvitedByFriend,
+			}},
+		})
+		if err != nil {
+			http.Error(w, "Error adding user to friend's friends list", http.StatusInternalServerError)
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		err = session.CommitTransaction(sc)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		w.WriteHeader(http.StatusOK)
+		return nil
 	})
+
 	if err != nil {
-		http.Error(w, "Error adding friend to user's friends list", http.StatusInternalServerError)
-		return
+		http.Error(w, "Transaction failed", http.StatusInternalServerError)
 	}
 
-	// Add user to friend's friends list
-	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": friendObjID}, bson.M{
-		"$push": bson.M{"friends": bson.M{
-			"_id":    objID,
-			"status": models.InvitedByFriend,
-		}},
-	})
-	if err != nil {
-		http.Error(w, "Error adding user to friend's friends list", http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 func AcceptUserToFriends(w http.ResponseWriter, r *http.Request) {
@@ -185,59 +211,80 @@ func AcceptUserToFriends(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	client := database.GetDatabaseConnection()
-
-	var requestBody struct {
-		UserID   string `json:"user_id"`
-		FriendID string `json:"friend_id"`
-	}
-	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	session, err := client.StartSession()
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		http.Error(w, "Cannot start session", http.StatusInternalServerError)
 		return
 	}
+	defer session.EndSession(context.Background())
 
-	userID := requestBody.UserID
-	friendID := requestBody.FriendID
+	err = mongo.WithSession(context.Background(), session, func(sc mongo.SessionContext) error {
+		if err := session.StartTransaction(); err != nil {
+			return err
+		}
 
-	if userID == "" || friendID == "" {
-		http.Error(w, "User ID and Friend ID are required", http.StatusBadRequest)
-		return
-	}
+		var requestBody struct {
+			UserID   string `json:"user_id"`
+			FriendID string `json:"friend_id"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&requestBody)
+		if err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return nil
+		}
 
-	userObjID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		http.Error(w, "Invalid User ID format", http.StatusBadRequest)
-		return
-	}
+		userID := requestBody.UserID
+		friendID := requestBody.FriendID
 
-	friendObjID, err := primitive.ObjectIDFromHex(friendID)
-	if err != nil {
-		http.Error(w, "Invalid Friend ID format", http.StatusBadRequest)
-		return
-	}
+		if userID == "" || friendID == "" {
+			http.Error(w, "User ID and Friend ID are required", http.StatusBadRequest)
+			return nil
+		}
 
-	collection := database.GetCollection(client, "Users", "users")
+		userObjID, err := primitive.ObjectIDFromHex(userID)
+		if err != nil {
+			http.Error(w, "Invalid User ID format", http.StatusBadRequest)
+			return nil
+		}
 
-	// Update the friend relationship to accepted for both users
-	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": userObjID, "friends._id": friendObjID}, bson.M{
-		"$set": bson.M{"friends.$.status": models.Accepted},
+		friendObjID, err := primitive.ObjectIDFromHex(friendID)
+		if err != nil {
+			http.Error(w, "Invalid Friend ID format", http.StatusBadRequest)
+			return nil
+		}
+
+		collection := database.GetCollection(client, "Users", "users")
+
+		_, err = collection.UpdateOne(sc, bson.M{"_id": userObjID, "friends._id": friendObjID}, bson.M{
+			"$set": bson.M{"friends.$.status": models.Accepted},
+		})
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		_, err = collection.UpdateOne(sc, bson.M{"_id": friendObjID, "friends._id": userObjID}, bson.M{
+			"$set": bson.M{"friends.$.status": models.Accepted},
+		})
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		err = session.CommitTransaction(sc)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		return nil
 	})
-	if err != nil {
-		http.Error(w, "Error accepting friend request", http.StatusInternalServerError)
-		return
-	}
 
-	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": friendObjID, "friends._id": userObjID}, bson.M{
-		"$set": bson.M{"friends.$.status": models.Accepted},
-	})
 	if err != nil {
-		http.Error(w, "Error updating friend's friend list", http.StatusInternalServerError)
-		return
+		http.Error(w, "Transaction failed", http.StatusInternalServerError)
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Friend request accepted"})
 }
 
 func RejectUserToFriends(w http.ResponseWriter, r *http.Request) {
@@ -247,59 +294,81 @@ func RejectUserToFriends(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	client := database.GetDatabaseConnection()
-
-	var requestBody struct {
-		UserID   string `json:"user_id"`
-		FriendID string `json:"friend_id"`
-	}
-	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	session, err := client.StartSession()
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		http.Error(w, "Cannot start session", http.StatusInternalServerError)
 		return
 	}
+	defer session.EndSession(context.Background())
 
-	userID := requestBody.UserID
-	friendID := requestBody.FriendID
+	err = mongo.WithSession(context.Background(), session, func(sc mongo.SessionContext) error {
+		if err := session.StartTransaction(); err != nil {
+			return err
+		}
 
-	if userID == "" || friendID == "" {
-		http.Error(w, "User ID and Friend ID are required", http.StatusBadRequest)
-		return
-	}
+		var requestBody struct {
+			UserID   string `json:"user_id"`
+			FriendID string `json:"friend_id"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&requestBody)
+		if err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return nil
+		}
 
-	userObjID, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		http.Error(w, "Invalid User ID format", http.StatusBadRequest)
-		return
-	}
+		userID := requestBody.UserID
+		friendID := requestBody.FriendID
 
-	friendObjID, err := primitive.ObjectIDFromHex(friendID)
-	if err != nil {
-		http.Error(w, "Invalid Friend ID format", http.StatusBadRequest)
-		return
-	}
+		if userID == "" || friendID == "" {
+			http.Error(w, "User ID and Friend ID are required", http.StatusBadRequest)
+			return nil
+		}
 
-	collection := database.GetCollection(client, "Users", "users")
+		userObjID, err := primitive.ObjectIDFromHex(userID)
+		if err != nil {
+			http.Error(w, "Invalid User ID format", http.StatusBadRequest)
+			return nil
+		}
 
-	// Remove the friend request from both users
-	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": userObjID}, bson.M{
-		"$pull": bson.M{"friends": bson.M{"_id": friendObjID}},
+		friendObjID, err := primitive.ObjectIDFromHex(friendID)
+		if err != nil {
+			http.Error(w, "Invalid Friend ID format", http.StatusBadRequest)
+			return nil
+		}
+
+		collection := database.GetCollection(client, "Users", "users")
+
+		_, err = collection.UpdateOne(sc, bson.M{"_id": userObjID}, bson.M{
+			"$pull": bson.M{"friends": bson.M{"_id": friendObjID}},
+		})
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		_, err = collection.UpdateOne(sc, bson.M{"_id": friendObjID}, bson.M{
+			"$pull": bson.M{"friends": bson.M{"_id": userObjID}},
+		})
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		err = session.CommitTransaction(sc)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Friend request rejected"})
+		return nil
 	})
-	if err != nil {
-		http.Error(w, "Error rejecting friend request", http.StatusInternalServerError)
-		return
-	}
 
-	_, err = collection.UpdateOne(context.Background(), bson.M{"_id": friendObjID}, bson.M{
-		"$pull": bson.M{"friends": bson.M{"_id": userObjID}},
-	})
 	if err != nil {
-		http.Error(w, "Error updating friend's friend list", http.StatusInternalServerError)
-		return
+		http.Error(w, "Transaction failed", http.StatusInternalServerError)
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Friend request rejected"})
 }
 
 func RemoveFriend(w http.ResponseWriter, r *http.Request) {
@@ -391,6 +460,8 @@ func RemoveFriend(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		return nil
 	})
 
@@ -399,6 +470,4 @@ func RemoveFriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 }

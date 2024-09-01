@@ -15,6 +15,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Link } from "react-router-dom";
+import Profile from "@/pages/Profile";
 
 const Navbar = () => {
     const { user, logout } = useUser();
@@ -53,7 +54,9 @@ const Navbar = () => {
                                 <>
                                     <DropdownMenuLabel>{user.username}</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Link to={`/profile/${user.id}`}>Profile</Link> 
+                                        </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={logout}>
                                         <Link to="/">Logout</Link>
