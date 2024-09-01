@@ -57,6 +57,7 @@
     "react-graph-vis": "^1.0.7",
     "react-icons": "^5.2.1",
     "react-iframe": "^1.8.5",
+    "react-markdown": "^9.0.1",
     "react-modal": "^3.16.1",
     "react-nice-avatar": "^1.5.0",
     "react-plantuml": "^0.0.8",

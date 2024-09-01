@@ -14,6 +14,12 @@ type User struct {
 	Friends      []Friend           `json:"friends"`
 	Projects     []int              `json:"projects"`
 	AvatarURL    string             `json:"avatar_url"`
+	Name         string             `json:"name"`
+	Description  string             `json:"description"`
+	Readme       string             `json:"readme"`
+	Organization string             `json:"organization"`
+	Location     string             `json:"location"`
+	Website      string             `json:"website"`
 }
 
 type Friend struct {

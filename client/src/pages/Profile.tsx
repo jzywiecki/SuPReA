@@ -1,11 +1,289 @@
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect, ChangeEvent } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { FaPencilAlt, FaSave, FaUser, FaEnvelope, FaGlobe, FaBuilding, FaMapMarkerAlt, FaFileAlt, FaUserTag } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
+import Modal from 'react-modal';
+
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  avatar_url: string;
+  name: string;
+  description: string;
+  readme: string;
+  organization: string;
+  location: string;
+  website: string;
+}
+
+Modal.setAppElement('#root'); // Required for accessibility
 
 function Profile() {
-  const { id } = useParams(); // Pobiera parametr id z URL
+  const { id } = useParams<{ id: string }>(); // Retrieve the user id from the URL
+  const [user, setUser] = useState<User | null>(null);
+  const [avatar, setAvatar] = useState<File | null>(null);
+  const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState<{ [key in keyof User]?: boolean }>({});
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false); // State for toggling edit mode
+
+  useEffect(() => {
+    // Fetch user data from the server
+    axios.get<User>(`http://localhost:3333/users/${id}`)
+      .then(response => {
+        setUser(response.data);
+        setPreviewAvatar(response.data.avatar_url);
+      })
+      .catch(error => {
+        console.error("There was an error fetching the user data!", error);
+      });
+  }, [id]);
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (user) {
+      setUser({
+        ...user,
+        [e.target.name]: e.target.value,
+      });
+    }
+  };
+
+  const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setAvatar(file);
+
+      // Generate a preview of the new avatar
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewAvatar(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFieldSubmit = (field: keyof User) => {
+    if (!user) return;
+
+    const formData = new FormData();
+    formData.append(field, (user as any)[field]);
+
+    axios.put(`http://localhost:3333/api/users/${id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then(response => {
+      alert(`${field} updated successfully!`);
+      setUser(response.data);
+      setIsEditing({ ...isEditing, [field]: false });
+    })
+    .catch(error => {
+      console.error(`There was an error updating the ${field}!`, error);
+    });
+  };
+
+  const handleAvatarSubmit = () => {
+    if (!avatar) return;
+    
+    const formData = new FormData();
+    formData.append('avatar', avatar);
+
+    axios.put(`http://localhost:3333/api/users/${id}/avatar`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then(response => {
+      alert("Avatar updated successfully!");
+      setUser(response.data);
+      setPreviewAvatar(response.data.avatar_url);
+      setIsAvatarModalOpen(false);
+    })
+    .catch(error => {
+      console.error("There was an error updating the avatar!", error);
+    });
+  };
+
+  const toggleEditMode = () => {
+    setIsEditMode(!isEditMode);
+    setIsEditing({});
+  };
+
   return (
-    <div>
-      <h1>Profile Page</h1>
-      <p>User ID: {id}</p>
+    <div className="max-w-5xl mx-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-10">
+      {user && (
+        <>
+          <div>
+            <div className="text-center mb-4">
+              <img 
+                src={previewAvatar || "https://via.placeholder.com/300"}
+                alt="Profile Avatar"
+                className="w-96 h-96 rounded-full object-cover mx-auto cursor-pointer border-1 border-gray-300"
+                onClick={() => setIsAvatarModalOpen(true)}
+              />
+            </div>
+            <div className="space-y-0 border-b-2">
+              <h2 className="text-2xl font-bold">{user.username}</h2>
+              <p className="text-gray-500">{user.email}</p>
+              <div className='space-y-0'>
+              {[
+                { field: 'description'},
+              ].map(({ field }) => (
+                <div key="description" className="relative flex items-center">
+                  <div className="relative mt-2 flex-1">
+                    <input 
+                      type={field === 'email' ? 'email' : 'text'} 
+                      id={field} 
+                      name={field} 
+                      value={user[field as keyof User]} 
+                      disabled={!isEditMode || !isEditing[field as keyof User]}
+                      onChange={handleInputChange} 
+                      className={`w-full px-4 py-2 rounded-md ${isEditMode && isEditing[field as keyof User] ? 'border border-gray-300' : 'border-none'}`}
+                    />
+                    {isEditMode && (
+                      <>
+                        {isEditing[field as keyof User] ? (
+                          <FaSave 
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                            onClick={() => handleFieldSubmit(field as keyof User)}
+                          />
+                        ) : (
+                          <FaPencilAlt 
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                            onClick={() => setIsEditing({ ...isEditing, [field]: true })}
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+              </div>
+            </div>
+            <button
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
+                onClick={toggleEditMode}
+              >
+                {isEditMode ? 'Cancel Edit' : 'Edit Profile'}
+              </button>
+            <div className="space-y-0">
+              {[
+                { field: 'name', icon: FaUser },
+                { field: 'description', icon: FaFileAlt },
+                { field: 'organization', icon: FaBuilding },
+                { field: 'location', icon: FaMapMarkerAlt },
+                { field: 'website', icon: FaGlobe },
+              ].map(({ field, icon: Icon }) => (
+                <div key={field} className="relative flex items-center">
+                  <Icon className="text-gray-700 mr-2" />
+                  <div className="relative mt-2 flex-1">
+                    <input 
+                      type={field === 'email' ? 'email' : 'text'} 
+                      id={field} 
+                      name={field} 
+                      value={user[field as keyof User]} 
+                      disabled={!isEditMode || !isEditing[field as keyof User]}
+                      onChange={handleInputChange} 
+                      className={`w-full px-4 py-2 rounded-md ${isEditMode && isEditing[field as keyof User] ? 'border border-gray-300' : 'border-none'}`}
+                    />
+                    {isEditMode && (
+                      <>
+                        {isEditing[field as keyof User] ? (
+                          <FaSave 
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                            onClick={() => handleFieldSubmit(field as keyof User)}
+                          />
+                        ) : (
+                          <FaPencilAlt 
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                            onClick={() => setIsEditing({ ...isEditing, [field]: true })}
+                          />
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="border-2 border-gray-300 rounded-lg p-4">
+              {isEditing.readme ? (
+                <div className="relative">
+                  <textarea
+                    name="readme"
+                    value={user.readme}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 rounded-md border border-gray-300 h-64"
+                  />
+                  <FaSave 
+                    className="absolute right-3 top-3 text-gray-500 cursor-pointer"
+                    onClick={() => handleFieldSubmit('readme')}
+                  />
+                </div>
+              ) : (
+                <div className="relative">
+                  {user.username}/about the user
+                  <ReactMarkdown className="prose">
+                    
+                    {user.readme}
+                  </ReactMarkdown>
+                  {isEditMode && (
+                    <FaPencilAlt 
+                      className="absolute right-3 top-1 text-gray-500 cursor-pointer"
+                      onClick={() => setIsEditing({ ...isEditing, readme: true })}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Avatar Upload Modal */}
+      <Modal 
+        isOpen={isAvatarModalOpen}
+        onRequestClose={() => setIsAvatarModalOpen(false)}
+        contentLabel="Upload Avatar"
+        className="absolute inset-0 flex items-center justify-center"
+        overlayClassName="fixed inset-0 bg-opacity-75"
+      >
+        <div className="p-6 rounded-lg shadow-lg max-w-md w-full">
+          <h2 className="text-xl font-bold mb-4">Upload New Avatar</h2>
+          <input 
+            type="file" 
+            accept="image/*"
+            onChange={handleAvatarChange}
+            className="w-full px-4 py-2 mb-4"
+          />
+          {previewAvatar && (
+            <img 
+              src={previewAvatar}
+              alt="Preview Avatar"
+              className="w-32 h-32 rounded-full object-cover mx-auto mb-4"
+            />
+          )}
+          <div className="flex justify-end">
+            <button
+              className="mr-4 px-4 py-2  text-white rounded-lg cursor-pointer"
+              onClick={() => setIsAvatarModalOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="px-4 py-2 bg-green-600 text-white rounded-lg cursor-pointer"
+              onClick={handleAvatarSubmit}
+            >
+              Save Avatar
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -64,15 +64,9 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userView := view.User{
-		ID:        user.ID.Hex(),
-		Username:  user.Username,
-		Email:     user.Email,
-		AvatarURL: user.AvatarURL,
-	}
+	userView := view.NewUserView(user)
 
 	json.NewEncoder(w).Encode(userView)
-
 	w.Header().Set("Content-Type", "application/json")
 }
 
@@ -108,14 +102,9 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usersView := make([]view.User, 0, len(users))
+	usersView := make([]view.UserView, 0, len(users))
 	for _, user := range users {
-		usersView = append(usersView, view.User{
-			ID:        user.ID.Hex(),
-			Username:  user.Username,
-			Email:     user.Email,
-			AvatarURL: user.AvatarURL,
-		})
+		usersView = append(usersView, view.NewUserView(user))
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -166,14 +155,9 @@ func GetUsersWithFilterQuery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usersView := make([]view.User, 0, len(users))
+	usersView := make([]view.UserView, 0, len(users))
 	for _, user := range users {
-		usersView = append(usersView, view.User{
-			ID:        user.ID.Hex(),
-			Username:  user.Username,
-			Email:     user.Email,
-			AvatarURL: user.AvatarURL,
-		})
+		usersView = append(usersView, view.NewUserView(user))
 	}
 
 	w.Header().Set("Content-Type", "application/json")
