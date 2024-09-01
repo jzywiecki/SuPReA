@@ -74,17 +74,14 @@ class ProjectsDAO:
         return self.collection.delete_one({"_id": ObjectId(project_id)})
 
     # TODO: below method should be a transaction.
-    def create_empty_project(
+    def create_project(
             self, project_name, owner_id, description: str, for_who: str, doing_what: str, additional_info: str
     ):
         """Creates new empty project with the specified details and returns the project id.
         Also creates two chats for the project: discussion_chat and ai_chat."""
 
-        discussion_chat = Chat(last_message_id=0, messages=[])
-        ai_chat = Chat(last_message_id=0, messages=[])
-
-        discussion_chat_id = chats_dao.save_chat(discussion_chat).inserted_id
-        ai_chat_id = chats_dao.save_chat(ai_chat).inserted_id
+        discussion_chat_id = chats_dao.create_chat()
+        ai_chat_id = chats_dao.create_chat()
 
         new_project = Project(
             name=project_name,
