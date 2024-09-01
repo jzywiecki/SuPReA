@@ -1,7 +1,7 @@
 import abc
 import json
 from database import projects_dao
-from utils import logger_ai
+from utils import logger_ai, logger_db
 
 
 class Module(metaclass=abc.ABCMeta):
@@ -66,8 +66,10 @@ class Module(metaclass=abc.ABCMeta):
         """Save the provided/generated model to the database for project with id={project_id}."""
         try:
             projects_dao.update_project_component(project_id, self.db_field_name, self.value)
+            logger_db.info(f"Finished successfully.", extra={"project_id": project_id, "field": self.db_field_name})
+
         except Exception as e:
-            #TODO: log this excepton
+            logger_db.error(f"{e}", extra={"project_id": project_id, "field": self.db_field_name})
             raise e
 
     def fetch_from_database(self, project_id):
@@ -76,8 +78,10 @@ class Module(metaclass=abc.ABCMeta):
             self.value = projects_dao.get_project_component(project_id, self.db_field_name)
             if self.value is None:
                 raise ValueError("value is None")
+            logger_db.info(f"Finished successfully.", extra={"project_id": project_id, "field": self.db_field_name})
+
         except Exception as e:
-            #TODO: log this excepton
+            logger_db.error(f"{e}", extra={"project_id": project_id, "field": self.db_field_name})
             raise e
 
     def update(self, new_val):
@@ -88,7 +92,6 @@ class Module(metaclass=abc.ABCMeta):
             self.value = new_val
 
         except Exception as e:
-            #TODO: log this excepton
             raise e
 
     def get_value(self):
