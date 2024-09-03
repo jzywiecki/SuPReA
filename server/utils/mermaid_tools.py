@@ -39,3 +39,11 @@ def parse_database_to_erdiagram_mermaid(database):
         mermaid_format += parse_relationship_to_erdiagram_mermaid(relationship)
 
     return mermaid_format
+
+
+def create_er_diagram_mermaid(database):
+    try:
+        return parse_database_to_erdiagram_mermaid(database)
+    except Exception as e:
+        # TODO: log error
+        return None
