@@ -1,3 +1,6 @@
+from utils import logger
+
+
 def parse_table_to_erdiagram_mermaid(table):
     result = f"{table['name']} {{\n"
     columns = table["columns"]
@@ -45,5 +48,5 @@ def create_er_diagram_mermaid(database):
     try:
         return parse_database_to_erdiagram_mermaid(database)
     except Exception as e:
-        # TODO: log error
+        logger.exception(f"{e}")
         return None

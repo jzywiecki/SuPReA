@@ -2,6 +2,7 @@ from bson.errors import InvalidId
 from fastapi import APIRouter, Response, HTTPException, status
 from utils.pdf import generate_pdf
 import database.projects as projects_dao
+from utils import logger
 
 router = APIRouter(
     tags=["download"],
@@ -25,8 +26,10 @@ def download_pdf(project_id: str):
         }
 
         return Response(content=pdf_buffer, headers=headers, media_type="application/pdf")
+
     except InvalidId:
+        logger.exception(f"Invalid project id")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id")
     except Exception as e:
-        # TODO log error
+        logger.error(f"{e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")

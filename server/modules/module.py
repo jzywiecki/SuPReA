@@ -1,7 +1,7 @@
 import abc
 import json
 import database.projects as projects_dao
-from utils import logger_ai, logger_db
+from utils import logger_ai, logger_db, logger
 
 
 class Module(metaclass=abc.ABCMeta):
@@ -98,6 +98,7 @@ class Module(metaclass=abc.ABCMeta):
             self.value = new_val
 
         except Exception as e:
+            logger.exception(f"{e}")
             raise e
 
     def get_value(self):

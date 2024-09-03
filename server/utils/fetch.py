@@ -2,6 +2,7 @@ import ray
 import requests
 from io import BytesIO
 from reportlab.platypus import Image
+from utils import logger
 
 
 def fetch_image(url):
@@ -19,5 +20,5 @@ def fetch_image_remote(url):
     try:
         return fetch_image(url)
     except Exception as e:
-        # TODO: log error
+        logger.error(f"{e}")
         return None

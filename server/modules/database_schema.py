@@ -50,6 +50,9 @@ class DatabaseSchemaModule(modules.Module):
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
 
+        except json.JSONDecodeError as e:
+            logger_ai.error(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
+            raise e
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
             raise e

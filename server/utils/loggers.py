@@ -28,3 +28,10 @@ database_logger_formatter = logging.Formatter(
 )
 logger_db = logging.getLogger("DB")
 configure_logging(logger_db, logging.INFO, "log_db", database_logger_formatter, 1024, 0)
+
+
+classic_logger_formatter = logging.Formatter(
+    "%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
+)
+logger = logging.getLogger("LOGGER")
+configure_logging(logger, logging.INFO, "log", classic_logger_formatter, 2048, 0)
