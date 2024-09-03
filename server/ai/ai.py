@@ -6,6 +6,7 @@ class AI(metaclass=abc.ABCMeta):
     """
     Abstract class represents AI models.
     """
+
     @abc.abstractmethod
     def name(self):
         """Returns the name of the AI model."""
@@ -24,7 +25,9 @@ class AI(metaclass=abc.ABCMeta):
         """
         raise NotImplementedError
 
-    def parse_generate_query(self, what, for_who, doing_what, additional_info, expected_answer_format):
+    def parse_generate_query(
+        self, what, for_who, doing_what, additional_info, expected_answer_format
+    ):
         """
         Generates a query to GENERATE model to use in AI model. Derived AI models can override this method
         to provide a custom query format.
@@ -48,7 +51,9 @@ class AI(metaclass=abc.ABCMeta):
             Additional information: {additional_info}
         """
 
-    def parse_update_query(self, what, previous_val, changes_request, expected_answer_format):
+    def parse_update_query(
+        self, what, previous_val, changes_request, expected_answer_format
+    ):
         """
         Generates a query to UPDATE model to use in AI model. Derived AI models can override this method
         to provide a custom query format.

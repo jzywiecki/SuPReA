@@ -3,9 +3,7 @@ import os
 import certifi
 
 mongo_client = pymongo.MongoClient(
-    os.environ["MONGODB_URL"],
-    tls=True,
-    tlsCAFile=certifi.where()
+    os.environ["MONGODB_URL"], tls=True, tlsCAFile=certifi.where()
 )
 
 db_name = "Projects"

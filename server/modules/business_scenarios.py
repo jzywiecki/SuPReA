@@ -18,4 +18,9 @@ expected_format = """
 @ray.remote
 class BusinessScenariosModule(modules.Module):
     def __init__(self):
-        super().__init__(BusinessScenarios, "business scenario", expected_format, ComponentIdentify.BUSINESS_SCENARIOS)
+        super().__init__(
+            BusinessScenarios,
+            "business scenario",
+            expected_format,
+            ComponentIdentify.BUSINESS_SCENARIOS,
+        )

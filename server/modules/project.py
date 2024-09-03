@@ -20,6 +20,7 @@ MAX_RE_REGENERATION = 5
 @ray.remote
 class ProjectAIGenerationActor:
     """Main actor that generates components by AI, saves them to the database and handles failures."""
+
     def __init__(self):
         self.logo_actor = LogoModule.remote()
         self.actors = [
@@ -40,27 +41,37 @@ class ProjectAIGenerationActor:
         self.db_future = []
         self.failure_actor = []
 
-    def generate_components_by_ai(self, ai_text_model, ai_image_model, for_what, doing_what, additional_info):
+    def generate_components_by_ai(
+        self, ai_text_model, ai_image_model, for_what, doing_what, additional_info
+    ):
         """Run remote tasks to generate components by AI"""
         for actor in self.actors:
             if actor is self.logo_actor:
                 self.generate_future.append(
-                    actor.generate_by_ai.remote(ai_image_model, for_what, doing_what, additional_info)
+                    actor.generate_by_ai.remote(
+                        ai_image_model, for_what, doing_what, additional_info
+                    )
                 )
             else:
                 self.generate_future.append(
-                    actor.generate_by_ai.remote(ai_text_model, for_what, doing_what, additional_info)
+                    actor.generate_by_ai.remote(
+                        ai_text_model, for_what, doing_what, additional_info
+                    )
                 )
 
-    def save_components_and_regenerate_failure_by_ai(self, ai_text_model, for_what, doing_what, additional_info,
-                                                     project_id):
+    def save_components_and_regenerate_failure_by_ai(
+        self, ai_text_model, for_what, doing_what, additional_info, project_id
+    ):
         """Run remote tasks to save components into database.
         If AI generates a wrong format, regenerate the component (max MAX_RE_REGENERATION times) and save it again.
-        If the component still fails or unknown exception occurred, add it to the failure list."""
+        If the component still fails or unknown exception occurred, add it to the failure list.
+        """
         re_regeneration_count = 0
 
         while self.generate_future:
-            ready_components, self.generate_future = ray.wait(self.generate_future, num_returns=1, timeout=None)
+            ready_components, self.generate_future = ray.wait(
+                self.generate_future, num_returns=1, timeout=None
+            )
             for actor_ref in ready_components:
                 try:
                     actor, error = ray.get(actor_ref)
@@ -72,7 +83,9 @@ class ProjectAIGenerationActor:
                         if re_regeneration_count < MAX_RE_REGENERATION:
                             re_regeneration_count += 1
                             self.generate_future.append(
-                                actor.generate_by_ai.remote(ai_text_model, for_what, doing_what, additional_info)
+                                actor.generate_by_ai.remote(
+                                    ai_text_model, for_what, doing_what, additional_info
+                                )
                             )
                         else:
                             self.failure_actor.append(actor)
@@ -98,14 +111,18 @@ class ProjectAIGenerationActor:
 
 
 @ray.remote
-def generate_components_remote_wrapper(project_id, for_what, doing_what, additional_info, ai_text_model,
-                                       ai_image_model):
+def generate_components_remote_wrapper(
+    project_id, for_what, doing_what, additional_info, ai_text_model, ai_image_model
+):
     project_ai_actor = ProjectAIGenerationActor.remote()
-    generate_task = project_ai_actor.generate_components_by_ai.remote(ai_text_model, ai_image_model, for_what,
-                                                                      doing_what, additional_info)
-    regenerate_task = project_ai_actor.save_components_and_regenerate_failure_by_ai.remote(ai_text_model, for_what,
-                                                                                           doing_what, additional_info,
-                                                                                           project_id)
+    generate_task = project_ai_actor.generate_components_by_ai.remote(
+        ai_text_model, ai_image_model, for_what, doing_what, additional_info
+    )
+    regenerate_task = (
+        project_ai_actor.save_components_and_regenerate_failure_by_ai.remote(
+            ai_text_model, for_what, doing_what, additional_info, project_id
+        )
+    )
     save_check_task = project_ai_actor.save_to_database_service.remote()
 
     try:

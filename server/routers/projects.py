@@ -8,10 +8,7 @@ from utils import logger
 
 from ai.open_ai import GPT35TurboInstance, DallE3Instance
 
-router = APIRouter(
-    tags=["projects"],
-    prefix="/projects"
-)
+router = APIRouter(tags=["projects"], prefix="/projects")
 
 
 class EmptyProjectCreateRequest(BaseModel):
@@ -27,9 +24,13 @@ class EmptyProjectCreateRequest(BaseModel):
 def create_empty(request: EmptyProjectCreateRequest):
     try:
         if not request.name:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project name")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project name"
+            )
 
-        new_project_id = projects_dao.create_project(request.name, request.owner_id, "", "", "", "")
+        new_project_id = projects_dao.create_project(
+            request.name, request.owner_id, "", "", "", ""
+        )
         return new_project_id
 
     except HTTPException as e:
@@ -37,7 +38,9 @@ def create_empty(request: EmptyProjectCreateRequest):
         raise e
     except InvalidId:
         logger.exception(f"Invalid project id")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid owner id")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid owner id"
+        )
     except Exception as e:
         logger.error(f"{e}")
         raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
@@ -59,9 +62,14 @@ class ProjectCreateRequest(BaseModel):
 def create(request: ProjectCreateRequest):
     try:
         if not request.name:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project name")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project name"
+            )
         if not request.doing_what or not request.for_who:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project description")
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid project description",
+            )
 
         new_project_id = projects_dao.create_project(
             request.name,
@@ -72,7 +80,14 @@ def create(request: ProjectCreateRequest):
             request.additional_info,
         )
 
-        generate_components_remote_wrapper.remote(new_project_id, request.for_who, request.doing_what, request.additional_info, GPT35TurboInstance, DallE3Instance)
+        generate_components_remote_wrapper.remote(
+            new_project_id,
+            request.for_who,
+            request.doing_what,
+            request.additional_info,
+            GPT35TurboInstance,
+            DallE3Instance,
+        )
 
         return new_project_id
 
@@ -81,7 +96,9 @@ def create(request: ProjectCreateRequest):
         raise e
     except InvalidId:
         logger.exception(f"Invalid project id")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid owner id")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid owner id"
+        )
     except Exception as e:
         logger.error(f"{e}")
         raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
@@ -103,10 +120,15 @@ def get_project(project_id: str):
 
     except InvalidId:
         logger.exception(f"Invalid project id")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id"
+        )
     except Exception as e:
         logger.error(f"{e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="INTERNAL SERVER ERROR",
+        )
 
 
 @router.delete(
@@ -122,7 +144,12 @@ def delete_project(project_id: str):
 
     except InvalidId:
         logger.exception(f"Invalid project id")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id"
+        )
     except Exception as e:
         logger.error(f"{e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="INTERNAL SERVER ERROR",
+        )

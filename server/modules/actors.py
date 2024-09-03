@@ -17,4 +17,6 @@ expected_format = """
 @ray.remote
 class ActorsModule(modules.Module):
     def __init__(self):
-        super().__init__(Actors, "few actors", expected_format, ComponentIdentify.ACTORS)
+        super().__init__(
+            Actors, "few actors", expected_format, ComponentIdentify.ACTORS
+        )

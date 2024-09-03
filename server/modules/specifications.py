@@ -18,4 +18,9 @@ expected_format = """
 @ray.remote
 class SpecificationsModule(modules.Module):
     def __init__(self):
-        super().__init__(Specifications, "specifications", expected_format, ComponentIdentify.SPECIFICATIONS)
+        super().__init__(
+            Specifications,
+            "specifications",
+            expected_format,
+            ComponentIdentify.SPECIFICATIONS,
+        )

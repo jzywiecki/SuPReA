@@ -37,13 +37,19 @@ class DallE3(AI):
         return response.data[0].url
 
     @override
-    def parse_generate_query(self, what, for_who, doing_what, additional_info, expected_answer_format):
+    def parse_generate_query(
+        self, what, for_who, doing_what, additional_info, expected_answer_format
+    ):
         """specific query for DallE3 to generate a picture"""
-        return f"Make {what} for {for_who} creating app for {doing_what} " \
-               f"additional information: {additional_info}"
+        return (
+            f"Make {what} for {for_who} creating app for {doing_what} "
+            f"additional information: {additional_info}"
+        )
 
     @override
-    def parse_update_query(self, what, previous_val, changes_request, expected_answer_format):
+    def parse_update_query(
+        self, what, previous_val, changes_request, expected_answer_format
+    ):
         """specific query for DallE3 to update a picture"""
         return f"Create a {what} making: {changes_request} expected format: {expected_answer_format}"
 

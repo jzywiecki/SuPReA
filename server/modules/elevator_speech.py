@@ -13,4 +13,9 @@ expected_format = """
 @ray.remote
 class ElevatorSpeechModule(modules.Module):
     def __init__(self):
-        super().__init__(ElevatorSpeech, "elevator speech", expected_format, ComponentIdentify.ELEVATOR_SPEECH)
+        super().__init__(
+            ElevatorSpeech,
+            "elevator speech",
+            expected_format,
+            ComponentIdentify.ELEVATOR_SPEECH,
+        )

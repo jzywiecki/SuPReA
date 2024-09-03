@@ -25,11 +25,18 @@ def download_pdf(project_id: str):
             "Content-Type": "application/pdf",
         }
 
-        return Response(content=pdf_buffer, headers=headers, media_type="application/pdf")
+        return Response(
+            content=pdf_buffer, headers=headers, media_type="application/pdf"
+        )
 
     except InvalidId:
         logger.exception(f"Invalid project id")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id"
+        )
     except Exception as e:
         logger.error(f"{e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="INTERNAL SERVER ERROR",
+        )

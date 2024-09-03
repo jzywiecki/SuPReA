@@ -128,26 +128,91 @@ def generate_pdf(project):
         ("Doing what", project.get("doing_what"), add_simple_text),
         ("Additional info", project.get("additional_info"), add_simple_text),
         ("Description", project.get("description"), add_simple_text),
-        ("Created at", project.get("created_at") and project["created_at"].strftime("%Y-%m-%d %H:%M:%S.%f"), add_simple_text),
+        (
+            "Created at",
+            project.get("created_at")
+            and project["created_at"].strftime("%Y-%m-%d %H:%M:%S.%f"),
+            add_simple_text,
+        ),
         ("Titles", project.get("title", {}).get("names"), add_simple_list),
-        ("Elevator speech", project.get("elevator_speech", {}).get("content"), add_simple_text),
+        (
+            "Elevator speech",
+            project.get("elevator_speech", {}).get("content"),
+            add_simple_text,
+        ),
         ("Motto", project.get("motto", {}).get("motto"), add_simple_text),
         ("Strategy", project.get("strategy", {}).get("strategy"), add_simple_text),
-        ("Database Schema", create_er_diagram_mermaid(project.get("database_schema")), add_er_diagram),
-        ("Actors", project.get("actors", {}).get("actors"), add_two_elements_list, "name", "description"),
-        ("Specifications", project.get("specifications", {}).get("specifications"), add_two_elements_list, "specification", "description"),
-        ("Risks", project.get("risks", {}).get("risks"), add_three_element_list, "risk", "description", "prevention"),
-        ("Functional Requirements", project.get("requirements", {}).get("functional_requirements"), add_three_element_list, "name", "description", "priority"),
-        ("Non Functional Requirements", project.get("requirements", {}).get("non_functional_requirements"), add_three_element_list, "name", "description", "priority"),
-        ("Project Schedule", project.get("project_schedule", {}).get("milestones"), add_three_element_list, "name", "description", "duration"),
-        ("Business Scenarios", project.get("business_scenarios", {}).get("business_scenario", {}).get("features"), add_two_elements_list, "feature_name", "description"),
+        (
+            "Database Schema",
+            create_er_diagram_mermaid(project.get("database_schema")),
+            add_er_diagram,
+        ),
+        (
+            "Actors",
+            project.get("actors", {}).get("actors"),
+            add_two_elements_list,
+            "name",
+            "description",
+        ),
+        (
+            "Specifications",
+            project.get("specifications", {}).get("specifications"),
+            add_two_elements_list,
+            "specification",
+            "description",
+        ),
+        (
+            "Risks",
+            project.get("risks", {}).get("risks"),
+            add_three_element_list,
+            "risk",
+            "description",
+            "prevention",
+        ),
+        (
+            "Functional Requirements",
+            project.get("requirements", {}).get("functional_requirements"),
+            add_three_element_list,
+            "name",
+            "description",
+            "priority",
+        ),
+        (
+            "Non Functional Requirements",
+            project.get("requirements", {}).get("non_functional_requirements"),
+            add_three_element_list,
+            "name",
+            "description",
+            "priority",
+        ),
+        (
+            "Project Schedule",
+            project.get("project_schedule", {}).get("milestones"),
+            add_three_element_list,
+            "name",
+            "description",
+            "duration",
+        ),
+        (
+            "Business Scenarios",
+            project.get("business_scenarios", {})
+            .get("business_scenario", {})
+            .get("features"),
+            add_two_elements_list,
+            "feature_name",
+            "description",
+        ),
         ("Logos", project.get("logo", {}).get("logo_urls"), add_pictures),
     ]
 
     for field in fields:
         title, data, func = field[0], field[1], field[2]
         if data:
-            if func is add_simple_text or func is add_simple_list or func is add_pictures:
+            if (
+                func is add_simple_text
+                or func is add_simple_list
+                or func is add_pictures
+            ):
                 func(pdf_elements, title, data)
             elif func is add_er_diagram:
                 func(pdf_elements, data, title)
