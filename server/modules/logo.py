@@ -44,6 +44,7 @@ class LogoModule(modules.Module):
             self.value = make_model_from_reply(self.model_class, list_value)
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
+            return self
 
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
@@ -62,6 +63,7 @@ class LogoModule(modules.Module):
             self.value = make_model_from_reply(self.model_class, list_value)
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
+            return self
 
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})

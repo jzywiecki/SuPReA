@@ -42,6 +42,7 @@ class Module(metaclass=abc.ABCMeta):
             self.value = make_model_from_reply(self.model_class, reply_json_str)
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
+            return self
 
         except json.JSONDecodeError as e:
             logger_ai.exception(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
@@ -60,6 +61,7 @@ class Module(metaclass=abc.ABCMeta):
             self.value = make_model_from_reply(self.model_class, reply_json_str)
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
+            return self
 
         except json.JSONDecodeError as e:
             logger_ai.exception(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
@@ -73,6 +75,7 @@ class Module(metaclass=abc.ABCMeta):
         try:
             projects_dao.update_project_component(project_id, self.db_field_name, self.value)
             logger_db.info(f"Finished successfully.", extra={"project_id": project_id, "field": self.db_field_name})
+            return self
 
         except Exception as e:
             logger_db.error(f"{e}", extra={"project_id": project_id, "field": self.db_field_name})
@@ -85,6 +88,7 @@ class Module(metaclass=abc.ABCMeta):
             if self.value is None:
                 raise ValueError("value is None")
             logger_db.info(f"Finished successfully.", extra={"project_id": project_id, "field": self.db_field_name})
+            return self
 
         except Exception as e:
             logger_db.error(f"{e}", extra={"project_id": project_id, "field": self.db_field_name})
@@ -96,6 +100,7 @@ class Module(metaclass=abc.ABCMeta):
             if not isinstance(new_val, self.model_class):
                 raise ValueError("new val is not of the correct type")
             self.value = new_val
+            return self
 
         except Exception as e:
             logger.exception(f"{e}")
