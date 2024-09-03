@@ -45,11 +45,11 @@ class LogoModule(modules.Module):
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
 
-            return self, None
+            return self.current_actor(), None
 
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self, e
+            return self.current_actor(), e
 
     @override
     def update_by_ai(self, ai_model, changes_request):
@@ -64,18 +64,17 @@ class LogoModule(modules.Module):
             self.value = make_model_from_reply(self.model_class, list_value)
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self, None
+            return self.current_actor(), None
 
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self, e
+            return self.current_actor(), e
 
 
 def process_ai_requests(ai_model, *requests):
     replies = []
     for request in requests:
         replies.append(ai_call_remote.remote(ai_model, request))
-        break
 
     results = ray.get(replies)
     return results

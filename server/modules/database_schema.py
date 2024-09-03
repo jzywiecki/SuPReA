@@ -49,12 +49,12 @@ class DatabaseSchemaModule(modules.Module):
             self.value = make_model_from_reply(self.model_class, reply_json_str)
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self, None
+            return self.current_actor(), None
 
         except json.JSONDecodeError as e:
             logger_ai.exception(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self, WrongFormatGeneratedByAI()
+            return self.current_actor(), WrongFormatGeneratedByAI()
 
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
-            return self, e
+            return self.current_actor(), e

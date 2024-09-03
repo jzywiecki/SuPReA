@@ -1,4 +1,5 @@
 import abc
+import ray
 import json
 import database.projects as projects_dao
 from utils import logger_ai, logger_db, logger, WrongFormatGeneratedByAI
@@ -32,7 +33,7 @@ class Module(metaclass=abc.ABCMeta):
 
     def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
         """Generates a model using the AI model.
-           returns the actor ref and an error if any."""
+           returns the current actor ref and an error if any."""
         try:
             request = ai_model.parse_generate_query(
                 self.what, for_what, doing_what, additional_info, self.expected_format
@@ -43,19 +44,19 @@ class Module(metaclass=abc.ABCMeta):
             self.value = make_model_from_reply(self.model_class, reply_json_str)
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self, None
+            return self.current_actor(), None
 
         except json.JSONDecodeError as e:
             logger_ai.exception(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self, WrongFormatGeneratedByAI()
+            return self.current_actor(), WrongFormatGeneratedByAI()
 
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self, e
+            return self.current_actor(), e
 
     def update_by_ai(self, ai_model, changes_request):
         """Update a model using the AI model.
-           returns the actor ref and an error if any."""
+           returns the current actor ref and an error if any."""
         try:
             request = ai_model.parse_update_query(self.what, self.value, changes_request, self.expected_format)
 
@@ -64,15 +65,15 @@ class Module(metaclass=abc.ABCMeta):
             self.value = make_model_from_reply(self.model_class, reply_json_str)
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self, None
+            return self.current_actor(), None
 
         except json.JSONDecodeError as e:
             logger_ai.exception(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self, WrongFormatGeneratedByAI()
+            return self.current_actor(), WrongFormatGeneratedByAI()
 
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self, e
+            return self.current_actor(), e
 
     def save_to_database(self, project_id):
         """Save the provided/generated model to the database for project with id={project_id}.
@@ -80,11 +81,11 @@ class Module(metaclass=abc.ABCMeta):
         try:
             projects_dao.update_project_component(project_id, self.component_identify.value, self.value)
             logger_db.info(f"Finished successfully.", extra={"project_id": project_id, "field": self.component_identify.value})
-            return self, None
+            return self.current_actor(), None
 
         except Exception as e:
             logger_db.error(f"{e}", extra={"project_id": project_id, "field": self.component_identify.value})
-            return self, e
+            return self.current_actor(), e
 
     def fetch_from_database(self, project_id):
         """Fetch the model from project with id={project_id} from the database.
@@ -94,11 +95,11 @@ class Module(metaclass=abc.ABCMeta):
             if self.value is None:
                 raise ValueError("value is None")
             logger_db.info(f"Finished successfully.", extra={"project_id": project_id, "field": self.component_identify.value})
-            return self, None
+            return self.current_actor(), None
 
         except Exception as e:
             logger_db.error(f"{e}", extra={"project_id": project_id, "field": self.component_identify.value})
-            return self, e
+            return self.current_actor(), e
 
     def update(self, new_val):
         """Update the model with a new value. Value must be of the correct type.
@@ -107,11 +108,11 @@ class Module(metaclass=abc.ABCMeta):
             if not isinstance(new_val, self.model_class):
                 raise ValueError("new val is not of the correct type")
             self.value = new_val
-            return self, None
+            return self.current_actor(), None
 
         except Exception as e:
             logger.exception(f"{e}")
-            return self, e
+            return self.current_actor(), e
 
     def get_value(self):
         """Returns the value of the model."""
@@ -120,6 +121,9 @@ class Module(metaclass=abc.ABCMeta):
     def get_component_identify(self):
         """Returns the component identify."""
         return self.component_identify
+
+    def current_actor(self):
+        return ray.get_runtime_context().current_actor
 
 
 def extract_json(text):
