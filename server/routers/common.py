@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, Response, status
 from bson.errors import InvalidId
 import database.projects as projects_dao
 
@@ -6,12 +6,12 @@ import database.projects as projects_dao
 def get_module(project_id: str, module_name):
     try:
         result = projects_dao.get_project_component(project_id, module_name)
-        if result is None:
-            raise HTTPException(status_code=404, detail="Resource not found")
-        return result
-    except HTTPException as ex:
-        raise ex
-    except InvalidId as ex:
-        raise HTTPException(status_code=400, detail="Invalid project ID")
-    except Exception as ex:
-        raise HTTPException(status_code=500, detail="Internal Server Error")
+        if result is not None:
+            return result
+
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
+    except InvalidId:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id")
+    except Exception as e:
+        # TODO: log error
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")

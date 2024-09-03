@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Response, HTTPException
+from bson.errors import InvalidId
+from fastapi import APIRouter, Response, HTTPException, status
 from utils.pdf import generate_pdf
 import database.projects as projects_dao
 
 router = APIRouter(
     tags=["download"],
     prefix="/download",
-    responses={404: {"description": "Not found"}},
 )
 
 
@@ -15,7 +15,7 @@ def download_pdf(project_id: str):
         project = projects_dao.get_project(project_id)
 
         if project is None:
-            return HTTPException(status_code=404, detail=f"Project {project_id} not found")
+            return Response(status_code=status.HTTP_404_NOT_FOUND)
 
         pdf_buffer = generate_pdf(project)
 
@@ -25,6 +25,8 @@ def download_pdf(project_id: str):
         }
 
         return Response(content=pdf_buffer, headers=headers, media_type="application/pdf")
+    except InvalidId:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id")
     except Exception as e:
-        print(f"Exception: {e}")
-        raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
+        # TODO log error
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")

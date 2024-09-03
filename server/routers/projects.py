@@ -9,8 +9,7 @@ from ai.open_ai import GPT35TurboInstance, DallE3Instance
 
 router = APIRouter(
     tags=["projects"],
-    prefix="/projects",
-    responses={404: {"description": "Not found"}},
+    prefix="/projects"
 )
 
 
@@ -26,10 +25,18 @@ class EmptyProjectCreateRequest(BaseModel):
 )
 def create_empty(request: EmptyProjectCreateRequest):
     try:
+        if not request.name:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project name")
+
         new_project_id = projects_dao.create_project(request.name, request.owner_id, "", "", "", "")
         return new_project_id
 
+    except HTTPException as e:
+        raise e
+    except InvalidId:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid owner id")
     except Exception as e:
+        # TODO log error
         raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
 
 
@@ -48,6 +55,11 @@ class ProjectCreateRequest(BaseModel):
 )
 def create(request: ProjectCreateRequest):
     try:
+        if not request.name:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project name")
+        if not request.doing_what or not request.for_who:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project description")
+
         new_project_id = projects_dao.create_project(
             request.name,
             request.owner_id,
@@ -63,8 +75,13 @@ def create(request: ProjectCreateRequest):
         project_ai_generator.save_components_to_database.remote(new_project_id)
 
         return new_project_id
+
+    except HTTPException as e:
+        raise e
+    except InvalidId:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid owner id")
     except Exception as e:
-        print(e)
+        # TODO log error
         raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
 
 
@@ -82,15 +99,15 @@ def get_project(project_id: str):
         else:
             return Response(status_code=status.HTTP_404_NOT_FOUND)
     except InvalidId:
-        raise HTTPException(status_code=400, detail="INVALID PROJECT ID")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id")
     except Exception:
-        raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")
 
 
 @router.delete(
     "/{project_id}",
 )
-async def delete_project(project_id: str):
+def delete_project(project_id: str):
     try:
         delete_result = projects_dao.delete_project(project_id)
         if delete_result.deleted_count == 1:
@@ -98,6 +115,6 @@ async def delete_project(project_id: str):
         else:
             return Response(status_code=status.HTTP_404_NOT_FOUND)
     except InvalidId:
-        raise HTTPException(status_code=400, detail="INVALID PROJECT ID")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id")
     except Exception:
-        raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="INTERNAL SERVER ERROR")
