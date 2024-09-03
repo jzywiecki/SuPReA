@@ -141,10 +141,10 @@ def generate_pdf(project):
                 "Database Schema",
             )
 
-        if project["modules"]:
+        if project["actors"]:
             add_two_elements_list(
                 pdf_elements,
-                project["modules"]["modules"],
+                project["actors"]["actors"],
                 "Actors",
                 "name",
                 "description",
@@ -155,7 +155,7 @@ def generate_pdf(project):
                 pdf_elements,
                 project["specifications"]["specifications"],
                 "Specifications",
-                "name",
+                "specification",
                 "description",
             )
 
@@ -217,7 +217,6 @@ def generate_pdf(project):
         if project["logo"]:
             add_simple_list(pdf_elements, project["logo"]["logo_urls"], "Logos")
 
-        # TODO: UMLs!
 
         doc.build(pdf_elements)
         buffer.seek(0)
