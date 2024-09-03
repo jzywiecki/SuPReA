@@ -15,7 +15,6 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Link } from "react-router-dom";
-import Profile from "@/pages/Profile";
 
 const Navbar = () => {
     const { user, logout } = useUser();
@@ -45,7 +44,7 @@ const Navbar = () => {
                     <DropdownMenu>
                         <DropdownMenuTrigger>
                             <Avatar>
-                                <AvatarImage src="" alt="@shadcn" />
+                                <AvatarImage src={user?.avatarurl} alt="@shadcn" />
                                 <AvatarFallback>?</AvatarFallback>
                             </Avatar>
                         </DropdownMenuTrigger>

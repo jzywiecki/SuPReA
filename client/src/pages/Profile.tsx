@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { FaPencilAlt, FaSave, FaUser, FaGlobe, FaBuilding, FaMapMarkerAlt } from 'react-icons/fa';
@@ -10,7 +10,7 @@ interface User {
   id: string;
   username: string;
   email: string;
-  avatar_url: string;
+  avatarurl: string;
   name: string;
   description: string;
   readme: string;
@@ -19,23 +19,23 @@ interface User {
   website: string;
 }
 
-Modal.setAppElement('#root'); // Required for accessibility
+Modal.setAppElement('#root'); 
 
 function Profile() {
-  const { id } = useParams<{ id: string }>(); // Retrieve the user id from the URL
+  const { id } = useParams<{ id: string }>(); 
   const [user, setUser] = useState<User | null>(null);
   const [avatar, setAvatar] = useState<File | null>(null);
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<{ [key in keyof User]?: boolean }>({});
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false); // State for toggling edit mode
+  const [isEditMode, setIsEditMode] = useState(false); 
 
   useEffect(() => {
-    // Fetch user data from the server
     axios.get<User>(`http://localhost:3333/users/${id}`)
       .then(response => {
         setUser(response.data);
-        setPreviewAvatar(response.data.avatar_url);
+        console.log(response.data);
+        setPreviewAvatar(response.data.avatarurl);
       })
       .catch(error => {
         console.error("There was an error fetching the user data!", error);
@@ -55,7 +55,7 @@ function Profile() {
     axios.post(`http://localhost:3333/users/${id}/reset-avatar`)
       .then(response => {
         alert("Avatar reset successfully!");
-        setPreviewAvatar(response.data.avatar_url);
+        setPreviewAvatar(response.data);          
         setIsAvatarModalOpen(false);
         console.log(response.data);
       })
@@ -69,7 +69,6 @@ function Profile() {
       const file = e.target.files[0];
       setAvatar(file);
 
-      // Generate a preview of the new avatar
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewAvatar(reader.result as string);
@@ -89,7 +88,7 @@ function Profile() {
         'Content-Type': 'application/json',
       },
     })
-    .then(response => {
+    .then(() => {
       alert(`${field} updated successfully!`);
       setIsEditing({ ...isEditing, [field]: false });
     })
@@ -112,7 +111,7 @@ function Profile() {
     .then(response => {
       alert("Avatar updated successfully!");
       setUser(response.data);
-      setPreviewAvatar(response.data.avatar_url);
+      setPreviewAvatar(response.data.avatarurl);
       setIsAvatarModalOpen(false);
     })
     .catch(error => {
@@ -132,7 +131,7 @@ function Profile() {
           <div>
             <div className="text-center mb-4">
               <img 
-                src={user.avatar_url}
+                src={user.avatarurl}
                 alt="Profile Avatar"
                 className="w-96 h-96 rounded-full object-cover mx-auto cursor-pointer border-1 border-gray-300"
                 onClick={() => setIsAvatarModalOpen(true)}
@@ -142,7 +141,6 @@ function Profile() {
             <div className="space-y-0 border-b-2">
               <h2 className="text-2xl font-bold">{user.username}</h2>
               <p className="text-gray-500">{user.email}</p>
-              {user.avatar_url}
               <div className='space-y-0'>
               {[
                 { field: 'description'},
@@ -232,7 +230,7 @@ function Profile() {
           </div>
 
           <div>
-            <div className="border-2 border-gray-300 rounded-lg p-4">
+            <div className="border-2 border-gray-300 rounded-lg p-10">
               {isEditing.readme ? (
                 <div className="relative">
                   <textarea
@@ -249,7 +247,7 @@ function Profile() {
               ) : (
                 <div className="relative">
                   {user.username}/about the user
-                  <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose">
+                  <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose mt-5 p-5 border-t-2">
                     
                     {user.readme}
                   </ReactMarkdown>
@@ -266,12 +264,11 @@ function Profile() {
         </>
       )}
 
-      {/* Avatar Upload Modal */}
       <Modal 
         isOpen={isAvatarModalOpen}
         onRequestClose={() => setIsAvatarModalOpen(false)}
         contentLabel="Upload Avatar"
-        className="absolute inset-0 flex items-center justify-center bg-white dark:bg-inherit"
+        className="absolute inset-0 flex items-center justify-center bg-white dark:bg-black"
         overlayClassName="fixed inset-0"
       >
         <div className="p-6 rounded-lg shadow-lg max-w-md w-full">
