@@ -1,7 +1,7 @@
 import abc
 import json
 import database.projects as projects_dao
-from utils import logger_ai, logger_db, logger
+from utils import logger_ai, logger_db, logger, WrongFormatGeneratedByAI
 
 
 class Module(metaclass=abc.ABCMeta):
@@ -44,8 +44,8 @@ class Module(metaclass=abc.ABCMeta):
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
 
         except json.JSONDecodeError as e:
-            logger_ai.error(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
-            raise e
+            logger_ai.exception(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
+            raise WrongFormatGeneratedByAI()
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
             raise e
@@ -62,8 +62,8 @@ class Module(metaclass=abc.ABCMeta):
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
 
         except json.JSONDecodeError as e:
-            logger_ai.error(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
-            raise e
+            logger_ai.exception(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
+            raise WrongFormatGeneratedByAI()
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
             raise e

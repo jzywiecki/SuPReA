@@ -1,0 +1,2 @@
+class WrongFormatGeneratedByAI(Exception):
+    pass
