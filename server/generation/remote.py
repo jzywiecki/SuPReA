@@ -9,6 +9,7 @@ from .generate import Generate
 class GenerateActor:
     """Remote actor that generates components by AI, saves them to the database and handles failures.
     This actor is wrapped around the Generate class."""
+
     def __init__(self, model_generate: Generate):
         self.model_generate = model_generate
 
@@ -16,22 +17,37 @@ class GenerateActor:
         """Generates a model using the AI model.
         returns the current actor ref and an error if any."""
         try:
-            self.model_generate.generate_by_ai(ai_model, for_what, doing_what, additional_info)
+            self.model_generate.generate_by_ai(
+                ai_model, for_what, doing_what, additional_info
+            )
 
             logger_ai.info(
                 f"Finished successfully.",
-                extra={"ai_model": ai_model.name(), "component": self.model_generate.what},
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
             )
             return self.current_actor(), None
 
         except json.JSONDecodeError as e:
-            logger_ai.exception(f"{e}", extra={"ai_model": ai_model.name(), "component": self.model_generate.what})
+            logger_ai.exception(
+                f"{e}",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
+            )
 
             return self.current_actor(), WrongFormatGeneratedByAI()
 
         except Exception as e:
             logger_ai.error(
-                f"{e}", extra={"ai_model": ai_model.name(), "component": self.model_generate.what}
+                f"{e}",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
             )
 
             return self.current_actor(), e
@@ -44,19 +60,32 @@ class GenerateActor:
 
             logger_ai.info(
                 f"Finished successfully.",
-                extra={"ai_model": ai_model.name(), "component": self.model_generate.what},
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
             )
 
             return self.current_actor(), None
 
         except json.JSONDecodeError as e:
-            logger_ai.exception(f"{e}", extra={"ai_model": ai_model.name(), "component": self.model_generate.what})
+            logger_ai.exception(
+                f"{e}",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
+            )
 
             return self.current_actor(), WrongFormatGeneratedByAI()
 
         except Exception as e:
             logger_ai.error(
-                f"{e}", extra={"ai_model": ai_model.name(), "component": self.model_generate.what}
+                f"{e}",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
             )
 
             return self.current_actor(), e
