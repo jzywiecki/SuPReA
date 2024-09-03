@@ -4,7 +4,7 @@ import modules.module as modules
 from models import Logo
 from utils.decorators import override
 from ai import ai_call_remote
-from models import ProjectFields
+from models import ComponentIdentify
 from utils import logger_ai
 
 
@@ -21,7 +21,7 @@ additional_details4 = " The logo should be funny. The whole background should be
 @ray.remote
 class LogoModule(modules.Module):
     def __init__(self):
-        super().__init__(Logo, "logo", expected_format, ProjectFields.LOGO.value)
+        super().__init__(Logo, "logo", expected_format, ComponentIdentify.LOGO)
 
     @override
     def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
@@ -44,11 +44,12 @@ class LogoModule(modules.Module):
             self.value = make_model_from_reply(self.model_class, list_value)
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self
+
+            return self, None
 
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
-            raise e
+            return self, e
 
     @override
     def update_by_ai(self, ai_model, changes_request):
@@ -63,17 +64,18 @@ class LogoModule(modules.Module):
             self.value = make_model_from_reply(self.model_class, list_value)
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self
+            return self, None
 
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name(), "component": self.what})
-            raise e
+            return self, e
 
 
 def process_ai_requests(ai_model, *requests):
     replies = []
     for request in requests:
         replies.append(ai_call_remote.remote(ai_model, request))
+        break
 
     results = ray.get(replies)
     return results

@@ -2,7 +2,7 @@ import ray
 
 import modules.module as modules
 from models import Motto
-from models import ProjectFields
+from models import ComponentIdentify
 
 
 expected_format = """
@@ -13,4 +13,4 @@ expected_format = """
 @ray.remote
 class MottoModule(modules.Module):
     def __init__(self):
-        super().__init__(Motto, "motto", expected_format, ProjectFields.MOTTO.value)
+        super().__init__(Motto, "motto", expected_format, ComponentIdentify.MOTTO)

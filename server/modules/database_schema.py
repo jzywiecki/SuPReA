@@ -6,7 +6,7 @@ from models import DatabaseSchema
 from utils.decorators import override
 from modules.module import extract_json
 from modules.module import make_model_from_reply
-from models import ProjectFields
+from models import ComponentIdentify
 from utils import logger_ai, WrongFormatGeneratedByAI
 
 
@@ -36,7 +36,7 @@ expected_format = """ Don't return the same values in the database! just be insp
 @ray.remote
 class DatabaseSchemaModule(modules.Module):
     def __init__(self):
-        super().__init__(DatabaseSchema, "database schema", expected_format, ProjectFields.DATABASE_SCHEMA.value)
+        super().__init__(DatabaseSchema, "database schema", expected_format, ComponentIdentify.DATABASE_SCHEMA)
 
     @override
     def update_by_ai(self, ai_model, changes_request):
@@ -49,11 +49,12 @@ class DatabaseSchemaModule(modules.Module):
             self.value = make_model_from_reply(self.model_class, reply_json_str)
 
             logger_ai.info(f"Finished successfully.", extra={"ai_model": ai_model.name(), "component": self.what})
-            return self
+            return self, None
 
         except json.JSONDecodeError as e:
             logger_ai.exception(f"{e}, reply={reply}", extra={"ai_model": ai_model.name(), "component": self.what})
-            raise WrongFormatGeneratedByAI()
+            return self, WrongFormatGeneratedByAI()
+
         except Exception as e:
             logger_ai.error(f"{e}", extra={"ai_model": ai_model.name, "component": self.what})
-            raise e
+            return self, e

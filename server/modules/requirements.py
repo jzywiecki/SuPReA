@@ -2,7 +2,7 @@ import ray
 
 import modules.module as modules
 from models import Requirements
-from models import ProjectFields
+from models import ComponentIdentify
 
 
 expected_format = """
@@ -26,5 +26,5 @@ expected_format = """
 @ray.remote
 class RequirementsModule(modules.Module):
     def __init__(self):
-        super().__init__(Requirements, "requirements", expected_format, ProjectFields.REQUIREMENTS.value)
+        super().__init__(Requirements, "requirements", expected_format, ComponentIdentify.REQUIREMENTS)
 

@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Response
 from pydantic import BaseModel
 from models import Project
 import database.projects as projects_dao
-from modules.project import ProjectAIGenerationActor
+from modules.project import generate_components_remote_wrapper
 from bson.errors import InvalidId
 from utils import logger
 
@@ -72,10 +72,7 @@ def create(request: ProjectCreateRequest):
             request.additional_info,
         )
 
-        project_ai_generator = ProjectAIGenerationActor.remote()
-        project_ai_generator.generate_components_by_ai.remote(GPT35TurboInstance, DallE3Instance, request.for_who,
-                                                              request.doing_what, request.additional_info)
-        project_ai_generator.save_components_to_database.remote(new_project_id)
+        generate_components_remote_wrapper.remote(new_project_id, request.for_who, request.doing_what, request.additional_info, GPT35TurboInstance, DallE3Instance)
 
         return new_project_id
 

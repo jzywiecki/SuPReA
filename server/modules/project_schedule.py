@@ -2,7 +2,7 @@ import ray
 
 import modules.module as modules
 from models import ProjectSchedule
-from models import ProjectFields
+from models import ComponentIdentify
 
 
 expected_format = """
@@ -19,4 +19,4 @@ expected_format = """
 @ray.remote
 class ProjectScheduleModule(modules.Module):
     def __init__(self):
-        super().__init__(ProjectSchedule, "project schedule", expected_format, ProjectFields.PROJECT_SCHEDULE.value)
+        super().__init__(ProjectSchedule, "project schedule", expected_format, ComponentIdentify.PROJECT_SCHEDULE)

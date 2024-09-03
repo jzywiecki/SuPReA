@@ -2,7 +2,7 @@ import ray
 
 import modules.module as modules
 from models import Title
-from models import ProjectFields
+from models import ComponentIdentify
 
 
 expected_format = """
@@ -17,4 +17,4 @@ expected_format = """
 @ray.remote
 class TitleModule(modules.Module):
     def __init__(self):
-        super().__init__(Title, "title", expected_format, ProjectFields.TITLE.value)
+        super().__init__(Title, "title", expected_format, ComponentIdentify.TITLE)

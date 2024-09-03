@@ -2,7 +2,7 @@ import ray
 
 import modules.module as modules
 from models import ElevatorSpeech
-from models import ProjectFields
+from models import ComponentIdentify
 
 
 expected_format = """
@@ -13,4 +13,4 @@ expected_format = """
 @ray.remote
 class ElevatorSpeechModule(modules.Module):
     def __init__(self):
-        super().__init__(ElevatorSpeech, "elevator speech", expected_format, ProjectFields.ELEVATOR_SPEECH.value)
+        super().__init__(ElevatorSpeech, "elevator speech", expected_format, ComponentIdentify.ELEVATOR_SPEECH)

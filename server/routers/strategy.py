@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from .common import get_module
-from models import ProjectFields
+from models import ComponentIdentify
 
 router = APIRouter(
     tags=["modules"],
@@ -10,4 +10,4 @@ router = APIRouter(
 
 @router.get("/strategy/{project_id}")
 def get_strategy(project_id: str):
-    return get_module(project_id, ProjectFields.STRATEGY.value)
+    return get_module(project_id, ComponentIdentify.STRATEGY.value)

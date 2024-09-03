@@ -6,7 +6,7 @@ from .elevator_speech import ElevatorSpeech
 from .logo import Logo
 from .motto import Motto
 from .project_schedule import Milestone, ProjectSchedule
-from .projects import Project, Projects, ProjectFields
+from .projects import Project, Projects, ComponentIdentify
 from .requirements import NonFunctionalRequirement, FunctionalRequirement, Requirements
 from .risks import Risk, Risks
 from .specifications import Specification, Specifications

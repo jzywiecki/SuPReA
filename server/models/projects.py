@@ -56,9 +56,9 @@ class Projects(BaseModel):
     projects: List[Project]
 
 
-class ProjectFields(Enum):
-    """Field names for MongoDB operations.
-    These are used to access the fields in the MongoDB documents.
+class ComponentIdentify(Enum):
+    """Field names to identify components
+    (e.g. These are used to access the fields in the MongoDB documents.)
     Should be consistent with the field names in the Project model."""
     ACTORS = "actors"
     BUSINESS_SCENARIOS = "business_scenarios"
@@ -72,4 +72,3 @@ class ProjectFields(Enum):
     TITLE = "title"
     DATABASE_SCHEMA = "database_schema"
     LOGO = "logo"
-
