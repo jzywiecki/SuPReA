@@ -5,8 +5,8 @@ import database.projects as projects_dao
 from utils import logger
 
 router = APIRouter(
-    tags=["download"],
-    prefix="/download",
+    tags=["model"],
+    prefix="/model",
 )
 
 

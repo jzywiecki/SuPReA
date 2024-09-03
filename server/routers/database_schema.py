@@ -3,8 +3,8 @@ from .common import get_module
 from models import ComponentIdentify
 
 router = APIRouter(
-    tags=["modules"],
-    prefix="/modules",
+    tags=["model"],
+    prefix="/model",
 )
 
 

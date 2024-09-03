@@ -1,6 +1,4 @@
-import ray
-
-import modules.module as modules
+from .generate import Generate
 from models import Actors
 from models import ComponentIdentify
 
@@ -14,8 +12,7 @@ expected_format = """
 """
 
 
-@ray.remote
-class ActorsModule(modules.Module):
+class ActorsGenerate(Generate):
     def __init__(self):
         super().__init__(
             Actors, "few actors", expected_format, ComponentIdentify.ACTORS

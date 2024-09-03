@@ -1,17 +1,18 @@
 import ray
 
-from .actors import ActorsModule
-from .business_scenarios import BusinessScenariosModule
-from .database_schema import DatabaseSchemaModule
-from .elevator_speech import ElevatorSpeechModule
-from .logo import LogoModule
-from .motto import MottoModule
-from .project_schedule import ProjectScheduleModule
-from .requirements import RequirementsModule
-from .risks import RiskModule
-from .specifications import SpecificationsModule
-from .strategy import StrategyModule
-from .title import TitleModule
+from .actors import ActorsGenerate
+from .business_scenarios import BusinessScenariosGenerate
+from .database_schema import DatabaseSchemaGenerate
+from .elevator_speech import ElevatorSpeechGenerate
+from .logo import LogoGenerate
+from .motto import MottoGenerate
+from .project_schedule import ProjectScheduleGenerate
+from .requirements import RequirementsGenerate
+from .risks import RiskGenerate
+from .specifications import SpecificationsGenerate
+from .strategy import StrategyGenerate
+from .title import TitleGenerate
+from .remote import GenerateActor
 from utils import WrongFormatGeneratedByAI, logger
 
 MAX_RE_REGENERATION = 5
@@ -22,20 +23,20 @@ class ProjectAIGenerationActor:
     """Main actor that generates components by AI, saves them to the database and handles failures."""
 
     def __init__(self):
-        self.logo_actor = LogoModule.remote()
+        self.logo_actor = GenerateActor.remote(LogoGenerate())
         self.actors = [
-            ActorsModule.remote(),
-            BusinessScenariosModule.remote(),
-            DatabaseSchemaModule.remote(),
-            ElevatorSpeechModule.remote(),
+            GenerateActor.remote(ActorsGenerate()),
+            GenerateActor.remote(BusinessScenariosGenerate()),
+            GenerateActor.remote(DatabaseSchemaGenerate()),
+            GenerateActor.remote(ElevatorSpeechGenerate()),
             self.logo_actor,
-            MottoModule.remote(),
-            ProjectScheduleModule.remote(),
-            RequirementsModule.remote(),
-            RiskModule.remote(),
-            SpecificationsModule.remote(),
-            StrategyModule.remote(),
-            TitleModule.remote(),
+            GenerateActor.remote(MottoGenerate()),
+            GenerateActor.remote(ProjectScheduleGenerate()),
+            GenerateActor.remote(RequirementsGenerate()),
+            GenerateActor.remote(RiskGenerate()),
+            GenerateActor.remote(SpecificationsGenerate()),
+            GenerateActor.remote(StrategyGenerate()),
+            GenerateActor.remote(TitleGenerate()),
         ]
         self.generate_future = []
         self.db_future = []

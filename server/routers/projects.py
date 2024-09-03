@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Response
 from pydantic import BaseModel
 from models import Project
 import database.projects as projects_dao
-from modules.project import generate_components_remote_wrapper
+from generation.project import generate_components_remote_wrapper
 from bson.errors import InvalidId
 from utils import logger
 

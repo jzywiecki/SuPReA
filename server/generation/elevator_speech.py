@@ -1,6 +1,4 @@
-import ray
-
-import modules.module as modules
+from .generate import Generate
 from models import ElevatorSpeech
 from models import ComponentIdentify
 
@@ -10,8 +8,7 @@ expected_format = """
 """
 
 
-@ray.remote
-class ElevatorSpeechModule(modules.Module):
+class ElevatorSpeechGenerate(Generate):
     def __init__(self):
         super().__init__(
             ElevatorSpeech,

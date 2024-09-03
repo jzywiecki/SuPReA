@@ -1,6 +1,4 @@
-import ray
-
-import modules.module as modules
+from .generate import Generate
 from models import ProjectSchedule
 from models import ComponentIdentify
 
@@ -16,8 +14,7 @@ expected_format = """
 """
 
 
-@ray.remote
-class ProjectScheduleModule(modules.Module):
+class ProjectScheduleGenerate(Generate):
     def __init__(self):
         super().__init__(
             ProjectSchedule,

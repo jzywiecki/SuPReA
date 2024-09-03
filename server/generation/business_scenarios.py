@@ -1,6 +1,4 @@
-import ray
-
-import modules.module as modules
+from .generate import Generate
 from models import BusinessScenarios
 from models import ComponentIdentify
 
@@ -15,8 +13,7 @@ expected_format = """
 """
 
 
-@ray.remote
-class BusinessScenariosModule(modules.Module):
+class BusinessScenariosGenerate(Generate):
     def __init__(self):
         super().__init__(
             BusinessScenarios,
