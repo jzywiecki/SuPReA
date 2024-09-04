@@ -1,8 +1,12 @@
 import React from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import Avatar, { genConfig } from 'react-nice-avatar';
 import { Button } from "@/components/ui/button";
 
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@/components/ui/avatar"
 type UserCardAction = 'addFriend' | 'acceptInvitation' | 'rejectInvitation' | 'withdrawInvitation' | 'removeFriend';
 
 interface UserCardProps {
@@ -32,7 +36,10 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
     return (
         <Card className="flex justify-between shadow-md rounded-lg h-48">
             <CardContent className="flex items-center space-x-4">
-                <Avatar className="w-16 h-16" {...genConfig(user.email)} />
+            <Avatar>
+                <AvatarImage src={user?.avatarurl} alt="@shadcn" />
+                <AvatarFallback>?</AvatarFallback>
+            </Avatar>
                 <div>
                     <p className="text-lg font-semibold">{user.username}</p>
                     <p className="text-sm text-muted-foreground">{user.email}</p>

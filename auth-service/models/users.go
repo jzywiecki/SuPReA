@@ -10,10 +10,16 @@ type User struct {
 	Email        string             `json:"email"`
 	Password     string             `json:"-"`
 	Token        string             `json:"token"`
-	RefreshToken string             `json:"refresh_token"`
+	RefreshToken string             `json:"refreshtoken"`
 	Friends      []Friend           `json:"friends"`
 	Projects     []int              `json:"projects"`
-	AvatarURL    string             `json:"avatar_url"`
+	AvatarURL    string             `json:"avatarurl"`
+	Name         string             `json:"name"`
+	Description  string             `json:"description"`
+	Readme       string             `json:"readme"`
+	Organization string             `json:"organization"`
+	Location     string             `json:"location"`
+	Website      string             `json:"website"`
 }
 
 type Friend struct {
@@ -33,6 +39,6 @@ type FriendDetails struct {
 	ID        primitive.ObjectID `json:"id"`
 	Username  string             `json:"username"`
 	Email     string             `json:"email"`
-	AvatarURL string             `json:"avatar_url"`
+	AvatarURL string             `json:"avatarurl"`
 	Status    FriendshipStatus   `json:"status"`
 }

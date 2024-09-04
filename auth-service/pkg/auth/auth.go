@@ -3,6 +3,7 @@ package auth
 import (
 	"auth-service/models"
 	"auth-service/pkg/database"
+	"auth-service/pkg/utils"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -35,11 +36,12 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := models.User{
-		Username: registerRequest.Username,
-		Email:    registerRequest.Email,
-		Password: registerRequest.Password,
-		Friends:  []models.Friend{},
-		Projects: []int{},
+		Username:  registerRequest.Username,
+		Email:     registerRequest.Email,
+		Password:  registerRequest.Password,
+		Friends:   []models.Friend{},
+		Projects:  []int{},
+		AvatarURL: utils.GetAvatarURL(registerRequest.Username),
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -141,7 +143,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		"refresh_token": refreshTokenString,
 		"username":      user.Username,
 		"email":         user.Email,
-		"avatar_url":    user.AvatarURL,
+		"avatarurl":     user.AvatarURL,
 	})
 }
 

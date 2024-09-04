@@ -3,13 +3,14 @@ import axios from 'axios';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import UserCard from '@/components/UserCard';
-import { useUser } from "@/components/UserProvider"; 
+import { useUser } from "@/components/UserProvider";
+import { Link } from 'react-router-dom';
 
 interface User {
     id: string;
     nickname: string;
     email: string;
-    avatar_id: string;
+    avatarurl: string;
     status: string;
 }
 
@@ -84,7 +85,7 @@ const SearchAndAddFriends: React.FC = () => {
     const handleRemoveFriend = async (friendId: string) => {
         try {
             await axios.post(`http://localhost:3333/users/friends/remove`, { user_id: user?.id, friend_id: friendId });
-            fetchFriends(); 
+        fetchFriends();      
         } catch (error) {
             console.error('Error removing friend:', error);
         }
@@ -94,15 +95,17 @@ const SearchAndAddFriends: React.FC = () => {
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-4">Your friends</h3>
-                {friends.length > 0 ? (
-                    <ul className="space-y-4">
+                {friends && friends.length > 0 ? (
+                    <ul className="space-y-4"> 
                         {friends.filter(friend => friend.status == "accepted").map(friend => (
+                            <Link to={`/users/${friend.id}`} className="hover:underline">
                             <UserCard 
                                 key={friend.id} 
                                 user={friend} 
-                                actionType="removeFriend" 
+                                actionType="removeFriend"
                                 onAction={() => handleRemoveFriend(friend.id)} 
                             />
+                            </Link>
                         ))}
                     </ul>
                 ) : (
@@ -111,15 +114,17 @@ const SearchAndAddFriends: React.FC = () => {
             </div>
             <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-4">Pending Invitations</h3>
-                {friends.length > 0 ? (
+                {friends && friends.length > 0 ? (
                     <ul className="space-y-4">
                         {friends.filter(friend => friend.status == "invited_by_friend").map(friend => (
+                            <Link to={`/profile/${friend.id}`} className="hover:underline">
                             <UserCard 
                                 key={friend.id} 
                                 user={friend} 
                                 actionType="acceptInvitation" 
                                 onAction={() => handleAcceptInvitation(friend.id)} 
                             />
+                            </Link>
                         ))}
                     </ul>
                 ) : (
@@ -128,15 +133,17 @@ const SearchAndAddFriends: React.FC = () => {
             </div>
             <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-4">Sent Invitations</h3>
-                {friends.length > 0 ? (
+                {friends && friends.length > 0 ? (
                     <ul className="space-y-4">
                         {friends.filter(friend => friend.status == "invited_by_user").map(friend => (
+                            <Link to={`/profile/${friend.id}`} className="hover:underline">
                             <UserCard 
                                 key={friend.id} 
                                 user={friend} 
                                 actionType="withdrawInvitation" 
                                 onAction={() => handleRejectInvitation(friend.id)} 
                             />
+                            </Link>
                         ))}
                     </ul>
                 ) : (
@@ -170,12 +177,14 @@ const SearchAndAddFriends: React.FC = () => {
                     <h3 className="text-lg font-semibold mb-4">Search Results</h3>
                     <ul className="space-y-4">
                         {searchResults.filter(result => user.id !== result.id && !friends.flatMap(friend => friend.id).includes(result.id)).map(user => (
+                            <Link to={`/profile/${user.id}`} className="hover:underline">
                             <UserCard 
                                 key={user.id} 
                                 user={user} 
                                 actionType="addFriend" 
                                 onAction={() => handleAddFriend(user.id)} 
                             />
+                            </Link>
                         ))}
                     </ul>
                 </div>

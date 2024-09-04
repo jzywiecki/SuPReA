@@ -3,6 +3,7 @@ package users
 import (
 	"auth-service/models"
 	"auth-service/pkg/database"
+	"auth-service/pkg/utils"
 	"auth-service/view"
 	"context"
 	"encoding/json"
@@ -20,6 +21,8 @@ func NewUsersRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Get("/", GetUsers)
 	r.Get("/{id}", GetUserByID)
+	r.Patch("/{id}", PatchUser)
+	r.Post("/{id}/reset-avatar", ResetAvatar)
 	r.Get("/friends", GetUserFriends)
 	r.Post("/friends/add", AddUserToFriends)
 	r.Post("/friends/accept", AcceptUserToFriends)
@@ -64,15 +67,9 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userView := view.User{
-		ID:        user.ID.Hex(),
-		Username:  user.Username,
-		Email:     user.Email,
-		AvatarURL: user.AvatarURL,
-	}
+	userView := view.NewUserView(user)
 
 	json.NewEncoder(w).Encode(userView)
-
 	w.Header().Set("Content-Type", "application/json")
 }
 
@@ -108,14 +105,9 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usersView := make([]view.User, 0, len(users))
+	usersView := make([]view.UserView, 0, len(users))
 	for _, user := range users {
-		usersView = append(usersView, view.User{
-			ID:        user.ID.Hex(),
-			Username:  user.Username,
-			Email:     user.Email,
-			AvatarURL: user.AvatarURL,
-		})
+		usersView = append(usersView, view.NewUserView(user))
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -166,16 +158,173 @@ func GetUsersWithFilterQuery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	usersView := make([]view.User, 0, len(users))
+	usersView := make([]view.UserView, 0, len(users))
 	for _, user := range users {
-		usersView = append(usersView, view.User{
-			ID:        user.ID.Hex(),
-			Username:  user.Username,
-			Email:     user.Email,
-			AvatarURL: user.AvatarURL,
-		})
+		usersView = append(usersView, view.NewUserView(user))
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(usersView)
+}
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	// if !auth.Authenticate(r) {
+	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	// 	return
+	// }
+
+	// Extract user ID from URL path
+	userID := chi.URLParam(r, "id")
+	if userID == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+
+	// Convert user ID string to MongoDB ObjectID
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+		return
+	}
+
+	client := database.GetDatabaseConnection()
+
+	var user models.User
+	collection := database.GetCollection(client, "Users", "users")
+	err = collection.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "User not found", http.StatusNotFound)
+		} else {
+			http.Error(w, "Error retrieving user", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	var userFromRequest view.UserView
+	err = json.NewDecoder(r.Body).Decode(&userFromRequest)
+	if err != nil {
+		http.Error(w, "Error decoding request body", http.StatusBadRequest)
+		return
+	}
+
+	// Update user fields
+	userFromRequest.UpdateUserFields(&user)
+
+	// Update user in database
+	_, err = collection.ReplaceOne(context.Background(), bson.M{"_id": objID}, user)
+	if err != nil {
+		http.Error(w, "Error updating user", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func PatchUser(w http.ResponseWriter, r *http.Request) {
+	// if !auth.Authenticate(r) {
+	//     http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	//     return
+	// }
+
+	// Extract user ID from URL path
+	userID := chi.URLParam(r, "id")
+	if userID == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+
+	// Convert user ID string to MongoDB ObjectID
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Parse request body into a map
+	var updates map[string]interface{}
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		return
+	}
+
+	// Prepare MongoDB update document
+	update := bson.M{
+		"$set": updates,
+	}
+
+	// Get database connection and collection
+	client := database.GetDatabaseConnection()
+	collection := database.GetCollection(client, "Users", "users")
+
+	// Update the user document
+	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": objID}, update)
+	if err != nil {
+		http.Error(w, "Error updating user", http.StatusInternalServerError)
+		return
+	}
+
+	// Check if the user was found and updated
+	if result.MatchedCount == 0 {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+	w.WriteHeader(http.StatusOK)
+}
+
+func ResetAvatar(w http.ResponseWriter, r *http.Request) {
+	// if !auth.Authenticate(r) {
+	//     http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	//     return
+	// }
+
+	userID := chi.URLParam(r, "id")
+	if userID == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+
+	// Convert user ID string to MongoDB ObjectID
+	objID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+		return
+	}
+
+	client := database.GetDatabaseConnection()
+
+	var user models.User
+	collection := database.GetCollection(client, "Users", "users")
+	err = collection.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&user)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "User not found", http.StatusNotFound)
+		} else {
+			http.Error(w, "Error retrieving user", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	avatarURL := utils.GetAvatarURL(user.Username)
+
+	// Prepare MongoDB update document
+	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": objID}, bson.M{"$set": bson.M{"avatarurl": avatarURL}})
+
+	if err != nil {
+		http.Error(w, "Error updating user", http.StatusInternalServerError)
+		return
+	}
+
+	// Check if the user was found and updated
+	if result.MatchedCount == 0 {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(avatarURL)
+	w.WriteHeader(http.StatusOK)
 }

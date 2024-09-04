@@ -60,7 +60,7 @@ const LoginForm: React.FC = () => {
             const userData = {
                 email: response.data.email,
                 username: response.data.username,
-                avatar_url: response.data.avatar_url,
+                avatarurl: response.data.avatarurl,
                 id: response.data.id,
             };
             login(userData);
