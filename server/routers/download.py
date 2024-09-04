@@ -1,30 +1,24 @@
-from bson.errors import InvalidId
-from fastapi import APIRouter, Response, HTTPException, status
-from utils.pdf import generate_pdf
-import database.projects as projects_dao
-from utils import logger
+from fastapi import APIRouter, Response, status
+from services import generate_pdf_for_project
 
 router = APIRouter(
-    tags=["model"],
-    prefix="/model",
+    tags=["download"],
+    prefix="/download",
 )
 
 
-@router.get("/pdf/{project_id}")
+@router.get(
+    "/pdf/{project_id}",
+    status_code=status.HTTP_200_OK,
+)
 def download_pdf(project_id: str):
-    project = projects_dao.get_project(project_id)
-
-    if project is None:
-        return Response(status_code=status.HTTP_404_NOT_FOUND)
-
-    pdf_buffer = generate_pdf(project)
+    pdf, name = generate_pdf_for_project(project_id)
 
     headers = {
-        "Content-Disposition": f'attachment; filename="{project["name"]}.pdf"',
+        "Content-Disposition": f'attachment; filename="{name}.pdf"',
         "Content-Type": "application/pdf",
     }
 
     return Response(
-        content=pdf_buffer, headers=headers, media_type="application/pdf"
+        content=pdf, headers=headers, media_type="application/pdf"
     )
-

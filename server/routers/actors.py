@@ -1,5 +1,5 @@
-from fastapi import APIRouter
-from .common import get_module
+from fastapi import APIRouter, status
+from services import get_model
 from models import ComponentIdentify
 
 router = APIRouter(
@@ -8,6 +8,9 @@ router = APIRouter(
 )
 
 
-@router.get("/actors/{project_id}")
+@router.get(
+    "/actors/{project_id}",
+    status_code=status.HTTP_200_OK,
+)
 def get_actors(project_id: str):
-    return get_module(project_id, ComponentIdentify.ACTORS.value)
+    return get_model(project_id, ComponentIdentify.ACTORS.value)

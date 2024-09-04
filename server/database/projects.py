@@ -113,3 +113,7 @@ def create_project(
 
     result = save_project(new_project)
     return str(result.inserted_id)
+
+
+def is_project_exist(project_id: str):
+    return collection.count_documents({"_id": ObjectId(project_id)}) > 0
