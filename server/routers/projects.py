@@ -22,28 +22,15 @@ class EmptyProjectCreateRequest(BaseModel):
     response_model_by_alias=False,
 )
 def create_empty(request: EmptyProjectCreateRequest):
-    try:
-        if not request.name:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project name"
-            )
-
-        new_project_id = projects_dao.create_project(
-            request.name, request.owner_id, "", "", "", ""
-        )
-        return new_project_id
-
-    except HTTPException as e:
-        logger.exception(f"{e}")
-        raise e
-    except InvalidId:
-        logger.exception(f"Invalid project id")
+    if not request.name:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid owner id"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project name"
         )
-    except Exception as e:
-        logger.error(f"{e}")
-        raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
+
+    new_project_id = projects_dao.create_project(
+        request.name, request.owner_id, "", "", "", ""
+    )
+    return new_project_id
 
 
 class ProjectCreateRequest(BaseModel):
@@ -60,48 +47,35 @@ class ProjectCreateRequest(BaseModel):
     response_model_by_alias=False,
 )
 def create(request: ProjectCreateRequest):
-    try:
-        if not request.name:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project name"
-            )
-        if not request.doing_what or not request.for_who:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid project description",
-            )
-
-        new_project_id = projects_dao.create_project(
-            request.name,
-            request.owner_id,
-            "",
-            request.for_who,
-            request.doing_what,
-            request.additional_info,
-        )
-
-        generate_components_remote_wrapper.remote(
-            new_project_id,
-            request.for_who,
-            request.doing_what,
-            request.additional_info,
-            GPT35TurboInstance,
-            DallE3Instance,
-        )
-
-        return new_project_id
-
-    except HTTPException as e:
-        logger.exception(f"{e}")
-        raise e
-    except InvalidId:
-        logger.exception(f"Invalid project id")
+    if not request.name:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid owner id"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project name"
         )
-    except Exception as e:
-        logger.error(f"{e}")
-        raise HTTPException(status_code=500, detail="INTERNAL SERVER ERROR")
+    if not request.doing_what or not request.for_who:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid project description",
+        )
+
+    new_project_id = projects_dao.create_project(
+        request.name,
+        request.owner_id,
+        "",
+        request.for_who,
+        request.doing_what,
+        request.additional_info,
+    )
+
+    generate_components_remote_wrapper.remote(
+        new_project_id,
+        request.for_who,
+        request.doing_what,
+        request.additional_info,
+        GPT35TurboInstance,
+        DallE3Instance,
+    )
+
+    return new_project_id
 
 
 @router.get(
@@ -111,45 +85,19 @@ def create(request: ProjectCreateRequest):
     response_model_by_alias=False,
 )
 def get_project(project_id: str):
-    try:
-        project = projects_dao.get_project(project_id)
-        if project:
-            return project
-        else:
-            return Response(status_code=status.HTTP_404_NOT_FOUND)
+    project = projects_dao.get_project(project_id)
+    if project is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
 
-    except InvalidId:
-        logger.exception(f"Invalid project id")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id"
-        )
-    except Exception as e:
-        logger.error(f"{e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="INTERNAL SERVER ERROR",
-        )
+    return project
 
 
 @router.delete(
     "/{project_id}",
 )
 def delete_project(project_id: str):
-    try:
-        delete_result = projects_dao.delete_project(project_id)
-        if delete_result.deleted_count == 1:
-            return Response(status_code=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(status_code=status.HTTP_404_NOT_FOUND)
+    delete_result = projects_dao.delete_project(project_id)
+    if delete_result.deleted_count == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-    except InvalidId:
-        logger.exception(f"Invalid project id")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid project id"
-        )
-    except Exception as e:
-        logger.error(f"{e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="INTERNAL SERVER ERROR",
-        )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

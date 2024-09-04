@@ -17,10 +17,12 @@ from routers import (
     download,
 )
 from fastapi.middleware.cors import CORSMiddleware
+from utils import register_fastapi_exception_handlers
 
 ray.init()
 
 app = FastAPI()
+register_fastapi_exception_handlers(app)
 
 # Add CORS middleware
 app.add_middleware(
