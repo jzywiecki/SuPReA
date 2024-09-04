@@ -3,7 +3,13 @@ from typing import List
 from fastapi import APIRouter, status, Response
 from pydantic import BaseModel, Field
 from models import Project
-from services import create_empty_project, create_project_by_ai, get_project_by_id, delete_project_by_id, get_project_list_by_user_id
+from services import (
+    create_empty_project,
+    create_project_by_ai,
+    get_project_by_id,
+    delete_project_by_id,
+    get_project_list_by_user_id,
+)
 
 router = APIRouter(tags=["projects"], prefix="/projects")
 

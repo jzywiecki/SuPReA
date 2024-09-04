@@ -19,6 +19,4 @@ def download_pdf(project_id: str):
         "Content-Type": "application/pdf",
     }
 
-    return Response(
-        content=pdf, headers=headers, media_type="application/pdf"
-    )
+    return Response(content=pdf, headers=headers, media_type="application/pdf")

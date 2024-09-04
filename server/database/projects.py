@@ -15,7 +15,8 @@ def get_projects_by_owner(owner_id: str):
     """Returns projects where the specified user is the owner with only id, name, and description."""
     return list(
         collection.find(
-            {"owner": ObjectId(owner_id)}, {"_id": 1, "name": 1, "description": 1, "owner": 1}
+            {"owner": ObjectId(owner_id)},
+            {"_id": 1, "name": 1, "description": 1, "owner": 1},
         )
     )
 

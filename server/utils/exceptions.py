@@ -49,11 +49,15 @@ def register_fastapi_exception_handlers(app: FastAPI):
         logger.error(f"{exc.model_name} not found in project: {exc.project_id}")
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
-            content={"detail": f"{exc.model_name} not found in project: {exc.project_id}"},
+            content={
+                "detail": f"{exc.model_name} not found in project: {exc.project_id}"
+            },
         )
 
     @app.exception_handler(ProjectNotFound)
-    async def project_not_found_exception_handler(request: Request, exc: ProjectNotFound):
+    async def project_not_found_exception_handler(
+        request: Request, exc: ProjectNotFound
+    ):
         logger.error(f"Project with id: {exc.project_id} not found")
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -61,7 +65,9 @@ def register_fastapi_exception_handlers(app: FastAPI):
         )
 
     @app.exception_handler(InvalidParameter)
-    async def invalid_parameter_exception_handler(request: Request, exc: InvalidParameter):
+    async def invalid_parameter_exception_handler(
+        request: Request, exc: InvalidParameter
+    ):
         logger.error(f"Invalid parameter provided: {exc.details}")
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
