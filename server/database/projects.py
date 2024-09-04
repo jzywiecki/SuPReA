@@ -15,7 +15,7 @@ def get_projects_by_owner(owner_id: str):
     """Returns projects where the specified user is the owner with only id, name, and description."""
     return list(
         collection.find(
-            {"owner": ObjectId(owner_id)}, {"_id": 1, "name": 1, "description": 1}
+            {"owner": ObjectId(owner_id)}, {"_id": 1, "name": 1, "description": 1, "owner": 1}
         )
     )
 
@@ -26,7 +26,7 @@ def get_projects_by_member(member_id: str):
     return list(
         collection.find(
             {"members": ObjectId(member_id), "owner": {"$ne": ObjectId(member_id)}},
-            {"_id": 1, "name": 1, "description": 1},
+            {"_id": 1, "name": 1, "description": 1, "owner": 1},
         )
     )
 
@@ -36,7 +36,7 @@ def get_projects_by_member_or_owner(user_id: str):
     return list(
         collection.find(
             {"$or": [{"owner": ObjectId(user_id)}, {"members": ObjectId(user_id)}]},
-            {"_id": 1, "name": 1, "description": 1},
+            {"_id": 1, "name": 1, "description": 1, "owner": 1},
         )
     )
 

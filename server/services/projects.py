@@ -57,3 +57,15 @@ def delete_project_by_id(project_id: str):
         raise ProjectNotFound(project_id)
 
     return projects_dao.delete_project(project_id)
+
+
+def get_project_list_by_user_id(user_id: str):
+    # TODO: check if user exists
+
+    project_list_member = projects_dao.get_projects_by_member(user_id)
+    project_list_owner = projects_dao.get_projects_by_owner(user_id)
+    result = {
+        "owner": project_list_owner,
+        "member": project_list_member,
+    }
+    return result
