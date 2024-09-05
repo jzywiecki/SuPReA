@@ -1,6 +1,8 @@
 import tempfile
 import mermaid as mmd
+import ray
 
+from utils.fetch import fetch_image_remote
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import (
@@ -12,7 +14,7 @@ from reportlab.platypus import (
     ListItem,
 )
 from mermaid.graph import Graph
-from utils.mermaid_tools import parse_database_to_erdiagram_mermaid
+from utils.mermaid_tools import create_er_diagram_mermaid
 from io import BytesIO
 
 
@@ -27,7 +29,7 @@ def add_simple_text(pdf_elements, title, text):
     pdf_elements.append(Spacer(1, 12))
 
 
-def add_simple_list(pdf_elements, modules, title):
+def add_simple_list(pdf_elements, title, modules):
     pdf_elements.append(Paragraph(title, title_style))
 
     items = [
@@ -39,15 +41,23 @@ def add_simple_list(pdf_elements, modules, title):
     pdf_elements.append(Spacer(1, 12))
 
 
-def add_er_diagram(pdf_elements, er_diagram_format, tmp_file_name, title):
+def add_er_diagram(pdf_elements, er_diagram_format, title):
     pdf_elements.append(Paragraph(title, title_style))
 
-    graphe = Graph(tmp_file_name, er_diagram_format)
-    mermaid = mmd.Mermaid(graphe)
-    mermaid.to_png(tmp_file_name)
-    img = Image(tmp_file_name)
-    pdf_elements.append(img)
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=True) as tmp:
+        tmp_file_name = tmp.name
 
+        graphe = Graph(tmp_file_name, er_diagram_format)
+        mermaid = mmd.Mermaid(graphe)
+        mermaid.to_png(tmp_file_name)
+
+        with open(tmp_file_name, "rb") as f:
+            image_data = f.read()
+
+    image_stream = BytesIO(image_data)
+    img = Image(image_stream)
+
+    pdf_elements.append(img)
     pdf_elements.append(Spacer(1, 12))
 
 
@@ -85,6 +95,21 @@ def add_three_element_list(pdf_elements, module, title, name_one, name_two, name
     pdf_elements.append(Spacer(1, 12))
 
 
+def add_pictures(pdf_elements, title, pictures_urls):
+    actors_refs = []
+    for picture_url in pictures_urls:
+        actors_refs.append(fetch_image_remote.remote(picture_url))
+    pictures = ray.get(actors_refs)
+
+    if any(picture is not None for picture in pictures):
+        pdf_elements.append(Paragraph(title, title_style))
+        for picture in pictures:
+            if picture is not None:
+                pdf_elements.append(picture)
+                pdf_elements.append(Spacer(1, 12))
+        pdf_elements.append(Spacer(1, 12))
+
+
 def generate_pdf(project):
     buffer = BytesIO()
     doc = SimpleDocTemplate(
@@ -97,129 +122,106 @@ def generate_pdf(project):
     )
     pdf_elements = []
 
-    add_simple_text(pdf_elements, "Name", project["name"])
+    fields = [
+        ("Name", project.get("name"), add_simple_text),
+        ("For who", project.get("for_who"), add_simple_text),
+        ("Doing what", project.get("doing_what"), add_simple_text),
+        ("Additional info", project.get("additional_info"), add_simple_text),
+        ("Description", project.get("description"), add_simple_text),
+        (
+            "Created at",
+            project.get("created_at")
+            and project["created_at"].strftime("%Y-%m-%d %H:%M:%S.%f"),
+            add_simple_text,
+        ),
+        ("Titles", project.get("title", {}).get("names"), add_simple_list),
+        (
+            "Elevator speech",
+            project.get("elevator_speech", {}).get("content"),
+            add_simple_text,
+        ),
+        ("Motto", project.get("motto", {}).get("motto"), add_simple_text),
+        ("Strategy", project.get("strategy", {}).get("strategy"), add_simple_text),
+        (
+            "Database Schema",
+            create_er_diagram_mermaid(project.get("database_schema")),
+            add_er_diagram,
+        ),
+        (
+            "Actors",
+            project.get("actors", {}).get("actors"),
+            add_two_elements_list,
+            "name",
+            "description",
+        ),
+        (
+            "Specifications",
+            project.get("specifications", {}).get("specifications"),
+            add_two_elements_list,
+            "specification",
+            "description",
+        ),
+        (
+            "Risks",
+            project.get("risks", {}).get("risks"),
+            add_three_element_list,
+            "risk",
+            "description",
+            "prevention",
+        ),
+        (
+            "Functional Requirements",
+            project.get("requirements", {}).get("functional_requirements"),
+            add_three_element_list,
+            "name",
+            "description",
+            "priority",
+        ),
+        (
+            "Non Functional Requirements",
+            project.get("requirements", {}).get("non_functional_requirements"),
+            add_three_element_list,
+            "name",
+            "description",
+            "priority",
+        ),
+        (
+            "Project Schedule",
+            project.get("project_schedule", {}).get("milestones"),
+            add_three_element_list,
+            "name",
+            "description",
+            "duration",
+        ),
+        (
+            "Business Scenarios",
+            project.get("business_scenarios", {})
+            .get("business_scenario", {})
+            .get("features"),
+            add_two_elements_list,
+            "feature_name",
+            "description",
+        ),
+        ("Logos", project.get("logo", {}).get("logo_urls"), add_pictures),
+    ]
 
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=True) as tmp:
-        if project["for_who"]:
-            add_simple_text(pdf_elements, "For who", project["for_who"])
+    for field in fields:
+        title, data, func = field[0], field[1], field[2]
+        if data:
+            if (
+                func is add_simple_text
+                or func is add_simple_list
+                or func is add_pictures
+            ):
+                func(pdf_elements, title, data)
+            elif func is add_er_diagram:
+                func(pdf_elements, data, title)
+            elif func is add_two_elements_list:
+                func(pdf_elements, data, title, field[3], field[4])
+            elif func is add_three_element_list:
+                func(pdf_elements, data, title, field[3], field[4], field[5])
 
-        if project["doing_what"]:
-            add_simple_text(pdf_elements, "Doing what", project["doing_what"])
-
-        if project["additional_info"]:
-            add_simple_text(pdf_elements, "Additional info", project["additional_info"])
-
-        if project["description"]:
-            add_simple_text(pdf_elements, "Description", project["description"])
-
-        if project["created_at"]:
-            add_simple_text(
-                pdf_elements,
-                "Created at",
-                project["created_at"].strftime("%Y-%m-%d %H:%M:%S.%f"),
-            )
-
-        if project["title"]:
-            add_simple_list(pdf_elements, project["title"]["names"], "Titles")
-
-        if project["elevator_speech"]:
-            add_simple_text(
-                pdf_elements, "Elevator speech", project["elevator_speech"]["content"]
-            )
-
-        if project["motto"]:
-            add_simple_text(pdf_elements, "Motto", project["motto"]["motto"])
-
-        if project["strategy"]:
-            add_simple_text(pdf_elements, "Strategy", project["strategy"]["strategy"])
-
-        if project["database_schema"]:
-            add_er_diagram(
-                pdf_elements,
-                parse_database_to_erdiagram_mermaid(project["database_schema"]),
-                tmp.name,
-                "Database Schema",
-            )
-
-        if project["actors"]:
-            add_two_elements_list(
-                pdf_elements,
-                project["actors"]["actors"],
-                "Actors",
-                "name",
-                "description",
-            )
-
-        if project["specifications"]:
-            add_two_elements_list(
-                pdf_elements,
-                project["specifications"]["specifications"],
-                "Specifications",
-                "name",
-                "description",
-            )
-
-        if project["risks"]:
-            add_three_element_list(
-                pdf_elements,
-                project["risks"]["risks"],
-                "Risks",
-                "risk",
-                "description",
-                "prevention",
-            )
-
-        if (
-            project["requirements"]
-            and project["requirements"]["functional_requirements"]
-        ):
-            add_three_element_list(
-                pdf_elements,
-                project["requirements"]["functional_requirements"],
-                "Functional Requirements",
-                "name",
-                "description",
-                "priority",
-            )
-
-        if (
-            project["requirements"]
-            and project["requirements"]["non_functional_requirements"]
-        ):
-            add_three_element_list(
-                pdf_elements,
-                project["requirements"]["non_functional_requirements"],
-                "Non Functional Requirements",
-                "name",
-                "description",
-                "priority",
-            )
-
-        if project["project_schedule"]:
-            add_three_element_list(
-                pdf_elements,
-                project["project_schedule"]["milestones"],
-                "Project Schedule",
-                "name",
-                "description",
-                "duration",
-            )
-
-        if project["business_scenarios"]:
-            add_two_elements_list(
-                pdf_elements,
-                project["business_scenarios"]["business_scenario"]["features"],
-                "Business Scenarios",
-                "feature_name",
-                "description",
-            )
-
-        if project["logo"]:
-            add_simple_list(pdf_elements, project["logo"]["logo_urls"], "Logos")
-
-        # TODO: UMLs!
-
-        doc.build(pdf_elements)
-        buffer.seek(0)
+    doc.build(pdf_elements)
+    buffer.seek(0)
 
     return buffer.getvalue()

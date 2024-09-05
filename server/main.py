@@ -1,3 +1,5 @@
+import ray
+
 from fastapi import FastAPI
 from routers import (
     actors,
@@ -12,13 +14,15 @@ from routers import (
     projects,
     requirements,
     risks,
-    umls,
     download,
 )
 from fastapi.middleware.cors import CORSMiddleware
+from utils import register_fastapi_exception_handlers
 
+ray.init()
 
 app = FastAPI()
+register_fastapi_exception_handlers(app)
 
 # Add CORS middleware
 app.add_middleware(
@@ -40,6 +44,5 @@ app.include_router(risks.router)
 app.include_router(specifications.router)
 app.include_router(strategy.router)
 app.include_router(title.router)
-app.include_router(umls.router)
 app.include_router(database_schema.router)
 app.include_router(download.router)

@@ -1,16 +1,16 @@
-from fastapi import APIRouter
-from routers.projects import get_module
-
+from fastapi import APIRouter, status
+from services import get_model
+from models import ComponentIdentify
 
 router = APIRouter(
-    tags=["title"],
-    prefix="/title",
-    responses={404: {"description": "Not found"}},
+    tags=["model"],
+    prefix="/model",
 )
 
 
 @router.get(
-    "/{project_id}",
+    "/title/{project_id}",
+    status_code=status.HTTP_200_OK,
 )
-async def get_title(project_id: str):
-    return await get_module(project_id, "title")
+def get_title(project_id: str):
+    return get_model(project_id, ComponentIdentify.TITLE.value)
