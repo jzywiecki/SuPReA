@@ -6,7 +6,9 @@ from .remote import GenerateActor
 
 
 @ray.remote
-def update_component_task(project_id, query, ai_model, generate_component_class: type(Generate)):
+def update_component_task(
+    project_id, query, ai_model, generate_component_class: type(Generate)
+):
     update_component = GenerateActor.remote(generate_component_class())
 
     try:

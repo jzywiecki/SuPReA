@@ -48,4 +48,3 @@ app.include_router(title.router)
 app.include_router(database_schema.router)
 app.include_router(download.router)
 app.include_router(logo.router)
-

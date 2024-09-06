@@ -17,4 +17,6 @@ def update_component(request, generate_component_class: type(Generate)):
     if not projects_dao.is_project_exist(request.project_id):
         raise ProjectNotFound(request.project_id)
 
-    update_component_task.remote(request.project_id, request.query, GPT35TurboInstance, generate_component_class)
+    update_component_task.remote(
+        request.project_id, request.query, GPT35TurboInstance, generate_component_class
+    )
