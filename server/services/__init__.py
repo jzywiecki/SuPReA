@@ -5,3 +5,4 @@ from .projects import create_project_by_ai
 from .projects import get_project_by_id
 from .projects import delete_project_by_id
 from .projects import get_project_list_by_user_id
+from .component import update_component
