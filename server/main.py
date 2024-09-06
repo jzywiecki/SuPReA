@@ -15,6 +15,7 @@ from routers import (
     requirements,
     risks,
     download,
+    logo,
 )
 from fastapi.middleware.cors import CORSMiddleware
 from utils import register_fastapi_exception_handlers
@@ -46,3 +47,5 @@ app.include_router(strategy.router)
 app.include_router(title.router)
 app.include_router(database_schema.router)
 app.include_router(download.router)
+app.include_router(logo.router)
+
