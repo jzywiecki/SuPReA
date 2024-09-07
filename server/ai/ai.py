@@ -1,46 +1,54 @@
+"""
+This module provides the core abstractions and tools for working with AI models.
+It defines an abstract base class for AI models and includes a utility function
+for making remote calls to AI models using the Ray framework.
+"""
+
 import abc
 import ray
 
 
 class AI(metaclass=abc.ABCMeta):
     """
-    Abstract class represents AI models.
+    Abstract class represents AI models. Each AI model should implement this class.
     """
 
     @abc.abstractmethod
     def name(self):
-        """Returns the name of the AI model."""
+        """
+        :return: the name of the AI model.
+        :rtype: str
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def make_ai_call(self, query):
+    def make_ai_call(self, query: str):
         """
         Generates a response from an AI model.
 
-        Args:
-            query (str): The query to be sent to the AI model.
+        :param str query: The query to be sent to the AI model.
 
-        Returns:
-            str: The response from the AI model.
+        :return: The response from the AI model.
+        :rtype: str
         """
         raise NotImplementedError
 
     def parse_generate_query(
-        self, what, for_who, doing_what, additional_info, expected_answer_format
+        self, what: str, for_who: str, doing_what: str, additional_info: str, expected_answer_format: str
     ):
         """
-        Generates a query to GENERATE model to use in AI model. Derived AI models can override this method
-        to provide a custom query format.
+        Creates a query for an AI model to generate a specific item. This query is used by the AI model to
+        generate the desired output based on the provided parameters. Derived AI models can override this
+        method to customize the query format.
 
-        Args:
-            what (str): The item to be generated (e.g., actors).
-            for_who (str): Specifies the intended recipient of the application (provided by user.).
-            doing_what (str): Describes the application's purpose or activity (provided by the user).
-            additional_info (str): Any additional information about application (provided by the user).
-            expected_answer_format (str): The expected format of the response (default should be JSON schema).
+        :param str what: The item to be generated (e.g., actors)
+        :param str for_who: Specifies the intended recipient of the application (provided by user.)
+        :param str doing_what: Specifies the purpose of the application (provided by user.)
+        :param str additional_info: Additional information about the application (provided by user.)
+        :param str expected_answer_format: The expected format of the response (default is JSON schema).
 
-        Returns:
-            str: A default query format for AI model.
+        :return: component query for AI model.
+        :rtype: str
         """
 
         return f"""
@@ -52,17 +60,20 @@ class AI(metaclass=abc.ABCMeta):
         """
 
     def parse_update_query(
-        self, what, previous_val, changes_request, expected_answer_format
+        self, what: str, previous_val: str, changes_request: str, expected_answer_format: str
     ):
         """
-        Generates a query to UPDATE model to use in AI model. Derived AI models can override this method
-        to provide a custom query format.
+        Generates a query for an AI model to update an existing item. This query is used by the AI model to
+        apply the specified changes to the item. Derived AI models can override this method to customize the
+        query format.
 
-        Args:
-            what (str): The item to be updated (e.g., actors).
-            previous_val (str): The previous value of the item.
-            changes_request (str): The changes to be made to the item.
-            expected_answer_format (str): The expected format of the response (default should be JSON schema).
+        :param str what: The item to be updated, such as actors or components.
+        :param str previous_val: The previous value of the item before the update.
+        :param str changes_request: The changes to be applied to the item.
+        :param str expected_answer_format: The format in which the AI model's response should be returned, usually a JSON schema.
+
+        :return: A query string formatted according to the AI model’s requirements, ready to be sent to the AI model.
+        :rtype: str
         """
         return f"""
             Update {what} from: {previous_val}.
@@ -74,8 +85,8 @@ class AI(metaclass=abc.ABCMeta):
 
 
 @ray.remote
-def ai_call_remote(ai_model, query):
+def ai_call_task(ai_model, query):
     """
-    Makes a remote call to the AI model.
+    Remote wrapper to call to the AI model.
     """
     return ai_model.make_ai_call(query)
