@@ -1,7 +1,18 @@
+"""
+This module provides utility functions for working with Mermaid.js.
+"""
+
 from utils import logger
 
 
 def parse_table_to_erdiagram_mermaid(table):
+    """
+    Parses a single table definition into Mermaid.js ER diagram format.
+
+    :param table: A dictionary representing a table with its name and columns.
+    :return: A string in Mermaid.js ER diagram format for the given table.
+    :raises ValueError: If the column type is not recognized.
+    """
     result = f"{table['name']} {{\n"
     columns = table["columns"]
     for col in columns:
@@ -18,6 +29,13 @@ def parse_table_to_erdiagram_mermaid(table):
 
 
 def parse_relationship_to_erdiagram_mermaid(relationship):
+    """
+    Parses a single relationship definition into Mermaid.js ER diagram format.
+
+    :param relationship: A dictionary representing a relationship between two tables.
+    :return: A string in Mermaid.js ER diagram format for the given relationship.
+    :raises ValueError: If the relationship type is not recognized.
+    """
     result = f"{relationship['from_table']}"
     if relationship["relationship_type"] == "one-to-one":
         result += " ||--|| "
@@ -34,6 +52,13 @@ def parse_relationship_to_erdiagram_mermaid(relationship):
 
 
 def parse_database_to_erdiagram_mermaid(database):
+    """
+    Parses the entire database schema (tables and relationships) into Mermaid.js ER diagram format.
+
+    :param database: A dictionary containing the database schema, including tables and relationships.
+    :return: A string in Mermaid.js ER diagram format representing the entire database schema.
+    :raises ValueError: If the column type is not recognized or the relationship type
+    """
     mermaid_format = "erDiagram\n"
     for table in database["tables"]:
         mermaid_format += parse_table_to_erdiagram_mermaid(table)
@@ -45,6 +70,13 @@ def parse_database_to_erdiagram_mermaid(database):
 
 
 def create_er_diagram_mermaid(database):
+    """
+    Creates an ER diagram in Mermaid.js format for the given database schema. If an error occurs, it logs the error
+    and returns None.
+
+    :param database: A dictionary containing the database schema, including tables and relationships.
+    :return: A string in Mermaid.js ER diagram format if successful, otherwise None.
+    """
     try:
         return parse_database_to_erdiagram_mermaid(database)
     except Exception as e:

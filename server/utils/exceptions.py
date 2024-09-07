@@ -1,3 +1,8 @@
+"""
+This module defines custom exception classes and registers exception handlers for a FastAPI application.
+It ensures that specific errors are handled gracefully and provides informative error responses to clients.
+"""
+
 from fastapi import HTTPException, Request, FastAPI, status
 from fastapi.responses import JSONResponse
 from utils import logger
@@ -5,29 +10,38 @@ from bson.errors import InvalidId
 
 
 class WrongFormatGeneratedByAI(Exception):
+    """Exception raised when an AI-generated format is incorrect."""
     pass
 
 
 class ProjectNotFound(Exception):
+    """Exception raised when a requested project is not found."""
     def __init__(self, project_id: str):
         self.project_id = project_id
         super().__init__(f"Project with id: '{project_id}' not found")
 
 
-class ModelNotFound(Exception):
-    def __init__(self, project_id: str, model_name: str):
-        self.model_name = model_name
+class ComponentNotFound(Exception):
+    """Exception raised when a specific component is not found within a project."""
+    def __init__(self, project_id: str, component_name: str):
+        self.component_name = component_name
         self.project_id = project_id
-        super().__init__(f"{model_name}' not found in project: '{project_id}'")
+        super().__init__(f"{component_name}' not found in project: '{project_id}'")
 
 
 class InvalidParameter(Exception):
+    """Exception raised when an invalid parameter is provided."""
     def __init__(self, details: str):
         super().__init__(details)
         self.details = details
 
 
 def register_fastapi_exception_handlers(app: FastAPI):
+    """
+    Registers exception handlers for a FastAPI application to handle various custom exceptions and HTTP errors.
+
+    :param app: The FastAPI application instance.
+    """
     @app.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):
         logger.error(f"HTTPException occurred: {exc.detail}")
@@ -44,13 +58,13 @@ def register_fastapi_exception_handlers(app: FastAPI):
             content={"detail": "Invalid ID provided"},
         )
 
-    @app.exception_handler(ModelNotFound)
-    async def model_not_found_exception_handler(request: Request, exc: ModelNotFound):
-        logger.error(f"{exc.model_name} not found in project: {exc.project_id}")
+    @app.exception_handler(ComponentNotFound)
+    async def model_not_found_exception_handler(request: Request, exc: ComponentNotFound):
+        logger.error(f"{exc.component_name} not found in project: {exc.project_id}")
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={
-                "detail": f"{exc.model_name} not found in project: {exc.project_id}"
+                "detail": f"{exc.component_name} not found in project: {exc.project_id}"
             },
         )
 
