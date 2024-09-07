@@ -1,3 +1,8 @@
+"""
+This module is responsible for configuring the connection to a MongoDB database and providing
+access to the collections.
+"""
+
 import pymongo
 import os
 import certifi
