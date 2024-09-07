@@ -21,6 +21,7 @@ class ActorsGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating actor models.
     """
+
     def __init__(self):
         """
         Initializes the `ActorsGenerate` instance.

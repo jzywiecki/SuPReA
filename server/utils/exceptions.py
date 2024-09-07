@@ -11,11 +11,13 @@ from bson.errors import InvalidId
 
 class WrongFormatGeneratedByAI(Exception):
     """Exception raised when an AI-generated format is incorrect."""
+
     pass
 
 
 class ProjectNotFound(Exception):
     """Exception raised when a requested project is not found."""
+
     def __init__(self, project_id: str):
         self.project_id = project_id
         super().__init__(f"Project with id: '{project_id}' not found")
@@ -23,6 +25,7 @@ class ProjectNotFound(Exception):
 
 class ComponentNotFound(Exception):
     """Exception raised when a specific component is not found within a project."""
+
     def __init__(self, project_id: str, component_name: str):
         self.component_name = component_name
         self.project_id = project_id
@@ -31,6 +34,7 @@ class ComponentNotFound(Exception):
 
 class InvalidParameter(Exception):
     """Exception raised when an invalid parameter is provided."""
+
     def __init__(self, details: str):
         super().__init__(details)
         self.details = details
@@ -42,6 +46,7 @@ def register_fastapi_exception_handlers(app: FastAPI):
 
     :param app: The FastAPI application instance.
     """
+
     @app.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):
         logger.error(f"HTTPException occurred: {exc.detail}")
@@ -59,7 +64,9 @@ def register_fastapi_exception_handlers(app: FastAPI):
         )
 
     @app.exception_handler(ComponentNotFound)
-    async def model_not_found_exception_handler(request: Request, exc: ComponentNotFound):
+    async def model_not_found_exception_handler(
+        request: Request, exc: ComponentNotFound
+    ):
         logger.error(f"{exc.component_name} not found in project: {exc.project_id}")
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,

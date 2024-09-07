@@ -2,6 +2,7 @@
 This module serves as a global Data Access Object (DAO) for performing operations on the chat-related
 collections in the MongoDB database. It provides a wrapper around the MongoDB operations for chats.
 """
+
 from bson import ObjectId
 from models import Chat
 

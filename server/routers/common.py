@@ -9,5 +9,6 @@ class UpdateComponentByAIRequest(BaseModel):
     """
     The request object for updating a component using AI-based generation.
     """
+
     project_id: str
     query: str

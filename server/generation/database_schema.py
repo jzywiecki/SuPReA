@@ -39,6 +39,7 @@ class DatabaseSchemaGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating database schema models.
     """
+
     def __init__(self):
         """
         Initializes the `DatabaseSchemaGenerate` instance.

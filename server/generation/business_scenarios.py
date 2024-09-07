@@ -21,6 +21,7 @@ class BusinessScenariosGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating business scenario models.
     """
+
     def __init__(self):
         """
         Initializes the `BusinessScenariosGenerate` instance.

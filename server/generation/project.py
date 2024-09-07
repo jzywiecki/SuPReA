@@ -123,7 +123,7 @@ class ProjectAIGenerationActor:
 
 
 @ray.remote
-def generate_project_components_task (
+def generate_project_components_task(
     project_id, for_what, doing_what, additional_info, ai_text_model, ai_image_model
 ):
     """

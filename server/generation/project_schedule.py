@@ -22,6 +22,7 @@ class ProjectScheduleGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating project schedule models.
     """
+
     def __init__(self):
         """
         Initializes the `ProjectScheduleGenerate` instance.

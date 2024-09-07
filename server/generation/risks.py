@@ -22,6 +22,7 @@ class RiskGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating risks models
     """
+
     def __init__(self):
         """
         Initializes the `RiskGenerate` instance

@@ -18,6 +18,7 @@ class StrategyGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating strategy models.
     """
+
     def __init__(self):
         """
         Initializes the `StrategyGenerate` instance.

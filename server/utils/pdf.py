@@ -114,15 +114,15 @@ def add_two_elements_list(pdf_elements, items, title, name_one, name_two):
 
 def add_three_element_list(pdf_elements, items, title, name_one, name_two, name_three):
     """
-     Adds a list with three elements per item to the PDF.
+    Adds a list with three elements per item to the PDF.
 
-     :param pdf_elements: The list of PDF elements to add to.
-     :param items: The list of items to include in the list.
-     :param title: The title of the list section.
-     :param name_one: The first key to extract from each item.
-     :param name_two: The second key to extract from each item.
-     :param name_three: The third key to extract from each item.
-     """
+    :param pdf_elements: The list of PDF elements to add to.
+    :param items: The list of items to include in the list.
+    :param title: The title of the list section.
+    :param name_one: The first key to extract from each item.
+    :param name_two: The second key to extract from each item.
+    :param name_three: The third key to extract from each item.
+    """
     pdf_elements.append(Paragraph(title, title_style))
 
     items = [

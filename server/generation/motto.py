@@ -16,6 +16,7 @@ class MottoGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating motto models
     """
+
     def __init__(self):
         """
         Initializes the `MottoGenerate` instance

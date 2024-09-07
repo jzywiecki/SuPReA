@@ -50,7 +50,12 @@ class DallE3(AI):
 
     @override
     def parse_generate_query(
-        self, what: str, for_who: str, doing_what: str, additional_info: str, expected_answer_format: str
+        self,
+        what: str,
+        for_who: str,
+        doing_what: str,
+        additional_info: str,
+        expected_answer_format: str,
     ):
         """Make a specific query for DALL-E 3 to generate an image."""
         return (
@@ -60,7 +65,11 @@ class DallE3(AI):
 
     @override
     def parse_update_query(
-        self, what: str, previous_val: str, changes_request: str, expected_answer_format: str
+        self,
+        what: str,
+        previous_val: str,
+        changes_request: str,
+        expected_answer_format: str,
     ):
         """Make a specific query for DALL-E 3 to update an image."""
         return f"Create a {what} making: {changes_request} expected format: {expected_answer_format}"

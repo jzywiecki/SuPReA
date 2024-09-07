@@ -16,6 +16,7 @@ class ElevatorSpeechGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating elevator speech content.
     """
+
     def __init__(self):
         """
         Initializes the `ElevatorSpeechGenerate` instance.

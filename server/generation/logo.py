@@ -33,6 +33,7 @@ class LogoGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating logo models.
     """
+
     def __init__(self):
         """
         Initializes the `LogoGenerate` instance.

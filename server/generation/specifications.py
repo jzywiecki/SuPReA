@@ -21,6 +21,7 @@ class SpecificationsGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating specifications models.
     """
+
     def __init__(self):
         """
         Initializes the `SpecificationsGenerate` instance.

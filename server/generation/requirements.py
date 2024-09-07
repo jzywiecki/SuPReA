@@ -29,6 +29,7 @@ class RequirementsGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating requirements models.
     """
+
     def __init__(self):
         """
         Initializes the `RequirementsGenerate` instance.

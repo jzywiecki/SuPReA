@@ -34,7 +34,12 @@ class AI(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     def parse_generate_query(
-        self, what: str, for_who: str, doing_what: str, additional_info: str, expected_answer_format: str
+        self,
+        what: str,
+        for_who: str,
+        doing_what: str,
+        additional_info: str,
+        expected_answer_format: str,
     ):
         """
         Creates a query for an AI model to generate a specific item. This query is used by the AI model to
@@ -60,7 +65,11 @@ class AI(metaclass=abc.ABCMeta):
         """
 
     def parse_update_query(
-        self, what: str, previous_val: str, changes_request: str, expected_answer_format: str
+        self,
+        what: str,
+        previous_val: str,
+        changes_request: str,
+        expected_answer_format: str,
     ):
         """
         Generates a query for an AI model to update an existing item. This query is used by the AI model to

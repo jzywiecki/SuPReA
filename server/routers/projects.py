@@ -22,6 +22,7 @@ class EmptyProjectCreateRequest(BaseModel):
     """
     Request object for creating an empty project.
     """
+
     name: str
     owner_id: str
 
@@ -45,6 +46,7 @@ class ProjectCreateByAIRequest(BaseModel):
     """
     Request object for creating a project using AI-based generation.
     """
+
     name: str
     for_who: str
     doing_what: str
@@ -99,6 +101,7 @@ class ProjectsListResponse(BaseModel):
     """
     Response object for retrieving the list of projects where the specified user is the owner or a member.
     """
+
     class ProjectListElement(BaseModel):
         id: ObjectId = Field(alias="_id", default=None)
         name: str

@@ -20,6 +20,7 @@ class TitleGenerate(Generate):
     """
     A concrete implementation of the Generate class for generating and updating title models.
     """
+
     def __init__(self):
         """
         Initializes the `TitleGenerate` instance.
