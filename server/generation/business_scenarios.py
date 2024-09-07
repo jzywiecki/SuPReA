@@ -1,3 +1,7 @@
+"""
+This module is responsible for generating a business scenarios model.
+"""
+
 from .generate import Generate
 from models import BusinessScenarios
 from models import ComponentIdentify
@@ -14,7 +18,13 @@ expected_format = """
 
 
 class BusinessScenariosGenerate(Generate):
+    """
+    A concrete implementation of the Generate class for generating and updating business scenario models.
+    """
     def __init__(self):
+        """
+        Initializes the `BusinessScenariosGenerate` instance.
+        """
         super().__init__(
             BusinessScenarios,
             "business scenario",

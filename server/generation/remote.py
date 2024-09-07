@@ -1,3 +1,7 @@
+"""
+Module containing remote wrapper for generating components by AI models.
+"""
+
 import json
 import ray
 
@@ -7,15 +11,22 @@ from .generate import Generate
 
 @ray.remote
 class GenerateActor:
-    """Remote actor that generates components by AI, saves them to the database and handles failures.
-    This actor is wrapped around the Generate class."""
+    """
+    Remote actor that generates components by AI, saves them to the database and handles failures.
+    This actor is wrapped around the Generate class.
+    """
 
     def __init__(self, model_generate: Generate):
+        """
+        Initializes the `GenerateActor` instance.
+        """
         self.model_generate = model_generate
 
     def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
-        """Generates a model using the AI model.
-        returns the current actor ref and an error if any."""
+        """
+        Generates a model using the AI model.
+        returns the current actor ref and an error if any.
+        """
         try:
             self.model_generate.generate_by_ai(
                 ai_model, for_what, doing_what, additional_info
@@ -53,8 +64,10 @@ class GenerateActor:
             return self.current_actor(), e
 
     def update_by_ai(self, ai_model, changes_request):
-        """Update a model using the AI model.
-        returns the current actor ref and an error if any."""
+        """
+        Update a model using the AI model.
+        returns the current actor ref and an error if any.
+        """
         try:
             self.model_generate.update_by_ai(ai_model, changes_request)
 
@@ -91,8 +104,10 @@ class GenerateActor:
             return self.current_actor(), e
 
     def save_to_database(self, project_id):
-        """Save the provided/generated model to the database for project with id={project_id}.
-        returns the actor ref and an error if any."""
+        """
+        Save the provided/generated model to the database for project with id={project_id}.
+        returns the actor ref and an error if any.
+        """
         try:
             self.model_generate.save_to_database(project_id)
 
@@ -116,8 +131,10 @@ class GenerateActor:
             return self.current_actor(), e
 
     def fetch_from_database(self, project_id):
-        """Fetch the model from project with id={project_id} from the database.
-        returns the actor ref and an error if any."""
+        """
+        Fetch the model from project with id={project_id} from the database.
+        returns the actor ref and an error if any.
+        """
         try:
             self.model_generate.fetch_from_database(project_id)
 
@@ -141,8 +158,10 @@ class GenerateActor:
             return self.current_actor(), e
 
     def update(self, new_val):
-        """Update the model with a new value. Value must be of the correct type.
-        returns the actor ref and an error if any."""
+        """
+        Update the model with a new value. Value must be of the correct type.
+        returns the actor ref and an error if any.
+        """
         try:
             self.model_generate.update(new_val)
             return self.current_actor(), None
@@ -152,12 +171,19 @@ class GenerateActor:
             return self.current_actor(), e
 
     def get_value(self):
-        """Returns the value of the model."""
+        """
+        Returns the value of the model.
+        """
         return self.model_generate.value
 
     def get_component_identify(self):
-        """Returns the component identify."""
+        """
+        Returns the component identify.
+        """
         return self.model_generate.component_identify
 
     def current_actor(self):
+        """
+        Returns the current ray actor reference
+        """
         return ray.get_runtime_context().current_actor

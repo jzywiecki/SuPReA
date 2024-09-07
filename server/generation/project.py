@@ -1,3 +1,7 @@
+"""
+Module contains general high-level functions for generate projects using AI models.
+"""
+
 import ray
 
 from .actors import ActorsGenerate
@@ -20,7 +24,9 @@ MAX_RE_REGENERATION = 5
 
 @ray.remote
 class ProjectAIGenerationActor:
-    """Main actor that generates components by AI, saves them to the database and handles failures."""
+    """
+    Main actor that generates components by AI, saves them to the database and handles failures.
+    """
 
     def __init__(self):
         self.logo_actor = GenerateActor.remote(LogoGenerate())
@@ -45,7 +51,9 @@ class ProjectAIGenerationActor:
     def generate_components_by_ai(
         self, ai_text_model, ai_image_model, for_what, doing_what, additional_info
     ):
-        """Run remote tasks to generate components by AI"""
+        """
+        Run remote tasks to generate components by AI.
+        """
         for actor in self.actors:
             if actor is self.logo_actor:
                 self.generate_future.append(
@@ -63,7 +71,8 @@ class ProjectAIGenerationActor:
     def save_components_and_regenerate_failure_by_ai(
         self, ai_text_model, for_what, doing_what, additional_info, project_id
     ):
-        """Run remote tasks to save components into database.
+        """
+        Run remote tasks to save components into database.
         If AI generates a wrong format, regenerate the component (max MAX_RE_REGENERATION times) and save it again.
         If the component still fails or unknown exception occurred, add it to the failure list.
         """
@@ -99,7 +108,9 @@ class ProjectAIGenerationActor:
                     raise e
 
     def save_to_database_service(self):
-        """Check if all components are saved to the database. If not, add them to the failure list."""
+        """
+        Check if all components are saved to the database. If not, add them to the failure list.
+        """
         for actor_ref in self.db_future:
             try:
                 actor, error = ray.get(actor_ref)
@@ -112,9 +123,12 @@ class ProjectAIGenerationActor:
 
 
 @ray.remote
-def generate_components_remote_wrapper(
+def generate_project_components_task (
     project_id, for_what, doing_what, additional_info, ai_text_model, ai_image_model
 ):
+    """
+    Initiates the remote generation of project components by AI models and handles their saving to the database.
+    """
     project_ai_actor = ProjectAIGenerationActor.remote()
     generate_task = project_ai_actor.generate_components_by_ai.remote(
         ai_text_model, ai_image_model, for_what, doing_what, additional_info

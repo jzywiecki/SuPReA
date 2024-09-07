@@ -1,3 +1,7 @@
+"""
+This module is responsible for generating a database schema.
+"""
+
 import json
 
 from .generate import Generate
@@ -32,7 +36,13 @@ expected_format = """ Don't return the same values in the database! just be insp
 
 
 class DatabaseSchemaGenerate(Generate):
+    """
+    A concrete implementation of the Generate class for generating and updating database schema models.
+    """
     def __init__(self):
+        """
+        Initializes the `DatabaseSchemaGenerate` instance.
+        """
         super().__init__(
             DatabaseSchema,
             "database schema",
@@ -42,6 +52,9 @@ class DatabaseSchemaGenerate(Generate):
 
     @override
     def update_by_ai(self, ai_model, changes_request):
+        """
+        Specifies how to update a database schema model using the AI model.
+        """
         json_val_format = json.dumps(self.value, default=lambda x: x.__dict__)
         request = ai_model.parse_update_query(
             self.what, json_val_format, changes_request, self.expected_format

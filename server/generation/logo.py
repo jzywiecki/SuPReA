@@ -1,9 +1,13 @@
+"""
+This module contains the LogoGenerate class, which is responsible for generating a logo model.
+"""
+
 import ray
 
 from .generate import Generate
 from models import Logo
 from utils.decorators import override
-from ai import ai_call_remote
+from ai import ai_call_task
 from models import ComponentIdentify
 
 
@@ -26,12 +30,20 @@ additional_details4 = (
 
 
 class LogoGenerate(Generate):
+    """
+    A concrete implementation of the Generate class for generating and updating logo models.
+    """
     def __init__(self):
+        """
+        Initializes the `LogoGenerate` instance.
+        """
         super().__init__(Logo, "logo", expected_format, ComponentIdentify.LOGO)
 
     @override
     def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
-        """Specify implementation for generating a model using the AI image-model."""
+        """
+        Specify implementation for generating a model using the AI image-model.
+        """
         request1 = ai_model.parse_generate_query(
             self.what,
             for_what,
@@ -70,7 +82,9 @@ class LogoGenerate(Generate):
 
     @override
     def update_by_ai(self, ai_model, changes_request):
-        """Update a model using the AI model."""
+        """
+        Specify implementation for updating a model using the AI image-model.
+        """
         request1 = ai_model.parse_update_query(
             self.what, "", changes_request, self.expected_format
         )
@@ -93,9 +107,12 @@ class LogoGenerate(Generate):
 
 
 def process_ai_requests(ai_model, *requests):
+    """
+    Process the AI requests and return the results.
+    """
     replies = []
     for request in requests:
-        replies.append(ai_call_remote.remote(ai_model, request))
+        replies.append(ai_call_task.remote(ai_model, request))
 
     results = ray.get(replies)
 
@@ -103,4 +120,7 @@ def process_ai_requests(ai_model, *requests):
 
 
 def make_model_from_reply(model_class, reply):
+    """
+    Create a model from the AI reply.
+    """
     return model_class(logo_urls=reply)

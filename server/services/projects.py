@@ -4,7 +4,7 @@ It also integrates with AI models to generate project components.
 """
 
 from utils import InvalidParameter, ProjectNotFound
-from generation.project import generate_components_remote_wrapper
+from generation.project import generate_project_components_task
 from ai import gpt_35_turbo, dall_e_3
 
 import database.projects as projects_dao
@@ -59,7 +59,7 @@ def create_project_by_ai(request):
         request.additional_info,
     )
 
-    generate_components_remote_wrapper.remote(
+    generate_project_components_task.remote(
         new_project_id,
         request.for_who,
         request.doing_what,
