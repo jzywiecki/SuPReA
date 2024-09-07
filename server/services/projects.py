@@ -1,11 +1,27 @@
+"""
+This module provides functionality for managing projects, including creating, retrieving, and deleting projects.
+It also integrates with AI models to generate project components.
+"""
+
 from utils import InvalidParameter, ProjectNotFound
 from generation.project import generate_components_remote_wrapper
-from ai import GPT35TurboInstance, DallE3Instance
+from ai import gpt_35_turbo, dall_e_3
 
 import database.projects as projects_dao
 
 
 def create_empty_project(request):
+    """
+    Creates a new project with basic details.
+
+    :param request: The request object containing project details.
+    :type request: object with attributes `name` (str), `owner_id` (str), etc.
+
+    :raises InvalidParameter: If the project name is empty.
+
+    :return: The unique identifier of the newly created project.
+    :rtype: str
+    """
     if not request.name:
         raise InvalidParameter("Project name cannot be empty")
 
@@ -17,6 +33,17 @@ def create_empty_project(request):
 
 
 def create_project_by_ai(request):
+    """
+    Creates a new project and triggers AI-based component generation.
+
+    :param request: The request object containing project details and AI parameters.
+    :type request: object with attributes `name` (str), `owner_id` (str), `for_who` (str), `doing_what` (str), `additional_info` (str)
+
+    :raises InvalidParameter: If the project name is empty or AI parameters are missing.
+
+    :return: The unique identifier of the newly created project.
+    :rtype: str
+    """
     if not request.name:
         raise InvalidParameter("Project name cannot be empty")
 
@@ -37,14 +64,25 @@ def create_project_by_ai(request):
         request.for_who,
         request.doing_what,
         request.additional_info,
-        GPT35TurboInstance,
-        DallE3Instance,
+        gpt_35_turbo,
+        dall_e_3,
     )
 
     return new_project_id
 
 
 def get_project_by_id(project_id: str):
+    """
+    Retrieves a project by its ID.
+
+    :param project_id: The unique identifier of the project.
+    :type project_id: str
+
+    :raises ProjectNotFound: If no project is found with the provided ID.
+
+    :return: The project details.
+    :rtype: dict
+    """
     project = projects_dao.get_project(project_id)
     if project is None:
         raise ProjectNotFound(project_id)
@@ -53,6 +91,17 @@ def get_project_by_id(project_id: str):
 
 
 def delete_project_by_id(project_id: str):
+    """
+    Deletes a project by its ID.
+
+    :param project_id: The unique identifier of the project.
+    :type project_id: str
+
+    :raises ProjectNotFound: If no project is found with the provided ID.
+
+    :return: Confirmation of deletion.
+    :rtype: bool
+    """
     if not projects_dao.is_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
@@ -60,6 +109,17 @@ def delete_project_by_id(project_id: str):
 
 
 def get_project_list_by_user_id(user_id: str):
+    """
+    Retrieves a list of projects associated with a specific user ID.
+
+    :param user_id: The unique identifier of the user.
+    :type user_id: str
+
+    :return: A dictionary containing lists of projects where the user is an owner or a member.
+    :rtype: dict
+    :key str "owner": List of projects owned by the user.
+    :key str "member": List of projects where the user is a member.
+    """
     # TODO: check if user exists
 
     project_list_member = projects_dao.get_projects_by_member(user_id)

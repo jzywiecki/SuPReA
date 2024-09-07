@@ -4,14 +4,6 @@ services package
 Submodules
 ----------
 
-services.common module
-----------------------
-
-.. automodule:: services.common
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 services.component module
 -------------------------
 

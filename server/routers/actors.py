@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Response
-from services import get_model
+from services import get_component
 from models import ComponentIdentify
 from .common import UpdateComponentByAIRequest
 from services.component import update_component
@@ -16,7 +16,7 @@ router = APIRouter(
     status_code=status.HTTP_200_OK,
 )
 def get_actors(project_id: str):
-    return get_model(project_id, ComponentIdentify.ACTORS.value)
+    return get_component(project_id, ComponentIdentify.ACTORS.value)
 
 
 @router.post(
