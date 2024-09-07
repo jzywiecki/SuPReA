@@ -1,3 +1,7 @@
+"""
+This module defines the API routes for interacting with project components, specifically title.
+"""
+
 from fastapi import APIRouter, status, Response
 from services import get_component
 from models import ComponentIdentify
@@ -17,6 +21,11 @@ router = APIRouter(
     status_code=status.HTTP_200_OK,
 )
 def get_title(project_id: str):
+    """
+    Retrieves the title component for the specified project.
+
+    :param str project_id: The unique identifier of the project.
+    """
     return get_component(project_id, ComponentIdentify.TITLE.value)
 
 
@@ -25,5 +34,10 @@ def get_title(project_id: str):
     status_code=status.HTTP_200_OK,
 )
 def update_title_by_ai(request: UpdateComponentByAIRequest):
+    """
+    Updates the title component for the specified project using AI-based generation.
+
+    :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
+    """
     update_component(request, TitleGenerate)
     return Response(status_code=status.HTTP_200_OK)

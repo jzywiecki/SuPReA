@@ -1,3 +1,7 @@
+"""
+This module defines the API routes for downloading project resources.
+"""
+
 from fastapi import APIRouter, Response, status
 from services import generate_pdf_for_project
 
@@ -12,6 +16,11 @@ router = APIRouter(
     status_code=status.HTTP_200_OK,
 )
 def download_pdf(project_id: str):
+    """
+    Downloads a PDF representation of the specified project.
+
+    :param str project_id: The unique identifier of the project.
+    """
     pdf, name = generate_pdf_for_project(project_id)
 
     headers = {
