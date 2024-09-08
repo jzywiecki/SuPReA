@@ -1,8 +1,24 @@
+"""
+This module provides services to generate a project resources for specific project.
+"""
+
 import database.projects as projects_dao
 from utils import ProjectNotFound, generate_pdf
 
 
 def generate_pdf_for_project(project_id):
+    """
+    Retrieves the project from the database using the provided project ID and generates a PDF document.
+
+    :param int project_id: The unique identifier of the project.
+
+    :raises ProjectNotFound: If no project is found with the provided ID.
+
+    :return: A tuple containing:
+        - pdf_buffer (bytes): The generated PDF document in a binary format.
+        - project_name (str): The name of the project or "unknown" if the name is not available.
+    :rtype: tuple
+    """
     project = projects_dao.get_project(project_id)
 
     if project is None:

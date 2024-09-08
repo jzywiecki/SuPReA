@@ -1,3 +1,7 @@
+"""
+This module provides functions to fetch resources from the network.
+"""
+
 import ray
 import requests
 from io import BytesIO
@@ -5,7 +9,14 @@ from reportlab.platypus import Image
 from utils import logger
 
 
-def fetch_image(url):
+def fetch_image(url: str):
+    """
+    Fetches an image from the specified URL.
+
+    :param url: The URL of the image to fetch.
+    :return: An Image object if the fetch is successful, otherwise None.
+    :rtype: reportlab.platypus.Image
+    """
     response = requests.get(url)
 
     if response.status_code == 200:
@@ -16,7 +27,14 @@ def fetch_image(url):
 
 
 @ray.remote
-def fetch_image_remote(url):
+def fetch_image_task(url: str):
+    """
+    Fetches an image from the specified URL asynchronously using Ray.
+
+    :param url: The URL of the image to fetch.
+    :return: An Image object if the fetch is successful, otherwise None.
+    :rtype: reportlab.platypus.Image
+    """
     try:
         return fetch_image(url)
     except Exception as e:

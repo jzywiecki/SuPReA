@@ -1,8 +1,12 @@
+"""
+This module provides functions to generate a PDF document.
+"""
+
 import tempfile
 import mermaid as mmd
 import ray
 
-from utils.fetch import fetch_image_remote
+from utils.fetch import fetch_image_task
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import (
@@ -24,17 +28,31 @@ text_style = styles["BodyText"]
 
 
 def add_simple_text(pdf_elements, title, text):
+    """
+    Adds a simple text section to the PDF.
+
+    :param pdf_elements: The list of PDF elements to add to.
+    :param title: The title of the text section.
+    :param text: The body text for the section.
+    """
     pdf_elements.append(Paragraph(title, title_style))
     pdf_elements.append(Paragraph(text, text_style))
     pdf_elements.append(Spacer(1, 12))
 
 
-def add_simple_list(pdf_elements, title, modules):
+def add_simple_list(pdf_elements, title, items):
+    """
+    Adds a bulleted list to the PDF.
+
+    :param pdf_elements: The list of PDF elements to add to.
+    :param title: The title of the list section.
+    :param items: The list of items to include in the bulleted list.
+    """
     pdf_elements.append(Paragraph(title, title_style))
 
     items = [
         ListItem(Paragraph(f" {title}<br/>", styles["BodyText"]))
-        for i, title in enumerate(modules)
+        for i, title in enumerate(items)
     ]
     pdf_elements.append(ListFlowable(items, bulletType="bullet"))
 
@@ -42,6 +60,13 @@ def add_simple_list(pdf_elements, title, modules):
 
 
 def add_er_diagram(pdf_elements, er_diagram_format, title):
+    """
+    Adds an ER diagram to the PDF in Mermaid.js format.
+
+    :param pdf_elements: The list of PDF elements to add to.
+    :param er_diagram_format: The ER diagram in Mermaid.js format.
+    :param title: The title of the ER diagram section.
+    """
     pdf_elements.append(Paragraph(title, title_style))
 
     with tempfile.NamedTemporaryFile(suffix=".png", delete=True) as tmp:
@@ -61,7 +86,16 @@ def add_er_diagram(pdf_elements, er_diagram_format, title):
     pdf_elements.append(Spacer(1, 12))
 
 
-def add_two_elements_list(pdf_elements, actors, title, name_one, name_two):
+def add_two_elements_list(pdf_elements, items, title, name_one, name_two):
+    """
+    Adds a list with two elements per item to the PDF.
+
+    :param pdf_elements: The list of PDF elements to add to.
+    :param items: The list of items to include in the list.
+    :param title: The title of the list section.
+    :param name_one: The first key to extract from each item.
+    :param name_two: The second key to extract from each item.
+    """
     pdf_elements.append(Paragraph(title, title_style))
 
     items = [
@@ -71,14 +105,24 @@ def add_two_elements_list(pdf_elements, actors, title, name_one, name_two):
                 styles["BodyText"],
             )
         )
-        for i, element in enumerate(actors)
+        for i, element in enumerate(items)
     ]
     pdf_elements.append(ListFlowable(items, bulletType="bullet"))
 
     pdf_elements.append(Spacer(1, 12))
 
 
-def add_three_element_list(pdf_elements, module, title, name_one, name_two, name_three):
+def add_three_element_list(pdf_elements, items, title, name_one, name_two, name_three):
+    """
+    Adds a list with three elements per item to the PDF.
+
+    :param pdf_elements: The list of PDF elements to add to.
+    :param items: The list of items to include in the list.
+    :param title: The title of the list section.
+    :param name_one: The first key to extract from each item.
+    :param name_two: The second key to extract from each item.
+    :param name_three: The third key to extract from each item.
+    """
     pdf_elements.append(Paragraph(title, title_style))
 
     items = [
@@ -88,7 +132,7 @@ def add_three_element_list(pdf_elements, module, title, name_one, name_two, name
                 styles["BodyText"],
             )
         )
-        for i, element in enumerate(module)
+        for i, element in enumerate(items)
     ]
     pdf_elements.append(ListFlowable(items, bulletType="bullet"))
 
@@ -96,9 +140,16 @@ def add_three_element_list(pdf_elements, module, title, name_one, name_two, name
 
 
 def add_pictures(pdf_elements, title, pictures_urls):
+    """
+    Adds images to the PDF from a list of URLs.
+
+    :param pdf_elements: The list of PDF elements to add to.
+    :param title: The title of the images section.
+    :param pictures_urls: A list of URLs of the images to include.
+    """
     actors_refs = []
     for picture_url in pictures_urls:
-        actors_refs.append(fetch_image_remote.remote(picture_url))
+        actors_refs.append(fetch_image_task.remote(picture_url))
     pictures = ray.get(actors_refs)
 
     if any(picture is not None for picture in pictures):
@@ -111,6 +162,12 @@ def add_pictures(pdf_elements, title, pictures_urls):
 
 
 def generate_pdf(project):
+    """
+    Generates a PDF document based on the provided project details.
+
+    :param project: A dictionary containing various details about the project.
+    :return: The generated PDF document as a byte stream.
+    """
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,

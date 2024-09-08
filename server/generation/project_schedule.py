@@ -1,3 +1,7 @@
+"""
+This module is responsible for generating project schedule data.
+"""
+
 from .generate import Generate
 from models import ProjectSchedule
 from models import ComponentIdentify
@@ -15,7 +19,14 @@ expected_format = """
 
 
 class ProjectScheduleGenerate(Generate):
+    """
+    A concrete implementation of the Generate class for generating and updating project schedule models.
+    """
+
     def __init__(self):
+        """
+        Initializes the `ProjectScheduleGenerate` instance.
+        """
         super().__init__(
             ProjectSchedule,
             "project schedule",

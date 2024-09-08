@@ -9,3 +9,12 @@ __pycache__/
 
 env/
 .idea/
+
+
+# Sphinx documentation
+**/_build/
+
+
+# MacOS files
+.DS_Store
+

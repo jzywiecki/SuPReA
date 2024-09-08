@@ -1,4 +1,4 @@
-from .common import get_model
+from .component import get_component
 from .resources import generate_pdf_for_project
 from .projects import create_empty_project
 from .projects import create_project_by_ai

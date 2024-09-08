@@ -1,3 +1,8 @@
+"""
+Module containing the Generate class, which provides an abstraction layer for generating, updating, and saving models
+to the database.
+"""
+
 import abc
 import json
 import database.projects as projects_dao
@@ -6,25 +11,25 @@ from models import ComponentIdentify
 
 class Generate(metaclass=abc.ABCMeta):
     """
-    Represents a abstraction layer that can be used to generate, update a model and save it to the database.
-    Derived AI models can override this method to provide a custom requirements.
+    An abstract class that provides an abstraction layer for generating, updating, and saving models to the database.
+
+    Derived AI models can override the methods to provide custom requirements.
     """
 
     def __init__(
         self, model_class, what, expected_format, component_identify: ComponentIdentify
     ):
         """
-        Initializes the module with the model class, name, and expected format.
+        Initializes the Generate class with model class, description, expected format, and component identification.
 
-        Args:
-            model_class (class):
-                The model class to be used (e.g., BusinessScenarios).
-            what (str):
-                what we generate/update (e.g., actors).
-            expected_format (str):
-                The expected format of the model (e.g., correct JSON schema).
-            component_identify (ComponentIdentify):
-                field indicates what component is being generated/updated.
+        :param model_class: The class of the model to be used (e.g., BusinessScenarios).
+        :type model_class: class
+        :param what: Describes what is being generated or updated (e.g., actors).
+        :type what: str
+        :param expected_format: The expected format of the model (e.g., correct JSON schema).
+        :type expected_format: str
+        :param component_identify: Indicates what component is being generated or updated.
+        :type component_identify: ComponentIdentify
         """
         self.model_class = model_class
         self.what = what
@@ -33,7 +38,23 @@ class Generate(metaclass=abc.ABCMeta):
         self.value = None
 
     def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
-        """Generates a model using the AI model."""
+        """
+        Generates a model using the AI model.
+
+        :param ai_model: The AI component to be used for generation.
+        :type ai_model: AI
+        :param for_what: Specifies the application or context for which the model is generated.
+        :type for_what: str
+        :param doing_what: Describes the purpose of the generated model.
+        :type doing_what: str
+        :param additional_info: Any additional information that may be needed for component generation.
+        :type additional_info: str
+
+        :return: The generated component.
+        :rtype: model_class
+
+        :raises ValueError: If the AI model response cannot be parsed or is not valid.
+        """
         request = ai_model.parse_generate_query(
             self.what, for_what, doing_what, additional_info, self.expected_format
         )
@@ -45,7 +66,19 @@ class Generate(metaclass=abc.ABCMeta):
         return self.value
 
     def update_by_ai(self, ai_model, changes_request):
-        """Update a model using the AI model."""
+        """
+        Updates a model using the AI model.
+
+        :param ai_model: The AI model to be used for updating.
+        :type ai_model: AI
+        :param changes_request: The changes to be made to the existing model.
+        :type changes_request: str
+
+        :return: The updated model.
+        :rtype: model_class
+
+        :raises ValueError: If the AI model response cannot be parsed or is not valid.
+        """
         request = ai_model.parse_update_query(
             self.what, self.value, changes_request, self.expected_format
         )
@@ -57,13 +90,33 @@ class Generate(metaclass=abc.ABCMeta):
         return self.value
 
     def save_to_database(self, project_id):
-        """Save the provided/generated model to the database for project with id={project_id}."""
+        """
+        Saves the generated or updated model to the database.
+
+        :param project_id: The ID of the project to which the model is to be saved.
+        :type project_id: str
+
+        :return: The result of the database update operation.
+        :rtype: bool
+
+        :raises ValueError: If the model value is not set or invalid.
+        """
         return projects_dao.update_project_component(
             project_id, self.component_identify.value, self.value
         )
 
     def fetch_from_database(self, project_id):
-        """Fetch the model from project with id={project_id} from the database."""
+        """
+        Fetches the model from the database for a given project ID.
+
+        :param project_id: The ID of the project from which to fetch the model.
+        :type project_id: str
+
+        :return: The fetched model.
+        :rtype: model_class
+
+        :raises ProjectNotFound: If the project with the specified ID does not exist.
+        """
         self.value = projects_dao.get_project_component(
             project_id, self.component_identify.value
         )
@@ -71,7 +124,17 @@ class Generate(metaclass=abc.ABCMeta):
         return self.value
 
     def update(self, new_val):
-        """Update the model with a new value. Value must be of the correct type."""
+        """
+        Updates the model with a new value.
+
+        :param new_val: The new value to set for the model.
+        :type new_val: model_class
+
+        :return: The updated model.
+        :rtype: model_class
+
+        :raises ValueError: If the new value is not of the correct type.
+        """
         if not isinstance(new_val, self.model_class):
             raise ValueError("new val is not of the correct type")
         self.value = new_val
@@ -79,22 +142,44 @@ class Generate(metaclass=abc.ABCMeta):
         return self.value
 
     def get_value(self):
-        """Returns the value of the model."""
+        """
+        Returns the current value of the model.
+
+        :return: The value of the model.
+        :rtype: model_class
+        """
         return self.value
 
     def get_component_identify(self):
-        """Returns the component identify."""
+        """
+        Returns the component identification.
+
+        :return: The component identification.
+        :rtype: ComponentIdentify
+        """
         return self.component_identify
 
     def get_what(self):
-        """Returns the what."""
+        """
+        Returns the description of what is being generated or updated.
+
+        :return: The description of the model's purpose.
+        :rtype: str
+        """
         return self.what
 
 
 def extract_json(text):
     """
-    Find the first occurrence of '{' and the last occurrence of '}'
-    It is used to extract the JSON content from the text.
+    Extracts the JSON content from a text.
+
+    Finds the first occurrence of '{' and the last occurrence of '}' to extract the JSON.
+
+    :param text: The text from which to extract JSON.
+    :type text: str
+
+    :return: The extracted JSON string.
+    :rtype: str
     """
     start_index = text.find("{")
     end_index = text.rfind("}")
@@ -106,6 +191,16 @@ def extract_json(text):
 
 
 def make_model_from_reply(model_class, reply):
-    """Creates a model object from the ai reply"""
+    """
+    Creates a model object from the AI reply.
+
+    :param model_class: The class of the model to create.
+    :type model_class: class
+    :param reply: The AI reply containing model data in JSON format.
+    :type reply: str
+
+    :return: The created model object.
+    :rtype: model_class
+    """
     data = json.loads(reply)
     return model_class(**data)

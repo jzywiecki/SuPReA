@@ -19,9 +19,11 @@ from .logo import Logo
 
 
 class Project(BaseModel):
-    """Represents the project the client is working with.
+    """
+    Represents the project the client is working with.
     includes configuration information and
-    the project's current state."""
+    the project's current state.
+    """
 
     id: ObjectId = Field(alias="_id", default=None)
     name: str
@@ -58,9 +60,11 @@ class Projects(BaseModel):
 
 
 class ComponentIdentify(Enum):
-    """Field names to identify components
+    """
+    Field names to identify components
     (e.g. These are used to access the fields in the MongoDB documents.)
-    Should be consistent with the field names in the Project model."""
+    Should be consistent with the field names in the Project model.
+    """
 
     ACTORS = "actors"
     BUSINESS_SCENARIOS = "business_scenarios"

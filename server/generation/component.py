@@ -1,3 +1,7 @@
+"""
+Module contains general high-level functions for generate components using AI models.
+"""
+
 import ray
 
 from utils import logger
@@ -9,6 +13,9 @@ from .remote import GenerateActor
 def update_component_task(
     project_id, query, ai_model, generate_component_class: type(Generate)
 ):
+    """
+    Updates a component using the AI model using ray.
+    """
     update_component = GenerateActor.remote(generate_component_class())
 
     try:
