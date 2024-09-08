@@ -106,7 +106,7 @@ def delete_project_by_id(project_id: str):
     if not project_dao.is_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
-    return project_dao.delete_project(project_id)
+    return project_dao.delete_project(project_id, chat_dao)
 
 
 def get_project_list_by_user_id(user_id: str):
