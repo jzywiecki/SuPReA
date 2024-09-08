@@ -3,7 +3,7 @@ This module provides services to generate a project resources for specific proje
 """
 
 from database import project_dao
-from utils import ProjectNotFound, generate_pdf
+from utils import ProjectNotFound, PDFGenerator
 
 
 def generate_pdf_for_project(project_id: str):
@@ -24,5 +24,7 @@ def generate_pdf_for_project(project_id: str):
     if project is None:
         raise ProjectNotFound(project_id)
 
-    pdf_buffer = generate_pdf(project)
-    return pdf_buffer, project.get("name", "unknown")
+    pdf_generator = PDFGenerator()
+    pdf_generator.add_project(project)
+
+    return pdf_generator.generate(), project.get("name", "unknown")
