@@ -63,7 +63,7 @@ def disable_file_logging():
                 log.removeHandler(handler)
 
 
-if os.getenv("VISION_ENVIRONMENT") != "TEST":
+if os.getenv("VISION_LOG") == "FILE":
     enable_file_logging()
 else:
     disable_file_logging()
