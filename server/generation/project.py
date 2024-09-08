@@ -16,7 +16,7 @@ from .risks import RiskGenerate
 from .specifications import SpecificationsGenerate
 from .strategy import StrategyGenerate
 from .title import TitleGenerate
-from .generate_remote import GenerateActor
+from .generate import GenerateActor
 from utils import WrongFormatGeneratedByAI, logger
 from ai import AI
 

@@ -7,7 +7,7 @@ import ray
 from utils import logger
 from ai import AI
 from .generate import Generate
-from .generate_remote import GenerateActor
+from .generate import GenerateActor
 
 
 @ray.remote

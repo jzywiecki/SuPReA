@@ -1,13 +1,16 @@
 """
-Module containing the Generate class, which provides an abstraction layer for generating, updating, and saving models
+Module containing:
+- Generate class, which provides an abstraction layer for generating, updating, and saving models
 to the database.
+- GenerateActor class, which is a remote actor that generates components by AI, saves them to the database,
 """
-
+import ray
 import abc
 import json
 from database import ProjectDAO
 from models import ComponentIdentify
 from ai import AI
+from utils import logger_ai, logger_db, logger, WrongFormatGeneratedByAI
 
 
 class Generate(metaclass=abc.ABCMeta):
@@ -208,3 +211,183 @@ def make_model_from_reply(model_class, reply):
     """
     data = json.loads(reply)
     return model_class(**data)
+
+
+@ray.remote
+class GenerateActor:
+    """
+    Remote actor that generates components by AI, saves them to the database and handles failures.
+    This actor is wrapped around the Generate class.
+    """
+
+    def __init__(self, model_generate: Generate):
+        """
+        Initializes the `GenerateActor` instance.
+        """
+        self.model_generate = model_generate
+
+    def generate_by_ai(self, ai_model: AI, for_what: str, doing_what: str, additional_info: str):
+        """
+        Generates a model using the AI model.
+        returns the current actor ref and an error if any.
+        """
+        try:
+            self.model_generate.generate_by_ai(
+                ai_model, for_what, doing_what, additional_info
+            )
+
+            logger_ai.info(
+                f"Finished successfully.",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
+            )
+            return self.current_actor(), None
+
+        except json.JSONDecodeError as e:
+            logger_ai.exception(
+                f"{e}",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
+            )
+
+            return self.current_actor(), WrongFormatGeneratedByAI()
+
+        except Exception as e:
+            logger_ai.error(
+                f"{e}",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
+            )
+
+            return self.current_actor(), e
+
+    def update_by_ai(self, ai_model: AI, changes_request: str):
+        """
+        Update a model using the AI model.
+        returns the current actor ref and an error if any.
+        """
+        try:
+            self.model_generate.update_by_ai(ai_model, changes_request)
+
+            logger_ai.info(
+                f"Finished successfully.",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
+            )
+
+            return self.current_actor(), None
+
+        except json.JSONDecodeError as e:
+            logger_ai.exception(
+                f"{e}",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
+            )
+
+            return self.current_actor(), WrongFormatGeneratedByAI()
+
+        except Exception as e:
+            logger_ai.error(
+                f"{e}",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
+            )
+
+            return self.current_actor(), e
+
+    def save_to_database(self, get_project_dao_ref, project_id: str):
+        """
+        Save the provided/generated model to the database for project with id={project_id}.
+        returns the actor ref and an error if any.
+        """
+        try:
+            self.model_generate.save_to_database(get_project_dao_ref(), project_id)
+
+            logger_db.info(
+                f"Finished successfully.",
+                extra={
+                    "project_id": project_id,
+                    "field": self.model_generate.component_identify.value,
+                },
+            )
+            return self.current_actor(), None
+
+        except Exception as e:
+            logger_db.error(
+                f"{e}",
+                extra={
+                    "project_id": project_id,
+                    "field": self.model_generate.component_identify.value,
+                },
+            )
+            return self.current_actor(), e
+
+    def fetch_from_database(self, get_project_dao_ref, project_id: str):
+        """
+        Fetch the model from project with id={project_id} from the database.
+        returns the actor ref and an error if any.
+        """
+        try:
+            self.model_generate.fetch_from_database(get_project_dao_ref(), project_id)
+
+            logger_db.info(
+                f"Finished successfully.",
+                extra={
+                    "project_id": project_id,
+                    "field": self.model_generate.component_identify.value,
+                },
+            )
+            return self.current_actor(), None
+
+        except Exception as e:
+            logger_db.error(
+                f"{e}",
+                extra={
+                    "project_id": project_id,
+                    "field": self.model_generate.component_identify.value,
+                },
+            )
+            return self.current_actor(), e
+
+    def update(self, new_val):
+        """
+        Update the model with a new value. Value must be of the correct type.
+        returns the actor ref and an error if any.
+        """
+        try:
+            self.model_generate.update(new_val)
+            return self.current_actor(), None
+
+        except Exception as e:
+            logger.exception(f"{e}")
+            return self.current_actor(), e
+
+    def get_value(self):
+        """
+        Returns the value of the model.
+        """
+        return self.model_generate.value
+
+    def get_component_identify(self):
+        """
+        Returns the component identify.
+        """
+        return self.model_generate.component_identify
+
+    def current_actor(self):
+        """
+        Returns the current ray actor reference
+        """
+        return ray.get_runtime_context().current_actor
