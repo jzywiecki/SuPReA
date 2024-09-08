@@ -19,6 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from utils import register_fastapi_exception_handlers
 
 
+
 app = FastAPI()
 register_fastapi_exception_handlers(app)
 
