@@ -5,8 +5,9 @@ to the database.
 
 import abc
 import json
-import database.projects as projects_dao
+from database import ProjectDAO
 from models import ComponentIdentify
+from ai import AI
 
 
 class Generate(metaclass=abc.ABCMeta):
@@ -17,13 +18,12 @@ class Generate(metaclass=abc.ABCMeta):
     """
 
     def __init__(
-        self, model_class, what, expected_format, component_identify: ComponentIdentify
+        self, model_class, what: str, expected_format: str, component_identify: ComponentIdentify
     ):
         """
         Initializes the Generate class with model class, description, expected format, and component identification.
 
         :param model_class: The class of the model to be used (e.g., BusinessScenarios).
-        :type model_class: class
         :param what: Describes what is being generated or updated (e.g., actors).
         :type what: str
         :param expected_format: The expected format of the model (e.g., correct JSON schema).
@@ -37,7 +37,7 @@ class Generate(metaclass=abc.ABCMeta):
         self.component_identify = component_identify
         self.value = None
 
-    def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
+    def generate_by_ai(self, ai_model: AI, for_what: str, doing_what: str, additional_info: str):
         """
         Generates a model using the AI model.
 
@@ -65,7 +65,7 @@ class Generate(metaclass=abc.ABCMeta):
 
         return self.value
 
-    def update_by_ai(self, ai_model, changes_request):
+    def update_by_ai(self, ai_model: AI, changes_request: str):
         """
         Updates a model using the AI model.
 
@@ -89,10 +89,12 @@ class Generate(metaclass=abc.ABCMeta):
 
         return self.value
 
-    def save_to_database(self, project_id):
+    def save_to_database(self, project_dao: ProjectDAO, project_id: str):
         """
         Saves the generated or updated model to the database.
 
+        :param project_dao: The DAO object for the project.
+        :type project_dao: ProjectDAO
         :param project_id: The ID of the project to which the model is to be saved.
         :type project_id: str
 
@@ -101,14 +103,16 @@ class Generate(metaclass=abc.ABCMeta):
 
         :raises ValueError: If the model value is not set or invalid.
         """
-        return projects_dao.update_project_component(
+        return project_dao.update_project_component(
             project_id, self.component_identify.value, self.value
         )
 
-    def fetch_from_database(self, project_id):
+    def fetch_from_database(self, project_dao: ProjectDAO, project_id: str):
         """
         Fetches the model from the database for a given project ID.
 
+        :param project_dao: The DAO object for the project.
+        :type project_dao: ProjectDAO
         :param project_id: The ID of the project from which to fetch the model.
         :type project_id: str
 
@@ -117,7 +121,7 @@ class Generate(metaclass=abc.ABCMeta):
 
         :raises ProjectNotFound: If the project with the specified ID does not exist.
         """
-        self.value = projects_dao.get_project_component(
+        self.value = project_dao.get_project_component(
             project_id, self.component_identify.value
         )
 

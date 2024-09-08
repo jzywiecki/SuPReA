@@ -18,6 +18,7 @@ from .strategy import StrategyGenerate
 from .title import TitleGenerate
 from .remote import GenerateActor
 from utils import WrongFormatGeneratedByAI, logger
+from ai import AI
 
 MAX_RE_REGENERATION = 5
 
@@ -49,7 +50,7 @@ class ProjectAIGenerationActor:
         self.failure_actor = []
 
     def generate_components_by_ai(
-        self, ai_text_model, ai_image_model, for_what, doing_what, additional_info
+        self, ai_text_model: AI, ai_image_model: AI, for_what: str, doing_what: str, additional_info: str
     ):
         """
         Run remote tasks to generate components by AI.
@@ -69,7 +70,7 @@ class ProjectAIGenerationActor:
                 )
 
     def save_components_and_regenerate_failure_by_ai(
-        self, ai_text_model, for_what, doing_what, additional_info, project_id
+        self, ai_text_model: AI, project_dao_remote_ref, for_what: str, doing_what: str, additional_info: str, project_id: str
     ):
         """
         Run remote tasks to save components into database.
@@ -87,7 +88,7 @@ class ProjectAIGenerationActor:
                     actor, error = ray.get(actor_ref)
 
                     if error is None:
-                        self.db_future.append(actor.save_to_database.remote(project_id))
+                        self.db_future.append(actor.save_to_database.remote(project_dao_remote_ref, project_id))
 
                     elif isinstance(error, WrongFormatGeneratedByAI):
                         if re_regeneration_count < MAX_RE_REGENERATION:
@@ -124,7 +125,7 @@ class ProjectAIGenerationActor:
 
 @ray.remote
 def generate_project_components_task(
-    project_id, for_what, doing_what, additional_info, ai_text_model, ai_image_model
+    project_id: str, for_what: str, doing_what: str, additional_info: str, ai_text_model: AI, ai_image_model: AI, project_dao_remote_ref
 ):
     """
     Initiates the remote generation of project components by AI models and handles their saving to the database.
@@ -135,7 +136,7 @@ def generate_project_components_task(
     )
     regenerate_task = (
         project_ai_actor.save_components_and_regenerate_failure_by_ai.remote(
-            ai_text_model, for_what, doing_what, additional_info, project_id
+            ai_text_model, project_dao_remote_ref, for_what, doing_what, additional_info, project_id
         )
     )
     save_check_task = project_ai_actor.save_to_database_service.remote()

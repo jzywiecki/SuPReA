@@ -5,6 +5,7 @@ Module containing remote wrapper for generating components by AI models.
 import json
 import ray
 
+from ai import AI
 from utils import logger_ai, logger_db, logger, WrongFormatGeneratedByAI
 from .generate import Generate
 
@@ -22,7 +23,7 @@ class GenerateActor:
         """
         self.model_generate = model_generate
 
-    def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
+    def generate_by_ai(self, ai_model: AI, for_what: str, doing_what: str, additional_info: str):
         """
         Generates a model using the AI model.
         returns the current actor ref and an error if any.
@@ -63,7 +64,7 @@ class GenerateActor:
 
             return self.current_actor(), e
 
-    def update_by_ai(self, ai_model, changes_request):
+    def update_by_ai(self, ai_model: AI, changes_request: str):
         """
         Update a model using the AI model.
         returns the current actor ref and an error if any.
@@ -103,13 +104,13 @@ class GenerateActor:
 
             return self.current_actor(), e
 
-    def save_to_database(self, project_id):
+    def save_to_database(self, project_dao_remote_ref, project_id: str):
         """
         Save the provided/generated model to the database for project with id={project_id}.
         returns the actor ref and an error if any.
         """
         try:
-            self.model_generate.save_to_database(project_id)
+            self.model_generate.save_to_database(project_dao_remote_ref(), project_id)
 
             logger_db.info(
                 f"Finished successfully.",
@@ -130,13 +131,13 @@ class GenerateActor:
             )
             return self.current_actor(), e
 
-    def fetch_from_database(self, project_id):
+    def fetch_from_database(self, project_dao_remote_ref, project_id: str):
         """
         Fetch the model from project with id={project_id} from the database.
         returns the actor ref and an error if any.
         """
         try:
-            self.model_generate.fetch_from_database(project_id)
+            self.model_generate.fetch_from_database(project_dao_remote_ref(), project_id)
 
             logger_db.info(
                 f"Finished successfully.",
