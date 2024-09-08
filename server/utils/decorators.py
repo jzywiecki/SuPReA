@@ -3,18 +3,11 @@ This module contains utility decorators for use throughout the application.
 """
 
 
-def singleton(class_):
+def singleton(f):
     """
-    Decorator that ensures a class has only one instance (singleton pattern).
+    Decorator to indicate that a class is a singleton.
     """
-    instances = {}
-
-    def getinstance(*args, **kwargs):
-        if class_ not in instances:
-            instances[class_] = class_(*args, **kwargs)
-        return instances[class_]
-
-    return getinstance
+    return f
 
 
 def override(f):

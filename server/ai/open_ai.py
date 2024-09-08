@@ -9,14 +9,21 @@ These instances ensure that only one instance of each model exists
 """
 
 from openai import OpenAI
-from utils.decorators import override
+from utils.decorators import override, singleton
 
 from ai.ai import AI
 
 client = OpenAI()
 
 
+@singleton
 class GPT35Turbo(AI):
+    def __new__(cls, *args, **kw):
+        if not hasattr(cls, '_instance'):
+            orig = super(GPT35Turbo, cls)
+            cls._instance = orig.__new__(cls, *args, **kw)
+        return cls._instance
+
     @override
     def name(self):
         return "GPT-3.5 Turbo"
@@ -30,7 +37,14 @@ class GPT35Turbo(AI):
         return response.choices[0].message.content
 
 
+@singleton
 class DallE3(AI):
+    def __new__(cls, *args, **kw):
+        if not hasattr(cls, '_instance'):
+            orig = super(DallE3, cls)
+            cls._instance = orig.__new__(cls, *args, **kw)
+        return cls._instance
+
     @override
     def name(self):
         return "DALL-E 3"
@@ -73,7 +87,3 @@ class DallE3(AI):
     ):
         """Make a specific query for DALL-E 3 to update an image."""
         return f"Create a {what} making: {changes_request} expected format: {expected_answer_format}"
-
-
-gpt_35_turbo = GPT35Turbo()
-dall_e_3 = DallE3()

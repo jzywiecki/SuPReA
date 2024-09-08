@@ -5,7 +5,7 @@ It also integrates with AI models to generate project components.
 
 from utils import InvalidParameter, ProjectNotFound
 from generation.project import generate_project_components_task
-from ai import gpt_35_turbo, dall_e_3
+from ai import GPT35Turbo, DallE3
 from database import project_dao, chat_dao, get_project_dao_ref
 
 
@@ -64,8 +64,8 @@ def create_project_by_ai(request):
         request.for_who,
         request.doing_what,
         request.additional_info,
-        gpt_35_turbo,
-        dall_e_3,
+        GPT35Turbo(),
+        DallE3(),
         get_project_dao_ref
     )
 
