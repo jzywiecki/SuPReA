@@ -84,10 +84,10 @@ generation.project\_schedule module
    :undoc-members:
    :show-inheritance:
 
-generation.remote module
+generation.generate_remote module
 ------------------------
 
-.. automodule:: generation.remote
+.. automodule:: generation.generate_remote
    :members:
    :undoc-members:
    :show-inheritance:
