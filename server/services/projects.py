@@ -6,7 +6,7 @@ It also integrates with AI models to generate project components.
 from utils import InvalidParameter, ProjectNotFound
 from generation.project import generate_project_components_task
 from ai import gpt_35_turbo, dall_e_3
-from database import project_dao, chat_dao, project_dao_global_remote_ref
+from database import project_dao, chat_dao, get_project_dao_ref
 
 
 def create_empty_project(request):
@@ -66,7 +66,7 @@ def create_project_by_ai(request):
         request.additional_info,
         gpt_35_turbo,
         dall_e_3,
-        project_dao_global_remote_ref
+        get_project_dao_ref
     )
 
     return new_project_id

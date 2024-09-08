@@ -104,13 +104,13 @@ class GenerateActor:
 
             return self.current_actor(), e
 
-    def save_to_database(self, project_dao_remote_ref, project_id: str):
+    def save_to_database(self, get_project_dao_ref, project_id: str):
         """
         Save the provided/generated model to the database for project with id={project_id}.
         returns the actor ref and an error if any.
         """
         try:
-            self.model_generate.save_to_database(project_dao_remote_ref(), project_id)
+            self.model_generate.save_to_database(get_project_dao_ref(), project_id)
 
             logger_db.info(
                 f"Finished successfully.",
@@ -131,13 +131,13 @@ class GenerateActor:
             )
             return self.current_actor(), e
 
-    def fetch_from_database(self, project_dao_remote_ref, project_id: str):
+    def fetch_from_database(self, get_project_dao_ref, project_id: str):
         """
         Fetch the model from project with id={project_id} from the database.
         returns the actor ref and an error if any.
         """
         try:
-            self.model_generate.fetch_from_database(project_dao_remote_ref(), project_id)
+            self.model_generate.fetch_from_database(get_project_dao_ref(), project_id)
 
             logger_db.info(
                 f"Finished successfully.",

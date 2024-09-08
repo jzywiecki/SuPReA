@@ -28,7 +28,7 @@ chat_dao = ChatDAO(db, "chats")
 project_dao = ProjectDAO(db, "projects")
 
 
-def chat_dao_global_remote_ref():
+def get_chat_dao_ref():
     """
     Returns a reference to the global chat DAO.
     Solves serialization problem with Ray remote functions.
@@ -36,7 +36,7 @@ def chat_dao_global_remote_ref():
     return chat_dao
 
 
-def project_dao_global_remote_ref():
+def get_project_dao_ref():
     """
     Returns a reference to the global project DAO.
     Solves serialization problem with Ray remote functions.

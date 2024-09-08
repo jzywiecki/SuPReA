@@ -70,7 +70,7 @@ class ProjectAIGenerationActor:
                 )
 
     def save_components_and_regenerate_failure_by_ai(
-        self, ai_text_model: AI, project_dao_remote_ref, for_what: str, doing_what: str, additional_info: str, project_id: str
+        self, ai_text_model: AI, get_project_dao_ref, for_what: str, doing_what: str, additional_info: str, project_id: str
     ):
         """
         Run remote tasks to save components into database.
@@ -88,7 +88,7 @@ class ProjectAIGenerationActor:
                     actor, error = ray.get(actor_ref)
 
                     if error is None:
-                        self.db_future.append(actor.save_to_database.remote(project_dao_remote_ref, project_id))
+                        self.db_future.append(actor.save_to_database.remote(get_project_dao_ref, project_id))
 
                     elif isinstance(error, WrongFormatGeneratedByAI):
                         if re_regeneration_count < MAX_RE_REGENERATION:
@@ -125,7 +125,7 @@ class ProjectAIGenerationActor:
 
 @ray.remote
 def generate_project_components_task(
-    project_id: str, for_what: str, doing_what: str, additional_info: str, ai_text_model: AI, ai_image_model: AI, project_dao_remote_ref
+    project_id: str, for_what: str, doing_what: str, additional_info: str, ai_text_model: AI, ai_image_model: AI, get_project_dao_ref
 ):
     """
     Initiates the remote generation of project components by AI models and handles their saving to the database.
@@ -136,7 +136,7 @@ def generate_project_components_task(
     )
     regenerate_task = (
         project_ai_actor.save_components_and_regenerate_failure_by_ai.remote(
-            ai_text_model, project_dao_remote_ref, for_what, doing_what, additional_info, project_id
+            ai_text_model, get_project_dao_ref, for_what, doing_what, additional_info, project_id
         )
     )
     save_check_task = project_ai_actor.save_to_database_service.remote()
