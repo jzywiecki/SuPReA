@@ -4,7 +4,7 @@ This module provides functionality for updating and retrieving project component
 
 from database import project_dao, get_project_dao_ref
 
-from ai import GPT35Turbo
+from ai import gpt_35_turbo_remote_ref
 from generation.component import update_component_task
 from generation.generate import Generate
 from utils import InvalidParameter
@@ -34,7 +34,7 @@ def update_component(request, generate_component_class: type(Generate)):
         raise ProjectNotFound(request.project_id)
 
     update_component_task.remote(
-        request.project_id, request.query, GPT35Turbo(), get_project_dao_ref, generate_component_class
+        request.project_id, request.query, gpt_35_turbo_remote_ref, get_project_dao_ref, generate_component_class
     )
 
 

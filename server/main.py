@@ -1,5 +1,3 @@
-import ray
-
 from fastapi import FastAPI
 from routers import (
     actors,
@@ -20,7 +18,6 @@ from routers import (
 from fastapi.middleware.cors import CORSMiddleware
 from utils import register_fastapi_exception_handlers
 
-ray.init()
 
 app = FastAPI()
 register_fastapi_exception_handlers(app)
