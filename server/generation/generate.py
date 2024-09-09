@@ -83,7 +83,7 @@ class Generate(metaclass=abc.ABCMeta):
         :raises ValueError: If the AI model response cannot be parsed or is not valid.
         """
         request = ai_model.parse_update_query(
-            self.what, self.value, changes_request, self.expected_format
+            self.what, self.value.__dict__, changes_request, self.expected_format
         )
 
         reply = ai_model.make_ai_call(request)
@@ -121,12 +121,12 @@ class Generate(metaclass=abc.ABCMeta):
 
         :return: The fetched model.
         :rtype: model_class
-
-        :raises ProjectNotFound: If the project with the specified ID does not exist.
         """
-        self.value = project_dao.get_project_component(
+        value_from_db = project_dao.get_project_component(
             project_id, self.component_identify.value
         )
+
+        self.value = self.model_class(**value_from_db)
 
         return self.value
 
