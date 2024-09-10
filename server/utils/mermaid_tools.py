@@ -5,13 +5,14 @@ This module provides utility functions for working with Mermaid.js.
 from utils import logger
 
 
-def parse_table_to_erdiagram_mermaid(table):
+def parse_table_to_erdiagram_mermaid(table: dict):
     """
     Parses a single table definition into Mermaid.js ER diagram format.
 
     :param table: A dictionary representing a table with its name and columns.
     :return: A string in Mermaid.js ER diagram format for the given table.
-    :raises ValueError: If the column type is not recognized.
+    :raises KeyError: If the column type is not recognized.
+    :raises TypeError: If the input is not a dictionary.
     """
     result = f"{table['name']} {{\n"
     columns = table["columns"]
@@ -28,13 +29,14 @@ def parse_table_to_erdiagram_mermaid(table):
     return result
 
 
-def parse_relationship_to_erdiagram_mermaid(relationship):
+def parse_relationship_to_erdiagram_mermaid(relationship: dict):
     """
     Parses a single relationship definition into Mermaid.js ER diagram format.
 
     :param relationship: A dictionary representing a relationship between two tables.
     :return: A string in Mermaid.js ER diagram format for the given relationship.
     :raises ValueError: If the relationship type is not recognized.
+    :raises KeyError: If the relationship type is not recognized.
     """
     result = f"{relationship['from_table']}"
     if relationship["relationship_type"] == "one-to-one":
@@ -51,13 +53,14 @@ def parse_relationship_to_erdiagram_mermaid(relationship):
     return result
 
 
-def parse_database_to_erdiagram_mermaid(database):
+def parse_database_to_erdiagram_mermaid(database: dict):
     """
     Parses the entire database schema (tables and relationships) into Mermaid.js ER diagram format.
 
     :param database: A dictionary containing the database schema, including tables and relationships.
     :return: A string in Mermaid.js ER diagram format representing the entire database schema.
-    :raises ValueError: If the column type is not recognized or the relationship type
+    :raises ValueError: If the column type is not recognized or the relationship type is not recognized.
+    :raises TypeError: If the input is not a dictionary
     """
     mermaid_format = "erDiagram\n"
     for table in database["tables"]:
@@ -69,7 +72,7 @@ def parse_database_to_erdiagram_mermaid(database):
     return mermaid_format
 
 
-def create_er_diagram_mermaid(database):
+def create_er_diagram_mermaid(database: dict):
     """
     Creates an ER diagram in Mermaid.js format for the given database schema. If an error occurs, it logs the error
     and returns None.

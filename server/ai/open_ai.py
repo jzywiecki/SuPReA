@@ -4,9 +4,13 @@ This module contains implementations of AI models from OpenAI.
 Instances of these models are created as singletons:
  - gpt_35_turbo: An instance of the GPT-3.5 Turbo model.
  - dall_e_3: An instance of the DALL-E 3 model.
+ - gpt_35_turbo_remote_ref: A reference to the GPT-3.5 Turbo model on ray cluster.
+    - dall_e_3_remote_ref: A reference to the DALL-E 3 model on ray cluster.
 
 These instances ensure that only one instance of each model exists
 """
+
+import ray
 
 from openai import OpenAI
 from utils.decorators import override
@@ -77,3 +81,6 @@ class DallE3(AI):
 
 gpt_35_turbo = GPT35Turbo()
 dall_e_3 = DallE3()
+
+gpt_35_turbo_remote_ref = ray.put(gpt_35_turbo)
+dall_e_3_remote_ref = ray.put(dall_e_3)

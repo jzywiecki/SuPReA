@@ -12,10 +12,10 @@ database.chats module
    :undoc-members:
    :show-inheritance:
 
-database.database module
+database.config module
 ------------------------
 
-.. automodule:: database.database
+.. automodule:: database.config
    :members:
    :undoc-members:
    :show-inheritance:

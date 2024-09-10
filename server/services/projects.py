@@ -5,9 +5,8 @@ It also integrates with AI models to generate project components.
 
 from utils import InvalidParameter, ProjectNotFound
 from generation.project import generate_project_components_task
-from ai import gpt_35_turbo, dall_e_3
-
-import database.projects as projects_dao
+from ai import gpt_35_turbo_remote_ref, dall_e_3_remote_ref
+from database import project_dao, chat_dao, get_project_dao_ref
 
 
 def create_empty_project(request):
@@ -25,8 +24,8 @@ def create_empty_project(request):
     if not request.name:
         raise InvalidParameter("Project name cannot be empty")
 
-    new_project_id = projects_dao.create_project(
-        request.name, request.owner_id, "", "", "", ""
+    new_project_id = project_dao.create_project(
+        request.name, request.owner_id, "", "", "", "", chat_dao
     )
 
     return new_project_id
@@ -50,13 +49,14 @@ def create_project_by_ai(request):
     if not request.doing_what or not request.for_who:
         raise InvalidParameter("Invalid request arguments for AI")
 
-    new_project_id = projects_dao.create_project(
+    new_project_id = project_dao.create_project(
         request.name,
         request.owner_id,
         "",
         request.for_who,
         request.doing_what,
         request.additional_info,
+        chat_dao,
     )
 
     generate_project_components_task.remote(
@@ -64,8 +64,9 @@ def create_project_by_ai(request):
         request.for_who,
         request.doing_what,
         request.additional_info,
-        gpt_35_turbo,
-        dall_e_3,
+        gpt_35_turbo_remote_ref,
+        dall_e_3_remote_ref,
+        get_project_dao_ref,
     )
 
     return new_project_id
@@ -83,7 +84,7 @@ def get_project_by_id(project_id: str):
     :return: The project details.
     :rtype: dict
     """
-    project = projects_dao.get_project(project_id)
+    project = project_dao.get_project(project_id)
     if project is None:
         raise ProjectNotFound(project_id)
 
@@ -102,10 +103,10 @@ def delete_project_by_id(project_id: str):
     :return: Confirmation of deletion.
     :rtype: bool
     """
-    if not projects_dao.is_project_exist(project_id):
+    if not project_dao.is_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
-    return projects_dao.delete_project(project_id)
+    return project_dao.delete_project(project_id, chat_dao)
 
 
 def get_project_list_by_user_id(user_id: str):
@@ -122,8 +123,8 @@ def get_project_list_by_user_id(user_id: str):
     """
     # TODO: check if user exists
 
-    project_list_member = projects_dao.get_projects_by_member(user_id)
-    project_list_owner = projects_dao.get_projects_by_owner(user_id)
+    project_list_member = project_dao.get_projects_by_member(user_id)
+    project_list_owner = project_dao.get_projects_by_owner(user_id)
     result = {
         "owner": project_list_owner,
         "member": project_list_member,

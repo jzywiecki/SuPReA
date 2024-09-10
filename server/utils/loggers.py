@@ -1,10 +1,11 @@
-"""
-This module configures loggers for use throughout the application.
-It sets up multiple loggers with specific formats and log rotation settings to handle different logging needs.
-"""
-
 import logging
+import os
 from logging.handlers import RotatingFileHandler
+
+
+logger_ai = logging.getLogger("AI")
+logger_db = logging.getLogger("DB")
+logger = logging.getLogger("LOGGER")
 
 
 def configure_logging(logger_arg, level, file_name, formatter, max_bytes, backup_count):
@@ -31,22 +32,40 @@ def configure_logging(logger_arg, level, file_name, formatter, max_bytes, backup
     logger_arg.addHandler(file_handler)
 
 
-ai_logger_formatter = logging.Formatter(
-    "%(asctime)s - %(levelname)s - %(funcName)s - [AI Model: %(ai_model)s] - [Component: %(component)s] - %(message)s"
-)
-logger_ai = logging.getLogger("AI")
-configure_logging(logger_ai, logging.INFO, "log_ai", ai_logger_formatter, 1024, 0)
+def enable_file_logging():
+    """
+    Enables file logging for all configured loggers.
+    """
+    ai_logger_formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(funcName)s - [AI Model: %(ai_model)s] - [Component: %(component)s] - %(message)s"
+    )
+    configure_logging(logger_ai, logging.INFO, "log_ai", ai_logger_formatter, 1024, 0)
+
+    database_logger_formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(funcName)s - [ProjectId: %(project_id)s] - [Field: %(field)s] - %(message)s"
+    )
+    configure_logging(
+        logger_db, logging.INFO, "log_db", database_logger_formatter, 1024, 0
+    )
+
+    classic_logger_formatter = logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
+    )
+    configure_logging(logger, logging.INFO, "log", classic_logger_formatter, 2048, 0)
 
 
-database_logger_formatter = logging.Formatter(
-    "%(asctime)s - %(levelname)s - %(funcName)s - [ProjectId: %(project_id)s] - [Field: %(field)s] - %(message)s"
-)
-logger_db = logging.getLogger("DB")
-configure_logging(logger_db, logging.INFO, "log_db", database_logger_formatter, 1024, 0)
+def disable_file_logging():
+    """
+    Disables file logging by removing all file handlers from the loggers.
+    """
+    loggers = [logger_ai, logger_db, logger]
+    for log in loggers:
+        for handler in log.handlers[:]:
+            if isinstance(handler, RotatingFileHandler):
+                log.removeHandler(handler)
 
 
-classic_logger_formatter = logging.Formatter(
-    "%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"
-)
-logger = logging.getLogger("LOGGER")
-configure_logging(logger, logging.INFO, "log", classic_logger_formatter, 2048, 0)
+if os.getenv("VISIO_LOG") == "FILE":
+    enable_file_logging()
+else:
+    disable_file_logging()
