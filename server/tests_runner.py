@@ -1,85 +1,81 @@
-from unittest import (
-    TestLoader,
-    TextTestRunner,
-    TestSuite
-)
+from unittest import TestLoader, TextTestRunner, TestSuite
 
 from test.utils.test_mermaid_tools import (
     TestParseTableToErdiagramMermaid,
     TestParseRelationshipToErdiagramMermaid,
-    TestParseDatabaseToErdiagramMermaid
+    TestParseDatabaseToErdiagramMermaid,
 )
 from test.generation.test_actors import (
     TestFetchActorsFromDatabase,
     TestUpdateActors,
     TestGenerateActorsByAI,
-    TestUpdateActorsByAI
+    TestUpdateActorsByAI,
 )
 from test.generation.test_business_scenarios import (
     TestFetchBusinessScenariosFromDatabase,
     TestUpdateBusinessScenarios,
     TestGenerateBusinessScenariosByAI,
-    TestUpdateBusinessScenariosByAI
+    TestUpdateBusinessScenariosByAI,
 )
 from test.generation.test_database_schema import (
     TestFetchDatabaseSchemaFromDatabase,
     TestUpdateDatabaseSchema,
     TestGenerateDatabaseSchemaByAI,
-    TestUpdateDatabaseSchemaByAI
+    TestUpdateDatabaseSchemaByAI,
 )
 from test.generation.test_elevator_speech import (
     TestFetchElevatorSpeechFromDatabase,
     TestUpdateElevatorSpeech,
     TestGenerateElevatorSpeechByAI,
-    TestUpdateElevatorSpeechByAI
+    TestUpdateElevatorSpeechByAI,
 )
 from test.generation.test_logo import (
     TestFetchLogosFromDatabase,
     TestUpdateLogos,
     TestGenerateLogosByAI,
-    TestUpdateLogosByAI
+    TestUpdateLogosByAI,
 )
 from test.generation.test_motto import (
     TestFetchMottoFromDatabase,
     TestUpdateMotto,
     TestGenerateMottoByAI,
-    TestUpdateMottoByAI
+    TestUpdateMottoByAI,
 )
 from test.generation.test_project_schedule import (
     TestFetchProjectScheduleFromDatabase,
     TestUpdateProjectSchedule,
     TestGenerateProjectScheduleByAI,
-    TestUpdateProjectScheduleByAI
+    TestUpdateProjectScheduleByAI,
 )
 from test.generation.test_requirements import (
     TestFetchRequirementsFromDatabase,
     TestUpdateRequirements,
     TestGenerateRequirementsByAI,
-    TestUpdateRequirementsByAI
+    TestUpdateRequirementsByAI,
 )
 from test.generation.test_risks import (
     TestFetchRisksFromDatabase,
     TestUpdateRisks,
     TestGenerateRisksByAI,
-    TestUpdateRisksByAI
+    TestUpdateRisksByAI,
 )
 from test.generation.test_specifications import (
     TestFetchSpecificationsFromDatabase,
     TestUpdateSpecifications,
     TestGenerateSpecificationsByAI,
-    TestUpdateSpecificationsByAI
+    TestUpdateSpecificationsByAI,
 )
 from test.generation.test_strategy import (
     TestFetchStrategyFromDatabase,
     TestUpdateStrategy,
     TestGenerateStrategyByAI,
-    TestUpdateStrategyByAI
+    TestUpdateStrategyByAI,
 )
 from test.generation.test_title import (
     TestFetchTitlesFromDatabase,
     TestUpdateTitles,
     TestGenerateTitlesByAI,
-    TestUpdateTitlesByAI
+    TestUpdateTitlesByAI,
 )
 
 
@@ -139,7 +135,7 @@ if __name__ == "__main__":
             TestFetchTitlesFromDatabase,
             TestUpdateTitles,
             TestGenerateTitlesByAI,
-            TestUpdateTitlesByAI
+            TestUpdateTitlesByAI,
         )
     ]
     suite = TestSuite(tests)

@@ -10,13 +10,9 @@ from .base import BaseTestUpdateByAI
 
 
 # Test data ===================================================
-correct_data = {
-    "content": "example"
-}
+correct_data = {"content": "example"}
 
-invalid_data = {
-    "elevator_speech": "example"
-}
+invalid_data = {"elevator_speech": "example"}
 
 invalid_format = "example"
 
@@ -26,7 +22,9 @@ elevator_speech_two = ElevatorSpeech(content="example two")
 # ============================================================
 
 
-class TestFetchElevatorSpeechFromDatabase(BaseTestFetchValueFromDatabase, unittest.TestCase):
+class TestFetchElevatorSpeechFromDatabase(
+    BaseTestFetchValueFromDatabase, unittest.TestCase
+):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.generate_class = ElevatorSpeechGenerate

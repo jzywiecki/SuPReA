@@ -12,50 +12,49 @@ from .base import BaseTestUpdateByAI
 # Test data ===================================================
 correct_data = {
     "functional_requirements": [
-        {
-            "name": "example",
-            "description": "example",
-            "priority": "example"
-        }
+        {"name": "example", "description": "example", "priority": "example"}
     ],
     "non_functional_requirements": [
-        {
-            "name": "example",
-            "description": "example",
-            "priority": "example"
-        }
-    ]
+        {"name": "example", "description": "example", "priority": "example"}
+    ],
 }
 
 invalid_data = {
     "functional": [
-        {
-            "name": "example",
-            "description": "example",
-            "priority": "example"
-        }
+        {"name": "example", "description": "example", "priority": "example"}
     ],
-    "non_functional": [
-        {
-            "name": "example",
-            "description": "example"
-        }
-    ]
+    "non_functional": [{"name": "example", "description": "example"}],
 }
 
 invalid_format = "functional_requirements: name: example, description: example, priority: example, non_functional_requirements: name: example, description: example, priority: example"
 
-functional_requirement_one = FunctionalRequirement(name="example", description="example", priority="example")
-non_functional_requirement_one = NonFunctionalRequirement(name="example", description="example", priority="example")
-requirements_one = Requirements(functional_requirements=[functional_requirement_one], non_functional_requirements=[non_functional_requirement_one])
+functional_requirement_one = FunctionalRequirement(
+    name="example", description="example", priority="example"
+)
+non_functional_requirement_one = NonFunctionalRequirement(
+    name="example", description="example", priority="example"
+)
+requirements_one = Requirements(
+    functional_requirements=[functional_requirement_one],
+    non_functional_requirements=[non_functional_requirement_one],
+)
 
-functional_requirement_two = FunctionalRequirement(name="example 2", description="example 2", priority="example 2")
-non_functional_requirement_two = NonFunctionalRequirement(name="example 2", description="example 2", priority="example 2")
-requirements_two = Requirements(functional_requirements=[functional_requirement_two], non_functional_requirements=[non_functional_requirement_two])
+functional_requirement_two = FunctionalRequirement(
+    name="example 2", description="example 2", priority="example 2"
+)
+non_functional_requirement_two = NonFunctionalRequirement(
+    name="example 2", description="example 2", priority="example 2"
+)
+requirements_two = Requirements(
+    functional_requirements=[functional_requirement_two],
+    non_functional_requirements=[non_functional_requirement_two],
+)
 # ============================================================
 
 
-class TestFetchRequirementsFromDatabase(BaseTestFetchValueFromDatabase, unittest.TestCase):
+class TestFetchRequirementsFromDatabase(
+    BaseTestFetchValueFromDatabase, unittest.TestCase
+):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.generate_class = RequirementsGenerate

@@ -9,6 +9,7 @@ Instances of these models are created as singletons:
 
 These instances ensure that only one instance of each model exists
 """
+
 import ray
 
 from openai import OpenAI

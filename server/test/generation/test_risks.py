@@ -11,23 +11,11 @@ from .base import BaseTestUpdateByAI
 
 # Test data ===================================================
 correct_data = {
-    "risks": [
-        {
-            "risk": "example",
-            "description": "example",
-            "prevention": "example"
-        }
-    ]
+    "risks": [{"risk": "example", "description": "example", "prevention": "example"}]
 }
 
 invalid_data = {
-    "risks": [
-        {
-            "name": "example",
-            "description": "example",
-            "prevention": "example"
-        }
-    ]
+    "risks": [{"name": "example", "description": "example", "prevention": "example"}]
 }
 
 invalid_format = "risk: example"

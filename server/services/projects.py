@@ -66,7 +66,7 @@ def create_project_by_ai(request):
         request.additional_info,
         gpt_35_turbo_remote_ref,
         dall_e_3_remote_ref,
-        get_project_dao_ref
+        get_project_dao_ref,
     )
 
     return new_project_id

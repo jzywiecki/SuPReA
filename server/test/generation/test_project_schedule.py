@@ -12,46 +12,44 @@ from .base import BaseTestUpdateByAI
 # Test data ===================================================
 correct_data = {
     "milestones": [
-        {
-            "name": "example",
-            "description": "example",
-            "duration": "example"
-        },
+        {"name": "example", "description": "example", "duration": "example"},
         {
             "name": "example two",
             "description": "example two",
-            "duration": "example two"
-        }
+            "duration": "example two",
+        },
     ]
 }
 
 invalid_data = {
     "content": [
-        {
-            "name": "example",
-            "description": "example",
-            "duration": "example"
-        },
+        {"name": "example", "description": "example", "duration": "example"},
         {
             "name": "example two",
             "description": "example two",
-            "duration": "example two"
-        }
+            "duration": "example two",
+        },
     ]
 }
 
 invalid_format = "milestones: -[name: 'example', description: 'example', duration: 'example'], -[name: 'example two', description: 'example two', duration: 'example two']"
 
 milestone_one = Milestone(name="example", description="example", duration="example")
-milestone_two = Milestone(name="example two", description="example two", duration="example two")
+milestone_two = Milestone(
+    name="example two", description="example two", duration="example two"
+)
 project_schedule_one = ProjectSchedule(milestones=[milestone_one, milestone_two])
 
-milestone_three = Milestone(name="example three", description="example three", duration="example three")
+milestone_three = Milestone(
+    name="example three", description="example three", duration="example three"
+)
 project_schedule_two = ProjectSchedule(milestones=[milestone_three])
 # ============================================================
 
 
-class TestFetchProjectScheduleFromDatabase(BaseTestFetchValueFromDatabase, unittest.TestCase):
+class TestFetchProjectScheduleFromDatabase(
+    BaseTestFetchValueFromDatabase, unittest.TestCase
+):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.generate_class = ProjectScheduleGenerate

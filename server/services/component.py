@@ -34,7 +34,11 @@ def update_component(request, generate_component_class: type(Generate)):
         raise ProjectNotFound(request.project_id)
 
     update_component_task.remote(
-        request.project_id, request.query, gpt_35_turbo_remote_ref, get_project_dao_ref, generate_component_class
+        request.project_id,
+        request.query,
+        gpt_35_turbo_remote_ref,
+        get_project_dao_ref,
+        generate_component_class,
     )
 
 

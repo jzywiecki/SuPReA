@@ -138,7 +138,11 @@ class PDFGenerator:
                 self.add_simple_text,
             ),
             ("Motto", project.get("motto", {}).get("motto"), self.add_simple_text),
-            ("Strategy", project.get("strategy", {}).get("strategy"), self.add_simple_text),
+            (
+                "Strategy",
+                project.get("strategy", {}).get("strategy"),
+                self.add_simple_text,
+            ),
             (
                 "Database Schema",
                 create_er_diagram_mermaid(project.get("database_schema")),
@@ -205,7 +209,11 @@ class PDFGenerator:
         for field in fields:
             title, data, func = field[0], field[1], field[2]
             if data:
-                if func in (self.add_simple_text, self.add_simple_list, self.add_pictures):
+                if func in (
+                    self.add_simple_text,
+                    self.add_simple_list,
+                    self.add_pictures,
+                ):
                     func(title, data)
                 elif func == self.add_er_diagram:
                     func(data, title)

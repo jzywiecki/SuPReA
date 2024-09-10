@@ -11,10 +11,25 @@ class TestParseTableToErdiagramMermaid(unittest.TestCase):
             "name": "users",
             "columns": [
                 {"name": "id", "type": "int", "primary_key": True, "foreign_key": None},
-                {"name": "username", "type": "string", "primary_key": False, "foreign_key": None},
-                {"name": "email", "type": "string", "primary_key": False, "foreign_key": None},
-                {"name": "account_id", "type": "int", "primary_key": False, "foreign_key": "Account(id)"}
-            ]
+                {
+                    "name": "username",
+                    "type": "string",
+                    "primary_key": False,
+                    "foreign_key": None,
+                },
+                {
+                    "name": "email",
+                    "type": "string",
+                    "primary_key": False,
+                    "foreign_key": None,
+                },
+                {
+                    "name": "account_id",
+                    "type": "int",
+                    "primary_key": False,
+                    "foreign_key": "Account(id)",
+                },
+            ],
         }
 
         expected_result = "users {\nint id PK\nstring username \nstring email \nint account_id FK\n}\n"
@@ -24,8 +39,13 @@ class TestParseTableToErdiagramMermaid(unittest.TestCase):
         table = {
             "name": "users",
             "columns": [
-                {"name": "id", "type": "int", "primary_key invalid": True, "foreign_key": None},
-            ]
+                {
+                    "name": "id",
+                    "type": "int",
+                    "primary_key invalid": True,
+                    "foreign_key": None,
+                },
+            ],
         }
 
         with self.assertRaises(KeyError):
@@ -42,26 +62,32 @@ class TestParseRelationshipToErdiagramMermaid(unittest.TestCase):
     relationship = {
         "from_table": "users",
         "to_table": "accounts",
-        "on_column": "account_id"
+        "on_column": "account_id",
     }
 
     def test_parse_one_to_one_successfully(self):
         self.relationship["relationship_type"] = "one-to-one"
 
         expected_result = "users ||--|| accounts : account_id\n"
-        self.assertEqual(parse_relationship_to_erdiagram_mermaid(self.relationship), expected_result)
+        self.assertEqual(
+            parse_relationship_to_erdiagram_mermaid(self.relationship), expected_result
+        )
 
     def test_parse_one_to_many_successfully(self):
         self.relationship["relationship_type"] = "one-to-many"
 
         expected_result = "users ||--o{ accounts : account_id\n"
-        self.assertEqual(parse_relationship_to_erdiagram_mermaid(self.relationship), expected_result)
+        self.assertEqual(
+            parse_relationship_to_erdiagram_mermaid(self.relationship), expected_result
+        )
 
     def test_parse_many_to_many_successfully(self):
         self.relationship["relationship_type"] = "many-to-many"
 
         expected_result = "users }o--o{ accounts : account_id\n"
-        self.assertEqual(parse_relationship_to_erdiagram_mermaid(self.relationship), expected_result)
+        self.assertEqual(
+            parse_relationship_to_erdiagram_mermaid(self.relationship), expected_result
+        )
 
     def test_invalid_relationship_type_should_raise_value_error(self):
         self.relationship["relationship_type"] = "invalid"
@@ -74,7 +100,7 @@ class TestParseRelationshipToErdiagramMermaid(unittest.TestCase):
             "from_table invalid": "users",
             "to_table": "accounts",
             "relationship_type": "one-to-one",
-            "on_column": "account_id"
+            "on_column": "account_id",
         }
 
         with self.assertRaises(KeyError):
@@ -94,28 +120,58 @@ class TestParseDatabaseToErdiagramMermaid(unittest.TestCase):
                 {
                     "name": "users",
                     "columns": [
-                        {"name": "id", "type": "int", "primary_key": True, "foreign_key": None},
-                        {"name": "username", "type": "string", "primary_key": False, "foreign_key": None},
-                        {"name": "email", "type": "string", "primary_key": False, "foreign_key": None},
-                        {"name": "account_id", "type": "int", "primary_key": False, "foreign_key": "Account(id)"}
-                    ]
+                        {
+                            "name": "id",
+                            "type": "int",
+                            "primary_key": True,
+                            "foreign_key": None,
+                        },
+                        {
+                            "name": "username",
+                            "type": "string",
+                            "primary_key": False,
+                            "foreign_key": None,
+                        },
+                        {
+                            "name": "email",
+                            "type": "string",
+                            "primary_key": False,
+                            "foreign_key": None,
+                        },
+                        {
+                            "name": "account_id",
+                            "type": "int",
+                            "primary_key": False,
+                            "foreign_key": "Account(id)",
+                        },
+                    ],
                 },
                 {
                     "name": "accounts",
                     "columns": [
-                        {"name": "id", "type": "int", "primary_key": True, "foreign_key": None},
-                        {"name": "name", "type": "string", "primary_key": False, "foreign_key": None},
-                    ]
-                }
+                        {
+                            "name": "id",
+                            "type": "int",
+                            "primary_key": True,
+                            "foreign_key": None,
+                        },
+                        {
+                            "name": "name",
+                            "type": "string",
+                            "primary_key": False,
+                            "foreign_key": None,
+                        },
+                    ],
+                },
             ],
             "relationships": [
                 {
                     "from_table": "users",
                     "to_table": "accounts",
                     "relationship_type": "one-to-one",
-                    "on_column": "account_id"
+                    "on_column": "account_id",
                 }
-            ]
+            ],
         }
 
         expected_result = "erDiagram\nusers {\nint id PK\nstring username \nstring email \nint account_id FK\n}\naccounts {\nint id PK\nstring name \n}\nusers ||--|| accounts : account_id\n"
@@ -127,11 +183,16 @@ class TestParseDatabaseToErdiagramMermaid(unittest.TestCase):
                 {
                     "name": "users",
                     "columns": [
-                        {"name": "id", "type": "int", "primary_key": True, "foreign_key": None},
-                    ]
+                        {
+                            "name": "id",
+                            "type": "int",
+                            "primary_key": True,
+                            "foreign_key": None,
+                        },
+                    ],
                 },
             ],
-            "relationships": []
+            "relationships": [],
         }
 
         with self.assertRaises(KeyError):
@@ -144,5 +205,5 @@ class TestParseDatabaseToErdiagramMermaid(unittest.TestCase):
             parse_database_to_erdiagram_mermaid(database)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

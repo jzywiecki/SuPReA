@@ -19,7 +19,7 @@ correct_data = {
         {
             "name": "Jane Doe",
             "description": "example",
-        }
+        },
     ]
 }
 

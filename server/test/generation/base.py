@@ -16,7 +16,9 @@ class BaseTestFetchValueFromDatabase:
     """
 
     @patch("database.config.project_dao.get_project_component")
-    def test_fetch_correct_data_from_database_should_create_component_instance(self, mock_get_project_component):
+    def test_fetch_correct_data_from_database_should_create_component_instance(
+        self, mock_get_project_component
+    ):
         mock_get_project_component.return_value = self.correct_data_from_db
         generate = self.generate_class()
         result = generate.fetch_from_database(project_dao, "66dd9234352568d45e4fc3f8")
@@ -25,14 +27,20 @@ class BaseTestFetchValueFromDatabase:
         self.assertEqual(self.expected_value, generate.get_value())
 
     @patch("database.config.project_dao.get_project_component")
-    def test_fetch_invalid_data_from_database_should_raise_value_error(self, mock_get_project_component):
+    def test_fetch_invalid_data_from_database_should_raise_value_error(
+        self, mock_get_project_component
+    ):
         mock_get_project_component.return_value = self.invalid_data_from_db
 
         with self.assertRaises(ValueError):
-            self.generate_class().fetch_from_database(project_dao, "66dd9234352568d45e4fc3f8")
+            self.generate_class().fetch_from_database(
+                project_dao, "66dd9234352568d45e4fc3f8"
+            )
 
     @patch("database.config.project_dao.get_project_component")
-    def test_fetch_null_data_from_database_should_set_none_value(self, mock_get_project_component):
+    def test_fetch_null_data_from_database_should_set_none_value(
+        self, mock_get_project_component
+    ):
         mock_get_project_component.return_value = None
         generate = self.generate_class()
         result = generate.fetch_from_database(project_dao, "66dd9234352568d45e4fc3f8")
@@ -46,16 +54,21 @@ class BaseTestUpdate:
     Common test class for fetching values from database.
     Inherit class MUST:   - extend unittest.TestCase
                           - define expected_value (Generate Component instance [e.g. Actors]) (expected correct
-                          component instance created from correct_data_from_db, stored in Generate instance)    """
+                          component instance created from correct_data_from_db, stored in Generate instance)
+    """
 
-    def test_update_value_when_new_value_is_instance_of_generate_should_set_this_value(self):
+    def test_update_value_when_new_value_is_instance_of_generate_should_set_this_value(
+        self,
+    ):
         generate = self.generate_class()
         result = generate.update(self.expected_value)
 
         self.assertEqual(self.expected_value, result)
         self.assertEqual(self.expected_value, generate.get_value())
 
-    def test_update_value_when_new_value_is_not_instance_of_generate_should_raise_value_error(self):
+    def test_update_value_when_new_value_is_not_instance_of_generate_should_raise_value_error(
+        self,
+    ):
         generate = self.generate_class()
 
         with self.assertRaises(ValueError):
@@ -81,7 +94,9 @@ class BaseTestGenerateByAI:
     """
 
     @patch("ai.open_ai.gpt_35_turbo.make_ai_call")
-    def test_generate_when_ai_generate_correct_data_should_create_instance_value(self, mock_generate):
+    def test_generate_when_ai_generate_correct_data_should_create_instance_value(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.correct_generated_data
         generate = self.generate_class()
         result = generate.generate_by_ai(gpt_35_turbo, "example", "example", "example")
@@ -90,25 +105,37 @@ class BaseTestGenerateByAI:
         self.assertEqual(self.expected_value, generate.get_value())
 
     @patch("ai.open_ai.gpt_35_turbo.make_ai_call")
-    def test_generate_when_ai_generate_invalid_data_format_should_raise_json_exception(self, mock_generate):
+    def test_generate_when_ai_generate_invalid_data_format_should_raise_json_exception(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.invalid_generated_data_format
 
         with self.assertRaises(JSONDecodeError):
-            self.generate_class().generate_by_ai(gpt_35_turbo, "example", "example", "example")
+            self.generate_class().generate_by_ai(
+                gpt_35_turbo, "example", "example", "example"
+            )
 
     @patch("ai.open_ai.gpt_35_turbo.make_ai_call")
-    def test_generate_when_ai_dont_generate_any_data_should_raise_exception(self, mock_generate):
+    def test_generate_when_ai_dont_generate_any_data_should_raise_exception(
+        self, mock_generate
+    ):
         mock_generate.return_value = None
 
         with self.assertRaises(Exception):
-            self.generate_class().generate_by_ai(gpt_35_turbo, "example", "example", "example")
+            self.generate_class().generate_by_ai(
+                gpt_35_turbo, "example", "example", "example"
+            )
 
     @patch("ai.open_ai.gpt_35_turbo.make_ai_call")
-    def test_generate_when_ai_generate_wrong_json_should_raise_value_error(self, mock_generate):
+    def test_generate_when_ai_generate_wrong_json_should_raise_value_error(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.invalid_generated_json
 
         with self.assertRaises(ValueError):
-            self.generate_class().generate_by_ai(gpt_35_turbo, "example", "example", "example")
+            self.generate_class().generate_by_ai(
+                gpt_35_turbo, "example", "example", "example"
+            )
 
 
 class BaseTestUpdateByAI:
@@ -121,19 +148,24 @@ class BaseTestUpdateByAI:
                           - define prev_expected_value (Generate Component instance [e.g. Actors])
                           (component instance stored in Generate before update)
                           - define expected_value (Generate Component instance [e.g. Actors]) (expected correct
-                          component instance created from correct_data_from_db, stored in Generate instance)    """
+                          component instance created from correct_data_from_db, stored in Generate instance)
+    """
 
     @patch("ai.open_ai.gpt_35_turbo.make_ai_call")
-    def test_update_by_ai_when_val_is_none_should_raise_value_error(self, mock_generate):
+    def test_update_by_ai_when_val_is_none_should_raise_value_error(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.correct_generated_data
 
         with self.assertRaises(ValueError):
             self.generate_class().update_by_ai(gpt_35_turbo, "query")
 
     @patch("ai.open_ai.gpt_35_turbo.make_ai_call")
-    def test_update_by_ai_when_ai_generate_correct_data_should_create_instance_value(self, mock_generate):
+    def test_update_by_ai_when_ai_generate_correct_data_should_create_instance_value(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.correct_generated_data
-        generate =self.generate_class()
+        generate = self.generate_class()
         generate.update(self.prev_expected_value)
         result = generate.update_by_ai(gpt_35_turbo, "query")
 
@@ -141,7 +173,9 @@ class BaseTestUpdateByAI:
         self.assertEqual(self.expected_value, generate.get_value())
 
     @patch("ai.open_ai.gpt_35_turbo.make_ai_call")
-    def test_update_by_ai_when_ai_generate_invalid_data_format_should_raise_json_exception(self, mock_generate):
+    def test_update_by_ai_when_ai_generate_invalid_data_format_should_raise_json_exception(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.invalid_generated_data_format
 
         with self.assertRaises(JSONDecodeError):
@@ -150,7 +184,9 @@ class BaseTestUpdateByAI:
             generate.update_by_ai(gpt_35_turbo, "query")
 
     @patch("ai.open_ai.gpt_35_turbo.make_ai_call")
-    def test_update_by_ai_when_ai_generate_wrong_json_should_raise_validation_error(self, mock_generate):
+    def test_update_by_ai_when_ai_generate_wrong_json_should_raise_validation_error(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.invalid_generated_json
 
         with self.assertRaises(ValueError):
@@ -159,7 +195,9 @@ class BaseTestUpdateByAI:
             generate.update_by_ai(gpt_35_turbo, "query")
 
     @patch("ai.open_ai.gpt_35_turbo.make_ai_call")
-    def test_update_by_ai_when_ai_dont_generate_any_value_should_raise_exception(self, mock_generate):
+    def test_update_by_ai_when_ai_dont_generate_any_value_should_raise_exception(
+        self, mock_generate
+    ):
         mock_generate.return_value = None
 
         with self.assertRaises(Exception):

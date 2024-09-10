@@ -10,13 +10,9 @@ from .base import BaseTestUpdateByAI
 
 
 # Test data ===================================================
-correct_data = {
-    "names": ["example", "example two"]
-}
+correct_data = {"names": ["example", "example two"]}
 
-invalid_data = {
-    "titles": ["example three"]
-}
+invalid_data = {"titles": ["example three"]}
 
 invalid_format = "title: example"
 

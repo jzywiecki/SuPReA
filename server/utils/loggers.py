@@ -44,7 +44,9 @@ def enable_file_logging():
     database_logger_formatter = logging.Formatter(
         "%(asctime)s - %(levelname)s - %(funcName)s - [ProjectId: %(project_id)s] - [Field: %(field)s] - %(message)s"
     )
-    configure_logging(logger_db, logging.INFO, "log_db", database_logger_formatter, 1024, 0)
+    configure_logging(
+        logger_db, logging.INFO, "log_db", database_logger_formatter, 1024, 0
+    )
 
     classic_logger_formatter = logging.Formatter(
         "%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"

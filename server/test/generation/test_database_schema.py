@@ -19,21 +19,21 @@ correct_data = {
                     "name": "name",
                     "type": "VARCHAR",
                     "primary_key": True,
-                    "foreign_key": None
+                    "foreign_key": None,
                 },
                 {
                     "name": "description",
                     "type": "TEXT",
                     "primary_key": False,
-                    "foreign_key": None
+                    "foreign_key": None,
                 },
                 {
                     "name": "film",
                     "type": "VARCHAR",
                     "primary_key": False,
-                    "foreign_key": "film.name"
-                }
-            ]
+                    "foreign_key": "film.name",
+                },
+            ],
         },
         {
             "name": "film",
@@ -42,25 +42,25 @@ correct_data = {
                     "name": "name",
                     "type": "VARCHAR",
                     "primary_key": True,
-                    "foreign_key": None
+                    "foreign_key": None,
                 },
                 {
                     "name": "description",
                     "type": "TEXT",
                     "primary_key": False,
-                    "foreign_key": None
-                }
-            ]
-        }
+                    "foreign_key": None,
+                },
+            ],
+        },
     ],
     "relationships": [
         {
             "from_table": "actor",
             "to_table": "film",
             "relationship_type": "one_to_many",
-            "on_column": "name"
+            "on_column": "name",
         }
-    ]
+    ],
 }
 
 invalid_data = {
@@ -72,15 +72,15 @@ invalid_data = {
                     "name": "name",
                     "type": "VARCHAR",
                     "primary_key": True,
-                    "foreign_key": None
+                    "foreign_key": None,
                 },
                 {
                     "name": "description",
                     "type": "TEXT",
                     "primary_key": False,
-                    "foreign_key": None
-                }
-            ]
+                    "foreign_key": None,
+                },
+            ],
         }
     ],
     "relationships": [
@@ -88,9 +88,9 @@ invalid_data = {
             "from_table": "actor",
             "to_table": "film",
             "relationship_type": "one_to_many",
-            "on_column": "name"
+            "on_column": "name",
         }
-    ]
+    ],
 }
 
 invalid_format = "tables: [Table] relationships: [Relationship]"
@@ -100,45 +100,43 @@ table_one = Table(
     columns=[
         Column(name="name", type="VARCHAR", primary_key=True, foreign_key=None),
         Column(name="description", type="TEXT", primary_key=False, foreign_key=None),
-        Column(name="film", type="VARCHAR", primary_key=False, foreign_key="film.name")
-    ]
+        Column(name="film", type="VARCHAR", primary_key=False, foreign_key="film.name"),
+    ],
 )
 
 table_two = Table(
     name="film",
     columns=[
         Column(name="name", type="VARCHAR", primary_key=True, foreign_key=None),
-        Column(name="description", type="TEXT", primary_key=False, foreign_key=None)
-    ]
+        Column(name="description", type="TEXT", primary_key=False, foreign_key=None),
+    ],
 )
 
 relationship_one = Relationship(
     from_table="actor",
     to_table="film",
     relationship_type="one_to_many",
-    on_column="name"
+    on_column="name",
 )
 
 table_three = Table(
     name="invoices",
     columns=[
         Column(name="id", type="INTEGER", primary_key=True, foreign_key=None),
-    ]
+    ],
 )
 
 database_schema_one = DatabaseSchema(
-    tables=[table_one, table_two],
-    relationships=[relationship_one]
+    tables=[table_one, table_two], relationships=[relationship_one]
 )
 
-database_schema_two = DatabaseSchema(
-    tables=[table_three],
-    relationships=[]
-)
+database_schema_two = DatabaseSchema(tables=[table_three], relationships=[])
 # ============================================================
 
 
-class TestFetchDatabaseSchemaFromDatabase(BaseTestFetchValueFromDatabase, unittest.TestCase):
+class TestFetchDatabaseSchemaFromDatabase(
+    BaseTestFetchValueFromDatabase, unittest.TestCase
+):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.generate_class = DatabaseSchemaGenerate

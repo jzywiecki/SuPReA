@@ -12,13 +12,9 @@ from .base import BaseTestUpdate
 
 
 # Test data ===================================================
-correct_data = {
-    "logo_urls": ["exampleOne", "exampleTwo"]
-}
+correct_data = {"logo_urls": ["exampleOne", "exampleTwo"]}
 
-invalid_data = {
-    "logos": ["exampleOne", "exampleTwo"]
-}
+invalid_data = {"logos": ["exampleOne", "exampleTwo"]}
 
 invalid_format = "exampleOne, exampleTwo"
 
@@ -54,7 +50,9 @@ class TestGenerateLogosByAI(unittest.TestCase):
         self.invalid_generated_json = json.dumps(invalid_data)
 
     @patch("generation.logo.process_ai_requests")
-    def test_generate_when_ai_generate_correct_data_should_create_instance_value(self, mock_generate):
+    def test_generate_when_ai_generate_correct_data_should_create_instance_value(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.correct_generated_data
         generate = self.generate_class()
         result = generate.generate_by_ai(gpt_35_turbo, "example", "example", "example")
@@ -63,25 +61,37 @@ class TestGenerateLogosByAI(unittest.TestCase):
         self.assertEqual(self.expected_value, generate.get_value())
 
     @patch("generation.logo.process_ai_requests")
-    def test_generate_when_ai_generate_invalid_data_format_should_raise_validation_exception(self, mock_generate):
+    def test_generate_when_ai_generate_invalid_data_format_should_raise_validation_exception(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.invalid_generated_data_format
 
         with self.assertRaises(ValidationError):
-            self.generate_class().generate_by_ai(gpt_35_turbo, "example", "example", "example")
+            self.generate_class().generate_by_ai(
+                gpt_35_turbo, "example", "example", "example"
+            )
 
     @patch("generation.logo.process_ai_requests")
-    def test_generate_when_ai_dont_generate_any_data_should_raise_value_error(self, mock_generate):
+    def test_generate_when_ai_dont_generate_any_data_should_raise_value_error(
+        self, mock_generate
+    ):
         mock_generate.return_value = None
 
         with self.assertRaises(ValueError):
-            self.generate_class().generate_by_ai(gpt_35_turbo, "example", "example", "example")
+            self.generate_class().generate_by_ai(
+                gpt_35_turbo, "example", "example", "example"
+            )
 
     @patch("generation.logo.process_ai_requests")
-    def test_generate_when_ai_generate_wrong_json_should_raise_validation_error(self, mock_generate):
+    def test_generate_when_ai_generate_wrong_json_should_raise_validation_error(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.invalid_generated_json
 
         with self.assertRaises(ValueError):
-            self.generate_class().generate_by_ai(gpt_35_turbo, "example", "example", "example")
+            self.generate_class().generate_by_ai(
+                gpt_35_turbo, "example", "example", "example"
+            )
 
 
 class TestUpdateLogosByAI(unittest.TestCase):
@@ -95,14 +105,18 @@ class TestUpdateLogosByAI(unittest.TestCase):
         self.invalid_generated_json = json.dumps(invalid_data)
 
     @patch("generation.logo.process_ai_requests")
-    def test_update_by_ai_when_val_is_none_should_raise_value_error(self, mock_generate):
+    def test_update_by_ai_when_val_is_none_should_raise_value_error(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.correct_generated_data
 
         with self.assertRaises(ValueError):
             self.generate_class().update_by_ai(gpt_35_turbo, "query")
 
     @patch("generation.logo.process_ai_requests")
-    def test_update_by_ai_when_ai_generate_correct_data_should_create_instance_value(self, mock_generate):
+    def test_update_by_ai_when_ai_generate_correct_data_should_create_instance_value(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.correct_generated_data
         generate = self.generate_class()
         generate.update(self.prev_expected_value)
@@ -112,7 +126,9 @@ class TestUpdateLogosByAI(unittest.TestCase):
         self.assertEqual(self.expected_value, generate.get_value())
 
     @patch("generation.logo.process_ai_requests")
-    def test_update_by_when_ai_generate_invalid_data_format_should_raise_validation_exception(self, mock_generate):
+    def test_update_by_when_ai_generate_invalid_data_format_should_raise_validation_exception(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.invalid_generated_data_format
 
         with self.assertRaises(ValidationError):
@@ -121,7 +137,9 @@ class TestUpdateLogosByAI(unittest.TestCase):
             generate.update_by_ai(gpt_35_turbo, "query")
 
     @patch("generation.logo.process_ai_requests")
-    def test_update_by_ai_when_ai_generate_wrong_json_should_raise_validation_error(self, mock_generate):
+    def test_update_by_ai_when_ai_generate_wrong_json_should_raise_validation_error(
+        self, mock_generate
+    ):
         mock_generate.return_value = self.invalid_generated_json
 
         with self.assertRaises(ValueError):
@@ -130,7 +148,9 @@ class TestUpdateLogosByAI(unittest.TestCase):
             generate.update_by_ai(gpt_35_turbo, "query")
 
     @patch("generation.logo.process_ai_requests")
-    def test_update_by_ai_when_ai_dont_generate_any_value_should_raise_exception(self, mock_generate):
+    def test_update_by_ai_when_ai_dont_generate_any_value_should_raise_exception(
+        self, mock_generate
+    ):
         mock_generate.return_value = None
 
         with self.assertRaises(Exception):

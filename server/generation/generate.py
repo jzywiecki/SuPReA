@@ -4,6 +4,7 @@ Module containing:
 to the database.
 - GenerateActor class, which is a remote actor that generates components by AI, saves them to the database,
 """
+
 import ray
 import abc
 import json
@@ -24,7 +25,11 @@ class Generate(metaclass=abc.ABCMeta):
     """
 
     def __init__(
-        self, model_class, what: str, expected_format: str, component_identify: ComponentIdentify
+        self,
+        model_class,
+        what: str,
+        expected_format: str,
+        component_identify: ComponentIdentify,
     ):
         """
         Initializes the Generate class with model class, description, expected format, and component identification.
@@ -43,7 +48,9 @@ class Generate(metaclass=abc.ABCMeta):
         self.component_identify = component_identify
         self.value = None
 
-    def generate_by_ai(self, ai_model: AI, for_what: str, doing_what: str, additional_info: str):
+    def generate_by_ai(
+        self, ai_model: AI, for_what: str, doing_what: str, additional_info: str
+    ):
         """
         Generates a model using the AI model.
 
@@ -235,7 +242,9 @@ class GenerateActor:
         """
         self.model_generate = model_generate
 
-    def generate_by_ai(self, ai_model: AI, for_what: str, doing_what: str, additional_info: str):
+    def generate_by_ai(
+        self, ai_model: AI, for_what: str, doing_what: str, additional_info: str
+    ):
         """
         Generates a model using the AI model.
         returns the current actor ref and an error if any.

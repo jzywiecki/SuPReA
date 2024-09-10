@@ -11,35 +11,26 @@ from .base import BaseTestUpdateByAI
 
 # Test data ===================================================
 correct_data = {
-    "specifications": [
-        {
-            "specification": "example",
-            "description": "example"
-        }
-    ]
+    "specifications": [{"specification": "example", "description": "example"}]
 }
 
-invalid_data = {
-    "specification": [
-        {
-            "name": "example",
-            "description": "example"
-        }
-
-    ]
-}
+invalid_data = {"specification": [{"name": "example", "description": "example"}]}
 
 invalid_format = "specification: example"
 
 specification_one = Specification(specification="example", description="example")
 specifications_one = Specifications(specifications=[specification_one])
 
-specification_two = Specification(specification="example two", description="example two")
+specification_two = Specification(
+    specification="example two", description="example two"
+)
 specifications_two = Specifications(specifications=[specification_two])
 # ============================================================
 
 
-class TestFetchSpecificationsFromDatabase(BaseTestFetchValueFromDatabase, unittest.TestCase):
+class TestFetchSpecificationsFromDatabase(
+    BaseTestFetchValueFromDatabase, unittest.TestCase
+):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.generate_class = SpecificationsGenerate

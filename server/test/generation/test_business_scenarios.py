@@ -15,15 +15,9 @@ correct_data = {
         "title": "business_scenario_one",
         "description": "example",
         "features": [
-            {
-                "feature_name": "feature_one",
-                "description": "example"
-            },
-            {
-                "feature_name": "feature_two",
-                "description": "example"
-            }
-        ]
+            {"feature_name": "feature_one", "description": "example"},
+            {"feature_name": "feature_two", "description": "example"},
+        ],
     }
 }
 
@@ -32,15 +26,9 @@ invalid_data = {
         "title": "business_scenario_one",
         "description": "example",
         "features": [
-            {
-                "feature_name": "feature_one",
-                "description": "example"
-            },
-            {
-                "feature_name": "feature_two",
-                "description": "example"
-            }
-        ]
+            {"feature_name": "feature_one", "description": "example"},
+            {"feature_name": "feature_two", "description": "example"},
+        ],
     }
 }
 
@@ -51,12 +39,26 @@ feature_two = Feature(feature_name="feature_two", description="example")
 feature_three = Feature(feature_name="feature_three", description="example")
 feature_four = Feature(feature_name="feature_four", description="example")
 
-business_scenario_one = BusinessScenarios(business_scenario=BusinessScenario(title="business_scenario_one", description="example", features=[feature_one, feature_two]))
-business_scenario_two = BusinessScenarios(business_scenario=BusinessScenario(title="business_scenario_two", description="example", features=[feature_three, feature_four]))
+business_scenario_one = BusinessScenarios(
+    business_scenario=BusinessScenario(
+        title="business_scenario_one",
+        description="example",
+        features=[feature_one, feature_two],
+    )
+)
+business_scenario_two = BusinessScenarios(
+    business_scenario=BusinessScenario(
+        title="business_scenario_two",
+        description="example",
+        features=[feature_three, feature_four],
+    )
+)
 # ============================================================
 
 
-class TestFetchBusinessScenariosFromDatabase(BaseTestFetchValueFromDatabase, unittest.TestCase):
+class TestFetchBusinessScenariosFromDatabase(
+    BaseTestFetchValueFromDatabase, unittest.TestCase
+):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.generate_class = BusinessScenariosGenerate

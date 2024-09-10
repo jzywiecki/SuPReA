@@ -11,6 +11,7 @@ class ChatDAO:
     """
     This class provides a DAO for chats in the MongoDB database.
     """
+
     def __init__(self, mongo_db, collection_name):
         self.collection = mongo_db.get_collection(collection_name)
 
