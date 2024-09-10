@@ -56,6 +56,9 @@ class DatabaseSchemaGenerate(Generate):
         """
         Specifies how to update a database schema model using the AI model.
         """
+        if not self.value:
+            raise ValueError("The value is not initialized")
+
         json_val_format = json.dumps(self.value, default=lambda x: x.__dict__)
         request = ai_model.parse_update_query(
             self.what, json_val_format, changes_request, self.expected_format

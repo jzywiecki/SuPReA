@@ -86,6 +86,9 @@ class LogoGenerate(Generate):
         """
         Specify implementation for updating a model using the AI image-model.
         """
+        if self.value is None:
+            raise ValueError("Value is None")
+
         request1 = ai_model.parse_update_query(
             self.what, "", changes_request, self.expected_format
         )

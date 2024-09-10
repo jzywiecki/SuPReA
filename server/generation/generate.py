@@ -7,6 +7,9 @@ to the database.
 import ray
 import abc
 import json
+
+from pydantic import ValidationError
+
 from database import ProjectDAO
 from models import ComponentIdentify
 from ai import AI
@@ -82,6 +85,9 @@ class Generate(metaclass=abc.ABCMeta):
 
         :raises ValueError: If the AI model response cannot be parsed or is not valid.
         """
+        if self.value is None:
+            raise ValueError("Model value is not set")
+
         request = ai_model.parse_update_query(
             self.what, self.value.__dict__, changes_request, self.expected_format
         )
@@ -126,7 +132,10 @@ class Generate(metaclass=abc.ABCMeta):
             project_id, self.component_identify.value
         )
 
-        self.value = self.model_class(**value_from_db)
+        if value_from_db:
+            self.value = self.model_class(**value_from_db)
+        else:
+            self.value = None
 
         return self.value
 
@@ -135,14 +144,14 @@ class Generate(metaclass=abc.ABCMeta):
         Updates the model with a new value.
 
         :param new_val: The new value to set for the model.
-        :type new_val: model_class
+        :type new_val: model_class or None
 
         :return: The updated model.
         :rtype: model_class
 
         :raises ValueError: If the new value is not of the correct type.
         """
-        if not isinstance(new_val, self.model_class):
+        if new_val is not None and not isinstance(new_val, self.model_class):
             raise ValueError("new val is not of the correct type")
         self.value = new_val
 
@@ -245,7 +254,7 @@ class GenerateActor:
             )
             return self.current_actor(), None
 
-        except json.JSONDecodeError as e:
+        except (json.JSONDecodeError, ValidationError, ValueError) as e:
             logger_ai.exception(
                 f"{e}",
                 extra={
@@ -285,7 +294,7 @@ class GenerateActor:
 
             return self.current_actor(), None
 
-        except json.JSONDecodeError as e:
+        except (json.JSONDecodeError, ValidationError, ValueError) as e:
             logger_ai.exception(
                 f"{e}",
                 extra={
