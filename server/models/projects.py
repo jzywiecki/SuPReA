@@ -33,8 +33,8 @@ class Project(BaseModel):
     doing_what: str
     additional_info: str
     members: List[ObjectId]
+    managers: List[ObjectId]
     created_at: datetime = Field(default=datetime.now())
-
     actors: Optional[Actors] = None
     business_scenarios: Optional[BusinessScenarios] = None
     elevator_speech: Optional[ElevatorSpeech] = None

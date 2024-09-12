@@ -178,6 +178,7 @@ class ProjectDAO:
             description=description,
             owner=ObjectId(owner_id),
             members=[ObjectId(owner_id)],
+            managers=[ObjectId(owner_id)],
             created_at=datetime.now(),
             chat_id=ObjectId(discussion_chat_id),
             ai_chat_id=ObjectId(ai_chat_id),
