@@ -195,3 +195,28 @@ class ProjectDAO:
         :rtype: bool
         """
         return self.collection.count_documents({"_id": ObjectId(project_id)}) > 0
+
+    def add_member_to_project(self, project_id: str, member_id: str):
+        """
+        Adds a member to the project.
+
+        :param str project_id: The id of the project.
+        :param str member_id: The id of the member to add.
+        :return: The result of the mongodb update operation.
+        """
+        return self.collection.update_one(
+            {"_id": ObjectId(project_id)}, {"$addToSet": {"members": ObjectId(member_id)}}
+        )
+
+    def remove_member_from_project(self, project_id: str, member_id: str):
+        """
+        Removes a member from the project.
+
+        :param str project_id: The id of the project.
+        :param str member_id: The id of the member to remove.
+        :return: The result of the mongodb update operation.
+        """
+
+        return self.collection.update_one(
+            {"_id": ObjectId(project_id)}, {"$pull": {"members": ObjectId(member_id)}}
+        )

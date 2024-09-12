@@ -13,6 +13,8 @@ from services import (
     get_project_by_id,
     delete_project_by_id,
     get_project_list_by_user_id,
+    invite_member_by_id,
+    remove_member_by_id,
 )
 
 router = APIRouter(tags=["projects"], prefix="/projects")
@@ -131,3 +133,30 @@ def get_project_list(user_id: str):
     :param str user_id: The unique identifier of the user.
     """
     return get_project_list_by_user_id(user_id)
+
+@router.post(
+    "/{project_id}/members/add",
+    status_code=status.HTTP_201_CREATED,
+    response_model_by_alias=False,
+)
+def invite_member(project_id: str, sender_id: str, member_id: str):
+    """
+    Adds a member to the project with the specified ID.
+
+    :param str project_id: The unique identifier of the project.
+    :param str member_id: The unique identifier of the member.
+    """
+    return invite_member_by_id(sender_id, project_id, member_id)
+
+@router.delete(
+    "/{project_id}/members/remove",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def remove_member(project_id: str, sender_id: str, member_id: str):
+    """
+    Removes a member from the project with the specified ID.
+
+    :param str project_id: The unique identifier of the project.
+    :param str member_id: The unique identifier of the member.
+    """
+    return remove_member_by_id(sender_id, project_id, member_id)
