@@ -11,10 +11,8 @@ import (
 )
 
 func SetServices(r *chi.Mux, config *config.Config, cache *cache.Cache) {
-	for serviceName, service := range config.Services {
-		for _, route := range service.Routes {
-			r.HandleFunc(fmt.Sprintf("/%s%s", serviceName, route.Path), proxy.HandlerFactory(serviceName, &route, config, cache))
-			log.Printf("Added route: %s%s for service: %s", serviceName, route.Path, serviceName)
-		}
+	for serviceName := range config.Services {
+		r.Mount(fmt.Sprintf("/%s", serviceName), proxy.HandlerFactory(serviceName, config, cache))
+		log.Printf("Added route: %s for service: %s", serviceName, serviceName)
 	}
 }
