@@ -244,5 +244,6 @@ class ProjectDAO:
         :return: The result of the mongodb update operation.
         """
         return self.collection.update_one(
-            {"_id": ObjectId(project_id)}, {"$addToSet": {"managers": ObjectId(manager_id)}}
+            {"_id": ObjectId(project_id)},
+            {"$addToSet": {"managers": ObjectId(manager_id)}},
         )

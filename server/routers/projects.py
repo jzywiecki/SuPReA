@@ -165,6 +165,7 @@ def remove_member(project_id: str, sender_id: str, member_id: str):
     """
     return remove_member_by_id(sender_id, project_id, member_id)
 
+
 @router.post(
     "/{project_id}/managers/assign",
     status_code=status.HTTP_201_CREATED,

@@ -196,12 +196,13 @@ def remove_member_by_id(sender_id: str, project_id: str, member_id: str):
 
     if member_id in project.managers:
         result = project_dao.unassign_manager_from_project(project_id, member_id)
-    
+
     if result.modified_count == 0:
         raise InvalidParameter("Error removing user as manager")
 
     project_dao.remove_member_from_project(project_id, member_id)
     return True
+
 
 def assign_manager_role_to_user_by_id(sender_id: str, project_id: str, member_id: str):
     """
@@ -234,7 +235,10 @@ def assign_manager_role_to_user_by_id(sender_id: str, project_id: str, member_id
     project_dao.assign_manager_to_project(project_id, member_id)
     return True
 
-def unassign_member_role_from_user_by_id(sender_id: str, project_id: str, member_id: str):
+
+def unassign_member_role_from_user_by_id(
+    sender_id: str, project_id: str, member_id: str
+):
     """
     Unassigns a user from being a manager of a project.
 
