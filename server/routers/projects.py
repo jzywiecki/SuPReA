@@ -134,6 +134,7 @@ def get_project_list(user_id: str):
     """
     return get_project_list_by_user_id(user_id)
 
+
 @router.post(
     "/{project_id}/members/add",
     status_code=status.HTTP_201_CREATED,
@@ -147,6 +148,7 @@ def invite_member(project_id: str, sender_id: str, member_id: str):
     :param str member_id: The unique identifier of the member.
     """
     return invite_member_by_id(sender_id, project_id, member_id)
+
 
 @router.delete(
     "/{project_id}/members/remove",

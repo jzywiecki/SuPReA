@@ -205,7 +205,8 @@ class ProjectDAO:
         :return: The result of the mongodb update operation.
         """
         return self.collection.update_one(
-            {"_id": ObjectId(project_id)}, {"$addToSet": {"members": ObjectId(member_id)}}
+            {"_id": ObjectId(project_id)},
+            {"$addToSet": {"members": ObjectId(member_id)}},
         )
 
     def remove_member_from_project(self, project_id: str, member_id: str):
