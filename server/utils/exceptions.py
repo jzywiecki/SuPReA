@@ -40,6 +40,13 @@ class InvalidParameter(Exception):
         self.details = details
 
 
+class AIModelNotFound(Exception):
+    """Exception raised when an AI model is not found."""
+
+    def __init__(self, model_name: str):
+        super().__init__(f"Model '{model_name}' not found")
+
+
 def register_fastapi_exception_handlers(app: FastAPI):
     """
     Registers exception handlers for a FastAPI application to handle various custom exceptions and HTTP errors.
