@@ -12,3 +12,4 @@ class UpdateComponentByAIRequest(BaseModel):
 
     project_id: str
     query: str
+    ai_model: str
