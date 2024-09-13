@@ -54,7 +54,7 @@ def enable_file_logging():
     configure_logging(logger, logging.INFO, "log", classic_logger_formatter, 2048, 0)
 
 
-def disable_file_logging():
+def disable_logging():
     """
     Disables file logging by removing all file handlers from the loggers.
     """
@@ -68,4 +68,4 @@ def disable_file_logging():
 if os.getenv("VISIO_LOG") == "FILE":
     enable_file_logging()
 else:
-    disable_file_logging()
+    disable_logging()
