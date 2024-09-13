@@ -45,6 +45,7 @@ class AIModelNotFound(Exception):
 
     def __init__(self, model_name: str):
         super().__init__(f"Model '{model_name}' not found")
+        self.model_name = model_name
 
 
 def register_fastapi_exception_handlers(app: FastAPI):
@@ -100,6 +101,16 @@ def register_fastapi_exception_handlers(app: FastAPI):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"detail": exc.details},
+        )
+
+    @app.exception_handler(AIModelNotFound)
+    async def ai_model_not_found_exception_handler(
+        request: Request, exc: AIModelNotFound
+    ):
+        logger.error(f"AI Model '{exc.model_name}' not found")
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"detail": f"Model '{exc.model_name}' not found"},
         )
 
     @app.exception_handler(Exception)
