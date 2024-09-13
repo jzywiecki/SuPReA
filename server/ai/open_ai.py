@@ -1,12 +1,6 @@
 """
 This module contains implementations of AI models from OpenAI.
 
-Instances of these models are created as singletons:
- - gpt_35_turbo: An instance of the GPT-3.5 Turbo model.
- - dall_e_3: An instance of the DALL-E 3 model.
- - gpt_35_turbo_remote_ref: A reference to the GPT-3.5 Turbo model on ray cluster.
-    - dall_e_3_remote_ref: A reference to the DALL-E 3 model on ray cluster.
-
 These instances ensure that only one instance of each model exists
 """
 
@@ -20,7 +14,18 @@ from ai.ai import AI
 client = OpenAI()
 
 
-class GPT35Turbo(AI):
+class GPT(AI):
+    """Base class for GPT AI models."""
+
+    def make_ai_call(self, query: str, model_name: str):
+        """Make a call to the GPT model and return the response."""
+        messages = [{"role": "system", "content": query, "type": "json_object"}]
+        params = {"model": model_name, "messages": messages, "max_tokens": 4000}
+        response = client.chat.completions.create(**params)
+        return response.choices[0].message.content
+
+
+class GPT35Turbo(GPT):
     @override
     def name(self):
         return "GPT-3.5 Turbo"
@@ -28,22 +33,27 @@ class GPT35Turbo(AI):
     @override
     def make_ai_call(self, query: str):
         """Make a call to the GPT-3.5 Turbo model and return the response."""
-        messages = [{"role": "system", "content": query, "type": "json_object"}]
-        params = {"model": "gpt-3.5-turbo", "messages": messages, "max_tokens": 4000}
-        response = client.chat.completions.create(**params)
-        return response.choices[0].message.content
+        return super().make_ai_call(query, "gpt-3.5-turbo")
 
 
-class DallE3(AI):
+class GPT4oMini(GPT):
     @override
     def name(self):
-        return "DALL-E 3"
+        return "GPT-4o mini"
 
     @override
     def make_ai_call(self, query: str):
+        """Make a call to the GPT-4.0 Mini model and return the response."""
+        return super().make_ai_call(query, "gpt-4o-mini")
+
+
+class DallE(AI):
+    """Base class for DALL-E AI models."""
+
+    def make_ai_call(self, query: str, model_name: str):
         """Make a call to the DALL-E 3 model and return the response."""
         params = {
-            "model": "dall-e-3",
+            "model": "dall-e-2",
             "prompt": query,
             "size": "1024x1024",
             "quality": "standard",
@@ -79,8 +89,34 @@ class DallE3(AI):
         return f"Create a {what} making: {changes_request} expected format: {expected_answer_format}"
 
 
+class DallE2(DallE):
+    @override
+    def name(self):
+        return "DALL-E 2"
+
+    @override
+    def make_ai_call(self, query: str):
+        """Make a call to the DALL-E 2 model and return the response."""
+        return super().make_ai_call(query, "dall-e-2")
+
+
+class DallE3(DallE):
+    @override
+    def name(self):
+        return "DALL-E 3"
+
+    @override
+    def make_ai_call(self, query: str):
+        """Make a call to the DALL-E 3 model and return the response."""
+        return super().make_ai_call(query, "dall-e-3")
+
+
 gpt_35_turbo = GPT35Turbo()
+gpt_4o_mini = GPT4oMini()
 dall_e_3 = DallE3()
+dall_e_2 = DallE2()
 
 gpt_35_turbo_remote_ref = ray.put(gpt_35_turbo)
+gpt_4o_mini_remote_ref = ray.put(gpt_4o_mini)
 dall_e_3_remote_ref = ray.put(dall_e_3)
+dall_e_2_remote_ref = ray.put(dall_e_2)

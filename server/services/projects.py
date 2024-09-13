@@ -5,7 +5,7 @@ It also integrates with AI models to generate project components.
 
 from utils import InvalidParameter, ProjectNotFound
 from generation.project import generate_project_components_task
-from ai import gpt_35_turbo_remote_ref, dall_e_3_remote_ref
+from ai import get_text_model_remote_ref_enum, get_image_model_remote_ref_enum
 from database import project_dao, chat_dao, get_project_dao_ref
 
 
@@ -49,6 +49,12 @@ def create_project_by_ai(request):
     if not request.doing_what or not request.for_who:
         raise InvalidParameter("Invalid request arguments for AI")
 
+    if not request.text_ai_model or not request.image_ai_model:
+        raise InvalidParameter("AI model cannot be empty")
+
+    ai_text_model = get_text_model_remote_ref_enum(request.text_ai_model)
+    ai_image_model = get_image_model_remote_ref_enum(request.image_ai_model)
+
     new_project_id = project_dao.create_project(
         request.name,
         request.owner_id,
@@ -64,8 +70,8 @@ def create_project_by_ai(request):
         request.for_who,
         request.doing_what,
         request.additional_info,
-        gpt_35_turbo_remote_ref,
-        dall_e_3_remote_ref,
+        ai_text_model,
+        ai_image_model,
         get_project_dao_ref,
     )
 
