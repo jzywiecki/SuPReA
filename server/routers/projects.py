@@ -52,6 +52,8 @@ class ProjectCreateByAIRequest(BaseModel):
     doing_what: str
     additional_info: str
     owner_id: str
+    text_ai_model: str
+    image_ai_model: str
 
 
 @router.post(
