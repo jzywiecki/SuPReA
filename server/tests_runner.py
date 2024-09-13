@@ -5,6 +5,11 @@ from test.utils.test_mermaid_tools import (
     TestParseRelationshipToErdiagramMermaid,
     TestParseDatabaseToErdiagramMermaid,
 )
+from test.ai.test_model_enum import (
+    TestGetModelRemoteRefEnum,
+    TestGetImageModelRemoteRefEnum,
+    TestGetTextModelRemoteRefEnum,
+)
 from test.generation.test_actors import (
     TestFetchActorsFromDatabase,
     TestUpdateActors,
@@ -88,6 +93,9 @@ if __name__ == "__main__":
             TestParseTableToErdiagramMermaid,
             TestParseRelationshipToErdiagramMermaid,
             TestParseDatabaseToErdiagramMermaid,
+            TestGetModelRemoteRefEnum,
+            TestGetImageModelRemoteRefEnum,
+            TestGetTextModelRemoteRefEnum,
             TestFetchActorsFromDatabase,
             TestUpdateActors,
             TestGenerateActorsByAI,
