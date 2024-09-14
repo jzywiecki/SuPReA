@@ -97,7 +97,7 @@ const ProjectTimeline: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/project_schedule/${projectID}`);
+            const response = await axios.get(`http://localhost:8000/model/project_schedule/${projectID}`);
             const fetchedMilestones = response.data.milestones;
 
             if (validateMilestones(fetchedMilestones)) {
