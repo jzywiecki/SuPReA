@@ -315,9 +315,7 @@ class GenerateActor:
         returns the current actor ref and an error if any.
         """
         try:
-            self.model_generate.regenerate_by_ai(
-                ai_model, details
-            )
+            self.model_generate.regenerate_by_ai(ai_model, details)
 
             logger_ai.info(
                 f"Finished successfully.",
