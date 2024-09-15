@@ -4,10 +4,12 @@ This module defines the API routes for interacting with project components, spec
 
 from fastapi import APIRouter, status, Response
 from services import get_component
-from models import ComponentIdentify
+from services import update_component_by_ai
+from services import update_component
+from models import ComponentIdentify, DatabaseSchema
 from .common import UpdateComponentByAIRequest
-from services.component import update_component
 from generation.database_schema import DatabaseSchemaGenerate
+from pydantic import BaseModel
 
 
 router = APIRouter(
@@ -38,6 +40,29 @@ def update_database_schema_by_ai(request: UpdateComponentByAIRequest):
     Updates the database schema component for the specified project using AI-based generation.
 
     :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
+    """
+    update_component_by_ai(request, DatabaseSchemaGenerate)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+class UpdateDatabaseSchemaRequest(BaseModel):
+    """
+    The request object for updating the database schema component by value provided by user.
+    """
+
+    project_id: str
+    new_val: DatabaseSchema
+
+
+@router.put(
+    "/database_schema/update",
+    status_code=status.HTTP_200_OK,
+)
+def update_database_schema(request: UpdateDatabaseSchemaRequest):
+    """
+    Updates the database schema component for the specified project using value provided by user.
+
+    :param UpdateDatabaseSchemaRequest request: The request object containing project ID and new value.
     """
     update_component(request, DatabaseSchemaGenerate)
     return Response(status_code=status.HTTP_200_OK)

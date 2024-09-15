@@ -4,10 +4,12 @@ This module defines the API routes for interacting with project components, spec
 
 from fastapi import APIRouter, status, Response
 from services import get_component
-from models import ComponentIdentify
+from services import update_component_by_ai
+from services import update_component
+from models import ComponentIdentify, Motto
 from .common import UpdateComponentByAIRequest
-from services.component import update_component
 from generation.motto import MottoGenerate
+from pydantic import BaseModel
 
 
 router = APIRouter(
@@ -38,6 +40,29 @@ def update_motto_by_ai(request: UpdateComponentByAIRequest):
     Updates the motto component for the specified project using AI-based generation.
 
     :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
+    """
+    update_component_by_ai(request, MottoGenerate)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+class UpdateMottoRequest(BaseModel):
+    """
+    The request object for updating the motto component by value provided by user.
+    """
+
+    project_id: str
+    new_val: Motto
+
+
+@router.put(
+    "/motto/update",
+    status_code=status.HTTP_200_OK,
+)
+def update_motto(request: UpdateMottoRequest):
+    """
+    Updates the motto component for the specified project using value provided by user.
+
+    :param UpdateMottoRequest request: The request object containing project ID and new value.
     """
     update_component(request, MottoGenerate)
     return Response(status_code=status.HTTP_200_OK)

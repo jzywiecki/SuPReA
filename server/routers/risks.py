@@ -4,10 +4,12 @@ This module defines the API routes for interacting with project components, spec
 
 from fastapi import APIRouter, status, Response
 from services import get_component
-from models import ComponentIdentify
+from services import update_component_by_ai
+from services import update_component
+from models import ComponentIdentify, Risks
 from .common import UpdateComponentByAIRequest
-from services.component import update_component
 from generation.risks import RiskGenerate
+from pydantic import BaseModel
 
 
 router = APIRouter(
@@ -38,6 +40,29 @@ def update_risks_by_ai(request: UpdateComponentByAIRequest):
     Updates the risks component for the specified project using AI-based generation.
 
     :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
+    """
+    update_component_by_ai(request, RiskGenerate)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+class UpdateRisksRequest(BaseModel):
+    """
+    The request object for updating the risks component by value provided by user.
+    """
+
+    project_id: str
+    new_val: Risks
+
+
+@router.put(
+    "/risks/update",
+    status_code=status.HTTP_200_OK,
+)
+def update_risks(request: UpdateRisksRequest):
+    """
+    Updates the risks component for the specified project using value provided by user.
+
+    :param UpdateRisksRequest request: The request object containing project ID and new value.
     """
     update_component(request, RiskGenerate)
     return Response(status_code=status.HTTP_200_OK)

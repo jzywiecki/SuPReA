@@ -2,6 +2,8 @@
 This module provides functionality for updating and retrieving project components.
 """
 
+import ray
+
 from database import project_dao, get_project_dao_ref
 
 from ai import get_model_remote_ref_enum
@@ -11,7 +13,7 @@ from utils import InvalidParameter
 from utils import ComponentNotFound, ProjectNotFound
 
 
-def update_component(request, generate_component_class: type(Generate)):
+def update_component_by_ai(request, generate_component_class: type(Generate)):
     """
     Updates a project component using AI-based generation.
 
@@ -25,7 +27,7 @@ def update_component(request, generate_component_class: type(Generate)):
     :raises ProjectNotFound: If the project with the specified ID does not exist.
     """
     if not request.project_id:
-        raise InvalidParameter("Project name cannot be empty")
+        raise InvalidParameter("Project id cannot be empty")
 
     if not request.ai_model:
         raise InvalidParameter("AI model cannot be empty")
@@ -37,13 +39,45 @@ def update_component(request, generate_component_class: type(Generate)):
         raise ProjectNotFound(request.project_id)
 
     ai_model = get_model_remote_ref_enum(request.ai_model)
-
     update_component_task.remote(
         request.project_id,
         request.query,
         ai_model,
         get_project_dao_ref,
         generate_component_class,
+    )
+
+
+def update_component(request, generate_component_class):
+    """
+    Updates a project component using value provided by user.
+
+    :param request: The request object containing project ID and value for component update.
+    :type request: object with attributes `project_id` (str) and `new_value` (component class)
+
+    :param generate_component_class: The class used for generating the component update.
+    :type generate_component_class: type of `Generate`
+
+    :raises InvalidParameter: If the project ID or query is missing or invalid.
+    :raises ProjectNotFound: If the project with the specified ID does not exist.
+    :raises Exception: ray can throw some exception during generate.
+    """
+    if not request.project_id:
+        raise InvalidParameter("Project id cannot be empty")
+
+    if not request.new_val:
+        raise InvalidParameter("Invalid new_val value")
+
+    if not project_dao.is_project_exist(request.project_id):
+        raise ProjectNotFound(request.project_id)
+
+    ray.get(
+        update_component_task.remote(
+            request.project_id,
+            request.new_val,
+            get_project_dao_ref,
+            generate_component_class,
+        )
     )
 
 
