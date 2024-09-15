@@ -92,6 +92,34 @@ class AI(metaclass=abc.ABCMeta):
             {expected_answer_format}.
         """
 
+    def parse_regenerate_query(
+        self,
+        what: str,
+        details: str,
+        expected_answer_format: str,
+    ):
+        """
+        Creates a query for an AI model to generate a specific item. This query is similar to generate query,
+        but there is less strict query structure. Query using to regenerate component.
+        This query is used by the AI model to generate the desired output based on the provided parameters. Derived AI models can override this
+        method to customize the query format.
+
+
+        :param str what: The item to be generated (e.g., actors)
+        :param str details: Additional information about the application (provided by user.)
+        :param str expected_answer_format: The expected format of the response (default is JSON schema).
+
+        :return: component query for AI model.
+        :rtype: str
+        """
+
+        return f"""
+            Generate {what} details: {details}.
+            Result return EXACTLY according to provided below json schema (do NOT CHANGE the convention from the given json! 
+            DO NOT generate Bulleted List! GENERATE JSON): 
+            {expected_answer_format}.
+        """
+
 
 @ray.remote
 def ai_call_task(ai_model, query):

@@ -85,8 +85,18 @@ class DallE(AI):
         changes_request: str,
         expected_answer_format: str,
     ):
-        """Make a specific query for DALL-E 3 to update an image."""
-        return f"Create a {what} making: {changes_request} expected format: {expected_answer_format}"
+        """Make a specific query for DALL-E to update an image."""
+        return f"Generate a {what} details: {changes_request}"
+
+    @override
+    def parse_regenerate_query(
+        self,
+        what: str,
+        details: str,
+        expected_answer_format: str,
+    ):
+        """Make a specific query for DALL-E 3 to regenerate an image."""
+        return f"Generate a {what} details: {details}"
 
 
 class DallE2(DallE):
