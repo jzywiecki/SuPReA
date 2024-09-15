@@ -78,6 +78,30 @@ class Generate(metaclass=abc.ABCMeta):
 
         return self.value
 
+    def regenerate_by_ai(self, ai_model: AI, details: str):
+        """
+        Generates a model using the AI model.
+
+        :param ai_model: The AI component to be used for generation.
+        :type ai_model: AI
+        :param details: information for component generation
+        :type details: str
+
+        :return: The generated component.
+        :rtype: model_class
+
+        :raises ValueError: If the AI model response cannot be parsed or is not valid.
+        """
+        request = ai_model.parse_regenerate_query(
+            self.what, details, self.expected_format
+        )
+
+        reply = ai_model.make_ai_call(request)
+        reply_json_str = extract_json(reply)
+        self.value = make_model_from_reply(self.model_class, reply_json_str)
+
+        return self.value
+
     def update_by_ai(self, ai_model: AI, changes_request: str):
         """
         Updates a model using the AI model.
@@ -252,6 +276,47 @@ class GenerateActor:
         try:
             self.model_generate.generate_by_ai(
                 ai_model, for_what, doing_what, additional_info
+            )
+
+            logger_ai.info(
+                f"Finished successfully.",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
+            )
+            return self.current_actor(), None
+
+        except (json.JSONDecodeError, ValidationError, ValueError) as e:
+            logger_ai.exception(
+                f"{e}",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
+            )
+
+            return self.current_actor(), WrongFormatGeneratedByAI()
+
+        except Exception as e:
+            logger_ai.error(
+                f"{e}",
+                extra={
+                    "ai_model": ai_model.name(),
+                    "component": self.model_generate.what,
+                },
+            )
+
+            return self.current_actor(), e
+
+    def regenerate_by_ai(self, ai_model: AI, details: str):
+        """
+        Generates a model using the AI model.
+        returns the current actor ref and an error if any.
+        """
+        try:
+            self.model_generate.regenerate_by_ai(
+                ai_model, details
             )
 
             logger_ai.info(
