@@ -7,9 +7,9 @@ import ray
 from database import project_dao, get_project_dao_ref
 
 from ai import get_model_remote_ref_enum
-from generation.component import update_component_task
-from generation.component import regenerate_component_task
 from generation.generate import Generate
+from generation.component import regenerate_component_task
+from generation.component import update_component_task
 from utils import InvalidParameter
 from utils import ComponentNotFound, ProjectNotFound
 
@@ -76,7 +76,7 @@ def regenerate_component_by_ai(request, generate_component_class: type(Generate)
 
     ai_model = get_model_remote_ref_enum(request.ai_model)
 
-    regenerate_component_task.remote(
+    regenerate_component_by_ai_task.remote(
         request.project_id,
         request.details,
         ai_model,
@@ -85,7 +85,7 @@ def regenerate_component_by_ai(request, generate_component_class: type(Generate)
     )
 
 
-def update_component(request, generate_component_class):
+def update_component(request, generate_component_class: type(Generate)):
     """
     Updates a project component using value provided by user.
 
@@ -108,14 +108,9 @@ def update_component(request, generate_component_class):
     if not project_dao.is_project_exist(request.project_id):
         raise ProjectNotFound(request.project_id)
 
-    ray.get(
-        update_component_task.remote(
-            request.project_id,
-            request.new_val,
-            get_project_dao_ref,
-            generate_component_class,
-        )
-    )
+    generate_component = GenerateWithMonitor(generate_component_class())
+    generate_component.update(request.new_val)
+    generate_component.save_to_database(project_dao, request.project_id)
 
 
 def get_component(project_id: str, model_name: str):
