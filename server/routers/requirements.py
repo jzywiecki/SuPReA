@@ -5,9 +5,11 @@ This module defines the API routes for interacting with project components, spec
 from fastapi import APIRouter, status, Response
 from services import get_component
 from services import update_component_by_ai
+from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, Requirements
 from .common import UpdateComponentByAIRequest
+from .common import RegenerateComponentByAIRequest
 from generation.requirements import RequirementsGenerate
 from pydantic import BaseModel
 
@@ -42,6 +44,20 @@ def update_requirements_by_ai(request: UpdateComponentByAIRequest):
     :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
     """
     update_component_by_ai(request, RequirementsGenerate)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+@router.post(
+    "/requirements/ai-regenerate",
+    status_code=status.HTTP_200_OK,
+)
+def regenerate_requirements_by_ai(request: RegenerateComponentByAIRequest):
+    """
+    Regenerates the requirements component for the specified project using AI-based generation.
+
+    :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
+    """
+    regenerate_component_by_ai(request, RequirementsGenerate)
     return Response(status_code=status.HTTP_200_OK)
 
 

@@ -2,8 +2,6 @@
 This module provides functionality for updating and retrieving project components.
 """
 
-import ray
-
 from database import project_dao, get_project_dao_ref
 
 from ai import get_model_remote_ref_enum
@@ -63,7 +61,7 @@ def regenerate_component_by_ai(request, generate_component_class: type(Generate)
     :raises ProjectNotFound: If the project with the specified ID does not exist.
     """
     if not request.project_id:
-        raise InvalidParameter("Project name cannot be empty")
+        raise InvalidParameter("Project id cannot be empty")
 
     if not request.ai_model:
         raise InvalidParameter("AI model cannot be empty")
