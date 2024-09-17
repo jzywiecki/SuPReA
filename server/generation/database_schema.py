@@ -4,6 +4,8 @@ This module is responsible for generating a database schema.
 
 import json
 
+from pydantic import BaseModel
+
 from .generate import Generate
 from models import DatabaseSchema
 from utils.decorators import override
@@ -52,7 +54,7 @@ class DatabaseSchemaGenerate(Generate):
         )
 
     @override
-    def update_by_ai(self, ai_model, changes_request):
+    def update_by_ai(self, ai_model, changes_request) -> BaseModel | None:
         """
         Specifies how to update a database schema model using the AI model.
         """

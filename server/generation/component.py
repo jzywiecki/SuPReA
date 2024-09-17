@@ -18,7 +18,7 @@ def update_component_by_ai_task(
     ai_model: AI,
     get_project_dao_ref,
     generate_component_class: type(Generate),
-):
+) -> None:
     """
     Updates a component using the AI model using ray.
     """
@@ -53,7 +53,7 @@ def regenerate_component_by_ai_task(
     ai_model: AI,
     get_project_dao_ref,
     generate_component_class: type(Generate),
-):
+) -> None:
     """
     Updates a component using the AI model using ray.
     """

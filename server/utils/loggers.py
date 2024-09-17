@@ -8,7 +8,9 @@ logger_db = logging.getLogger("DB")
 logger = logging.getLogger("LOGGER")
 
 
-def configure_logging(logger_arg, level, file_name, formatter, max_bytes, backup_count):
+def configure_logging(
+    logger_arg, level, file_name: str, formatter, max_bytes: int, backup_count: int
+) -> None:
     """
     Configures a logger with a rotating file handler.
 
@@ -32,7 +34,7 @@ def configure_logging(logger_arg, level, file_name, formatter, max_bytes, backup
     logger_arg.addHandler(file_handler)
 
 
-def enable_file_logging():
+def enable_file_logging() -> None:
     """
     Enables file logging for all configured loggers.
     """
@@ -54,7 +56,7 @@ def enable_file_logging():
     configure_logging(logger, logging.INFO, "log", classic_logger_formatter, 2048, 0)
 
 
-def disable_logging():
+def disable_logging() -> None:
     """
     Disables file logging by removing all file handlers from the loggers.
     """

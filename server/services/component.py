@@ -2,6 +2,8 @@
 This module provides functionality for updating and retrieving project components.
 """
 
+from typing import Dict
+
 from database import project_dao, get_project_dao_ref
 
 from ai import get_model_remote_ref_enum
@@ -12,7 +14,7 @@ from utils import InvalidParameter
 from utils import ComponentNotFound, ProjectNotFound
 
 
-def update_component_by_ai(request, generate_component_class: type(Generate)):
+def update_component_by_ai(request, generate_component_class: type(Generate)) -> None:
     """
     Updates a project component using AI-based generation.
 
@@ -47,7 +49,9 @@ def update_component_by_ai(request, generate_component_class: type(Generate)):
     )
 
 
-def regenerate_component_by_ai(request, generate_component_class: type(Generate)):
+def regenerate_component_by_ai(
+    request, generate_component_class: type(Generate)
+) -> None:
     """
     Regenerate a project component using AI-based generation.
 
@@ -83,7 +87,7 @@ def regenerate_component_by_ai(request, generate_component_class: type(Generate)
     )
 
 
-def update_component(request, generate_component_class: type(Generate)):
+def update_component(request, generate_component_class: type(Generate)) -> None:
     """
     Updates a project component using value provided by user.
 
@@ -111,7 +115,7 @@ def update_component(request, generate_component_class: type(Generate)):
     generate_component.save_to_database(project_dao, request.project_id)
 
 
-def get_component(project_id: str, model_name: str):
+def get_component(project_id: str, model_name: str) -> Dict:
     """
     Retrieves a project component by its ID and model name.
 

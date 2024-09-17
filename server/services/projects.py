@@ -3,13 +3,17 @@ This module provides functionality for managing projects, including creating, re
 It also integrates with AI models to generate project components.
 """
 
+from typing import Dict
+
+from pymongo.results import DeleteResult
+
 from utils import InvalidParameter, ProjectNotFound
 from generation.project import generate_project_components_task
 from ai import get_text_model_remote_ref_enum, get_image_model_remote_ref_enum
 from database import project_dao, chat_dao, get_project_dao_ref
 
 
-def create_empty_project(request):
+def create_empty_project(request) -> str:
     """
     Creates a new project with basic details.
 
@@ -31,7 +35,7 @@ def create_empty_project(request):
     return new_project_id
 
 
-def create_project_by_ai(request):
+def create_project_by_ai(request) -> str:
     """
     Creates a new project and triggers AI-based component generation.
 
@@ -78,7 +82,7 @@ def create_project_by_ai(request):
     return new_project_id
 
 
-def get_project_by_id(project_id: str):
+def get_project_by_id(project_id: str) -> Dict:
     """
     Retrieves a project by its ID.
 
@@ -97,7 +101,7 @@ def get_project_by_id(project_id: str):
     return project
 
 
-def delete_project_by_id(project_id: str):
+def delete_project_by_id(project_id: str) -> DeleteResult | None:
     """
     Deletes a project by its ID.
 
@@ -115,7 +119,7 @@ def delete_project_by_id(project_id: str):
     return project_dao.delete_project(project_id, chat_dao)
 
 
-def get_project_list_by_user_id(user_id: str):
+def get_project_list_by_user_id(user_id: str) -> Dict:
     """
     Retrieves a list of projects associated with a specific user ID.
 

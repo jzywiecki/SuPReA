@@ -14,7 +14,7 @@ class AI(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def name(self):
+    def name(self) -> str:
         """
         :return: the name of the AI model.
         :rtype: str
@@ -22,7 +22,7 @@ class AI(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def make_ai_call(self, query: str):
+    def make_ai_call(self, query: str) -> str:
         """
         Generates a response from an AI model.
 
@@ -40,7 +40,7 @@ class AI(metaclass=abc.ABCMeta):
         doing_what: str,
         additional_info: str,
         expected_answer_format: str,
-    ):
+    ) -> str:
         """
         Creates a query for an AI model to generate a specific item. This query is used by the AI model to
         generate the desired output based on the provided parameters. Derived AI models can override this
@@ -70,7 +70,7 @@ class AI(metaclass=abc.ABCMeta):
         previous_val: str,
         changes_request: str,
         expected_answer_format: str,
-    ):
+    ) -> str:
         """
         Generates a query for an AI model to update an existing item. This query is used by the AI model to
         apply the specified changes to the item. Derived AI models can override this method to customize the
@@ -97,7 +97,7 @@ class AI(metaclass=abc.ABCMeta):
         what: str,
         details: str,
         expected_answer_format: str,
-    ):
+    ) -> str:
         """
         Creates a query for an AI model to generate a specific item. This query is similar to generate query,
         but there is less strict query structure. Query using to regenerate component.
@@ -122,7 +122,7 @@ class AI(metaclass=abc.ABCMeta):
 
 
 @ray.remote
-def ai_call_task(ai_model, query):
+def ai_call_task(ai_model, query) -> str:
     """
     Remote wrapper to call to the AI model.
     """

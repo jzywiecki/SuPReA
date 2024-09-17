@@ -5,7 +5,7 @@ This module provides utility functions for working with Mermaid.js.
 from utils import logger
 
 
-def parse_table_to_erdiagram_mermaid(table: dict):
+def parse_table_to_erdiagram_mermaid(table: dict) -> str:
     """
     Parses a single table definition into Mermaid.js ER diagram format.
 
@@ -29,7 +29,7 @@ def parse_table_to_erdiagram_mermaid(table: dict):
     return result
 
 
-def parse_relationship_to_erdiagram_mermaid(relationship: dict):
+def parse_relationship_to_erdiagram_mermaid(relationship: dict) -> str:
     """
     Parses a single relationship definition into Mermaid.js ER diagram format.
 
@@ -53,7 +53,7 @@ def parse_relationship_to_erdiagram_mermaid(relationship: dict):
     return result
 
 
-def parse_database_to_erdiagram_mermaid(database: dict):
+def parse_database_to_erdiagram_mermaid(database: dict) -> str:
     """
     Parses the entire database schema (tables and relationships) into Mermaid.js ER diagram format.
 
@@ -72,7 +72,7 @@ def parse_database_to_erdiagram_mermaid(database: dict):
     return mermaid_format
 
 
-def create_er_diagram_mermaid(database: dict):
+def create_er_diagram_mermaid(database: dict) -> str | None:
     """
     Creates an ER diagram in Mermaid.js format for the given database schema. If an error occurs, it logs the error
     and returns None.

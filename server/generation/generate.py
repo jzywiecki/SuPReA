@@ -9,7 +9,8 @@ import ray
 import abc
 import json
 
-from pydantic import ValidationError
+from pydantic import ValidationError, BaseModel
+from pymongo.results import UpdateResult
 
 from database import ProjectDAO
 from models import ComponentIdentify
@@ -51,7 +52,7 @@ class Generate(metaclass=abc.ABCMeta):
 
     def generate_by_ai(
         self, ai_model: AI, for_what: str, doing_what: str, additional_info: str
-    ):
+    ) -> BaseModel | None:
         """
         Generates a model component using the AI model.
 
@@ -79,7 +80,7 @@ class Generate(metaclass=abc.ABCMeta):
 
         return self.value
 
-    def regenerate_by_ai(self, ai_model: AI, details: str):
+    def regenerate_by_ai(self, ai_model: AI, details: str) -> BaseModel | None:
         """
         Generates a model component using the AI model.
         Method is similar to generate_by_ai, but it is more flexible.
@@ -104,7 +105,7 @@ class Generate(metaclass=abc.ABCMeta):
 
         return self.value
 
-    def update_by_ai(self, ai_model: AI, changes_request: str):
+    def update_by_ai(self, ai_model: AI, changes_request: str) -> BaseModel | None:
         """
         Updates a model component using the AI model.
 
@@ -131,7 +132,9 @@ class Generate(metaclass=abc.ABCMeta):
 
         return self.value
 
-    def save_to_database(self, project_dao: ProjectDAO, project_id: str):
+    def save_to_database(
+        self, project_dao: ProjectDAO, project_id: str
+    ) -> UpdateResult:
         """
         Saves the generated or updated model component to the database.
 
@@ -149,7 +152,9 @@ class Generate(metaclass=abc.ABCMeta):
             project_id, self.component_identify.value, self.value
         )
 
-    def fetch_from_database(self, project_dao: ProjectDAO, project_id: str):
+    def fetch_from_database(
+        self, project_dao: ProjectDAO, project_id: str
+    ) -> BaseModel | None:
         """
         Fetches the model component from the database for a given project ID.
 
@@ -172,7 +177,7 @@ class Generate(metaclass=abc.ABCMeta):
 
         return self.value
 
-    def update(self, new_val):
+    def update(self, new_val) -> BaseModel | None:
         """
         Updates the model component with a new value.
 
@@ -190,7 +195,7 @@ class Generate(metaclass=abc.ABCMeta):
 
         return self.value
 
-    def get_value(self):
+    def get_value(self) -> BaseModel | None:
         """
         Returns the current value of the model component.
 
@@ -199,7 +204,7 @@ class Generate(metaclass=abc.ABCMeta):
         """
         return self.value
 
-    def get_component_identify(self):
+    def get_component_identify(self) -> ComponentIdentify:
         """
         Returns the component identification.
 
@@ -208,7 +213,7 @@ class Generate(metaclass=abc.ABCMeta):
         """
         return self.component_identify
 
-    def get_what(self):
+    def get_what(self) -> str:
         """
         Returns the description of what is being generated or updated.
 
@@ -218,7 +223,7 @@ class Generate(metaclass=abc.ABCMeta):
         return self.what
 
 
-def extract_json(text):
+def extract_json(text) -> str:
     """
     Extracts the JSON content from a text.
 
@@ -239,7 +244,7 @@ def extract_json(text):
     return text
 
 
-def make_model_from_reply(model_class, reply):
+def make_model_from_reply(model_class, reply) -> BaseModel:
     """
     Creates a model component object from the AI reply.
 
@@ -268,7 +273,7 @@ class GenerateWithMonitor:
 
     def generate_by_ai(
         self, ai_model: AI, for_what: str, doing_what: str, additional_info: str
-    ):
+    ) -> BaseModel | None:
         """
         Generates a model using the AI model and logs the process.
         """
@@ -309,7 +314,7 @@ class GenerateWithMonitor:
 
             raise e
 
-    def regenerate_by_ai(self, ai_model: AI, details: str):
+    def regenerate_by_ai(self, ai_model: AI, details: str) -> BaseModel | None:
         """
         Generates a model using the AI model and logs the process.
         """
@@ -347,7 +352,7 @@ class GenerateWithMonitor:
 
             raise e
 
-    def update_by_ai(self, ai_model: AI, changes_request: str):
+    def update_by_ai(self, ai_model: AI, changes_request: str) -> BaseModel | None:
         """
         Update a model using the AI model and logs the process.
         """
@@ -386,7 +391,9 @@ class GenerateWithMonitor:
 
             raise e
 
-    def save_to_database(self, project_dao: ProjectDAO, project_id: str):
+    def save_to_database(
+        self, project_dao: ProjectDAO, project_id: str
+    ) -> UpdateResult:
         """
         Save the provided/generated model to the database for project with id={project_id}.
         Methods logs the process.
@@ -414,7 +421,9 @@ class GenerateWithMonitor:
 
             raise e
 
-    def fetch_from_database(self, project_dao: ProjectDAO, project_id: str):
+    def fetch_from_database(
+        self, project_dao: ProjectDAO, project_id: str
+    ) -> BaseModel | None:
         """
         Fetch the model from project with id={project_id} from the database.
         Methods logs the process.
@@ -441,7 +450,7 @@ class GenerateWithMonitor:
             )
             raise e
 
-    def update(self, new_val):
+    def update(self, new_val) -> BaseModel | None:
         """
         Update the model with a new value. Value must be of the correct type.
         Method logs the process.
@@ -454,13 +463,13 @@ class GenerateWithMonitor:
             logger.exception(f"{e}")
             raise e
 
-    def get_value(self):
+    def get_value(self) -> BaseModel | None:
         """
         Returns the value of the model.
         """
         return self.model_generate.get_value()
 
-    def get_component_identify(self):
+    def get_component_identify(self) -> ComponentIdentify:
         """
         Returns the component identify.
         """
