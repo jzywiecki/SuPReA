@@ -59,6 +59,13 @@ class ProjectCreateByAIRequest(BaseModel):
     text_ai_model: str
     image_ai_model: str
 
+class ProjectAddMemberRequest(BaseModel):
+    """
+    Request object for adding a member to a project.
+    """
+
+    sender_id: str
+    member_id: str
 
 @router.post(
     "/create",

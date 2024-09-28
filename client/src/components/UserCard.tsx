@@ -7,7 +7,8 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar"
-type UserCardAction = 'addFriend' | 'acceptInvitation' | 'rejectInvitation' | 'withdrawInvitation' | 'removeFriend';
+type UserCardAction = 'addFriend' | 'acceptInvitation' | 'rejectInvitation' | 'withdrawInvitation' | 'removeFriend' | 'addMember';
+import { Link } from 'react-router-dom';
 
 interface UserCardProps {
     user: User;
@@ -28,22 +29,26 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
                 return 'Withdraw Invitation';
             case 'removeFriend':
                 return 'Remove Friend';
+            case 'addMember':
+                return 'Add Member';
             default:
                 return '';
         }
     };
 
     return (
-        <Card className="flex justify-between shadow-md rounded-lg h-48">
+        <Card className="flex justify-between shadow rounded-lg h-24 mt-3">
             <CardContent className="flex items-center space-x-4">
             <Avatar>
                 <AvatarImage src={user?.avatarurl} alt="@shadcn" />
                 <AvatarFallback>?</AvatarFallback>
             </Avatar>
+            <Link to={`/profile/${user.id}`} className="hover:underline" key={user.id}>
                 <div>
                     <p className="text-lg font-semibold">{user.username}</p>
                     <p className="text-sm text-muted-foreground">{user.email}</p>
                 </div>
+            </Link>
             </CardContent>
             <CardFooter className="space-x-2">
                 {actionType === 'acceptInvitation' && (
