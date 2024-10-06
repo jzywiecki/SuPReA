@@ -1,4 +1,4 @@
-FROM python:3.12
+FROM rayproject/ray:latest
 
 WORKDIR /code
 
@@ -9,5 +9,7 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 COPY . /code
 
 EXPOSE 8000
+
+EXPOSE 8265
 
 CMD ["fastapi", "run", "main.py"]
