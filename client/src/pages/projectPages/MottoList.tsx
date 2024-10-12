@@ -21,7 +21,7 @@ const MottoList: React.FC = () => {
     }
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/motto/${projectID}`);
+            const response = await axios.get(`http://localhost:8000/model/motto/${projectID}`);
             setMotto(response.data.motto);
 
         } catch (error) {

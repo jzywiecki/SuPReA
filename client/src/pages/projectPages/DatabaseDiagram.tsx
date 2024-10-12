@@ -131,7 +131,7 @@ const DatabaseDiagram = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/database_schema/${projectID}`);
+            const response = await axios.get(`http://localhost:8000/model/database_schema/${projectID}`);
             console.log(response.data);
             const { nodes: initialNodes, edges: initialEdges } = generateFlowElements(response.data);
             setNodes(initialNodes);

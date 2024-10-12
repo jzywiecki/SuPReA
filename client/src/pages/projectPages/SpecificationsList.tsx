@@ -26,7 +26,7 @@ const SpecificationsList: React.FC = () => {
     }
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/specifications/${projectID}`);
+            const response = await axios.get(`http://localhost:8000/model/specifications/${projectID}`);
             setSpecifications(response.data.specifications);
 
         } catch (error) {

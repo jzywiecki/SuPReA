@@ -203,7 +203,7 @@ const UMLDiagrams: React.FC = () => {
     }
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/uml/${projectID}`);
+            const response = await axios.get(`http://localhost:8000/model/uml/${projectID}`);
             console.log(response.data)
 
 

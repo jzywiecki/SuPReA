@@ -4,10 +4,12 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import axios from 'axios'
+import { useUser } from '@/components/UserProvider';
+import axios from 'axios';
 
 
 const NewProjectInput = () => {
+    const { user } = useUser();
 
     const [usedAi, setUsedAi] = useState<boolean>(true);
 
@@ -123,7 +125,7 @@ const NewProjectInput = () => {
             for_who: forWhoFieldRef.current?.value,
             doing_what: doingWhatFieldRef.current?.value,
             additional_info: additionalInfoFieldRef.current?.value,
-            owner_id: "6671f67b1964c25bba263ec1"
+            owner_id: user?.id,
         }
 
 

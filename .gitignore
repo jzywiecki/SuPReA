@@ -18,3 +18,4 @@ env/
 # MacOS files
 .DS_Store
 
+auth-service/auth-service

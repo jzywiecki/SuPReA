@@ -35,7 +35,7 @@ const ActorList: React.FC = () => {
     }
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/actors/${projectID}`);
+            const response = await axios.get(`http://localhost:8000/model/actors/${projectID}`);
 
             const actorsWithIcons = response.data.actors.map((actor: Actor) => ({
                 ...actor,
