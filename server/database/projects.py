@@ -184,6 +184,7 @@ class ProjectDAO:
             description=description,
             owner=ObjectId(owner_id),
             members=[ObjectId(owner_id)],
+            managers=[ObjectId(owner_id)],
             created_at=datetime.now(),
             chat_id=ObjectId(discussion_chat_id),
             ai_chat_id=ObjectId(ai_chat_id),
@@ -201,3 +202,54 @@ class ProjectDAO:
         :rtype: bool
         """
         return self.collection.count_documents({"_id": ObjectId(project_id)}) > 0
+
+    def add_member_to_project(self, project_id: str, member_id: str):
+        """
+        Adds a member to the project.
+
+        :param str project_id: The id of the project.
+        :param str member_id: The id of the member to add.
+        :return: The result of the mongodb update operation.
+        """
+        return self.collection.update_one(
+            {"_id": ObjectId(project_id)},
+            {"$addToSet": {"members": ObjectId(member_id)}},
+        )
+
+    def remove_member_from_project(self, project_id: str, member_id: str):
+        """
+        Removes a member from the project.
+
+        :param str project_id: The id of the project.
+        :param str member_id: The id of the member to remove.
+        :return: The result of the mongodb update operation.
+        """
+
+        return self.collection.update_one(
+            {"_id": ObjectId(project_id)}, {"$pull": {"members": ObjectId(member_id)}}
+        )
+
+    def unassign_manager_from_project(self, project_id: str, manager_id: str):
+        """
+        Removes a manager from the project.
+
+        :param str project_id: The id of the project.
+        :param str manager_id: The id of the manager to remove.
+        :return: The result of the mongodb update operation.
+        """
+        return self.collection.update_one(
+            {"_id": ObjectId(project_id)}, {"$pull": {"managers": ObjectId(manager_id)}}
+        )
+
+    def assign_manager_to_project(self, project_id: str, manager_id: str):
+        """
+        Assigns a manager to the project.
+
+        :param str project_id: The id of the project.
+        :param str manager_id: The id of the manager to add.
+        :return: The result of the mongodb update operation.
+        """
+        return self.collection.update_one(
+            {"_id": ObjectId(project_id)},
+            {"$addToSet": {"managers": ObjectId(manager_id)}},
+        )

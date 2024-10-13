@@ -10,9 +10,24 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
+import InviteModal from '@/components/InviteModal';
+import Search from '@/components/Search';
+import axios from 'axios';
+import { User } from '@/pages/SearchAndAddFriends';
+import { useUser } from '@/components/UserProvider';
 
 const ProjectView = ({ }) => {
+    const { user } = useUser();
+    const [searchResults, setSearchResults] = useState<User[]>([]);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
+    const openInviteModal = () => {
+        setIsInviteModalOpen(true);
+    };
+
+    const closeInviteModal = () => {
+        setIsInviteModalOpen(false);
+    };
 
     const { projectID } = useParams();
     const [isCollapsedLeft, setIsCollapsedLeft] = useState(true);
@@ -25,6 +40,26 @@ const ProjectView = ({ }) => {
     const toggleCollapseRight = () => {
         setIsCollapsedRight(!isCollapsedRight);
     };
+
+    const handleSearch = async (searchQuery: string) => {
+        try {
+            const response = await axios.get<User[]>(`http://localhost:3333/users/filter?user_id=${user?.id}&filter=${searchQuery}`);
+            setSearchResults(response.data);
+        } catch (error) {
+            console.error('Error searching users:', error);
+        }
+    };
+
+    const handleAddMember = async (friendId: string) => {
+        try {
+            const url = `http://localhost:8000/projects/${projectID}/members/add`;
+
+            await axios.post(url);
+            closeInviteModal();
+        } catch (error) {
+            console.error('Error adding member:', error);
+        }
+    }
 
 
     const elements = [
@@ -44,6 +79,9 @@ const ProjectView = ({ }) => {
 
     return (
         <div style={{ height: 'calc(100vh - 64px)' }}>
+                                    <Button variant="secondary" onClick={openInviteModal} className="">
+                Invite Members
+            </Button>
             <ResizablePanelGroup
                 direction="horizontal"
                 className="w-full border"
@@ -76,6 +114,7 @@ const ProjectView = ({ }) => {
                         <Button variant="outline" size="icon" onClick={toggleCollapseRight}>
                             <MenuIcon className="h-[1.2rem] w-[1.2rem]" />
                         </Button>
+
                     </div>
                     <RegenerateProjectButton />
                     <Chat 
@@ -88,6 +127,17 @@ const ProjectView = ({ }) => {
                 </ResizablePanel>
             </ResizablePanelGroup>
 
+
+            <InviteModal isOpen={isInviteModalOpen} onClose={closeInviteModal}>
+                <Search
+                    onSearch={handleSearch}
+                    searchResults={searchResults}
+                    friends={[]}
+                    onClick={handleAddMember}
+                    userId={user.id}
+                    actionType='addMember'
+                />
+            </InviteModal>
         </div>
 
 

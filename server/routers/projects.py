@@ -13,6 +13,10 @@ from services import (
     get_project_by_id,
     delete_project_by_id,
     get_project_list_by_user_id,
+    invite_member_by_id,
+    remove_member_by_id,
+    assign_manager_role_to_user_by_id,
+    unassign_member_role_from_user_by_id,
 )
 
 router = APIRouter(tags=["projects"], prefix="/projects")
@@ -54,6 +58,15 @@ class ProjectCreateByAIRequest(BaseModel):
     owner_id: str
     text_ai_model: str
     image_ai_model: str
+
+
+class ProjectAddMemberRequest(BaseModel):
+    """
+    Request object for adding a member to a project.
+    """
+
+    sender_id: str
+    member_id: str
 
 
 @router.post(
@@ -131,3 +144,61 @@ def get_project_list(user_id: str):
     :param str user_id: The unique identifier of the user.
     """
     return get_project_list_by_user_id(user_id)
+
+
+@router.post(
+    "/{project_id}/members/add",
+    status_code=status.HTTP_201_CREATED,
+    response_model_by_alias=False,
+)
+def invite_member(project_id: str, sender_id: str, member_id: str):
+    """
+    Adds a member to the project with the specified ID.
+
+    :param str project_id: The unique identifier of the project.
+    :param str member_id: The unique identifier of the member.
+    """
+    return invite_member_by_id(sender_id, project_id, member_id)
+
+
+@router.post(
+    "/{project_id}/members/remove",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def remove_member(project_id: str, sender_id: str, member_id: str):
+    """
+    Removes a member from the project with the specified ID.
+
+    :param str project_id: The unique identifier of the project.
+    :param str member_id: The unique identifier of the member.
+    """
+    return remove_member_by_id(sender_id, project_id, member_id)
+
+
+@router.post(
+    "/{project_id}/managers/assign",
+    status_code=status.HTTP_201_CREATED,
+    response_model_by_alias=False,
+)
+def assign_manager(project_id: str, sender_id: str, manager_id: str):
+    """
+    Assigns a manager to the project with the specified ID.
+
+    :param str project_id: The unique identifier of the project.
+    :param str manager_id: The unique identifier of the manager.
+    """
+    return assign_manager_role_to_user_by_id(sender_id, project_id, manager_id)
+
+
+@router.post(
+    "/{project_id}/managers/unassign",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def unassign_manager(project_id: str, sender_id: str, manager_id: str):
+    """
+    Unassigns a manager from the project with the specified ID.
+
+    :param str project_id: The unique identifier of the project.
+    :param str manager_id: The unique identifier of the manager.
+    """
+    return unassign_member_role_from_user_by_id(sender_id, project_id, manager_id)

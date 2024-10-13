@@ -95,7 +95,7 @@ const NameList: React.FC = () => {
     }
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/title/${projectID}`);
+            const response = await axios.get(`http://localhost:8000/model/title/${projectID}`);
             setNames(response.data.names);
 
             setPriorities(new Array(response.data.names.length).fill(1));

@@ -7,13 +7,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Route struct {
-	Path string `mapstructure:"path"`
-}
-
 type Service struct {
-	URL    string  `mapstructure:"url"`
-	Routes []Route `mapstructure:"routes"`
+	URL string `mapstructure:"url"`
 }
 
 // Config struct holds the configuration for the application

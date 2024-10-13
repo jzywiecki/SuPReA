@@ -61,7 +61,7 @@ const RiskList: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/risks/${projectID}`);
+            const response = await axios.get(`http://localhost:8000/model/risks/${projectID}`);
             setRisks(response.data.risks);
 
             setComponentRegenerate(getComponentName())
