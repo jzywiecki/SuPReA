@@ -4,10 +4,14 @@ This module defines the API routes for interacting with project components, spec
 
 from fastapi import APIRouter, status, Response
 from services import get_component
-from models import ComponentIdentify
+from services import update_component_by_ai
+from services import regenerate_component_by_ai
+from services import update_component
+from models import ComponentIdentify, BusinessScenarios
 from .common import UpdateComponentByAIRequest
-from services.component import update_component
+from .common import RegenerateComponentByAIRequest
 from generation.business_scenarios import BusinessScenariosGenerate
+from pydantic import BaseModel
 
 
 router = APIRouter(
@@ -38,6 +42,43 @@ def update_business_scenarios_by_ai(request: UpdateComponentByAIRequest):
     Updates the business scenarios component for the specified project using AI-based generation.
 
     :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
+    """
+    update_component_by_ai(request, BusinessScenariosGenerate)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+@router.post(
+    "/business_scenarios/ai-regenerate",
+    status_code=status.HTTP_200_OK,
+)
+def regenerate_business_scenarios_by_ai(request: RegenerateComponentByAIRequest):
+    """
+    Regenerates the business scenarios component for the specified project using AI-based generation.
+
+    :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
+    """
+    regenerate_component_by_ai(request, BusinessScenariosGenerate)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+class UpdateBusinessScenariosRequest(BaseModel):
+    """
+    The request object for updating the business scenarios component by value provided by user.
+    """
+
+    project_id: str
+    new_val: BusinessScenarios
+
+
+@router.put(
+    "/business_scenarios/update",
+    status_code=status.HTTP_200_OK,
+)
+def update_business_scenarios(request: UpdateBusinessScenariosRequest):
+    """
+    Updates the business scenarios component for the specified project using value provided by user.
+
+    :param UpdateBusinessScenariosRequest request: The request object containing project ID and new value.
     """
     update_component(request, BusinessScenariosGenerate)
     return Response(status_code=status.HTTP_200_OK)

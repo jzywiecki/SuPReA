@@ -3,11 +3,12 @@ This module contains the LogoGenerate class, which is responsible for generating
 """
 
 import ray
+from pydantic import BaseModel
 
 from .generate import Generate
 from models import Logo
 from utils.decorators import override
-from ai import ai_call_task
+from ai import ai_call_task, AI
 from models import ComponentIdentify
 
 
@@ -41,7 +42,9 @@ class LogoGenerate(Generate):
         super().__init__(Logo, "logo", expected_format, ComponentIdentify.LOGO)
 
     @override
-    def generate_by_ai(self, ai_model, for_what, doing_what, additional_info):
+    def generate_by_ai(
+        self, ai_model: AI, for_what: str, doing_what: str, additional_info: str
+    ) -> BaseModel | None:
         """
         Specify implementation for generating a model using the AI image-model.
         """
@@ -82,7 +85,7 @@ class LogoGenerate(Generate):
         return self.value
 
     @override
-    def update_by_ai(self, ai_model, changes_request):
+    def update_by_ai(self, ai_model: AI, changes_request: str) -> BaseModel | None:
         """
         Specify implementation for updating a model using the AI image-model.
         """
@@ -110,7 +113,7 @@ class LogoGenerate(Generate):
         return self.value
 
 
-def process_ai_requests(ai_model, *requests):
+def process_ai_requests(ai_model: AI, *requests):
     """
     Process the AI requests and return the results.
     """

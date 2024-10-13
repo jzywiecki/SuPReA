@@ -17,7 +17,7 @@ client = OpenAI()
 class GPT(AI):
     """Base class for GPT AI models."""
 
-    def make_ai_call(self, query: str, model_name: str):
+    def make_ai_call(self, query: str, model_name: str) -> str:
         """Make a call to the GPT model and return the response."""
         messages = [{"role": "system", "content": query, "type": "json_object"}]
         params = {"model": model_name, "messages": messages, "max_tokens": 4000}
@@ -27,22 +27,22 @@ class GPT(AI):
 
 class GPT35Turbo(GPT):
     @override
-    def name(self):
+    def name(self) -> str:
         return "GPT-3.5 Turbo"
 
     @override
-    def make_ai_call(self, query: str):
+    def make_ai_call(self, query: str) -> str:
         """Make a call to the GPT-3.5 Turbo model and return the response."""
         return super().make_ai_call(query, "gpt-3.5-turbo")
 
 
 class GPT4oMini(GPT):
     @override
-    def name(self):
+    def name(self) -> str:
         return "GPT-4o mini"
 
     @override
-    def make_ai_call(self, query: str):
+    def make_ai_call(self, query: str) -> str:
         """Make a call to the GPT-4.0 Mini model and return the response."""
         return super().make_ai_call(query, "gpt-4o-mini")
 
@@ -50,7 +50,7 @@ class GPT4oMini(GPT):
 class DallE(AI):
     """Base class for DALL-E AI models."""
 
-    def make_ai_call(self, query: str, model_name: str):
+    def make_ai_call(self, query: str, model_name: str) -> str:
         """Make a call to the DALL-E 3 model and return the response."""
         params = {
             "model": "dall-e-2",
@@ -70,7 +70,7 @@ class DallE(AI):
         doing_what: str,
         additional_info: str,
         expected_answer_format: str,
-    ):
+    ) -> str:
         """Make a specific query for DALL-E 3 to generate an image."""
         return (
             f"Make {what} for {for_who} creating app for {doing_what} "
@@ -84,29 +84,39 @@ class DallE(AI):
         previous_val: str,
         changes_request: str,
         expected_answer_format: str,
-    ):
-        """Make a specific query for DALL-E 3 to update an image."""
-        return f"Create a {what} making: {changes_request} expected format: {expected_answer_format}"
+    ) -> str:
+        """Make a specific query for DALL-E to update an image."""
+        return f"Generate a {what} details: {changes_request}"
+
+    @override
+    def parse_regenerate_query(
+        self,
+        what: str,
+        details: str,
+        expected_answer_format: str,
+    ) -> str:
+        """Make a specific query for DALL-E 3 to regenerate an image."""
+        return f"Generate a {what} details: {details}"
 
 
 class DallE2(DallE):
     @override
-    def name(self):
+    def name(self) -> str:
         return "DALL-E 2"
 
     @override
-    def make_ai_call(self, query: str):
+    def make_ai_call(self, query: str) -> str:
         """Make a call to the DALL-E 2 model and return the response."""
         return super().make_ai_call(query, "dall-e-2")
 
 
 class DallE3(DallE):
     @override
-    def name(self):
+    def name(self) -> str:
         return "DALL-E 3"
 
     @override
-    def make_ai_call(self, query: str):
+    def make_ai_call(self, query: str) -> str:
         """Make a call to the DALL-E 3 model and return the response."""
         return super().make_ai_call(query, "dall-e-3")
 

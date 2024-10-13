@@ -48,7 +48,7 @@ class AIModelNotFound(Exception):
         self.model_name = model_name
 
 
-def register_fastapi_exception_handlers(app: FastAPI):
+def register_fastapi_exception_handlers(app: FastAPI) -> None:
     """
     Registers exception handlers for a FastAPI application to handle various custom exceptions and HTTP errors.
 

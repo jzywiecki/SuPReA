@@ -3,8 +3,12 @@ This module serves as a Data Access Object (DAO) for performing operations on th
 collections in the MongoDB database. It provides a wrapper around the MongoDB operations for projects.
 """
 
+from typing import Optional, List, Dict
+
 from bson import ObjectId
 from datetime import datetime
+
+from pymongo.results import UpdateResult, InsertOneResult, DeleteResult
 
 from models import Project
 
@@ -19,7 +23,7 @@ class ProjectDAO:
     def __init__(self, mongo_db, collection_name):
         self.collection = mongo_db.get_collection(collection_name)
 
-    def get_project(self, project_id: str):
+    def get_project(self, project_id: str) -> Optional[Dict]:
         """
         :param str project_id: The id of the project to retrieve.
         :return: The project with the specified id.
@@ -27,7 +31,7 @@ class ProjectDAO:
         """
         return self.collection.find_one({"_id": ObjectId(project_id)})
 
-    def get_projects_by_owner(self, owner_id: str):
+    def get_projects_by_owner(self, owner_id: str) -> List[Dict]:
         """
         Returns the projects where the specified user is the owner.
 
@@ -42,7 +46,7 @@ class ProjectDAO:
             )
         )
 
-    def get_projects_by_member(self, member_id: str):
+    def get_projects_by_member(self, member_id: str) -> List[Dict]:
         """
         Returns the projects where the specified user is a member (but not owner).
 
@@ -57,7 +61,7 @@ class ProjectDAO:
             )
         )
 
-    def get_projects_by_member_or_owner(self, user_id: str):
+    def get_projects_by_member_or_owner(self, user_id: str) -> List[Dict]:
         """
         Returns the projects where the specified user is either the owner or a member.
 
@@ -72,7 +76,7 @@ class ProjectDAO:
             )
         )
 
-    def get_project_component(self, project_id: str, component_name: str):
+    def get_project_component(self, project_id: str, component_name: str) -> List[Dict]:
         """
         Returns a specific component of a project. (e.g. actors, business_scenarios)
 
@@ -87,7 +91,9 @@ class ProjectDAO:
         else:
             return None
 
-    def update_project_component(self, project_id: str, component_name: str, component):
+    def update_project_component(
+        self, project_id: str, component_name: str, component
+    ) -> UpdateResult:
         """
         Saves a specific component of a project. (e.g. actors, business_scenarios)
 
@@ -100,7 +106,7 @@ class ProjectDAO:
             {"_id": ObjectId(project_id)}, {"$set": {component_name: component.dict()}}
         )
 
-    def save_project(self, project: Project):
+    def save_project(self, project: Project) -> InsertOneResult:
         """
         Saves a project to the database.
 
@@ -109,7 +115,7 @@ class ProjectDAO:
         """
         return self.collection.insert_one(project.dict(exclude={"id"}))
 
-    def update_project(self, project_id: str, project: Project):
+    def update_project(self, project_id: str, project: Project) -> UpdateResult:
         """
         Updates a project with the specified id.
 
@@ -122,7 +128,7 @@ class ProjectDAO:
         )
 
     # TODO: below method should be a transaction.
-    def delete_project(self, project_id: str, chat_dao: ChatDAO):
+    def delete_project(self, project_id: str, chat_dao: ChatDAO) -> DeleteResult | None:
         """
         Deletes a project and its associated chats.
 
@@ -150,7 +156,7 @@ class ProjectDAO:
         doing_what: str,
         additional_info: str,
         chat_dao: ChatDAO,
-    ):
+    ) -> str:
         """
         Creates new empty project with the specified details and returns the project id.
         Also creates two chats for the project: discussion_chat and ai_chat.
@@ -187,7 +193,7 @@ class ProjectDAO:
         result = self.save_project(new_project)
         return str(result.inserted_id)
 
-    def is_project_exist(self, project_id: str):
+    def is_project_exist(self, project_id: str) -> bool:
         """
         Checks if a project with the specified id exists.
 

@@ -6,6 +6,8 @@ import tempfile
 import mermaid as mmd
 import ray
 
+from models import Project
+from typing import List, Dict
 from utils.fetch import fetch_image_task
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
@@ -32,13 +34,13 @@ class PDFGenerator:
         self.text_style = self.styles["BodyText"]
         self.pdf_elements = []
 
-    def add_simple_text(self, title, text):
+    def add_simple_text(self, title: str, text: str) -> None:
         """Adds a simple text section to the PDF."""
         self.pdf_elements.append(Paragraph(title, self.title_style))
         self.pdf_elements.append(Paragraph(text, self.text_style))
         self.pdf_elements.append(Spacer(1, 12))
 
-    def add_simple_list(self, title, items):
+    def add_simple_list(self, title: str, items: List[str]) -> None:
         """Adds a bulleted list to the PDF."""
         self.pdf_elements.append(Paragraph(title, self.title_style))
         items = [
@@ -48,7 +50,7 @@ class PDFGenerator:
         self.pdf_elements.append(ListFlowable(items, bulletType="bullet"))
         self.pdf_elements.append(Spacer(1, 12))
 
-    def add_er_diagram(self, er_diagram_format, title):
+    def add_er_diagram(self, er_diagram_format: str, title: str) -> None:
         """Adds an ER diagram to the PDF in Mermaid.js format."""
         self.pdf_elements.append(Paragraph(title, self.title_style))
 
@@ -68,7 +70,9 @@ class PDFGenerator:
         self.pdf_elements.append(img)
         self.pdf_elements.append(Spacer(1, 12))
 
-    def add_two_elements_list(self, items, title, name_one, name_two):
+    def add_two_elements_list(
+        self, items: List[Dict[str, str]], title: str, name_one: str, name_two: str
+    ) -> None:
         """Adds a list with two elements per item to the PDF."""
         self.pdf_elements.append(Paragraph(title, self.title_style))
         items = [
@@ -83,7 +87,14 @@ class PDFGenerator:
         self.pdf_elements.append(ListFlowable(items, bulletType="bullet"))
         self.pdf_elements.append(Spacer(1, 12))
 
-    def add_three_element_list(self, items, title, name_one, name_two, name_three):
+    def add_three_element_list(
+        self,
+        items: List[Dict[str, str]],
+        title: str,
+        name_one: str,
+        name_two: str,
+        name_three: str,
+    ) -> None:
         """Adds a list with three elements per item to the PDF."""
         self.pdf_elements.append(Paragraph(title, self.title_style))
         items = [
@@ -98,7 +109,7 @@ class PDFGenerator:
         self.pdf_elements.append(ListFlowable(items, bulletType="bullet"))
         self.pdf_elements.append(Spacer(1, 12))
 
-    def add_pictures(self, title, pictures_urls):
+    def add_pictures(self, title: str, pictures_urls: str) -> None:
         """Adds images to the PDF from a list of URLs."""
         actors_refs = []
         for picture_url in pictures_urls:
@@ -113,7 +124,7 @@ class PDFGenerator:
                     self.pdf_elements.append(Spacer(1, 12))
             self.pdf_elements.append(Spacer(1, 12))
 
-    def add_project(self, project):
+    def add_project(self, project: Project) -> None:
         """
         Adds project details to the PDF elements.
 
@@ -222,7 +233,7 @@ class PDFGenerator:
                 elif func == self.add_three_element_list:
                     func(data, title, field[3], field[4], field[5])
 
-    def generate(self):
+    def generate(self) -> bytes:
         """
         Generates the final PDF document based on added elements.
 

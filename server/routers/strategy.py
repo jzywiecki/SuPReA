@@ -4,10 +4,14 @@ This module defines the API routes for interacting with project components, spec
 
 from fastapi import APIRouter, status, Response
 from services import get_component
-from models import ComponentIdentify
+from services import update_component_by_ai
+from services import regenerate_component_by_ai
+from services import update_component
+from models import ComponentIdentify, Strategy
 from .common import UpdateComponentByAIRequest
-from services.component import update_component
+from .common import RegenerateComponentByAIRequest
 from generation.strategy import StrategyGenerate
+from pydantic import BaseModel
 
 
 router = APIRouter(
@@ -38,6 +42,43 @@ def update_strategy_by_ai(request: UpdateComponentByAIRequest):
     Updates the strategy component for the specified project using AI-based generation.
 
     :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
+    """
+    update_component_by_ai(request, StrategyGenerate)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+@router.post(
+    "/strategy/ai-regenerate",
+    status_code=status.HTTP_200_OK,
+)
+def regenerate_strategy_by_ai(request: RegenerateComponentByAIRequest):
+    """
+    Regenerates the strategy component for the specified project using AI-based generation.
+
+    :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
+    """
+    regenerate_component_by_ai(request, StrategyGenerate)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+class UpdateStrategyRequest(BaseModel):
+    """
+    The request object for updating the strategies component by value provided by user.
+    """
+
+    project_id: str
+    new_val: Strategy
+
+
+@router.put(
+    "/strategy/update",
+    status_code=status.HTTP_200_OK,
+)
+def update_strategy(request: UpdateStrategyRequest):
+    """
+    Updates the strategy component for the specified project using value provided by user.
+
+    :param UpdateStrategyRequest request: The request object containing project ID and new value.
     """
     update_component(request, StrategyGenerate)
     return Response(status_code=status.HTTP_200_OK)

@@ -9,7 +9,7 @@ from reportlab.platypus import Image
 from utils import logger
 
 
-def fetch_image(url: str):
+def fetch_image(url: str) -> Image | None:
     """
     Fetches an image from the specified URL.
 

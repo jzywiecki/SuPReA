@@ -16,7 +16,7 @@ from .risks import RiskGenerate
 from .specifications import SpecificationsGenerate
 from .strategy import StrategyGenerate
 from .title import TitleGenerate
-from .generate import GenerateActor
+from .generate import GenerateActor, GenerateWithMonitor
 from utils import WrongFormatGeneratedByAI, logger
 from ai import AI
 
@@ -30,20 +30,20 @@ class ProjectAIGenerationActor:
     """
 
     def __init__(self):
-        self.logo_actor = GenerateActor.remote(LogoGenerate())
+        self.logo_actor = GenerateActor.remote(GenerateWithMonitor(LogoGenerate()))
         self.actors = [
-            GenerateActor.remote(ActorsGenerate()),
-            GenerateActor.remote(BusinessScenariosGenerate()),
-            GenerateActor.remote(DatabaseSchemaGenerate()),
-            GenerateActor.remote(ElevatorSpeechGenerate()),
+            GenerateActor.remote(GenerateWithMonitor(ActorsGenerate())),
+            GenerateActor.remote(GenerateWithMonitor(BusinessScenariosGenerate())),
+            GenerateActor.remote(GenerateWithMonitor(DatabaseSchemaGenerate())),
+            GenerateActor.remote(GenerateWithMonitor(ElevatorSpeechGenerate())),
             self.logo_actor,
-            GenerateActor.remote(MottoGenerate()),
-            GenerateActor.remote(ProjectScheduleGenerate()),
-            GenerateActor.remote(RequirementsGenerate()),
-            GenerateActor.remote(RiskGenerate()),
-            GenerateActor.remote(SpecificationsGenerate()),
-            GenerateActor.remote(StrategyGenerate()),
-            GenerateActor.remote(TitleGenerate()),
+            GenerateActor.remote(GenerateWithMonitor(MottoGenerate())),
+            GenerateActor.remote(GenerateWithMonitor(ProjectScheduleGenerate())),
+            GenerateActor.remote(GenerateWithMonitor(RequirementsGenerate())),
+            GenerateActor.remote(GenerateWithMonitor(RiskGenerate())),
+            GenerateActor.remote(GenerateWithMonitor(SpecificationsGenerate())),
+            GenerateActor.remote(GenerateWithMonitor(StrategyGenerate())),
+            GenerateActor.remote(GenerateWithMonitor(TitleGenerate())),
         ]
         self.generate_future = []
         self.db_future = []

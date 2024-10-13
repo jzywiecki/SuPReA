@@ -4,10 +4,14 @@ This module defines the API routes for interacting with project components, spec
 
 from fastapi import APIRouter, status, Response
 from services import get_component
-from models import ComponentIdentify
+from services import update_component_by_ai
+from services import regenerate_component_by_ai
+from services import update_component
+from models import ComponentIdentify, Title
 from .common import UpdateComponentByAIRequest
-from services.component import update_component
+from .common import RegenerateComponentByAIRequest
 from generation.title import TitleGenerate
+from pydantic import BaseModel
 
 
 router = APIRouter(
@@ -38,6 +42,43 @@ def update_title_by_ai(request: UpdateComponentByAIRequest):
     Updates the title component for the specified project using AI-based generation.
 
     :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
+    """
+    update_component_by_ai(request, TitleGenerate)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+@router.post(
+    "/title/ai-regenerate",
+    status_code=status.HTTP_200_OK,
+)
+def regenerate_title_by_ai(request: RegenerateComponentByAIRequest):
+    """
+    Regenerates the title component for the specified project using AI-based generation.
+
+    :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
+    """
+    regenerate_component_by_ai(request, TitleGenerate)
+    return Response(status_code=status.HTTP_200_OK)
+
+
+class UpdateTitleRequest(BaseModel):
+    """
+    The request object for updating the titles component by value provided by user.
+    """
+
+    project_id: str
+    new_val: Title
+
+
+@router.put(
+    "/title/update",
+    status_code=status.HTTP_200_OK,
+)
+def update_title(request: UpdateTitleRequest):
+    """
+    Updates the title component for the specified project using value provided by user.
+
+    :param UpdateTitleRequest request: The request object containing project ID and new value.
     """
     update_component(request, TitleGenerate)
     return Response(status_code=status.HTTP_200_OK)
