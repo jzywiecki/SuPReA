@@ -120,8 +120,8 @@ const ProjectView = ({ }) => {
                     <Chat 
                         isCollapsed={isCollapsedRight} 
                         projectId={ projectID } 
-                        userId="6671f67b1964c25bba263ec1" 
-                        userNick="6671f67b1964c25bba263ec1"
+                        userId={ user.id }
+                        userNick={ user.username }
                         authToken="1"
                     />
                 </ResizablePanel>
