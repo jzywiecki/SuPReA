@@ -59,7 +59,7 @@ export class UnregisterEditSessionCommunicate {
 }
 
 
-export class ConfirmationEditionSessionCommunicate {
+export class ConfirmationRegisterEditionSessionCommunicate {
     /**
      * Notification informing about the successful registration of an editing session.
      * Sent to the client that requested the editing session.
@@ -68,23 +68,19 @@ export class ConfirmationEditionSessionCommunicate {
 }
 
 
+export class ConfirmationUnregisterEditionSessionCommunicate {
+    /**
+     * Notification informing about the successful unregistration of an editing session.
+     * Sent to the client that requested the editing session.
+     */
+    code = 5;
+}
+
+
 export class RejectedEditionSessionRegisterRequestCommunicate {
     /**
      * Notification informing about the rejection registration of an editing session.
      * Sent to the client that requested the editing session.
-     */
-    code = 5;
-
-    constructor(details) {
-        this.details = details;
-    }
-}
-
-
-export class RejectedRequestCommunicates {
-    /**
-     * Notification informing about the rejection of any user request (e.g., an AI update).
-     * Sent to the client that made the request.
      */
     code = 6;
 
@@ -94,31 +90,53 @@ export class RejectedRequestCommunicates {
 }
 
 
-export class DiscussionChatNoOlderMessagesCommunicates {
+export class RejectedUpdateRequestCommunicate {
     /**
-     * Notification informing that there are no more new messages in the discussion chat.
-     * Sent to the client to indicate that all messages have been read.
+     * Notification informing about the rejection of an update request.
+     * Sent to the client that made the request.
      */
     code = 7;
+
+    constructor(details) {
+        this.details = details;
+    }
 }
 
 
-export class AIChatNoOlderMessagesCommunicates {
+export class ConfirmedUpdateRequestCommunicate {
     /**
-     * Notification informing that there are no more new messages in the AI chat.
-     * Sent to the client to indicate that all messages have been read.
+     * Notification informing about the confirmation of an update request.
+     * Sent to the client that made the request.
      */
     code = 8;
 }
 
 
-export class RefreshEditionSessionsCommunicates {
+export class DiscussionChatNoOlderMessagesCommunicate {
+    /**
+     * Notification informing that there are no more new messages in the discussion chat.
+     * Sent to the client to indicate that all messages have been read.
+     */
+    code = 9;
+}
+
+
+export class AIChatNoOlderMessagesCommunicate {
+    /**
+     * Notification informing that there are no more new messages in the AI chat.
+     * Sent to the client to indicate that all messages have been read.
+     */
+    code = 10;
+}
+
+
+export class RefreshEditionSessionsCommunicate {
     /**
      * Notification sent after a client reconnects, informing which components are currently being edited by users.
      * The map contains components as keys and the respective users as values.
      * Sent to the client to refresh their view of the current editing sessions.
      */
-    code = 9;
+    code = 11;
 
     constructor(componentsToUserMap) {
         this.componentsToUserMap = componentsToUserMap;

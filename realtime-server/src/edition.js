@@ -1,10 +1,262 @@
+/**
+ * This module handles events related to component edition within a project.
+ * It manages the starting, finishing, and updating of edition sessions for specific components.
+*/
+
+import { RefreshEditionSessionsCommunicate } from "./notifications.js";
+import { ConfirmationRegisterEditionSessionCommunicate } from "./notifications.js";
+import { ConfirmationUnregisterEditionSessionCommunicate } from "./notifications.js";
+import { RegisterEditSessionCommunicate } from "./notifications.js";
+import { UnregisterEditSessionCommunicate } from "./notifications.js";
+import { RejectedEditionSessionRegisterRequestCommunicate } from "./notifications.js";
+import { RejectedUpdateRequestCommunicate } from "./notifications.js";
+import { ConfirmedUpdateRequestCommunicate } from "./notifications.js";
+import { logger } from './utils.js';
+import { getUpdateComponentURL } from "./utils.js";
+
+
 export const registerEditionEvents = (socket, session, editionRegister) => {
+    /**
+     * Registers event listeners for various component edition-related actions.
+     * 
+     * This function listens to events from the socket and triggers the appropriate request handlers.
+     * 
+     * @param {Socket} socket - The socket object used to communicate with the client.
+     * @param {Session} session - The current user session, containing user and project information.
+     * @param {EditionRegister} editionRegister - An object responsible for tracking active editions.
+     * 
+     * Listens for the following events:
+     * - `edit-component`: Triggers `editComponentRequestHandler` to start editing a component.
+     * - `finish-edition`: Triggers `finishedEditionRequestHandler` to finish the current edition.
+     * - `update-component`: Triggers `updateComponentRequestHandler` to update a component with new data.
+    */
     
     socket.on('edit-component', (component) => {
+        editComponentRequestHandler(component, session, editionRegister);
+    });
+
+
+    socket.on('finish-edition', (any) => {
+        finishedEditionRequestHandler(session, editionRegister);
+    });
+
+
+    socket.on('update-component', (component, new_val) => {
+        updateComponentRequestHandler(component, session, editionRegister, new_val);
     });
 }
 
 
-export const transmitEditionsStatusOnConnection = async (socket, editionRegister) => {
+export const transmitEditionsStatusOnConnection = async (socket, session, editionRegister) => {
+    /**
+     * Sends the status of active edition sessions to the client upon connection.
+     * 
+     * Retrieves users with active edition sessions for the project and emits this data.
+     * If an error occurs, an error message is sent.
+     * 
+     * @param {Socket} socket - The socket object to communicate with the client.
+     * @param {Session} session - The current user session.
+     * @param {EditionRegister} editionRegister - Manages active edition sessions.
+     * 
+     * Emits:
+     * - `notify`: List of users with active edition sessions.
+     * - `error`: "INTERNAL SERVER ERROR" on failure.
+     */
 
+    try {
+        const activeSessions = editionRegister.getUsersWithActiveEditionSessionForProject(session.projectId);
+    
+        socket.emit(
+            'notify',
+            new RefreshEditionSessionsCommunicate(activeSessions)
+        );
+    }
+    catch (error) {
+        logger.error("Unexpected error", error);
+
+        socket.emit(
+            'error',
+            "INTERNAL SERVER ERROR"
+        );
+    }
+};
+
+
+const editComponentRequestHandler = (component, session, editionRegister) => {
+    /**
+     * Handles the request to start editing a component.
+     * 
+     * Registers an edition session for the user and component, broadcasts the event to other users, 
+     * and sends appropriate notifications to the client. Handles errors for non-existent or already edited components.
+     * 
+     * @param {string} component - The ID of the component to be edited.
+     * @param {Session} session - The current user session.
+     * @param {EditionRegister} editionRegister - Manages edition sessions.
+     * 
+     * Emits:
+     * - `notify`: Confirmation of starting the edition or error messages (if component does not exist or is already being edited).
+     * - Broadcasts: `RegisterEditSessionCommunicate` to notify other users of the edition.
+     */
+
+    try {
+        editionRegister.registerEditionSession(session, component);
+        
+        socket.emit(
+            'notify',
+            new ConfirmationRegisterEditionSessionCommunicate()
+        )
+
+        broadcastMessage = new RegisterEditSessionCommunicate(component, session.userId);
+        
+        io.to(socket.projectId).emit('notify', broadcastMessage);
+
+        logger.info(`User ${session.userId} started editing component: ${component}`);
+    }
+    catch (error) {
+        if (error instanceof ComponentIsNotExist) {
+            logger.info(`User ${session.userId} tried to edit a non-existent component: ${component}`);
+
+            socket.emit(
+                'notify',
+                new RejectedEditionSessionRegisterRequestCommunicate('Component does not exist.')
+            );
+        }
+        else if (error instanceof ComponentIsAlreadyEdited) {
+            logger.info(`User ${session.userId} tried to edit an already edited component: ${component}`);
+
+            socket.emit(
+                'notify',
+                new RejectedEditionSessionRegisterRequestCommunicate('Component is already being edited.')
+            );
+        }
+        else {
+            logger.error("Unexpected error", error);
+
+            socket.emit(
+                'error',
+                "INTERNAL SERVER ERROR"
+            );
+        }
+    }
+};
+
+
+const finishedEditionRequestHandler = (session, editionRegister) => {
+    /**
+     * Handles the request to finish an edition session.
+     * 
+     * Unregisters the edition session, broadcasts the event to other users, and sends appropriate notifications.
+     * Handles errors if no edition session is active for the user.
+     * 
+     * @param {Session} session - The current user session.
+     * @param {EditionRegister} editionRegister - Manages edition sessions.
+     * 
+     * Emits:
+     * - `notify`: Confirmation of finishing the edition or error messages (if no active session).
+     * - Broadcasts: `UnregisterEditSessionCommunicate` to notify other users of the session end.
+     */
+
+    try {
+        editionRegister.unregisterEditionSession(session);
+
+        socket.emit(
+            'notify',
+            new ConfirmationUnregisterEditionSessionCommunicate()
+        )
+
+        broadcastMessage = new UnregisterEditSessionCommunicate(component);
+        
+        io.to(socket.projectId).emit('notify', broadcastMessage);
+
+        logger.info(`User ${session.userId} finished editing component: ${component}`);
+    }
+    catch (error) {
+        if (error instanceof SessionIsNotBeingEdited) {
+            logger.info(`User ${session.userId} tried to finish an edition session that is not being edited.`);
+
+            socket.emit(
+                'notify',
+                new RejectedEditionSessionRegisterRequestCommunicate('Session is not being edited.')
+            )
+        }
+        else {
+            logger.error("Unexpected error", error);
+
+            socket.emit(
+                'error',
+                "INTERNAL SERVER ERROR"
+            );
+        }            
+    }
+}
+
+
+const updateComponentRequestHandler = async (component, session, editionRegister, new_val) => {
+    /**
+     * Handles the request to update a component, ensuring the session is active and properly manages responses.
+     * 
+     * @param {string} component - The identifier of the component being updated.
+     * @param {Object} session - The session object containing the user's details (e.g., userId, projectId).
+     * @param {Object} editionRegister - The object that manages edition sessions for components.
+     * @param {any} new_val - The new value that the component should be updated with.
+     * 
+     * The function follows these steps:
+     * - Checks if the current session is active for editing the specified component.
+     * - Sends a request to an external API to update the component with the new value.
+     * - Notifies the client about the success or failure of the operation.
+     * 
+     * @throws Will log errors and notify the client in case of failure. If an internal server error occurs, the socket is disconnected.
+     */
+    
+    try {
+        if (!editionRegister.isEditionSessionActive(session, component)) {
+            logger.info(`User ${session.userId} tried to update a component that is not being edited: ${component}`);
+            
+            socket.emit(
+                'notify',
+                new RejectedUpdateRequestCommunicate('Session is not being edited.')
+            );
+            return;
+        }
+
+        const requestData = {
+            project_id: session.projectId,
+            new_val: new_val
+        };
+
+        const apiUrl = getUpdateComponentURL(component);
+
+        const response = await axios.put(apiUrl, requestData);
+
+        logger.info(`User ${session.userId} updated component: ${component}`);
+        
+        socket.emit(
+            'notify',
+            new ConfirmedUpdateRequestCommunicate()
+        );
+    } 
+    catch (error) {
+        if (error.response) {
+            const statusCode = error.response.status;
+
+            if (statusCode === 500) {
+                logger.error('Error updating database schema:', error.response.data);
+                socket.emit(
+                    'error',
+                    "INTERNAL SERVER ERROR"
+                );
+            } else {
+                logger.error('Error updating a component:', error.response.data);
+                socket.emit('notify',
+                    new RejectedUpdateRequestCommunicate(error.response.data)
+                );
+            }
+        } else {
+            logger.error("An error occurred while updating a component.", error);
+            socket.emit(
+                'error',
+                "INTERNAL SERVER ERROR"
+            );
+        }
+    }
 };

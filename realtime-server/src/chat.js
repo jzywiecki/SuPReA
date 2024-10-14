@@ -5,8 +5,8 @@
 import { logger } from "./utils.js";
 import { isMessageValid } from "./utils.js";
 import { isNumericIdCorrect } from "./utils.js";
-import { DiscussionChatNoOlderMessagesCommunicates } from "./notifications.js";
-import { AIChatNoOlderMessagesCommunicates } from "./notifications.js";
+import { DiscussionChatNoOlderMessagesCommunicate } from "./notifications.js";
+import { AIChatNoOlderMessagesCommunicate } from "./notifications.js";
 
 
 export class ProjectChatsReference {
@@ -23,8 +23,8 @@ export class ProjectChatsReference {
 }
 
 
-const noOlderMessagesOnDiscussionChat = new DiscussionChatNoOlderMessagesCommunicates();
-const noOlderMessagesOnAIChat = new AIChatNoOlderMessagesCommunicates();
+const noOlderMessagesOnDiscussionChat = new DiscussionChatNoOlderMessagesCommunicate();
+const noOlderMessagesOnAIChat = new AIChatNoOlderMessagesCommunicate();
 
 
 export const registerChatEvents = (socket, session, projectChatsReference) => {

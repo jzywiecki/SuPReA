@@ -6,14 +6,6 @@ export class UserIsNotProjectMemberException extends Error {
 }
 
 
-export class InternalServerError extends Error {
-    constructor(message = 'Internal server error.') {
-        super(message);
-        this.name = 'InteralServerError';
-    }
-}
-
-
 export class ComponentIsNotExistException extends Error {
     constructor(message = 'Component does not exist.') {
         super(message);

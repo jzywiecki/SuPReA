@@ -1,6 +1,6 @@
 import { ObjectId, BSONError } from "mongodb";
 import { logger } from "./utils.js";
-import { UserIsNotProjectMemberException, InternalServerError } from "./exceptions.js";
+import { UserIsNotProjectMemberException } from "./exceptions.js";
 
 
 export const authenticationMiddleware = (io, db) => {
@@ -50,7 +50,7 @@ export const authenticationMiddleware = (io, db) => {
             } else {
                 logger.error("Adapter Execution Failure")
                 logger.error(`Details: ${error.message}`)
-                next(new InternalServerError("INTERNAL SERVER ERROR"));
+                next(new Error("INTERNAL SERVER ERROR"));
             }
         }
 

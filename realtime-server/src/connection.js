@@ -1,10 +1,20 @@
+/**
+ * This module defines the connection service that handles the communication between the server and clients in a real-time application.
+ * It establishes a WebSocket connection, manages user sessions, and provides real-time updates for messages and edition statuses.
+ */
+
 import { transmitMessagesOnConnection } from './chat.js';
+import { transmitEditionsStatusOnConnection } from './edition.js';
 import { registerChatEvents } from './chat.js';
+import { registerEditionEvents } from './edition.js';
 import { ObjectId } from 'mongodb';
 import { ProjectChatsReference } from './chat.js';
 
 
 export class Session {
+    /**
+     * Represents a user session within a project.
+    */
     id;
     socket;
     userId;
@@ -22,6 +32,14 @@ export class Session {
 
 
 export const connectionService = (io, db) => {
+    /**
+    * The main connection service responsible for handling user connections and real-time events in the project.
+    * Here we can added a specific logic for particular client-server session.
+    * After the connection/reconnection is established, this code is executed.
+    * 
+    * @param {Object} io - The Socket.IO server instance to handle WebSocket connections.
+    * @param {Object} db - The database object used to interact with the project's data.
+    */
 
     io.on('connection', async (socket) => {
         logger.info('User connected');
@@ -46,9 +64,17 @@ export const connectionService = (io, db) => {
 
             registerChatEvents(socket, session, projectChatsReference);
 
+            transmitEditionsStatusOnConnection(socket, session, editionRegister);
+
+            registerEditionEvents(socket, session, editionRegister);
+
+            // Join the room for the project (using in broadcast communicates for project)
             socket.join(socket.projectId);
 
             socket.onAny(async (eventName, ...args) => {
+                /**
+                 * This code will be executed for every event received by the socket.
+                 */
 
                 try {
                     const isMember = await db.isUserProjectMember(session.projectId, session.userId);
@@ -89,5 +115,4 @@ export const connectionService = (io, db) => {
     io.on('connect_error', (error) => {
         logger.error(`Connection error: ${error.message}`);
     });
-
 }
