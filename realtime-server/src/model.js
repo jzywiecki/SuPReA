@@ -17,11 +17,11 @@ export const Components = Object.freeze({
 });
 
 
-export const getComponentByName = (name) => {
-    const model = Object.values(Components).find(model => model.name === name);
+export const getComponentByName = (component) => {
+    const model = Object.values(Components).find(model => model.name === component);
 
     if (!model) {
-        throw new ComponentIsNotExist(`Model with name ${name} does not exist.`);
+        throw new ComponentIsNotExist(`Model with name ${component} does not exist.`);
     }
     return model;
 }
