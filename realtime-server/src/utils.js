@@ -1,5 +1,7 @@
 import {pino} from 'pino';
 
+const SERVER_URL = process.env.SERVER_URL;
+
 
 export const logger = pino({
     level: 'info',
@@ -16,4 +18,19 @@ export const isMessageValid = (message) => {
 
 export const isNumericIdCorrect = (id) => {
     return !id || typeof id !== 'number' || id < 0;
+}
+
+
+export const getUpdateComponentURL = (component) => {
+    return SERVER_URL + `/model/${component}/update`;
+}
+
+
+export const getGenerateComponentByAiURL = (component) => {
+    return SERVER_URL + `/model/${component}/ai-update`;
+}
+
+
+export const getRegenerateComponentByAiURL = (component) => {
+    return SERVER_URL + `/model/${component}/ai-regenerate`;
 }
