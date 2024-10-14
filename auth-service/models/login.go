@@ -10,10 +10,6 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-type LoginResponse struct {
-	Token string `json:"token"`
-}
-
 func (l *LoginRequest) Validate() error {
 	if l.Email == "" || l.Password == "" {
 		return errors.New("email and password must be provided")

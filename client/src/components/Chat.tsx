@@ -194,6 +194,7 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
     };
 
 
+
     const handleSetActiveTab = (value: string) => {
         if (value === "ai" || value === "discussion") {
             setActiveTab(value as ActiveTab);

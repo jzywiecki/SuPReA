@@ -63,7 +63,7 @@ const LoginForm: React.FC = () => {
                 avatarurl: response.data.avatarurl,
                 id: response.data.id,
             };
-            login(userData);
+            login(userData, response.data.access_token, response.data.refresh_token);
             alert('Logged in!');
         })
         .catch(error => {

@@ -3,3 +3,5 @@ rateLimitCount: 100
 services:
   server:
     url: http://localhost:8000
+  realtime-server:
+    url: http://localhost:3000
