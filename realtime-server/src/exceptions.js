@@ -15,8 +15,16 @@ export class InternalServerError extends Error {
 
 
 export class ComponentIsNotExist extends Error {
-    constructor(message = 'Model does not exist.') {
+    constructor(message = 'Component does not exist.') {
         super(message);
         this.name = 'ModelsIsNotExist';
+    }
+}
+
+
+export class ComponentIsAlreadyEdited extends Error {
+    constructor(message = 'Component is already being edited.') {
+        super(message);
+        this.name = 'ComponentIsAlreadyEdited';
     }
 }
