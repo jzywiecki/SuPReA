@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import axios from 'axios';
 
 interface User {
     id: string;
@@ -9,20 +10,77 @@ interface User {
 
 interface UserContextType {
     user: User | null;
-    login: (userData: User) => void;
+    login: (userData: User, accessToken: string, refreshToken: string) => void;
     logout: () => void;
+    accessToken: string | null;
+    refreshAccessToken: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [accessToken, setAccessToken] = useState<string | null>(null);
+    const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
-    const login = (userData: User) => setUser(userData);
-    const logout = () => setUser(null);
+    useEffect(() => {
+        // Retrieve user data and tokens from localStorage on initial load
+        const storedUser = localStorage.getItem('user');
+        const storedAccessToken = localStorage.getItem('accessToken');
+        const storedRefreshToken = localStorage.getItem('refreshToken');
+
+        if (storedUser && storedAccessToken && storedRefreshToken) {
+            setUser(JSON.parse(storedUser));
+            setAccessToken(storedAccessToken);
+            setRefreshToken(storedRefreshToken);
+        }
+    }, []);
+
+    const login = (userData: User, accessToken: string, refreshToken: string) => {
+        // Store user and tokens in localStorage
+        setUser(userData);
+        setAccessToken(accessToken);
+        setRefreshToken(refreshToken);
+
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+    };
+
+    const logout = () => {
+        // Clear user data and tokens from state and localStorage
+        setUser(null);
+        setAccessToken(null);
+        setRefreshToken(null);
+
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+    };
+
+    const refreshAccessToken = async () => {
+        try {
+            if (!refreshToken) {
+                throw new Error("No refresh token available.");
+            }
+
+            const response = await axios.post('http://localhost:5000/refresh', {
+                token: refreshToken,
+            });
+
+            const newAccessToken = response.data.accessToken;
+
+            // Update access token in state and localStorage
+            setAccessToken(newAccessToken);
+            localStorage.setItem('accessToken', newAccessToken);
+        } catch (error) {
+            console.error("Failed to refresh access token", error);
+            logout();
+        }
+    };
 
     return (
-        <UserContext.Provider value={{ user, login, logout }}>
+        <UserContext.Provider value={{ user, login, logout, accessToken, refreshAccessToken }}>
             {children}
         </UserContext.Provider>
     );
@@ -35,5 +93,3 @@ export const useUser = (): UserContextType => {
     }
     return context;
 };
-
-
