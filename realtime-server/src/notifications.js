@@ -57,3 +57,16 @@ export class UnregisterEditSessionCommunicate {
         this.componentName;
     }
 }
+
+
+export class ConfirmationEditionSessionCommunicate {
+    /**
+     * Notification informing about the successful registration of an editing session.
+     * Sent to the client that requested the editing session.
+     */
+    code = 4;
+
+    constructor(sessionToken) {
+        this.sessionToken = sessionToken;
+    }
+}
