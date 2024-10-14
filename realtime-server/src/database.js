@@ -91,7 +91,7 @@ class Database {
     }
 
 
-    async isUserIsProjectMember(projectId, userId) {
+    async isUserProjectMember(projectId, userId) {
         
         const project = await this.projectCollection.findOne({
             _id: projectId,
