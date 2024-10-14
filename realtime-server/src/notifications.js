@@ -65,10 +65,6 @@ export class ConfirmationEditionSessionCommunicate {
      * Sent to the client that requested the editing session.
      */
     code = 4;
-
-    constructor(sessionToken) {
-        this.sessionToken = sessionToken;
-    }
 }
 
 
