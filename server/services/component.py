@@ -8,8 +8,8 @@ from database import project_dao, get_project_dao_ref
 
 from ai import get_model_remote_ref_enum
 from generation.generate import Generate
-from generation.component import regenerate_component_task
-from generation.component import update_component_task
+from generation.component import regenerate_component_by_ai_task
+from generation.component import update_component_by_ai_task
 from utils import InvalidParameter
 from utils import ComponentNotFound, ProjectNotFound
 
@@ -40,7 +40,7 @@ def update_component_by_ai(request, generate_component_class: type(Generate)) ->
         raise ProjectNotFound(request.project_id)
 
     ai_model = get_model_remote_ref_enum(request.ai_model)
-    update_component_task.remote(
+    update_component_by_ai_task.remote(
         request.project_id,
         request.query,
         ai_model,
