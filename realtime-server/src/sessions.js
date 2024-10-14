@@ -3,6 +3,9 @@
  */
 
 import { isComponent } from "./model.js";
+import { InvalidArgument } from "./exceptions.js";
+import { ComponentIsAlreadyEdited } from "./exceptions.js";
+import { SessionIsNotBeingEdited } from "./exceptions.js";
 
 
 class ProjectEditionsRegister {
@@ -25,12 +28,12 @@ class ProjectEditionsRegister {
          * @param {Object} component - The component name which being edited.
          * @throws {Error} If the component does not exist or is already being edited.
         */
-        if (!session || !isComponent(component)) {
-            throw new Error("Invalid session or component.");
+        if (!isComponent(component)) {
+            throw new InvalidArgument("Invalid component name.");
         }
 
         if (this.mapComponentToSession.has(component)) {
-            throw new Error("Component is already being edited.");
+            throw new ComponentIsAlreadyEdited("Component is already being edited.");
         }
 
         this.mapComponentToSession.set(component, session);
@@ -52,7 +55,7 @@ class ProjectEditionsRegister {
                 return;
             }
         }
-        throw new Error("Session is not being edited.");
+        throw new SessionIsNotBeingEdited();
     }
 
 
@@ -71,7 +74,7 @@ class ProjectEditionsRegister {
         * @throws {Error} If the component does not exist in the project.
         */
         if (!isComponent(component)) {
-            throw new Error("Component does not exist.");
+            throw new InvalidArgument("Invalid component name.");
         }
 
         if (!this.mapComponentToSession.has(component)) {
@@ -146,7 +149,7 @@ export class EditionRegister {
         const projectRegister = this.register.get(session.projectId);
     
         if (!projectRegister) {
-            throw new Error("Project does not exist.");
+            throw new SessionIsNotBeingEdited();
         }
     
         projectRegister.removeSession(session);
