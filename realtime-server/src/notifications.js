@@ -54,7 +54,7 @@ export class UnregisterEditSessionCommunicate {
     code = 3;
 
     constructor(componentName) {
-        this.componentName;
+        this.componentName = componentName;
     }
 }
 
@@ -68,5 +68,63 @@ export class ConfirmationEditionSessionCommunicate {
 
     constructor(sessionToken) {
         this.sessionToken = sessionToken;
+    }
+}
+
+
+export class RejectedEditionSessionRegisterRequestCommunicate {
+    /**
+     * Notification informing about the rejection registration of an editing session.
+     * Sent to the client that requested the editing session.
+     */
+    code = 5;
+
+    constructor(details) {
+        this.details = details;
+    }
+}
+
+
+export class RejectedRequestCommunicates {
+    /**
+     * Notification informing about the rejection of any user request (e.g., an AI update).
+     * Sent to the client that made the request.
+     */
+    code = 6;
+
+    constructor(details) {
+        this.details = details;
+    }
+}
+
+
+export class DiscussionChatNoOlderMessagesCommunicates {
+    /**
+     * Notification informing that there are no more new messages in the discussion chat.
+     * Sent to the client to indicate that all messages have been read.
+     */
+    code = 7;
+}
+
+
+export class AIChatNoOlderMessagesCommunicates {
+    /**
+     * Notification informing that there are no more new messages in the AI chat.
+     * Sent to the client to indicate that all messages have been read.
+     */
+    code = 8;
+}
+
+
+export class RefreshEditionSessionsCommunicates {
+    /**
+     * Notification sent after a client reconnects, informing which components are currently being edited by users.
+     * The map contains components as keys and the respective users as values.
+     * Sent to the client to refresh their view of the current editing sessions.
+     */
+    code = 9;
+
+    constructor(componentsToUserMap) {
+        this.componentsToUserMap = componentsToUserMap;
     }
 }
