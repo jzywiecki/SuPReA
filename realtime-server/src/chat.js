@@ -1,6 +1,6 @@
-import { logger } from "./utils";
-import { isMessageValid } from "./utils";
-import { isNumericIdCorrect } from "./utils";
+import { logger } from "./utils.js";
+import { isMessageValid } from "./utils.js";
+import { isNumericIdCorrect } from "./utils.js";
 
 
 export class ProjectChatsReference {

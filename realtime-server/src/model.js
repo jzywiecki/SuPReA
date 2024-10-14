@@ -1,4 +1,4 @@
-import { ComponentIsNotExist } from "./exceptions";
+import { ComponentIsNotExist } from "./exceptions.js";
 
 
 export const Components = Object.freeze({

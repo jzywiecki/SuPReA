@@ -1,4 +1,4 @@
-import { isComponent } from "./model";
+import { isComponent } from "./model.js";
 
 
 class ProjectEditionsRegister {
@@ -48,6 +48,22 @@ class ProjectEditionsRegister {
         }
 
         return this.mapComponentToSession.get(component).equals(session);
+    }
+
+
+    getActiveSessios() {
+        const result = [];
+
+        for (let [component, session] of this.mapComponentToSession.entries()) {
+            if (component && session) {
+                result.push({
+                    component: component.name,
+                    userId: session.userId
+                });
+            }
+        }
+
+        return result;
     }
 }
 
