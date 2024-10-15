@@ -1,9 +1,10 @@
 import { io } from 'socket.io-client';
 
-const URL = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000';
+const URL = 'http://localhost:3333';
 
 const socketChats = io(URL, {
-    autoConnect: false
+    autoConnect: false,
+    path: "/realtime-server/socket.io/"
 });
 
 export { socketChats };

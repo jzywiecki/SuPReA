@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useUser } from '@/components/UserProvider';
 import axios from 'axios';
+import axiosInstance from '@/services/api'
+import { API_URLS } from '@/services/apiUrls'
 
 
 const NewProjectInput = () => {
@@ -129,7 +131,7 @@ const NewProjectInput = () => {
         }
 
 
-        axios.post('http://localhost:8000/projects/create', request, {
+        axiosInstance.post(`${API_URLS.API_SERVER_URL}/projects/create`, request, {
             headers: {
                 'Content-Type': 'application/json'
             }

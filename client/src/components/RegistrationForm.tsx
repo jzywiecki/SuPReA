@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from 'axios';
+import axiosInstance from '@/services/api';
+import { API_URLS } from '@/services/apiUrls';
 
 const RegisterForm: React.FC = () => {
     const [emailFieldError, setEmailFieldError] = useState<string>("");
@@ -81,7 +83,7 @@ const RegisterForm: React.FC = () => {
             password: passwordFieldRef.current?.value,
         };
 
-        axios.post('http://localhost:3333/register', request, {
+        axiosInstance.post(`${API_URLS.BASE_URL}/register`, request, {
             headers: {
                 'Content-Type': 'application/json',
             },

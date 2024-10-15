@@ -6,6 +6,8 @@ import './styles.css'
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import RegenerateContext from "@/components/contexts/RegenerateContext";
+import axiosInstance from "@/services/api";
+import { API_URLS } from "@/services/apiUrls";
 
 interface Actor {
     name: string;
@@ -35,7 +37,7 @@ const ActorList: React.FC = () => {
     }
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/model/actors/${projectID}`);
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/model/actors/${projectID}`);
 
             const actorsWithIcons = response.data.actors.map((actor: Actor) => ({
                 ...actor,

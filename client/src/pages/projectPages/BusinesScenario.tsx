@@ -2,9 +2,10 @@ import { useEffect, useState, useRef, useContext } from "react";
 import { motion } from "framer-motion";
 import Xarrow, { Xwrapper, useXarrow } from "react-xarrows";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import RegenerateContext from "@/components/contexts/RegenerateContext";
+import axiosInstance from "@/services/api";
+import { API_URLS } from "@/services/apiUrls";
 
 interface Feature {
     feature_name: string;
@@ -25,7 +26,7 @@ const BusinessScenario: React.FC = () => {
     }
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/model/business_scenarios/${projectID}`);
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/model/business_scenarios/${projectID}`);
             setTitle(response.data.business_scenario.title);
             setDescription(response.data.business_scenario.description);
             setFeatures(response.data.business_scenario.features);

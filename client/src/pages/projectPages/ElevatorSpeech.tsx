@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import RegenerateContext from '@/components/contexts/RegenerateContext';
+import axiosInstance from '@/services/api';
+import { API_URLS } from '@/services/apiUrls';
 
 const ElevatorSpeech: React.FC = () => {
     const { projectID } = useParams();
@@ -23,7 +24,7 @@ const ElevatorSpeech: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/model/elevator_speech/${projectID}`);
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/model/elevator_speech/${projectID}`);
             setContent(response.data.content);
 
         } catch (error) {

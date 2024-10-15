@@ -5,6 +5,8 @@ import { FaPencilAlt, FaSave, FaUser, FaGlobe, FaBuilding, FaMapMarkerAlt } from
 import ReactMarkdown from 'react-markdown';
 import Modal from 'react-modal';
 import rehypeRaw from 'rehype-raw';
+import { API_URLS } from '@/services/apiUrls';
+import axiosInstance from '@/services/api';
 
 interface User {
   id: string;
@@ -31,7 +33,7 @@ function Profile() {
   const [isEditMode, setIsEditMode] = useState(false); 
 
   useEffect(() => {
-    axios.get<User>(`http://localhost:3333/users/${id}`)
+    axiosInstance.get<User>(`${API_URLS.BASE_URL}/users/${id}`)
       .then(response => {
         setUser(response.data);
         console.log(response.data);
@@ -52,7 +54,7 @@ function Profile() {
   };
 
   const handleResetAvatar = () => {
-    axios.post(`http://localhost:3333/users/${id}/reset-avatar`)
+    axiosInstance.post(`${API_URLS.BASE_URL}/users/${id}/reset-avatar`)
       .then(response => {
         alert("Avatar reset successfully!");
         setPreviewAvatar(response.data);          
@@ -83,7 +85,7 @@ function Profile() {
     const formData = new FormData();
     formData.append(field, (user as any)[field]);
 
-    axios.patch(`http://localhost:3333/users/${id}`, formData, {
+    axiosInstance.patch(`${API_URLS.BASE_URL}/users/${id}`, formData, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -103,7 +105,7 @@ function Profile() {
     const formData = new FormData();
     formData.append('avatar', avatar);
 
-    axios.put(`http://localhost:3333/api/users/${id}/avatar`, formData, {
+    axiosInstance.put(`${API_URLS.BASE_URL}/api/users/${id}/avatar`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

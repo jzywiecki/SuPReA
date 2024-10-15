@@ -10,6 +10,8 @@ import './styles.css';
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import RegenerateContext from '@/components/contexts/RegenerateContext';
+import axiosInstance from "@/services/api";
+import { API_URLS } from "@/services/apiUrls";
 
 interface DraggableCardProps {
     name: string;
@@ -95,7 +97,7 @@ const NameList: React.FC = () => {
     }
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/model/title/${projectID}`);
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/model/title/${projectID}`);
             setNames(response.data.names);
 
             setPriorities(new Array(response.data.names.length).fill(1));

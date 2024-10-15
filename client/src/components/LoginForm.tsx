@@ -3,6 +3,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from 'axios';
 import { useUser } from './UserProvider';
+import axiosInstance from '@/services/api';
+import { API_URLS } from '@/services/apiUrls';
 
 const LoginForm: React.FC = () => {
     const { login } = useUser();
@@ -50,7 +52,7 @@ const LoginForm: React.FC = () => {
             password: passwordFieldRef.current?.value,
         };
 
-        axios.post('http://localhost:3333/login', request, {
+        axiosInstance.post(`${API_URLS.BASE_URL}/login`, request, {
             headers: {
                 'Content-Type': 'application/json',
             },

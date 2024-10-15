@@ -15,6 +15,8 @@ import Search from '@/components/Search';
 import axios from 'axios';
 import { User } from '@/pages/SearchAndAddFriends';
 import { useUser } from '@/components/UserProvider';
+import { API_URLS } from '@/services/apiUrls';
+import axiosInstance from '@/services/api';
 
 const ProjectView = ({ }) => {
     const { user } = useUser();
@@ -43,7 +45,7 @@ const ProjectView = ({ }) => {
 
     const handleSearch = async (searchQuery: string) => {
         try {
-            const response = await axios.get<User[]>(`http://localhost:3333/users/filter?user_id=${user?.id}&filter=${searchQuery}`);
+            const response = await axiosInstance.get<User[]>(`${API_URLS.BASE_URL}/users/filter?user_id=${user?.id}&filter=${searchQuery}`);
             setSearchResults(response.data);
         } catch (error) {
             console.error('Error searching users:', error);
@@ -52,9 +54,9 @@ const ProjectView = ({ }) => {
 
     const handleAddMember = async (friendId: string) => {
         try {
-            const url = `http://localhost:8000/projects/${projectID}/members/add`;
+            const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/members/add`;
 
-            await axios.post(url);
+            await axiosInstance.post(url);
             closeInviteModal();
         } catch (error) {
             console.error('Error adding member:', error);
