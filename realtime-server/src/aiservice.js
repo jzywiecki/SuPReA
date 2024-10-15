@@ -1,27 +1,44 @@
+import { sendMessageByAI } from "./chat.js";
+import { ComponentCreatedCommunicate } from "./notifications.js";
+import { ComponentGeneratedCommunicate } from "./notifications.js";
+
+
 export class AIService {
-    constructor(editionService) {
+    
+    constructor(editionService, io, db) {
         this.editionService = editionService;
+        this.io = io;
+        this.db = db;
     }
 
 
-    notifyMessageCompleted(message) {
-
+    sendMessageOnChat(message) {
+        sendMessageByAI(this.io, this.db, message.projectId, message.content);
     }
 
     
-    notifyGenerationCompleted(result) {
+    notifyComponentCreated(message) {
+        this.io.to(message.projectId).emit(
+            'notify', 
+            new ComponentCreatedCommunicate(message.componentName)
+        );
     }
 
 
-    notfiyRegenerationCompleted(result) {
+    sendGeneratedComponent(result) {
+        socket = this.getSession(result.sessionId);
+        if (!socket) {
+            return;
+        }
 
+        socket.emit (
+            'notify',
+            new ComponentGeneratedCommunicate(result.componentName, result.component)
+        )
     }
 
 
-    notifyUpdateCompleted(result) {
-    }
-
-
-    notifyComponentGeneration(result, eventName) {
+    getUserSocket(userId) {
+        this.editionService
     }
 }
