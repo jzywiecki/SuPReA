@@ -53,7 +53,5 @@ export const authenticationMiddleware = (io, db) => {
                 next(new Error("INTERNAL SERVER ERROR"));
             }
         }
-
     });
-
 }

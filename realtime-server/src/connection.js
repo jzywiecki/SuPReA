@@ -31,7 +31,7 @@ export class Session {
 }
 
 
-export const connectionService = (io, db) => {
+export const connectionService = (io, db, editionRegister) => {
     /**
     * The main connection service responsible for handling user connections and real-time events in the project.
     * Here we can added a specific logic for particular client-server session.
@@ -97,12 +97,15 @@ export const connectionService = (io, db) => {
             });
         
             socket.on('disconnect', () => {
+                attemptSafeSessionRemoval(socket, editionRegister);
+
                 logger.info(`User disconnected`);
                 logger.info(`socket id: ${socket.id}`);
             });
 
-
         } catch (error) {
+            attemptSafeSessionRemoval(socket, editionRegister);
+
             logger.error(`Cannot get chats from project ${socket.projectId}.`);
             logger.error(`Details: ${error.message}`);
 
@@ -115,4 +118,11 @@ export const connectionService = (io, db) => {
     io.on('connect_error', (error) => {
         logger.error(`Connection error: ${error.message}`);
     });
+}
+
+
+const attemptSafeSessionRemoval = (socket, editionRegister) => {
+    try {
+        editionRegister.removeSession(socket.id);
+    } catch (error) {}
 }

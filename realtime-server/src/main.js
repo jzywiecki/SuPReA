@@ -29,7 +29,7 @@ const editionRegister = new EditionRegister();
 
 authenticationMiddleware(io, db);
 
-connectionService(io, db);
+connectionService(io, db, editionRegister);
 
 registerRouters(app);
 
