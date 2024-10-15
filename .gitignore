@@ -18,5 +18,17 @@ env/
 # MacOS files
 .DS_Store
 
+# Auth service binaries
 auth-service/auth-service
+
+# Realtime server environment file
 .realtime-server/.env
+
+# Node.js dependencies
+node_modules/
+
+# Environment file for Node.js
+.env
+
+# Realtime server logs
+/realtime-server/logs
