@@ -2,11 +2,10 @@
  * This module contains a data structure to manage a edition sessions.
  */
 
-import { isComponent } from "./model.js";
+import { isComponentIdCorrect } from "./model.js";
 import { InvalidArgument } from "./exceptions.js";
 import { ComponentIsAlreadyEdited } from "./exceptions.js";
-import { SessionIsNotRegisteredException } from "./exceptions.js";
-import { UserAlreadyHasActiveEditSession } from "./exceptions.js";
+import { UserAlreadyHasActiveEditSessionException } from "./exceptions.js";
 
 
 class ProjectEditionsRegister {
@@ -23,7 +22,7 @@ class ProjectEditionsRegister {
     }
 
 
-    addSession(session, component) {
+    addSession(session, componentId) {
         /**
          * Adds a new editing session for a specific component.
          * 
@@ -31,19 +30,19 @@ class ProjectEditionsRegister {
          * @param {Object} component - The component name which being edited.
          * @throws {Error} If the component does not exist or is already being edited.
         */
-        if (!isComponent(component)) {
-            throw new InvalidArgument("Invalid component name.");
+        if (!isComponentIdCorrect(componentId)) {
+            throw new InvalidArgument("Invalid component id.");
         }
 
-        if (this.isComponentAlreadyEdited(component)) {
+        if (this.isComponentAlreadyEdited(componentId)) {
             throw new ComponentIsAlreadyEdited();
         }
 
         if (this.isActiveSessionForUser(session.userId)) {
-            throw new UserAlreadyHasActiveEditSession();
+            throw new UserAlreadyHasActiveEditSessionException();
         }
 
-        this.mapComponentToSession.set(component, session);
+        this.mapComponentToSession.set(componentId, session);
         this.mapIdToSession.set(session.id, session);
         this.activeUsersEditorsSet.add(session.userId);
 
@@ -56,16 +55,17 @@ class ProjectEditionsRegister {
         * Searches for the session and removes it from the register.
         * 
         * @param {Object} session - The session object to be removed.
-        * @throws {Error} If the session is not currently being edited (not found).
+        * @returns {boolean} True if the session was successfully removed, false otherwise.
         */
         if (!this.isSessionRegistered(session.id)) {
-            throw new SessionIsNotRegisteredException();
+            return false;
         }
 
         this.activeUsersEditorsSet.delete(session.userId);
         this.mapIdToSession.delete(session.id);
-
         this.activeSessionsQuantity--;
+
+        return true;
     }
 
 
@@ -83,7 +83,7 @@ class ProjectEditionsRegister {
         * @returns {boolean} True if the provided session is the active session for the component, false otherwise.
         * @throws {Error} If the component does not exist in the project.
         */
-        if (!isComponent(component)) {
+        if (!isComponentIdCorrect(component)) {
             throw new InvalidArgument("Invalid component name.");
         }
 
@@ -106,8 +106,10 @@ class ProjectEditionsRegister {
     
         for (let [component, session] of this.mapComponentToSession.entries()) {
             if (component && session) {
+                if (!this.mapIdToSession.has(session.id)) continue;
+
                 result.push({
-                    component: component,
+                    componentId: component,
                     userId: session.userId
                 });
             }
@@ -155,13 +157,13 @@ export class EditionRegister {
         this.register = new Map(); //map projectId -> ProjectEditionsRegister
     }
 
-    registerEditionSession(session, component) {
+    registerEditionSession(session, componentId) {
         /**
          * Registers a new edition session for a specific component within a project.
          * If a `ProjectEditionsRegister` does not exist for the given project, it is created.
          * 
          * @param {Object} session - The session object representing the current edition session.
-         * @param {Object} component - The component name being edited in the session.
+         * @param {Number} componentId - The component id being edited in the session.
          * @throws {Error} If the component does not exist or is already being edited.
         */
         
@@ -169,7 +171,7 @@ export class EditionRegister {
             this.register.set(session.projectId, new ProjectEditionsRegister());
         }        
 
-        this.register.get(session.projectId).addSession(session, component);
+        this.register.get(session.projectId).addSession(session, componentId);
     }
 
 
@@ -179,20 +181,22 @@ export class EditionRegister {
          * If the project no longer has any active sessions after removal, it is deleted from the global register.
          * 
          * @param {Object} session - The session object representing the edition session to be unregistered.
-         * @throws {Error} If the project does not exist in the global register.
-         * @throws {Error} If the session is not found or is not active in the project's edition register.
+         * @returns {boolean} True if the session was successfully unregistered, false otherwise.
+         * 
         */
         const projectRegister = this.register.get(session.projectId);
     
         if (!projectRegister) {
-            throw new SessionIsNotRegisteredException();
+            return false;
         }
     
-        projectRegister.removeSession(session);
+        const result = projectRegister.removeSession(session);
 
         if (projectRegister.getActiveSessionsQuantity() === 0) {
             this.register.delete(session.projectId);
         }
+
+        return result;
     }
 
 
@@ -220,7 +224,7 @@ export class EditionRegister {
          * @param {Object} session - The session object representing the edition session to check.
          * @param {Object} component - The component for which the session is being checked.
          * @returns {boolean} True if the session is active for the given component, false otherwise.
-         * @throws {Error} If the project does not exist in the global register.
+         * @throws {Error} If the component does not exist in the project.
          */
         const projectRegister = this.register.get(session.projectId);
 
@@ -228,6 +232,6 @@ export class EditionRegister {
             return false;
         }
 
-        return projectRegister.isActiveSessionForComponent(session, component);
+        return projectRegister.isActiveParticularSessionForComponent(session, component);
     }
 }
