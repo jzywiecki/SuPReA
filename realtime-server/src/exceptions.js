@@ -30,10 +30,10 @@ export class InvalidArgumentException extends Error {
 }
 
 
-export class SessionIsNotBeingEditedException extends Error {
+export class SessionIsNotRegisteredException extends Error {
     constructor(message = 'Session is not being edited.') {
         super(message);
-        this.name = 'SessionIsNotBeingEditedException';
+        this.name = 'SessionIsNotRegisteredException';
     }
 }
 

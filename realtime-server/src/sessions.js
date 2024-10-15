@@ -5,7 +5,8 @@
 import { isComponent } from "./model.js";
 import { InvalidArgument } from "./exceptions.js";
 import { ComponentIsAlreadyEdited } from "./exceptions.js";
-import { SessionIsNotBeingEdited } from "./exceptions.js";
+import { SessionIsNotRegisteredException } from "./exceptions.js";
+import { UserAlreadyHasActiveEditSession } from "./exceptions.js";
 
 
 class ProjectEditionsRegister {
@@ -16,6 +17,8 @@ class ProjectEditionsRegister {
 
     constructor() {
         this.mapComponentToSession = new Map();
+        this.mapIdToSession = new Map();
+        this.activeUsersEditorsSet = new Set();
         this.activeSessionsQuantity = 0;
     }
 
@@ -32,11 +35,18 @@ class ProjectEditionsRegister {
             throw new InvalidArgument("Invalid component name.");
         }
 
-        if (this.mapComponentToSession.has(component)) {
-            throw new ComponentIsAlreadyEdited("Component is already being edited.");
+        if (this.isComponentAlreadyEdited(component)) {
+            throw new ComponentIsAlreadyEdited();
+        }
+
+        if (this.isActiveSessionForUser(session.userId)) {
+            throw new UserAlreadyHasActiveEditSession();
         }
 
         this.mapComponentToSession.set(component, session);
+        this.mapIdToSession.set(session.id, session);
+        this.activeUsersEditorsSet.add(session.userId);
+
         this.activeSessionsQuantity++;
     }
 
@@ -48,14 +58,14 @@ class ProjectEditionsRegister {
         * @param {Object} session - The session object to be removed.
         * @throws {Error} If the session is not currently being edited (not found).
         */
-        for (let [component, currentSession] of this.mapComponentToSession) {
-            if (currentSession.equals(session)) {
-                this.mapComponentToSession.delete(component);
-                this.activeSessionsQuantity--;
-                return;
-            }
+        if (!this.isSessionRegistered(session.id)) {
+            throw new SessionIsNotRegisteredException();
         }
-        throw new SessionIsNotBeingEdited();
+
+        this.activeUsersEditorsSet.delete(session.userId);
+        this.mapIdToSession.delete(session.id);
+
+        this.activeSessionsQuantity--;
     }
 
 
@@ -64,7 +74,7 @@ class ProjectEditionsRegister {
     }
 
 
-    isActiveSessionForComponent(session, component) {
+    isActiveParticularSessionForComponent(session, component) {
         /**
         * Checks if the provided session is the active editing session for the specified component.
         * 
@@ -104,6 +114,32 @@ class ProjectEditionsRegister {
         }
     
         return result;
+    }
+
+
+    getSession(id) {
+        /**
+        * Retrieves the session object for the provided session ID.
+        * 
+        * @param {string} id - The ID of the user for which the session is being retrieved.
+        * @returns {Object} The session object for the provided user ID.
+        */
+        return this.mapIdToSession.get(id);
+    }
+
+
+    isComponentAlreadyEdited(component) {
+        return this.mapComponentToSession.has(component) && this.activeUsersEditorsSet.has(this.mapComponentToSession.get(component).userId)
+    }
+
+
+    isActiveSessionForUser(userId) {
+        return this.activeUsersEditorsSet.has(userId)
+    }
+
+
+    isSessionRegistered(sessionId) {
+        return this.mapIdToSession.has(sessionId)
     }
 }
 
@@ -149,7 +185,7 @@ export class EditionRegister {
         const projectRegister = this.register.get(session.projectId);
     
         if (!projectRegister) {
-            throw new SessionIsNotBeingEdited();
+            throw new SessionIsNotRegisteredException();
         }
     
         projectRegister.removeSession(session);
