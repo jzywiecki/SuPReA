@@ -27,21 +27,97 @@ const noOlderMessagesOnDiscussionChat = new DiscussionChatNoOlderMessagesCommuni
 const noOlderMessagesOnAIChat = new AIChatNoOlderMessagesCommunicate();
 
 
-export const registerChatEvents = (socket, session, projectChatsReference) => {
+export const registerChatEvents = (socket, io, db, session, projectChatsReference) => {
     /**
      * Registers chat events for the given socket.
      * @param {Socket} socket - The socket object handling communication between the server and client.
+     * @param {Server} io - The Socket.IO server instance to handle WebSocket connections.
+     * @param {Database} db - The database object used to interact with the project's data.
      * @param {Session} session - The user session object containing details like projectId and userId.
      * @param {ProjectChatsReference} projectChatsReference - References to the project's chats, containing properties like discussionChatId and aiChatId.
     */
+
+
+    const handleGetOlderMessages = async (chatId, oldestReceivedMessageId, reciveOlderMessageEvent, noOlderCommuniate) => {
+        /**
+         * Handles fetching older messages from a chat and sending them via socket.
+         * 
+         * @param {ObjectId} chatId - The ID of the chat from which to fetch older messages.
+         * @param {number} oldestReceivedMessageId - The ID of the last received message to fetch older ones.
+         * @param {string} reciveOlderMessageEvent - The event name used to send older messages to the client.
+         * @param {Object} noOlderCommuniate - The message to notify the client when no older messages are available.
+         * 
+        */
+        try {
+            if (!isNumericIdCorrect(oldestReceivedMessageId)) {
+                logger.info("User requested older messages with wrong last message id.")
+                socket.emit('error', 'Invalid id parameter');
+                return;
+            }
     
+            const olderMessagesQuantity = 10;
+    
+            const messages = await db.getOlderMessages(chatId, oldestReceivedMessageId, olderMessagesQuantity);
+            socket.emit(reciveOlderMessageEvent, messages);
+            
+            if (messages.length < olderMessagesQuantity) {
+                socket.emit('notify', noOlderCommuniate);
+            }
+    
+        } catch (error) {
+            logger.error(`Cannot get older messages from chat ${chatId}.`)
+            logger.error(`Details: ${error.message}`);
+            
+            socket.emit('error', 'INTERNAL SERVER ERROR');
+            socket.disconnect();
+        }
+    }
+    
+    
+    const handleSendMessageByUser = async (chatId, text, broadcastMessageEvent) => {    
+        /**
+         * Handles sending a new message in a chat and broadcasting it to all users in the project.
+         * 
+         * @param {ObjectId} userId - The ID of the user sending the message.
+         * @param {ObjectId} chatId - The ID of the chat where the message will be sent.
+         * @param {string} text - The content of the message being sent.
+         * @param {string} broadcastMessageEvent - The event name used to broadcast the new message.
+         * 
+         * 
+         * @returns {boolean} - Returns true if the message was sent successfully, false if there was an error.
+         */
+        try {
+            if (!isMessageValid(text)) {
+                logger.info("User tried to send invalid message.");
+                socket.emit('error', 'Invalid message format.');
+                return;
+            }
+    
+            const message = await db.addMessage(session.projectId, chatId, text, session.userId);
+    
+            io.to(session.projectId).emit(broadcastMessageEvent, message);
+    
+            return true;
+    
+        } catch (error) {
+            logger.error(`Cannot add message to chat ${chatId}.`);
+            logger.error(`Details: ${error.message}`);
+    
+            socket.emit('error', 'INTERNAL SERVER ERROR');
+            socket.disconnect();
+    
+            return false;
+        }
+    }
+    
+
     socket.on('send-message-to-discussion-chat', (message) => {
-        handleSendMessage(socket, session.projectId, session.userId, projectChatsReference.discussionChatId, message, 'receive-message-from-discussion-chat');
+        handleSendMessageByUser(socket, session.projectId, session.userId, projectChatsReference.discussionChatId, message, 'receive-message-from-discussion-chat');
     });
 
 
     socket.on('send-message-to-ai-chat', (message) => {
-        handleSendMessage(socket, session.projectId, session.userId, projectChatsReference.aiChatId, message, 'receive-message-from-ai-chat');
+        handleSendMessageByUser(socket, session.projectId, session.userId, projectChatsReference.aiChatId, message, 'receive-message-from-ai-chat');
     }); 
 
 
@@ -118,81 +194,25 @@ export const transmitMessagesOnConnection = async (socket, projectChatsReference
 };
 
 
-const handleGetOlderMessages = async (socket, chatId, oldestReceivedMessageId, reciveOlderMessageEvent, noOlderCommuniate) => {
+export const sendMessageByAI = async (io, db, projectId, chatId, aiId, text, broadcastMessageEvent) => {
     /**
-     * Handles fetching older messages from a chat and sending them via socket.
+     * Sends a message generated by the AI to ai chat.
      * 
-     * @param {Socket} socket - The socket object to communicate with the client.
-     * @param {ObjectId} chatId - The ID of the chat from which to fetch older messages.
-     * @param {number} oldestReceivedMessageId - The ID of the last received message to fetch older ones.
-     * @param {string} reciveOlderMessageEvent - The event name used to send older messages to the client.
-     * @param {Object} noOlderCommuniate - The message to notify the client when no older messages are available.
-     * 
-     * Fetches up to 10 older messages from the database. If there are fewer than 10 messages, 
-     * it notifies the client that no more older messages are available. Logs errors and handles invalid IDs.
-    */
-    try {
-        if (!isNumericIdCorrect(oldestReceivedMessageId)) {
-            logger.info("User requested older messages with wrong last message id.")
-            socket.emit('error', 'Invalid id parameter');
-            return;
-        }
-
-        const olderMessagesQuantity = 10;
-
-        const messages = await db.getOlderMessages(chatId, oldestReceivedMessageId, olderMessagesQuantity);
-        socket.emit(reciveOlderMessageEvent, messages);
-        
-        if (messages.length < olderMessagesQuantity) {
-            socket.emit('notify', noOlderCommuniate);
-        }
-
-    } catch (error) {
-        logger.error(`Cannot get older messages from chat ${chatId}.`)
-        logger.error(`Details: ${error.message}`);
-        
-        socket.emit('error', 'INTERNAL SERVER ERROR');
-        socket.disconnect();
-    }
-}
-
-
-const handleSendMessage = async (socket, projectId, userId, chatId, text, broadcastMessageEvent) => {    
-    /**
-     * Handles sending a new message in a chat and broadcasting it to all users in the project.
-     * 
-     * @param {Socket} socket - The socket object to communicate with the client.
-     * @param {ObjectId} projectId - The ID of the project to which the chat belongs.
-     * @param {ObjectId} userId - The ID of the user sending the message.
+     * @param {Object} io - The Socket.IO server instance to emit events to connected clients.
+     * @param {Object} db - The database instance for interacting with message storage.
+     * @param {ObjectId} projectId - The ID of the project to which the message belongs.
      * @param {ObjectId} chatId - The ID of the chat where the message will be sent.
-     * @param {string} text - The content of the message being sent.
-     * @param {string} broadcastMessageEvent - The event name used to broadcast the new message.
+     * @param {ObjectId} aiId - The ID of the AI sending the message.
+     * @param {string} text - The content of the message to be sent.
+     * @param {string} broadcastMessageEvent - The event name to broadcast the message to all users.
      * 
-     * Validates the message format, adds it to the database, and broadcasts it to all users in the project. 
-     * Logs errors and handles invalid message formats.
-     * 
-     * @returns {boolean} - Returns true if the message was sent successfully, false if there was an error.
-     */
-    try {
-        if (!isMessageValid(text)) {
-            logger.info("User tried to send invalid message.");
-            socket.emit('error', 'Invalid message format.');
-            return;
-        }
+    */
 
-        const message = await db.addMessage(projectId, chatId, text, userId);
+    try {
+        const message = await db.addMessage(projectId, chatId, text, aiId);
 
         io.to(socket.projectId).emit(broadcastMessageEvent, message);
-
-        return true;
-
     } catch (error) {
-        logger.error(`Cannot add message to chat ${chatId}.`);
-        logger.error(`Details: ${error.message}`);
-
-        socket.emit('error', 'INTERNAL SERVER ERROR');
-        socket.disconnect();
-
-        return false;
+        logger.error(`Unexpected Error ${chatId}.`);
     }
 }

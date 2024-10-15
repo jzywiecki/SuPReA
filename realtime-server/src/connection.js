@@ -62,7 +62,7 @@ export const connectionService = (io, db) => {
             
             transmitMessagesOnConnection(socket, projectChatsReference);
 
-            registerChatEvents(socket, session, projectChatsReference);
+            registerChatEvents(socket, io, db, session, projectChatsReference);
 
             transmitEditionsStatusOnConnection(socket, session, editionRegister);
 
