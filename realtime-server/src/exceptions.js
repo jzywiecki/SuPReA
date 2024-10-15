@@ -36,3 +36,11 @@ export class SessionIsNotBeingEditedException extends Error {
         this.name = 'SessionIsNotBeingEditedException';
     }
 }
+
+
+export class UserAlreadyHasActiveEditSessionException extends Error {
+    constructor(message = 'User already has an active editing session.') {
+        super(message);
+        this.name = 'UserAlreadyHasActiveEditSessionException';
+    }
+}
