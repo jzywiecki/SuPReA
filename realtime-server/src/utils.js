@@ -1,7 +1,13 @@
+import fs from 'fs';
 import {pino} from 'pino';
 
 const SERVER_URL = process.env.SERVER_URL;
 
+const logDir = './logs';
+
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+}
 
 export const logger = pino({
     level: 'info',

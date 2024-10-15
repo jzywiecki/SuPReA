@@ -3,6 +3,8 @@
  * It handles various events like component creation, regeneration, update completion, and chat messages.
  * Used by server which is responsible for generation components.
  * 
+ * API architecture: WEB HOOK.
+ * 
  * @param {Object} app - The Express application instance used to register routes.
  * @param {AIService} aiService - The AIService instance responsible for processing the events.
  */
