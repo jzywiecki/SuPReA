@@ -1,22 +1,19 @@
-import React, { useState, useCallback, useRef, useContext, useEffect } from 'react';
+import { useState, useCallback, useRef, useContext, useEffect } from 'react';
 import ReactFlow, {
     addEdge,
     Background,
     Controls,
-    MiniMap,
-    updateEdge,
     useEdgesState,
     useNodesState,
     Handle,
     ReactFlowProvider,
-    useReactFlow,
     useViewport
 } from 'react-flow-renderer';
 import { v4 as uuidv4 } from 'uuid';
-// import 'reactflow/dist/style.css';
 import { useParams } from 'react-router-dom';
 import RegenerateContext from '@/components/contexts/RegenerateContext';
-import axios from 'axios';
+import axiosInstance from '@/services/api';
+import { API_URLS } from '@/services/apiUrls';
 
 const initialSchema = {
     "schema": [
@@ -81,7 +78,7 @@ const generateFlowElements = (schema) => {
 
 
     schema.relationships.forEach((relationship, index) => {
-        const [entity1, connector, entity2, label] = relationship.split(' ');
+        const [entity1, entity2, label] = relationship.split(' ');
         if (entity1 && entity2) {
             edges.push({
                 id: `e-${entity1}-${entity2}-${index}`,
@@ -131,7 +128,7 @@ const DatabaseDiagram = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/model/database_schema/${projectID}`);
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/model/database_schema/${projectID}`);
             console.log(response.data);
             const { nodes: initialNodes, edges: initialEdges } = generateFlowElements(response.data);
             setNodes(initialNodes);

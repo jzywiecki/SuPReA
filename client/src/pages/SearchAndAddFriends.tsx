@@ -4,6 +4,8 @@ import UserCard from '@/components/UserCard';
 import { useUser } from "@/components/UserProvider";
 import { Link } from 'react-router-dom';
 import Search from '@/components/Search';
+import axiosInstance from '@/services/api';
+import { API_URLS } from '@/services/apiUrls';
 
 export interface User { 
     id: string; 
@@ -30,7 +32,7 @@ const SearchAndAddFriends: React.FC = () => {
 
     const fetchFriends = async () => {
         try {
-            const response = await axios.get<User[]>(`http://localhost:3333/users/friends?id=${user?.id}`);
+            const response = await axiosInstance.get<User[]>(`${API_URLS.BASE_URL}/users/friends?id=${user?.id}`);
             setFriends(response.data);
         } catch (error) {
             console.error('Error fetching friends:', error);
@@ -39,7 +41,7 @@ const SearchAndAddFriends: React.FC = () => {
 
     const handleSearch = async (searchQuery: string) => {
         try {
-            const response = await axios.get<User[]>(`http://localhost:3333/users/filter?user_id=${user?.id}&filter=${searchQuery}`);
+            const response = await axiosInstance.get<User[]>(`${API_URLS.BASE_URL}/users/filter?user_id=${user?.id}&filter=${searchQuery}`);
             setSearchResults(response.data);
         } catch (error) {
             console.error('Error searching users:', error);
@@ -48,8 +50,8 @@ const SearchAndAddFriends: React.FC = () => {
 
     const handleAddFriend = async (friendId: string) => {
         try {
-            const url = `http://localhost:3333/users/friends/add?user_id=${encodeURIComponent(user.id)}&friend_id=${encodeURIComponent(friendId)}`;
-            await axios.post(url);
+            const url = `${API_URLS.BASE_URL}/users/friends/add?user_id=${encodeURIComponent(user.id)}&friend_id=${encodeURIComponent(friendId)}`;
+            await axiosInstance.post(url);
             fetchFriends(); 
         } catch (error) {
             console.error('Error adding friend:', error);
@@ -58,7 +60,7 @@ const SearchAndAddFriends: React.FC = () => {
 
     const handleAcceptInvitation = async (friendId: string) => {
         try {
-            await axios.post(`http://localhost:3333/users/friends/accept`, { user_id: user?.id, friend_id: friendId });
+            await axiosInstance.post(`${API_URLS.BASE_URL}/users/friends/accept`, { user_id: user?.id, friend_id: friendId });
             fetchFriends(); 
         } catch (error) {
             console.error('Error accepting invitation:', error);
@@ -67,7 +69,7 @@ const SearchAndAddFriends: React.FC = () => {
 
     const handleRejectInvitation = async (friendId: string) => {
         try {
-            await axios.post(`http://localhost:3333/users/friends/reject`, { user_id: user?.id, friend_id: friendId });
+            await axiosInstance.post(`${API_URLS.BASE_URL}/users/friends/reject`, { user_id: user?.id, friend_id: friendId });
             fetchFriends();
         } catch (error) {
             console.error('Error rejecting invitation:', error);
@@ -76,7 +78,7 @@ const SearchAndAddFriends: React.FC = () => {
 
     const handleRemoveFriend = async (friendId: string) => {
         try {
-            await axios.post(`http://localhost:3333/users/friends/remove`, { user_id: user?.id, friend_id: friendId });
+            await axiosInstance.post(`${API_URLS.BASE_URL}/users/friends/remove`, { user_id: user?.id, friend_id: friendId });
             fetchFriends();      
         } catch (error) {
             console.error('Error removing friend:', error);

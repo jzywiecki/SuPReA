@@ -7,9 +7,10 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import RegenerateContext from "@/components/contexts/RegenerateContext";
+import axiosInstance from "@/services/api";
+import { API_URLS } from "@/services/apiUrls";
 
 interface Specifications {
     name: string;
@@ -26,7 +27,7 @@ const SpecificationsList: React.FC = () => {
     }
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/model/specifications/${projectID}`);
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/model/specifications/${projectID}`);
             setSpecifications(response.data.specifications);
 
         } catch (error) {

@@ -9,6 +9,8 @@ import "./styles.css";
 import { useParams } from "react-router-dom";
 import axios from 'axios';
 import RegenerateContext from '@/components/contexts/RegenerateContext';
+import axiosInstance from '@/services/api';
+import { API_URLS } from '@/services/apiUrls';
 
 
 interface Requirement {
@@ -63,10 +65,9 @@ const RequirementsList: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/model/requirements/${projectID}`);
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/model/requirements/${projectID}`);
             setFunctionalRequirements(response.data.functional_requirements);
             setNonFunctionalRequirements(response.data.non_functional_requirements);
-
         } catch (error) {
             console.error('Error fetching data:', error);
         }

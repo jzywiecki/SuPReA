@@ -1,5 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import axios from 'axios';
+import axiosInstance from '@/services/api';
+import { API_URLS } from '@/services/apiUrls';
 
 interface User {
     id: string;
@@ -64,7 +66,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 throw new Error("No refresh token available.");
             }
 
-            const response = await axios.post('http://localhost:5000/refresh', {
+            const response = await axiosInstance.post(`${API_URLS.BASE_URL}/refresh`, {
                 token: refreshToken,
             });
 

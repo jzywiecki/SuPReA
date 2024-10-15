@@ -10,6 +10,8 @@ import {
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import RegenerateContext from "@/components/contexts/RegenerateContext";
+import axiosInstance from "@/services/api";
+import { API_URLS } from "@/services/apiUrls";
 
 const MottoList: React.FC = () => {
     const { projectID } = useParams();
@@ -21,7 +23,7 @@ const MottoList: React.FC = () => {
     }
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/model/motto/${projectID}`);
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/model/motto/${projectID}`);
             setMotto(response.data.motto);
 
         } catch (error) {

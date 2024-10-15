@@ -4,6 +4,8 @@ import '@bitnoi.se/react-scheduler/dist/style.css';
 import { useParams } from 'react-router-dom';
 import RegenerateContext from '@/components/contexts/RegenerateContext';
 import axios from 'axios';
+import { API_URLS } from '@/services/apiUrls';
+import axiosInstance from '@/services/api';
 
 interface Milestone {
     name: string;
@@ -97,7 +99,7 @@ const ProjectTimeline: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/model/project_schedule/${projectID}`);
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/model/project_schedule/${projectID}`);
             const fetchedMilestones = response.data.milestones;
 
             if (validateMilestones(fetchedMilestones)) {

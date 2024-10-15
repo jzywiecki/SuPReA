@@ -12,6 +12,8 @@ import 'tailwindcss/tailwind.css';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
 import { useUser } from '@/components/UserProvider';
+import axiosInstance from '@/services/api';
+import { API_URLS } from '@/services/apiUrls';
 
 type Project = {
     id: string;
@@ -69,7 +71,7 @@ const ProjectsView = () => {
     useEffect(() => {
         const fetchProjects = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/projects/list/${user?.id}`);
+                const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/list/${user?.id}`);
                 console.log(response.data); // Log the response data to check its structure
                 setProjects(response.data);
             } catch (error) {
