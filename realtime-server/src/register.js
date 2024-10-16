@@ -234,4 +234,12 @@ export class EditionRegister {
 
         return projectRegister.isActiveParticularSessionForComponent(session, component);
     }
+
+
+    getSession(sessionId, projetId) {
+        /**
+         * Retrieves the session object for the provided session ID and project ID.
+         */
+        return this.register.get(projetId)?.getSession(sessionId);
+    }
 }
