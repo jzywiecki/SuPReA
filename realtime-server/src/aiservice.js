@@ -2,6 +2,7 @@ import { sendMessageByAI } from "./chat.js";
 import { ComponentCreatedCommunicate } from "./notifications.js";
 import { ComponentGeneratedCommunicate } from "./notifications.js";
 
+
 /**
  * AIService class handles communication and notifications for AI-related events.
  * It sends chat messages and notifies users when components are created or generated.

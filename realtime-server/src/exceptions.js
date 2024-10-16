@@ -44,3 +44,11 @@ export class UserAlreadyHasActiveEditSessionException extends Error {
         this.name = 'UserAlreadyHasActiveEditSessionException';
     }
 }
+
+
+export class UnsupportedRequestTypeException extends Error {
+    constructor(message = 'Unsupported request type.') {
+        super(message);
+        this.name = 'UnsupportedRequestTypeException';
+    }
+}

@@ -30,3 +30,27 @@ export const getComponentById = (id) => {
 export const isComponentIdCorrect = (id) => {
     return id >= 1 && id <= 12;
 }
+
+
+export const AITextModels = Object.freeze({
+    GPT35Turbo: {id: 1, name: "gpt-35-turbo"},
+    GPT4oMini: {id: 2}, name: "gpt-4o-mini",
+});
+
+
+export const AIImageModels = Object.freeze({
+    DALL_E3: {id: 1, name: "dall-e-3"},
+    DALL_E2: {id: 2, name: "dall-e-2"},
+});
+
+
+export const getAITextModelById = (id) => {
+    const model = Object.values(AITextModels).find(model => model.id === id);
+    return model || AITextModels.GPT35Turbo;
+}
+
+
+export const getAIImageModelById = (id) => {
+    const model = Object.values(AIImageModels).find(model => model.id === id);
+    return model || AIImageModels.DALL_E3;
+}

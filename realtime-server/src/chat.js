@@ -7,6 +7,10 @@ import { isMessageValid } from "./utils.js";
 import { isNumericIdCorrect } from "./utils.js";
 import { DiscussionChatNoOlderMessagesCommunicate } from "./notifications.js";
 import { AIChatNoOlderMessagesCommunicate } from "./notifications.js";
+import { serveUserMessageToAI } from './aiservice.js';
+
+import { InvalidArgumentException } from './exceptions.js'
+
 import { ObjectId } from "mongodb";
 import 'dotenv/config';
 
@@ -29,7 +33,7 @@ const noOlderMessagesOnDiscussionChat = new DiscussionChatNoOlderMessagesCommuni
 const noOlderMessagesOnAIChat = new AIChatNoOlderMessagesCommunicate();
 
 
-export const registerChatEvents = (socket, io, db, session, projectChatsReference) => {
+export const registerChatEvents = (socket, io, db, session, projectChatsReference, editionRegister) => {
     /**
      * Registers chat events for the given socket.
      * @param {Socket} socket - The socket object handling communication between the server and client.
@@ -111,6 +115,32 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
             return false;
         }
     }
+
+
+    const forwardMessageToAi = async (message) => {
+        /**
+         * Forwards a user message to the AI service for processing.
+         * @param {Object} message - The message object containing the user's message.
+         */
+        try {
+            serveUserMessageToAI(session, message, editionRegister)
+        } catch (error) {
+            if (
+                error instanceof InvalidArgumentException ||
+                error instanceof SessionIsNotRegisteredException ||
+                error instanceof UnsupportedRequestTypeException
+            ) {
+                logger.info("User encountered an error while sending a message to AI.");
+                logger.info(`Details: ${error.message}`);
+                socket.emit('error', error.message);
+                return;
+            } else {
+                logger.error("Cannot serve user message to AI.");
+                logger.error(`Details: ${error.message}`);
+                socket.emit('error', 'INTERNAL SERVER ERROR');
+            }
+        }
+    };
     
 
     socket.on('send-message-to-discussion-chat', (message) => {
@@ -119,7 +149,10 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
 
 
     socket.on('send-message-to-ai-chat', (message) => {
-        handleSendMessageByUser(socket, session.projectId, session.userId, projectChatsReference.aiChatId, message, 'receive-message-from-ai-chat');
+        const isMessageSent = handleSendMessageByUser(socket, session.projectId, session.userId, projectChatsReference.aiChatId, message, 'receive-message-from-ai-chat');
+        if (isMessageSent) {
+            forwardMessageToAi(message);
+        }
     }); 
 
 

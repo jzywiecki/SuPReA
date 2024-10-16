@@ -24,6 +24,11 @@ const getRegenerateComponentByAiURL = (component) => {
 }
 
 
+const getQuestionToAiURL = (component) => {
+    return SERVER_URL + `/aiassistant/question`;
+}
+
+
 export const updateComponentAPI = async (component, requestData) => {
     const apiUrl = getUpdateComponentURL(component);
     
@@ -34,12 +39,19 @@ export const updateComponentAPI = async (component, requestData) => {
 export const updateComponentByAiAPI = async (component, requestData) => {
     const apiUrl = getUpdateComponentByAiURL(component);
     
-    return await axios.put(apiUrl, requestData);
+    return await axios.post(apiUrl, requestData);
 };
 
 
 export const regenerateComponentByAiAPI = async (component, requestData) => {
     const apiUrl = getRegenerateComponentByAiURL(component);
     
-    return await axios.put(apiUrl, requestData);
+    return await axios.post(apiUrl, requestData);
+};
+
+
+export const questionToAiAPI = async (requestData) => {
+    const apiUrl = getQuestionToAiURL();
+
+    return await axios.post(apiUrl, requestData);
 };
