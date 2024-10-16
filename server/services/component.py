@@ -8,6 +8,7 @@ from database import project_dao, get_project_dao_ref
 
 from ai import get_model_remote_ref_enum
 from generation.generate import Generate
+from generation.generate import GenerateWithMonitor
 from generation.component import regenerate_component_by_ai_task
 from generation.component import update_component_by_ai_task
 from utils import InvalidParameter
