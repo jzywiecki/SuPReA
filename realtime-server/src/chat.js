@@ -8,6 +8,7 @@ import { isNumericIdCorrect } from "./utils.js";
 import { DiscussionChatNoOlderMessagesCommunicate } from "./notifications.js";
 import { AIChatNoOlderMessagesCommunicate } from "./notifications.js";
 import { ObjectId } from "mongodb";
+import 'dotenv/config';
 
 
 export class ProjectChatsReference {

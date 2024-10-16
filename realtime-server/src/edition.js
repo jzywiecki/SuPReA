@@ -12,7 +12,7 @@ import { RejectedEditionSessionRegisterRequestCommunicate } from "./notification
 import { RejectedUpdateRequestCommunicate } from "./notifications.js";
 import { ConfirmedUpdateRequestCommunicate } from "./notifications.js";
 import { logger } from './utils.js';
-import { getUpdateComponentURL } from "./utils.js";
+import { updateComponentAPI } from "./gateway.js";
 
 
 export const registerEditionEvents = (socket, session, editionRegister) => {
@@ -224,9 +224,7 @@ const updateComponentRequestHandler = async (component, session, editionRegister
             new_val: new_val
         };
 
-        const apiUrl = getUpdateComponentURL(component);
-
-        const response = await axios.put(apiUrl, requestData);
+        await updateComponentAPI(component, requestData);
 
         logger.info(`User ${session.userId} updated component: ${component}`);
         

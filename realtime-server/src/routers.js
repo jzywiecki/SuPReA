@@ -9,6 +9,9 @@
  * @param {AIService} aiService - The AIService instance responsible for processing the events.
  */
 
+import { logger } from './utils.js';
+
+
 export const registerRouters = (app, aiService) => {
 
     app.post('/event/generation-complete', (req, res) => {
@@ -36,7 +39,7 @@ export const registerRouters = (app, aiService) => {
 
 
     app.use((err, req, res, next) => {
-        console.error(err.stack);
+        logger.error(err.stack);
         res.status(500).send({ message: 'Internal Server Error' });
     });
 }

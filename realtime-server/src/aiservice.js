@@ -10,8 +10,8 @@ import { ComponentGeneratedCommunicate } from "./notifications.js";
 */
 export class AIService {
     
-    constructor(editionService, io, db) {
-        this.editionService = editionService;
+    constructor(editionRegister, io, db) {
+        this.editionRegister = editionRegister;
         this.io = io;
         this.db = db;
     }
@@ -56,6 +56,6 @@ export class AIService {
 
 
     getUserSocket(sessionId) {
-        return this.editionService?.getSession(sessionId);
+        return this.editionRegister?.getSession(sessionId);
     }
 }
