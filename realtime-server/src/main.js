@@ -8,6 +8,10 @@ import { connectionService } from './connection.js';
 import { registerRouters } from './routers.js';
 import { EditionRegister } from './edition.js';
 import { AIService } from './aiservice.js';
+import 'dotenv/config';
+
+const URL = process.env.MONGODB_URL;
+const DATABASE_NAME = process.env.DATABASE_NAME;
 
 
 const app = express();
@@ -24,7 +28,7 @@ instrument(io, {
     mode: "development",
 });
 
-const db = new Database();
+const db = new Database(URL, DATABASE_NAME);
 
 const editionRegister = new EditionRegister();
 
