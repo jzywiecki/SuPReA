@@ -35,6 +35,6 @@ def notify_update_complete(component, value, callback: str):
 
 
 def send_question_answer(content, callback: str):
-    data = {content: content, callback: callback}
+    data = {"content": content, "callback": callback}
     url = URL + '/event/message'
     return requests.post(url, json=data, headers=headers)
