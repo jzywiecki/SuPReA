@@ -81,10 +81,7 @@ def regenerate_component_by_ai(
     ai_model = get_model_remote_ref_enum(request.ai_model)
 
     regenerate_component_by_ai_task.remote(
-        request.details,
-        ai_model,
-        generate_component_class,
-        request.callback
+        request.details, ai_model, generate_component_class, request.callback
     )
 
 

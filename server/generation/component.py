@@ -20,7 +20,7 @@ def update_component_by_ai_task(
     ai_model: AI,
     get_project_dao_ref,
     generate_component_class: type(Generate),
-    callback: str
+    callback: str,
 ) -> None:
     """
     Updates a component using the AI model using ray.
@@ -41,7 +41,9 @@ def update_component_by_ai_task(
 
         component_identify = ray.get(update_component.get_component_identify.remote())
         component_value = ray.get(update_component.get_value.remote())
-        realtime_server.notify_update_complete(component_identify.value, component_value.json(), callback)
+        realtime_server.notify_update_complete(
+            component_identify.value, component_value.json(), callback
+        )
 
     except Exception as e:
         logger.error(f"Error while remote updating model by ai: {e}")
@@ -49,10 +51,7 @@ def update_component_by_ai_task(
 
 @ray.remote
 def regenerate_component_by_ai_task(
-    details: str,
-    ai_model: AI,
-    generate_component_class: type(Generate),
-    callback: str
+    details: str, ai_model: AI, generate_component_class: type(Generate), callback: str
 ) -> None:
     """
     Updates a component using the AI model using ray.
@@ -67,7 +66,9 @@ def regenerate_component_by_ai_task(
 
         component_identify = ray.get(update_component.get_component_identify.remote())
         component_value = ray.get(update_component.get_value.remote())
-        realtime_server.notify_regeneration_complete(component_identify.value, component_value.json(), callback)
+        realtime_server.notify_regeneration_complete(
+            component_identify.value, component_value.json(), callback
+        )
 
     except Exception as e:
         logger.error(f"Error while remote regenerating model by ai: {e}")

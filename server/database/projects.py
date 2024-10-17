@@ -254,7 +254,6 @@ class ProjectDAO:
             {"$addToSet": {"managers": ObjectId(manager_id)}},
         )
 
-
     def get_project_model_and_basic_information(self, project_id: str):
         """
         Retrieves the project model along with basic project information, excluding certain fields.
@@ -263,11 +262,18 @@ class ProjectDAO:
             project_id (str): The ID of the project to retrieve.
         """
         project = self.collection.find_one(
-            {'_id': ObjectId(project_id)},
-            {'chat_id': 0, 'ai_chat_id': 0, '_id': 0, 'logo': 0,
-             'owner': 0, 'description': 0, 'members': 0, 'managers': 0,
-             'created_at': 0
-             }
+            {"_id": ObjectId(project_id)},
+            {
+                "chat_id": 0,
+                "ai_chat_id": 0,
+                "_id": 0,
+                "logo": 0,
+                "owner": 0,
+                "description": 0,
+                "members": 0,
+                "managers": 0,
+                "created_at": 0,
+            },
         )
 
         if not project:
