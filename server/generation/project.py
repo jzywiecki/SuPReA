@@ -19,6 +19,7 @@ from .title import TitleGenerate
 from .generate import GenerateActor, GenerateWithMonitor
 from utils import WrongFormatGeneratedByAI, logger
 from ai import AI
+import callback.realtime_server as realtime_server
 
 MAX_RE_REGENERATION = 5
 
@@ -29,7 +30,7 @@ class ProjectAIGenerationActor:
     Main actor that generates components by AI, saves them to the database and handles failures.
     """
 
-    def __init__(self):
+    def __init__(self, callback):
         self.logo_actor = GenerateActor.remote(GenerateWithMonitor(LogoGenerate()))
         self.actors = [
             GenerateActor.remote(GenerateWithMonitor(ActorsGenerate())),
@@ -45,17 +46,18 @@ class ProjectAIGenerationActor:
             GenerateActor.remote(GenerateWithMonitor(StrategyGenerate())),
             GenerateActor.remote(GenerateWithMonitor(TitleGenerate())),
         ]
-        self.generate_future = []
-        self.db_future = []
-        self.failure_actor = []
+        self.generate_future = [] # Contains futures of generation components by AI.
+        self.db_future = []       # Contains futures of saving components to the database.
+        self.failure_actor = []   # Contains components that failed to generation or saving.
+        self.callback = callback
 
     def generate_components_by_ai(
-        self,
-        ai_text_model: AI,
-        ai_image_model: AI,
-        for_what: str,
-        doing_what: str,
-        additional_info: str,
+            self,
+            ai_text_model: AI,
+            ai_image_model: AI,
+            for_what: str,
+            doing_what: str,
+            additional_info: str,
     ):
         """
         Run remote tasks to generate components by AI.
@@ -75,22 +77,27 @@ class ProjectAIGenerationActor:
                 )
 
     def save_components_and_regenerate_failure_by_ai(
-        self,
-        ai_text_model: AI,
-        get_project_dao_ref,
-        for_what: str,
-        doing_what: str,
-        additional_info: str,
-        project_id: str,
+            self,
+            ai_text_model: AI,
+            get_project_dao_ref,
+            for_what: str,
+            doing_what: str,
+            additional_info: str,
+            project_id: str,
     ):
         """
         Run remote tasks to save components into database.
+
+        If AI generates a correct format of the component, save it to the database.
+        If component is saved, notify the user about it.
+
         If AI generates a wrong format, regenerate the component (max MAX_RE_REGENERATION times) and save it again.
         If the component still fails or unknown exception occurred, add it to the failure list.
         """
         re_regeneration_count = 0
 
-        while self.generate_future:
+        def regeneration_handler():
+            nonlocal re_regeneration_count
             ready_components, self.generate_future = ray.wait(
                 self.generate_future, num_returns=1, timeout=None
             )
@@ -98,6 +105,7 @@ class ProjectAIGenerationActor:
                 try:
                     actor, error = ray.get(actor_ref)
 
+                    # Correctly generated component case.
                     if error is None:
                         self.db_future.append(
                             actor.save_to_database.remote(
@@ -105,6 +113,7 @@ class ProjectAIGenerationActor:
                             )
                         )
 
+                    # AI generated a wrong format case.
                     elif isinstance(error, WrongFormatGeneratedByAI):
                         if re_regeneration_count < MAX_RE_REGENERATION:
                             re_regeneration_count += 1
@@ -116,12 +125,34 @@ class ProjectAIGenerationActor:
                         else:
                             self.failure_actor.append(actor)
 
-                    else:  # unknown exception occurred
+                    # Unexpected exception during generations.
+                    else:
                         self.failure_actor.append(actor)
 
                 except Exception as e:
                     logger.error(f"{e}")
                     raise e
+
+        def notify_about_ready_components():
+            saved_in_db_components, self.db_future = ray.wait(
+                self.db_future, num_returns=0, timeout=None
+            )
+            for actor_ref in saved_in_db_components:
+                try:
+                    actor, error = ray.get(actor_ref)
+
+                    # Correctly saved component to db case.
+                    if error is None:
+                        component_identify = actor.get_component_identify.remote()
+                        realtime_server.notify_generation_complete(component_identify, self.callback)
+                    else:
+                        self.failure_actor.append(actor)
+                except Exception as e:
+                    logger.error(f"{e}")
+
+        while self.generate_future:
+            regeneration_handler()
+            notify_about_ready_components()
 
     def save_to_database_service(self):
         """
@@ -130,7 +161,11 @@ class ProjectAIGenerationActor:
         for actor_ref in self.db_future:
             try:
                 actor, error = ray.get(actor_ref)
-                if error is not None:
+                if error is None:
+                    component_identify = actor.get_component_identify.remote()
+                    realtime_server.notify_generation_complete(component_identify, self.callback)
+
+                else:
                     self.failure_actor.append(actor)
 
             except Exception as e:
@@ -140,18 +175,19 @@ class ProjectAIGenerationActor:
 
 @ray.remote
 def generate_project_components_task(
-    project_id: str,
-    for_what: str,
-    doing_what: str,
-    additional_info: str,
-    ai_text_model: AI,
-    ai_image_model: AI,
-    get_project_dao_ref,
+        project_id: str,
+        for_what: str,
+        doing_what: str,
+        additional_info: str,
+        ai_text_model: AI,
+        ai_image_model: AI,
+        get_project_dao_ref,
+        callback: str,
 ):
     """
     Initiates the remote generation of project components by AI models and handles their saving to the database.
     """
-    project_ai_actor = ProjectAIGenerationActor.remote()
+    project_ai_actor = ProjectAIGenerationActor.remote(callback)
     generate_task = project_ai_actor.generate_components_by_ai.remote(
         ai_text_model, ai_image_model, for_what, doing_what, additional_info
     )

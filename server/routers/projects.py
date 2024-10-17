@@ -58,6 +58,7 @@ class ProjectCreateByAIRequest(BaseModel):
     owner_id: str
     text_ai_model: str
     image_ai_model: str
+    callback: str
 
 
 class ProjectAddMemberRequest(BaseModel):
