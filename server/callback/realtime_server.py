@@ -16,20 +16,20 @@ headers = {
 }
 
 
-def notify_generation_complete(component):
-    data = {component: component}
+def notify_generation_complete(component, callback: str):
+    data = {component: component, callback: callback}
     url = URL + '/event/generation-complete'
     return requests.post(url, json=data, headers=headers)
 
 
-def notify_regeneration_complete(component, content, callback: str):
-    data = {component: component, content: content, callback: callback}
+def notify_regeneration_complete(component, value, callback: str):
+    data = {component: component, value: value, callback: callback}
     url = URL + '/event/regeneration-complete'
     return requests.post(url, json=data, headers=headers)
 
 
-def notify_update_complete(component, content, callback: str):
-    data = {component: component, content: content, callback: callback}
+def notify_update_complete(component, value, callback: str):
+    data = {component: component, value: value, callback: callback}
     url = URL + '/event/update-complete'
     return requests.post(url, json=data, headers=headers)
 

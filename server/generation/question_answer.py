@@ -1,5 +1,6 @@
 """
 This module provides methods for asking the AI about a project task.
+Callback will be forwarded in the notify message to the realtime server.
 """
 
 import ray

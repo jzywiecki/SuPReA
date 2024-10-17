@@ -13,6 +13,7 @@ class UpdateComponentByAIRequest(BaseModel):
     project_id: str
     query: str
     ai_model: str
+    callback: str
 
 
 class RegenerateComponentByAIRequest(BaseModel):
@@ -20,6 +21,6 @@ class RegenerateComponentByAIRequest(BaseModel):
     The request object for regenerating a component using AI-based generation.
     """
 
-    project_id: str
     details: str
     ai_model: str
+    callback: str

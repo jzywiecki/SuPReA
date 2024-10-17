@@ -25,7 +25,7 @@ def update_component_by_ai(request, generate_component_class: type(Generate)) ->
     :param generate_component_class: The class used for generating the component update.
     :type generate_component_class: type of `Generate`
 
-    :raises InvalidParameter: If the project ID or query is missing or invalid.
+    :raises InvalidParameter: If the project ID or query is missing.
     :raises ProjectNotFound: If the project with the specified ID does not exist.
     """
     if not request.project_id:
@@ -37,6 +37,9 @@ def update_component_by_ai(request, generate_component_class: type(Generate)) ->
     if not request.query:
         raise InvalidParameter("Invalid request arguments for AI")
 
+    if not request.callback:
+        raise InvalidParameter("Invalid callback argument")
+
     if not project_dao.is_project_exist(request.project_id):
         raise ProjectNotFound(request.project_id)
 
@@ -47,6 +50,7 @@ def update_component_by_ai(request, generate_component_class: type(Generate)) ->
         ai_model,
         get_project_dao_ref,
         generate_component_class,
+        request.callback,
     )
 
 
@@ -65,14 +69,14 @@ def regenerate_component_by_ai(
     :raises InvalidParameter: If the project ID or query is missing or invalid.
     :raises ProjectNotFound: If the project with the specified ID does not exist.
     """
-    if not request.project_id:
-        raise InvalidParameter("Project id cannot be empty")
-
     if not request.ai_model:
         raise InvalidParameter("AI model cannot be empty")
 
     if not request.details:
         raise InvalidParameter("Invalid details arguments for AI")
+
+    if not request.callback:
+        raise InvalidParameter("Invalid callback argument")
 
     if not project_dao.is_project_exist(request.project_id):
         raise ProjectNotFound(request.project_id)
@@ -80,11 +84,10 @@ def regenerate_component_by_ai(
     ai_model = get_model_remote_ref_enum(request.ai_model)
 
     regenerate_component_by_ai_task.remote(
-        request.project_id,
         request.details,
         ai_model,
-        get_project_dao_ref,
         generate_component_class,
+        request.callback
     )
 
 
