@@ -18,6 +18,7 @@ class QuestionRequest:
     content: str
     callback: str
     ai_model: str
+    project_id: str
 
 
 @router.post(

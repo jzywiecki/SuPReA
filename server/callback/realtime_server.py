@@ -15,6 +15,7 @@ headers = {
     'Content-Type': 'application/json'
 }
 
+
 def notify_generation_complete(component):
     data = {component: component}
     url = URL + '/event/generation-complete'
@@ -33,7 +34,7 @@ def notify_update_complete(component, content, callback: str):
     return requests.post(url, json=data, headers=headers)
 
 
-def send_answer(content, callback: str):
+def send_question_answer(content, callback: str):
     data = {content: content, callback: callback}
     url = URL + '/event/message'
     return requests.post(url, json=data, headers=headers)
