@@ -135,7 +135,7 @@ class ProjectAIGenerationActor:
 
         def notify_about_ready_components():
             saved_in_db_components, self.db_future = ray.wait(
-                self.db_future, num_returns=0, timeout=None
+                self.db_future, num_returns=1, timeout=0
             )
             for actor_ref in saved_in_db_components:
                 try:
@@ -143,8 +143,8 @@ class ProjectAIGenerationActor:
 
                     # Correctly saved component to db case.
                     if error is None:
-                        component_identify = actor.get_component_identify.remote()
-                        realtime_server.notify_generation_complete(component_identify, self.callback)
+                        component_identify = ray.get(actor.get_component_identify.remote())
+                        realtime_server.notify_generation_complete(component_identify.value, self.callback)
                     else:
                         self.failure_actor.append(actor)
                 except Exception as e:
@@ -162,8 +162,8 @@ class ProjectAIGenerationActor:
             try:
                 actor, error = ray.get(actor_ref)
                 if error is None:
-                    component_identify = actor.get_component_identify.remote()
-                    realtime_server.notify_generation_complete(component_identify, self.callback)
+                    component_identify = ray.get(actor.get_component_identify.remote())
+                    realtime_server.notify_generation_complete(component_identify.value, self.callback)
 
                 else:
                     self.failure_actor.append(actor)
