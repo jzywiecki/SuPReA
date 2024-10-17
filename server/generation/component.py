@@ -1,5 +1,6 @@
 """
 Module contains general high-level functions for generate components using AI models.
+Callback will be forwarded in the notify message to the realtime server.
 """
 
 import ray
@@ -9,6 +10,7 @@ from ai import AI
 from .generate import Generate
 from .generate import GenerateWithMonitor
 from .generate import GenerateActor
+import callback.realtime_server as realtime_server
 
 
 @ray.remote
@@ -18,6 +20,7 @@ def update_component_by_ai_task(
     ai_model: AI,
     get_project_dao_ref,
     generate_component_class: type(Generate),
+    callback: str,
 ) -> None:
     """
     Updates a component using the AI model using ray.
@@ -36,11 +39,11 @@ def update_component_by_ai_task(
         if err:
             raise err
 
-        _, err = ray.get(
-            update_component.save_to_database.remote(get_project_dao_ref, project_id)
+        component_identify = ray.get(update_component.get_component_identify.remote())
+        component_value = ray.get(update_component.get_value.remote())
+        realtime_server.notify_update_complete(
+            component_identify.value, component_value.json(), callback
         )
-        if err:
-            raise err
 
     except Exception as e:
         logger.error(f"Error while remote updating model by ai: {e}")
@@ -48,11 +51,7 @@ def update_component_by_ai_task(
 
 @ray.remote
 def regenerate_component_by_ai_task(
-    project_id: str,
-    details: str,
-    ai_model: AI,
-    get_project_dao_ref,
-    generate_component_class: type(Generate),
+    details: str, ai_model: AI, generate_component_class: type(Generate), callback: str
 ) -> None:
     """
     Updates a component using the AI model using ray.
@@ -65,11 +64,11 @@ def regenerate_component_by_ai_task(
         if err:
             raise err
 
-        _, err = ray.get(
-            update_component.save_to_database.remote(get_project_dao_ref, project_id)
+        component_identify = ray.get(update_component.get_component_identify.remote())
+        component_value = ray.get(update_component.get_value.remote())
+        realtime_server.notify_regeneration_complete(
+            component_identify.value, component_value.json(), callback
         )
-        if err:
-            raise err
 
     except Exception as e:
         logger.error(f"Error while remote regenerating model by ai: {e}")
