@@ -41,7 +41,7 @@ def update_component_by_ai_task(
 
         component_identify = ray.get(update_component.get_component_identify.remote())
         component_value = ray.get(update_component.get_value.remote())
-        realtime_server.notify_update_complete(component_identify, component_value, callback)
+        realtime_server.notify_update_complete(component_identify.value, component_value.json(), callback)
 
     except Exception as e:
         logger.error(f"Error while remote updating model by ai: {e}")
@@ -67,7 +67,7 @@ def regenerate_component_by_ai_task(
 
         component_identify = ray.get(update_component.get_component_identify.remote())
         component_value = ray.get(update_component.get_value.remote())
-        realtime_server.notify_regeneration_complete(component_identify, component_value, callback)
+        realtime_server.notify_regeneration_complete(component_identify.value, component_value.json(), callback)
 
     except Exception as e:
         logger.error(f"Error while remote regenerating model by ai: {e}")

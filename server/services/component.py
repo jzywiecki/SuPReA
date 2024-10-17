@@ -78,9 +78,6 @@ def regenerate_component_by_ai(
     if not request.callback:
         raise InvalidParameter("Invalid callback argument")
 
-    if not project_dao.is_project_exist(request.project_id):
-        raise ProjectNotFound(request.project_id)
-
     ai_model = get_model_remote_ref_enum(request.ai_model)
 
     regenerate_component_by_ai_task.remote(
