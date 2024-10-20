@@ -147,14 +147,24 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
         }
     };
     
-
+    // Messeage format send to discussion chat:
+    // {
+    //      content: string
+    // }
     socket.on('send-message-to-discussion-chat', (message) => {
-        handleSendMessageByUser(socket, session.projectId, session.userId, projectChatsReference.discussionChatId, message, 'receive-message-from-discussion-chat');
+        handleSendMessageByUser(socket, session.projectId, session.userId, projectChatsReference.discussionChatId, message.content, 'receive-message-from-discussion-chat');
     });
 
 
+    // Message format send to ai chat:
+    // {
+    //      content: string
+    //      ai: int (code)
+    //      component: int (code)
+    //      requestType: int (code)
+    // }
     socket.on('send-message-to-ai-chat', (message) => {
-        const isMessageSent = handleSendMessageByUser(socket, session.projectId, session.userId, projectChatsReference.aiChatId, message, 'receive-message-from-ai-chat');
+        const isMessageSent = handleSendMessageByUser(socket, session.projectId, session.userId, projectChatsReference.aiChatId, message.content, 'receive-message-from-ai-chat');
         if (isMessageSent) {
             forwardMessageToAi(message);
         }

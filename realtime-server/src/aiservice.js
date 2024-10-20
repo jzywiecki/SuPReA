@@ -1,6 +1,7 @@
 import { sendMessageByAI } from "./chat.js";
 import { ComponentCreatedCommunicate } from "./notifications.js";
 import { ComponentGeneratedCommunicate } from "./notifications.js";
+import { getComponentyByName } from "./model.js";
 
 
 /**
@@ -21,20 +22,22 @@ export class AIService {
     sendMessageOnChat(message) {
         /**
          * Sends a chat message through the AI service.
-         * @param {Object} message - Object containing projectId and content.
+         * @param {Object} message - Object received from server.
         */
-        sendMessageByAI(this.io, this.db, message.projectId, message.content);
+        sendMessageByAI(this.io, this.db, message.callback, message.content);
     }
 
     
     notifyComponentCreated(message) {
         /**
          * Notifies users when a component is created.
-         * @param {Object} message - Object containing projectId and componentName.
+         * @param {Object} message - Object received from server.
         */
-        this.io.to(message.projectId).emit(
+        const component = getComponentyByName(message?.component)
+
+        this.io.to(message?.callback).emit(
             'notify', 
-            new ComponentCreatedCommunicate(message.componentName)
+            new ComponentCreatedCommunicate(component?.id)
         );
     }
 
@@ -42,17 +45,19 @@ export class AIService {
     sendGeneratedComponent(result) {
         /**
          * Sends a generated component to the user.
-         * @param {Object} result - Object containing sessionId, componentName, and component.
+         * @param {Object} result - Object received from server.
         */
-        const socket = this.editionRegister?.getSession(result.sessionId)?.socket;
+        const socket = this.editionRegister?.getSession(result?.callback)?.socket;
 
         if (!socket) {
             return;
         }
 
+        const component = getComponentyByName(result?.component)
+
         socket.emit (
             'notify',
-            new ComponentGeneratedCommunicate(result.componentName, result.component)
+            new ComponentGeneratedCommunicate(component?.id, result?.value)
         )
     }
 }

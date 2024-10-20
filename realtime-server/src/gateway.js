@@ -26,7 +26,7 @@ const getRegenerateComponentByAiURL = (component) => {
 
 
 const getQuestionToAiURL = () => {
-    return SERVER_URL + `/aiassistant/question`;
+    return SERVER_URL + `/model/ai-question/`;
 }
 
 

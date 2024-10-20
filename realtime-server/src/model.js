@@ -18,7 +18,7 @@ export const Components = Object.freeze({
 
 
 export const getComponentById = (id) => {
-    const model = Object.values(Components).find(model => model.id === id);
+    const model = Object.values(Components).find(model => model.id == id);
 
     if (!model) {
         throw new ComponentIsNotExistException(`Model with id ${id} does not exist.`);
@@ -28,7 +28,7 @@ export const getComponentById = (id) => {
 
 
 export const getComponentyByName = (name) => {
-    const model = Object.values(Components).find(model => model.id === name);
+    const model = Object.values(Components).find(model => model.name == name);
 
     if (!model) {
         throw new ComponentIsNotExistException(`Model with name ${name} does not exist.`);
@@ -55,12 +55,12 @@ export const AIImageModels = Object.freeze({
 
 
 export const getAITextModelById = (id) => {
-    const model = Object.values(AITextModels).find(model => model.id === id);
+    const model = Object.values(AITextModels).find(model => model.id == id);
     return model || AITextModels.GPT35Turbo;
 }
 
 
 export const getAIImageModelById = (id) => {
-    const model = Object.values(AIImageModels).find(model => model.id === id);
+    const model = Object.values(AIImageModels).find(model => model.id == id);
     return model || AIImageModels.DALL_E3;
 }

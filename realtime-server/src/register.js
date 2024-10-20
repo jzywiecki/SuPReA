@@ -217,7 +217,7 @@ export class EditionRegister {
     }
 
 
-    isEditionSessionActive(session, component) {
+    isEditionSessionActive(session, componentId) {
         /**
          * Checks whether a specific edition session is currently active for a given component in a project.
          * 
@@ -232,7 +232,7 @@ export class EditionRegister {
             return false;
         }
 
-        return projectRegister.isActiveParticularSessionForComponent(session, component);
+        return projectRegister.isActiveParticularSessionForComponent(session, componentId);
     }
 
 

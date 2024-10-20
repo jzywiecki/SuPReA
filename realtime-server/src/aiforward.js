@@ -21,7 +21,7 @@ const RequestType = Object.freeze({
 
 
 const getRequestTypeById = (id) => {
-    const requestType = Object.values(RequestType).find(requestType => requestType.id === id);
+    const requestType = Object.values(RequestType).find(requestType => requestType.id == id);
     return requestType || RequestType.QUESTION;
 }
 
@@ -29,18 +29,18 @@ const getRequestTypeById = (id) => {
 export const serveUserMessageToAI = (session, message, editionRegister) => {
     
     const validGenerationRequest = (message, session) => {
-        if (!isComponentIdCorrect(message?.componentId)) {
+        if (!isComponentIdCorrect(message?.component)) {
             throw InvalidArgumentException('Invalid component id.');
         }
 
-        if (!editionRegister.isEditionSessionActive(session, message?.componentId)) {
+        if (!editionRegister.isEditionSessionActive(session, message?.component)) {
             throw SessionIsNotRegisteredException();
         }
     }
 
 
     const selectAiModelForQuestion = (aiId, componentId) => {
-        if (componentId === Components.LOGO.id) {
+        if (componentId == Components.LOGO.id) {
             throw UnsupportedRequestTypeException('Logo component does not support questions.');
         }
 
@@ -49,7 +49,7 @@ export const serveUserMessageToAI = (session, message, editionRegister) => {
 
 
     const selectAiModelForRegeneration = (aiId, componentId) => {
-        if (componentId === Components.LOGO.id) {
+        if (componentId == Components.LOGO.id) {
             return getAIImageModelById(aiId);
         } else {
             return getAITextModelById(aiId);
@@ -58,7 +58,7 @@ export const serveUserMessageToAI = (session, message, editionRegister) => {
 
 
     const selectAiModelForUpdate = (aiId, componentId) => {
-        if (componentId === Components.LOGO.id) {
+        if (componentId == Components.LOGO.id) {
             throw UnsupportedRequestTypeException('Logo component does not update request.');
         }
 
@@ -66,25 +66,25 @@ export const serveUserMessageToAI = (session, message, editionRegister) => {
     }
 
 
-    const requestType = getRequestTypeById(message.requestType);
+    const requestType = getRequestTypeById(message?.requestType);
 
     let aiModel;
 
     switch (requestType) {
         case RequestType.QUESTION:
-            aiModel = selectAiModelForQuestion(message.aiId, message.componentId);
+            aiModel = selectAiModelForQuestion(message?.ai, message?.component);
 
             serveQuestionToAI(message, aiModel);
             break;
         case RequestType.REGENERATION:
             validGenerationRequest(message, session);
-            aiModel = selectAiModelForRegeneration(message.aiId, message.component);
+            aiModel = selectAiModelForRegeneration(message?.ai, message?.component);
             
             serveRegenerateRequestToAI(session, message, aiModel);
             break;
         case RequestType.UPDATE:
             validGenerationRequest(message, session);
-            aiModel = selectAiModelForUpdate(message.aiId, message.component);
+            aiModel = selectAiModelForUpdate(message?.ai, message?.component);
 
             serveUpdateRequestToAI(session, message, aiModel);
             break;
@@ -102,7 +102,7 @@ const serveQuestionToAI = async (message, aiModel) => {
 
 
 const serveRegenerateRequestToAI = async (session, message, aiModel) => {
-    const component = getComponentById(message.componentId);
+    const component = getComponentById(message.component);
 
     const requestData = {
         project_id: session.projectId,
@@ -111,7 +111,7 @@ const serveRegenerateRequestToAI = async (session, message, aiModel) => {
         ai_model: aiModel.name,
     };
 
-    regenerateComponentByAiAPI(component, requestData);
+    regenerateComponentByAiAPI(component.name, requestData);
 }
 
 
@@ -125,5 +125,5 @@ const serveUpdateRequestToAI = async (session, message, aiModel) => {
         ai_model: aiModel.name,
     };
 
-    updateComponentByAiAPI(component, requestData);
+    updateComponentByAiAPI(component.name, requestData);
 }

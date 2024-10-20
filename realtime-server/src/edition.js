@@ -19,6 +19,7 @@ import {
     ComponentIsAlreadyEditedException,
     SessionIsNotRegisteredException
 } from "./exceptions.js";
+import { getComponentById } from "./model.js";
 
 
 export const registerEditionEvents = (socket, session, io, editionRegister) => {
@@ -37,18 +38,18 @@ export const registerEditionEvents = (socket, session, io, editionRegister) => {
      * - `update-component`: Triggers `updateComponentRequestHandler` to update a component with new data.
     */
     
-    socket.on('edit-component', (component) => {
-        editComponentRequestHandler(component, socket, io, session, editionRegister);
+    socket.on('edit-component', (request) => {
+        editComponentRequestHandler(request?.component, socket, io, session, editionRegister);
     });
 
 
-    socket.on('finish-edition', (_any) => {
-        finishedEditionRequestHandler(session, socket, io, editionRegister);
+    socket.on('finish-edition', (request) => {
+        finishedEditionRequestHandler(request?.component, session, socket, io, editionRegister);
     });
 
 
-    socket.on('update-component', (component, new_val) => {
-        updateComponentRequestHandler(component, session, editionRegister, new_val);
+    socket.on('update-component', (request) => {
+        updateComponentRequestHandler(request?.component, session, editionRegister, request?.new_val);
     });
 }
 
@@ -88,14 +89,14 @@ export const transmitEditionsStatusOnConnection = async (socket, session, editio
 };
 
 
-const editComponentRequestHandler = (component, socket, io, session, editionRegister) => {
+const editComponentRequestHandler = (componentId, socket, io, session, editionRegister) => {
     /**
      * Handles the request to start editing a component.
      * 
      * Registers an edition session for the user and component, broadcasts the event to other users, 
      * and sends appropriate notifications to the client. Handles errors for non-existent or already edited components.
      * 
-     * @param {string} component - The ID of the component to be edited.
+     * @param {string} componentId - The ID of the component to be edited.
      * @param {Socket} socket - The socket object used to communicate with the client.
      * @param {SocketIO.Server} io - The server object used to communicate with all clients.
      * @param {Session} session - The current user session.
@@ -107,22 +108,22 @@ const editComponentRequestHandler = (component, socket, io, session, editionRegi
      */
 
     try {
-        editionRegister.registerEditionSession(session, component);
+        editionRegister.registerEditionSession(session, componentId);
         
         socket.emit(
             'notify',
             new ConfirmationRegisterEditionSessionCommunicate()
         )
 
-        const broadcastMessage = new RegisterEditSessionCommunicate(component, session.userId);
+        const broadcastMessage = new RegisterEditSessionCommunicate(componentId, session.userId);
         
         io.to(socket.projectId).emit('notify', broadcastMessage);
 
-        logger.info(`User ${session.userId} started editing component: ${component}`);
+        logger.info(`User ${session.userId} started editing component: ${componentId}`);
     }
     catch (error) {
         if (error instanceof ComponentIsNotExistException) {
-            logger.info(`User ${session.userId} tried to edit a non-existent component: ${component}`);
+            logger.info(`User ${session.userId} tried to edit a non-existent component: ${componentId}`);
 
             socket.emit(
                 'notify',
@@ -130,7 +131,7 @@ const editComponentRequestHandler = (component, socket, io, session, editionRegi
             );
         }
         else if (error instanceof ComponentIsAlreadyEditedException) {
-            logger.info(`User ${session.userId} tried to edit an already edited component: ${component}`);
+            logger.info(`User ${session.userId} tried to edit an already edited component: ${componentId}`);
 
             socket.emit(
                 'notify',
@@ -149,14 +150,14 @@ const editComponentRequestHandler = (component, socket, io, session, editionRegi
 };
 
 
-const finishedEditionRequestHandler = (component, session, socket, io, editionRegister) => {
+const finishedEditionRequestHandler = (componentId, session, socket, io, editionRegister) => {
     /**
      * Handles the request to finish an edition session.
      * 
      * Unregisters the edition session, broadcasts the event to other users, and sends appropriate notifications.
      * Handles errors if no edition session is active for the user.
      * 
-     * @param {string} component - The ID of the component being edited.
+     * @param {string} componentId - The ID of the component to be edited.
      * @param {Session} session - The current user session.
      * @param {Socket} socket - The socket object used to communicate with the client.
      * @param {SocketIO.Server} io - The server object used to communicate with all clients.
@@ -178,11 +179,11 @@ const finishedEditionRequestHandler = (component, session, socket, io, editionRe
             new ConfirmationUnregisterEditionSessionCommunicate()
         )
 
-        const broadcastMessage = new UnregisterEditSessionCommunicate(component);
+        const broadcastMessage = new UnregisterEditSessionCommunicate(componentId);
         
         io.to(socket.projectId).emit('notify', broadcastMessage);
 
-        logger.info(`User ${session.userId} finished editing component: ${component}`);
+        logger.info(`User ${session.userId} finished editing component: ${componentId}`);
     }
     catch (error) {
         if (error instanceof SessionIsNotRegisteredException) {
@@ -205,11 +206,11 @@ const finishedEditionRequestHandler = (component, session, socket, io, editionRe
 }
 
 
-const updateComponentRequestHandler = async (component, session, socket, editionRegister, new_val) => {
+const updateComponentRequestHandler = async (componentId, session, socket, editionRegister, new_val) => {
     /**
      * Handles the request to update a component, ensuring the session is active and properly manages responses.
      * 
-     * @param {string} component - The identifier of the component being updated.
+     * @param {string} componentId - The identifier of the component being updated.
      * @param {Object} session - The session object containing the user's details (e.g., userId, projectId).
      * @param {Object} editionRegister - The object that manages edition sessions for components.
      * @param {any} new_val - The new value that the component should be updated with.
@@ -223,8 +224,8 @@ const updateComponentRequestHandler = async (component, session, socket, edition
      */
     
     try {
-        if (!editionRegister.isEditionSessionActive(session, component)) {
-            logger.info(`User ${session.userId} tried to update a component that is not being edited: ${component}`);
+        if (!editionRegister.isEditionSessionActive(session, componentId)) {
+            logger.info(`User ${session.userId} tried to update a component that is not being edited: ${componentId}`);
             
             socket.emit(
                 'notify',
@@ -238,9 +239,11 @@ const updateComponentRequestHandler = async (component, session, socket, edition
             new_val: new_val
         };
 
-        updateComponentAPI(component, requestData);
+        const component = getComponentById(componentId);
 
-        logger.info(`User ${session.userId} updated component: ${component}`);
+        updateComponentAPI(component.name, requestData);
+
+        logger.info(`User ${session.userId} updated component: ${component.name}`);
         
         socket.emit(
             'notify',

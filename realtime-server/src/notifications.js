@@ -12,9 +12,9 @@ export class ComponentGeneratedCommunicate {
      */
     code = 0;
 
-    constructor(componentName, component) {
-        this.componentName = componentName;
-        this.component = component;
+    constructor(componentId, value) {
+        this.component = componentId;
+        this.value = value;
     }
 }
 
@@ -26,8 +26,8 @@ export class ComponentCreatedCommunicate {
      */
     code = 1;
 
-    constructor(componentName) {
-        this.componentName = componentName;
+    constructor(componentId) {
+        this.component = componentId;
     }
 }
 
@@ -39,8 +39,8 @@ export class RegisterEditSessionCommunicate {
      */
     code = 2;
     
-    constructor(componentName, userId) {
-        this.componentName = componentName;
+    constructor(componentId, userId) {
+        this.component = componentId;
         this.userId = userId;
     }
 }
@@ -53,8 +53,8 @@ export class UnregisterEditSessionCommunicate {
      */
     code = 3;
 
-    constructor(componentName) {
-        this.componentName = componentName;
+    constructor(componentId) {
+        this.component = componentId;
     }
 }
 
