@@ -3,8 +3,8 @@
  */
 
 import { isComponentIdCorrect } from "./model.js";
-import { InvalidArgument } from "./exceptions.js";
-import { ComponentIsAlreadyEdited } from "./exceptions.js";
+import { InvalidArgumentException } from "./exceptions.js";
+import { ComponentIsAlreadyEditedException } from "./exceptions.js";
 import { UserAlreadyHasActiveEditSessionException } from "./exceptions.js";
 
 
@@ -31,11 +31,11 @@ class ProjectEditionsRegister {
          * @throws {Error} If the component does not exist or is already being edited.
         */
         if (!isComponentIdCorrect(componentId)) {
-            throw new InvalidArgument("Invalid component id.");
+            throw new InvalidArgumentException("Invalid component id.");
         }
 
         if (this.isComponentAlreadyEdited(componentId)) {
-            throw new ComponentIsAlreadyEdited();
+            throw new ComponentIsAlreadyEditedException();
         }
 
         if (this.isActiveSessionForUser(session.userId)) {

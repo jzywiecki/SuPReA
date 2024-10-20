@@ -1,9 +1,15 @@
 import { getComponentById } from "./model.js";
 import { getAIImageModelById } from "./model.js";
 import { getAITextModelById } from "./model.js";
+import { isComponentIdCorrect } from "./model.js";
 import { UnsupportedRequestTypeException } from "./exceptions.js";
 import { InvalidArgumentException } from "./exceptions.js";
-import {updateComponentByAiAPI, regenerateComponentByAiAPI, questionToAiAPI} from './gateway.js';
+import { SessionIsNotRegisteredException } from "./exceptions.js";
+import {
+    updateComponentByAiAPI, 
+    regenerateComponentByAiAPI, 
+    questionToAiAPI} 
+from './gateway.js';
 import { Components } from './model.js';
 
 
@@ -111,7 +117,6 @@ const serveRegenerateRequestToAI = async (session, message, aiModel) => {
 
 const serveUpdateRequestToAI = async (session, message, aiModel) => {
     const component = getComponentById(message.componentId);
-    const aiModel = getAITextModelById(message.aiId);
 
     const requestData = {
         project_id: session.projectId,

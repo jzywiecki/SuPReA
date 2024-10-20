@@ -7,9 +7,13 @@ import { isMessageValid } from "./utils.js";
 import { isNumericIdCorrect } from "./utils.js";
 import { DiscussionChatNoOlderMessagesCommunicate } from "./notifications.js";
 import { AIChatNoOlderMessagesCommunicate } from "./notifications.js";
-import { serveUserMessageToAI } from './aiservice.js';
+import { serveUserMessageToAI } from './aiforward.js';
 
-import { InvalidArgumentException } from './exceptions.js'
+import { 
+    InvalidArgumentException,
+    SessionIsNotRegisteredException,
+    UnsupportedRequestTypeException
+} from './exceptions.js'
 
 import { ObjectId } from "mongodb";
 import 'dotenv/config';
@@ -41,6 +45,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
      * @param {Database} db - The database object used to interact with the project's data.
      * @param {Session} session - The user session object containing details like projectId and userId.
      * @param {ProjectChatsReference} projectChatsReference - References to the project's chats, containing properties like discussionChatId and aiChatId.
+     * @param {EditionRegister} editionRegister - The register object containing the edition status of the project.
     */
 
 
@@ -57,7 +62,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
         try {
             if (!isNumericIdCorrect(oldestReceivedMessageId)) {
                 logger.info("User requested older messages with wrong last message id.")
-                socket.emit('error', 'Invalid id parameter');
+                socket.emit('error', 'Cannot receive older messages. Invalid last message id parameter.');
                 return;
             }
     
@@ -74,8 +79,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
             logger.error(`Cannot get older messages from chat ${chatId}.`)
             logger.error(`Details: ${error.message}`);
             
-            socket.emit('error', 'INTERNAL SERVER ERROR');
-            socket.disconnect();
+            socket.emit('error', 'Internal server error. Cannot receive older messages.');
         }
     }
     
@@ -95,7 +99,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
         try {
             if (!isMessageValid(text)) {
                 logger.info("User tried to send invalid message.");
-                socket.emit('error', 'Invalid message format.');
+                socket.emit('error', 'Cannot send message. Invalid message format.');
                 return;
             }
     
@@ -109,8 +113,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
             logger.error(`Cannot add message to chat ${chatId}.`);
             logger.error(`Details: ${error.message}`);
     
-            socket.emit('error', 'INTERNAL SERVER ERROR');
-            socket.disconnect();
+            socket.emit('error', 'Internal server error. Cannot send message.');
     
             return false;
         }
@@ -132,12 +135,14 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
             ) {
                 logger.info("User encountered an error while sending a message to AI.");
                 logger.info(`Details: ${error.message}`);
-                socket.emit('error', error.message);
+
+                socket.emit('error', "Error during forwarding message to AI. " + error.message);
                 return;
             } else {
                 logger.error("Cannot serve user message to AI.");
                 logger.error(`Details: ${error.message}`);
-                socket.emit('error', 'INTERNAL SERVER ERROR');
+                
+                socket.emit('error', 'Internal server error. Cannot forward message to AI.');
             }
         }
     };
@@ -179,7 +184,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
 }
 
 
-export const transmitMessagesOnConnection = async (socket, projectChatsReference) => {
+export const transmitMessagesOnConnection = async (socket, db, projectChatsReference) => {
     /**
      * Transmits chat messages to the client upon connection or reconnection.
      * @param {Socket} socket - The socket object handling communication between the server and client.
@@ -223,7 +228,7 @@ export const transmitMessagesOnConnection = async (socket, projectChatsReference
         logger.error(`Cannot retransmit lost data.`);
         logger.error(`Details: ${error.message}`);
 
-        socket.emit('error', 'INTERNAL SERVER ERROR');
+        socket.emit('error', 'Internal server error. Cannot retransmit data on connection.');
         socket.disconnect();
     }
 };
@@ -248,9 +253,10 @@ export const sendMessageByAI = async (io, db, projectId, text) => {
         projectId = ObjectId.createFromHexString(projectId);
 
         const message = await db.addMessage(projectId, chatId, text, AI_ID);
+        const broadcastMessageEvent = 'receive-message-from-ai-chat';
 
-        io.to(socket.projectId).emit(broadcastMessageEvent, message);
+        io.to(projectId).emit(broadcastMessageEvent, message);
     } catch (error) {
-        logger.error(`Unexpected Error ${chatId}.`);
+        logger.error(`Unexpected Error ${error}.`);
     }
 }

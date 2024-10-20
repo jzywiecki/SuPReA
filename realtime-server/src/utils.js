@@ -14,7 +14,7 @@ export const logger = pino({
 
 
 export const isMessageValid = (message) => {
-    content = message?.content;
+    const content = message?.content;
 
     return !content || typeof content !== 'string' || content.length > 1000;
 }

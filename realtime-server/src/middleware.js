@@ -1,4 +1,5 @@
-import { ObjectId, BSONError } from "mongodb";
+import pkg from 'mongodb';
+const { ObjectId, BSONError } = pkg;
 import { logger } from "./utils.js";
 import { UserIsNotProjectMemberException } from "./exceptions.js";
 
@@ -47,6 +48,7 @@ export const authenticationMiddleware = (io, db) => {
                 }
 
                 next(error);
+                
             } else {
                 logger.error("Adapter Execution Failure")
                 logger.error(`Details: ${error.message}`)

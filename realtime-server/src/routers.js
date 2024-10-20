@@ -14,7 +14,7 @@ import { logger } from './utils.js';
 
 export const registerRouters = (app, aiService) => {
 
-    app.post('/event/generation-complete', (req, res) => {
+    app.post('/event/generation-lus', (req, res) => {
         aiService.notifyComponentCreated(req);
         res.status(200).send({});
     });
@@ -38,7 +38,7 @@ export const registerRouters = (app, aiService) => {
     });
 
 
-    app.use((err, req, res, next) => {
+    app.use((err, req, res, _next) => {
         logger.error(err.stack);
         res.status(500).send({ message: 'Internal Server Error' });
     });

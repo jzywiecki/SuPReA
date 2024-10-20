@@ -6,7 +6,7 @@ import { instrument } from "@socket.io/admin-ui";
 import { authenticationMiddleware } from './middleware.js';
 import { connectionService } from './connection.js';
 import { registerRouters } from './routers.js';
-import { EditionRegister } from './edition.js';
+import { EditionRegister } from './register.js';
 import { AIService } from './aiservice.js';
 import 'dotenv/config';
 

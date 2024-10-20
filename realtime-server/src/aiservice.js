@@ -44,7 +44,8 @@ export class AIService {
          * Sends a generated component to the user.
          * @param {Object} result - Object containing sessionId, componentName, and component.
         */
-        socket = this.getUserSocket(result.sessionId);
+        const socket = this.editionRegister?.getSession(result.sessionId)?.socket;
+
         if (!socket) {
             return;
         }
@@ -53,10 +54,5 @@ export class AIService {
             'notify',
             new ComponentGeneratedCommunicate(result.componentName, result.component)
         )
-    }
-
-
-    getUserSocket(sessionId) {
-        return this.editionRegister?.getSession(sessionId);
     }
 }

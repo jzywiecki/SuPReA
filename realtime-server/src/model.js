@@ -1,4 +1,4 @@
-import { ComponentIsNotExist } from "./exceptions.js";
+import { ComponentIsNotExistException } from "./exceptions.js";
 
 
 export const Components = Object.freeze({
@@ -21,7 +21,17 @@ export const getComponentById = (id) => {
     const model = Object.values(Components).find(model => model.id === id);
 
     if (!model) {
-        throw new ComponentIsNotExist(`Model with id ${id} does not exist.`);
+        throw new ComponentIsNotExistException(`Model with id ${id} does not exist.`);
+    }
+    return model;
+}
+
+
+export const getComponentyByName = (name) => {
+    const model = Object.values(Components).find(model => model.id === name);
+
+    if (!model) {
+        throw new ComponentIsNotExistException(`Model with name ${name} does not exist.`);
     }
     return model;
 }

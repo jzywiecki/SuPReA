@@ -4,6 +4,7 @@
  * - Requesting AI to generate or update a component via the main server API.
  */
 import 'dotenv/config'
+import axios from 'axios';
 
 
 const SERVER_URL = process.env.SERVER_URL;
@@ -24,7 +25,7 @@ const getRegenerateComponentByAiURL = (component) => {
 }
 
 
-const getQuestionToAiURL = (component) => {
+const getQuestionToAiURL = () => {
     return SERVER_URL + `/aiassistant/question`;
 }
 

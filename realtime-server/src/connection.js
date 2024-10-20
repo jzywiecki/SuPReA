@@ -9,6 +9,7 @@ import { registerChatEvents } from './chat.js';
 import { registerEditionEvents } from './edition.js';
 import { ObjectId } from 'mongodb';
 import { ProjectChatsReference } from './chat.js';
+import { logger } from './utils.js';
 
 
 export class Session {
@@ -60,13 +61,13 @@ export const connectionService = (io, db, editionRegister) => {
                 await db.getAiChatIdFromProject(session.projectId)
             )
             
-            transmitMessagesOnConnection(socket, projectChatsReference);
+            transmitMessagesOnConnection(socket, db, projectChatsReference);
 
             registerChatEvents(socket, io, db, session, projectChatsReference, editionRegister);
 
             transmitEditionsStatusOnConnection(socket, session, editionRegister);
 
-            registerEditionEvents(socket, session, editionRegister);
+            registerEditionEvents(socket, io, session, editionRegister);
 
             // Join the room for the project (using in broadcast communicates for project)
             socket.join(socket.projectId);
@@ -124,5 +125,7 @@ export const connectionService = (io, db, editionRegister) => {
 const attemptSafeSessionRemoval = (socket, editionRegister) => {
     try {
         editionRegister.removeSession(socket.id);
-    } catch (error) {}
+    } catch (error) {
+        //ignore exception.
+    }
 }
