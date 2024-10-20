@@ -6,6 +6,8 @@ import (
 	"auth-service/pkg/utils"
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -147,10 +149,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func Authenticate(r *http.Request) bool {
+func Authenticate(r *http.Request) (bool, error) {
 	tokenStr := r.Header.Get("Authorization")
 	if tokenStr == "" {
-		return false
+		return false, errors.New("did not provide any token")
 	}
 
 	claims := &Claims{}
@@ -159,7 +161,7 @@ func Authenticate(r *http.Request) bool {
 	})
 
 	if err != nil || !tkn.Valid {
-		return false
+		return false, fmt.Errorf("token is invalid %s", err.Error())
 	}
 
 	client := database.GetDatabaseConnection()
@@ -168,7 +170,7 @@ func Authenticate(r *http.Request) bool {
 	collection := database.GetCollection(client, "Users", "users")
 	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email, "token": tokenStr}).Decode(&user)
 
-	return err == nil
+	return err == nil, err
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
