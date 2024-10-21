@@ -1,16 +1,11 @@
 import { MongoClient } from 'mongodb';
-import 'dotenv/config'
-
-
-const URL = process.env.MONGODB_URL;
-const DATABASE_NAME = process.env.DATABASE_NAME;
 
 
 class Database {
     
-    constructor() {
-        this.client = new MongoClient(URL);
-        this.db = this.client.db(DATABASE_NAME);
+    constructor(url, dbName) {
+        this.client = new MongoClient(url);
+        this.db = this.client.db(dbName);
         this.chatCollection = this.db.collection('chats');
         this.projectCollection = this.db.collection('projects');
     }
@@ -91,7 +86,7 @@ class Database {
     }
 
 
-    async isUserIsProjectMember(projectId, userId) {
+    async isUserProjectMember(projectId, userId) {
         
         const project = await this.projectCollection.findOne({
             _id: projectId,
