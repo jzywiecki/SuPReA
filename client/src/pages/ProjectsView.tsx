@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
 import {
     Card,
     CardHeader,
@@ -97,7 +96,6 @@ const ProjectsView = () => {
         <div className="p-6">
             <h1 className="text-2xl font-bold mb-4">Projects</h1>
 
-            {/* Show owned projects */}
             {projects.owner.length > 0 && (
                 <>
                     <h2 className="text-xl font-semibold mb-2">Owned Projects</h2>
@@ -116,7 +114,9 @@ const ProjectsView = () => {
                                     <p><strong>For Who:</strong> {project.for_who}</p>
                                 </CardContent>
                                 <CardFooter className="flex justify-between">
+                                    <Link to={`/projects/${project.id}/settings`}>
                                     <Button variant="outline">Settings</Button>
+                                    </Link>
                                     <Link to={`/projects/${project.id}`}>
                                         <Button>Show project</Button>
                                     </Link>

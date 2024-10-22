@@ -23,6 +23,7 @@ import RegisterView from './pages/RegisterView';
 import LoginView from './pages/LoginView';
 import { UserProvider } from './components/UserProvider';
 import SearchAndAddFriends from './pages/SearchAndAddFriends';
+import ProjectsSettings from './pages/ProjectSettings';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
               <Route path="register" element={<RegisterView />} />
               <Route path="login" element={<LoginView />} />
               <Route path="/projects" element={<ProjectsView />} />
+              <Route path="/projects/:projectID/settings" element={<ProjectsSettings />} />
               <Route path="/projects/:projectID" element={<ProjectView />}>
                 <Route path="name" element={<NameList />} />
                 <Route path="requirements" element={<RequirementsList />} />
