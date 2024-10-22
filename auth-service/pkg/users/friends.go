@@ -2,9 +2,11 @@ package users
 
 import (
 	"auth-service/models"
+	"auth-service/pkg/auth"
 	"auth-service/pkg/database"
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,10 +15,12 @@ import (
 )
 
 func GetUserFriends(w http.ResponseWriter, r *http.Request) {
-	// if !auth.Authenticate(r) {
-	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	// 	return
-	// }
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	client := database.GetDatabaseConnection()
 
@@ -85,10 +89,12 @@ func GetUserFriends(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddUserToFriends(w http.ResponseWriter, r *http.Request) {
-	// if !auth.Authenticate(r) {
-	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	// 	return
-	// }
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	client := database.GetDatabaseConnection()
 	session, err := client.StartSession()
@@ -205,10 +211,12 @@ func AddUserToFriends(w http.ResponseWriter, r *http.Request) {
 }
 
 func AcceptUserToFriends(w http.ResponseWriter, r *http.Request) {
-	// if !auth.Authenticate(r) {
-	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	// 	return
-	// }
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	client := database.GetDatabaseConnection()
 	session, err := client.StartSession()
@@ -288,10 +296,12 @@ func AcceptUserToFriends(w http.ResponseWriter, r *http.Request) {
 }
 
 func RejectUserToFriends(w http.ResponseWriter, r *http.Request) {
-	// if !auth.Authenticate(r) {
-	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	// 	return
-	// }
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	client := database.GetDatabaseConnection()
 	session, err := client.StartSession()
@@ -372,10 +382,12 @@ func RejectUserToFriends(w http.ResponseWriter, r *http.Request) {
 }
 
 func RemoveFriend(w http.ResponseWriter, r *http.Request) {
-	// if !auth.Authenticate(r) {
-	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	// 	return
-	// }
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	client := database.GetDatabaseConnection()
 	session, err := client.StartSession()

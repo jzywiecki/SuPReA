@@ -2,11 +2,13 @@ package users
 
 import (
 	"auth-service/models"
+	"auth-service/pkg/auth"
 	"auth-service/pkg/database"
 	"auth-service/pkg/utils"
 	"auth-service/view"
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"regexp"
 
@@ -34,10 +36,12 @@ func NewUsersRouter() *chi.Mux {
 
 // GetUserByID retrieves a user by their ID
 func GetUserByID(w http.ResponseWriter, r *http.Request) {
-	// if !auth.Authenticate(r) {
-	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	// 	return
-	// }
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	// Extract user ID from URL path
 	userID := chi.URLParam(r, "id")
@@ -75,10 +79,12 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 
 // GetUsers retrieves a list of all users
 func GetUsers(w http.ResponseWriter, r *http.Request) {
-	// if !auth.Authenticate(r) {
-	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	// 	return
-	// }
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	client := database.GetDatabaseConnection()
 
@@ -115,11 +121,12 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUsersWithFilterQuery(w http.ResponseWriter, r *http.Request) {
-	// if !auth.Authenticate(r) {
-	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	// 	return
-	// }
-
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 	client := database.GetDatabaseConnection()
 
 	filter := r.URL.Query().Get("filter")
@@ -168,10 +175,12 @@ func GetUsersWithFilterQuery(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	// if !auth.Authenticate(r) {
-	// 	http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	// 	return
-	// }
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	// Extract user ID from URL path
 	userID := chi.URLParam(r, "id")
@@ -222,10 +231,12 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func PatchUser(w http.ResponseWriter, r *http.Request) {
-	// if !auth.Authenticate(r) {
-	//     http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	//     return
-	// }
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	// Extract user ID from URL path
 	userID := chi.URLParam(r, "id")
@@ -276,10 +287,12 @@ func PatchUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func ResetAvatar(w http.ResponseWriter, r *http.Request) {
-	// if !auth.Authenticate(r) {
-	//     http.Error(w, "Unauthorized", http.StatusUnauthorized)
-	//     return
-	// }
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	userID := chi.URLParam(r, "id")
 	if userID == "" {
