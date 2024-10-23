@@ -11,7 +11,6 @@ from .generate import Generate
 from .generate import GenerateWithMonitor
 from .generate import GenerateActor
 import callback.realtime_server as realtime_server
-import asyncio
 
 
 @ray.remote
@@ -42,10 +41,8 @@ def update_component_by_ai_task(
 
         component_identify = ray.get(update_component.get_component_identify.remote())
         component_value = ray.get(update_component.get_value.remote())
-        asyncio.get_event_loop().create_task(
-            realtime_server.notify_update_complete(
-                component_identify.value, component_value.json(), callback
-            )
+        realtime_server.notify_update_complete(
+            component_identify.value, component_value.json(), callback
         )
 
     except Exception as e:
@@ -69,10 +66,8 @@ def regenerate_component_by_ai_task(
 
         component_identify = ray.get(update_component.get_component_identify.remote())
         component_value = ray.get(update_component.get_value.remote())
-        asyncio.get_event_loop().create_task(
-            realtime_server.notify_regeneration_complete(
-                component_identify.value, component_value.json(), callback
-            )
+        realtime_server.notify_regeneration_complete(
+            component_identify.value, component_value.json(), callback
         )
 
     except Exception as e:

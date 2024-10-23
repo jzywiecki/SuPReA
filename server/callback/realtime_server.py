@@ -8,31 +8,52 @@ regeneration complete, and updates.
 
 import requests
 import os
+import threading
 
 URL = os.environ["REALTIME_SERVER_URL"]
 
 headers = {"Content-Type": "application/json"}
 
 
-async def notify_generation_complete(component, callback: str):
+def notify_generation_complete(component, callback: str):
     data = {"component": component, "callback": callback}
     url = URL + "/event/generation-complete"
-    return requests.post(url, json=data, headers=headers)
+
+    def send_request():
+        requests.post(url, json=data, headers=headers)
+
+    thread = threading.Thread(target=send_request)
+    thread.start()
 
 
-async def notify_regeneration_complete(component, value, callback: str):
+def notify_regeneration_complete(component, value, callback: str):
     data = {"component": component, "value": value, "callback": callback}
     url = URL + "/event/regeneration-complete"
-    return requests.post(url, json=data, headers=headers)
+
+    def send_request():
+        requests.post(url, json=data, headers=headers)
+
+    thread = threading.Thread(target=send_request)
+    thread.start()
 
 
-async def notify_update_complete(component, value, callback: str):
+def notify_update_complete(component, value, callback: str):
     data = {"component": component, "value": value, "callback": callback}
     url = URL + "/event/update-complete"
-    return requests.post(url, json=data, headers=headers)
+
+    def send_request():
+        requests.post(url, json=data, headers=headers)
+
+    thread = threading.Thread(target=send_request)
+    thread.start()
 
 
-async def send_question_answer(content, callback: str):
+def send_question_answer(content, callback: str):
     data = {"content": content, "callback": callback}
     url = URL + "/event/message"
-    return requests.post(url, json=data, headers=headers)
+
+    def send_request():
+        requests.post(url, json=data, headers=headers)
+
+    thread = threading.Thread(target=send_request)
+    thread.start()
