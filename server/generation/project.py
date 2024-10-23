@@ -151,6 +151,7 @@ class ProjectAIGenerationActor:
                         realtime_server.notify_generation_complete(
                             component_identify.value, self.callback
                         )
+
                     else:
                         self.failure_actor.append(actor)
                 except Exception as e:
