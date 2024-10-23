@@ -8,6 +8,7 @@ import ray
 from utils import logger
 from ai import AI
 import callback.realtime_server as realtime_server
+import asyncio
 
 
 @ray.remote
@@ -25,7 +26,9 @@ def ask_ai_about_project_task(
             f"Project details: {project_basic_details}"
         )
         response = ai_model.make_ai_call(question_with_project_details)
-        realtime_server.send_question_answer(response, callback)
+        asyncio.get_event_loop().create_task(
+            realtime_server.send_question_answer(response, callback)
+        )
 
     except Exception as e:
         logger.error(f"Error during generating answer for project. Details: {e}")
