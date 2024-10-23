@@ -8,11 +8,13 @@ import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import { API_URLS } from "@/services/apiUrls";
-import { AxiosInstance } from "axios";
 import axiosInstance from "@/services/api";
+import InviteModal from '@/components/InviteModal';
+import Search from '@/components/Search';
+import { useUser } from '@/components/UserProvider';
+import { User } from '@/pages/SearchAndAddFriends';
 
 interface ProjectSettings {
     name: string;
@@ -36,8 +38,19 @@ const membersList = [
 ];
 
 const ProjectSettings: React.FC = () => {
+    const { user } = useUser();
     const { projectID } = useParams();
     const [loading, setLoading] = useState(true);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+    const [searchResults, setSearchResults] = useState<User[]>([]);
+
+    const openInviteModal = () => {
+        setIsInviteModalOpen(true);
+    };
+
+    const closeInviteModal = () => {
+        setIsInviteModalOpen(false);
+    };
 
     const {
         register,
@@ -55,6 +68,15 @@ const ProjectSettings: React.FC = () => {
             managers: [],
         },
     });
+
+    const handleSearch = async (searchQuery: string) => {
+        try {
+            const response = await axiosInstance.get<User[]>(`${API_URLS.BASE_URL}/users/filter?user_id=${user?.id}&filter=${searchQuery}`);
+            setSearchResults(response.data);
+        } catch (error) {
+            console.error('Error searching users:', error);
+        }
+    };
 
     // Fetch current project settings
     useEffect(() => {
@@ -85,6 +107,17 @@ const ProjectSettings: React.FC = () => {
         } catch (error) {
         }
     };
+
+    const handleAddMember = async (friendId: string) => {
+        try {
+            const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/members/add`;
+
+            await axiosInstance.post(url);
+            closeInviteModal();
+        } catch (error) {
+            console.error('Error adding member:', error);
+        }
+    }
 
     const handleManagerSelect = (managerId: string) => {
         setValue("managers", [...new Set([...control._formValues.managers || [], managerId])]);
@@ -148,7 +181,7 @@ const ProjectSettings: React.FC = () => {
 
             <div>
                 <Label htmlFor="members" className="block text-sm font-medium text-gray-700">Members</Label>
-                <Button className="mt-1 w-full">Add Members</Button>
+                <Button className="mt-1 w-full" onClick={openInviteModal}>Add Members</Button>
                 <div className="mt-2">
                     {(control._formValues.members || []).map((id, index) => (
                         <span key={index} className="inline-flex items-center bg-green-100 text-green-800 text-sm px-2 py-1 rounded-full mr-2">
@@ -191,7 +224,18 @@ const ProjectSettings: React.FC = () => {
             </div>
 
             <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white">Save Settings</Button>
+            <InviteModal isOpen={isInviteModalOpen} onClose={closeInviteModal}>
+                <Search
+                    onSearch={handleSearch}
+                    searchResults={searchResults}
+                    friends={[]}
+                    onClick={handleAddMember}
+                    userId={user.id}
+                    actionType='addMember'
+                />
+            </InviteModal>
         </form>
+        
     );
 };
 
