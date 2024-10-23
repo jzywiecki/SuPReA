@@ -80,7 +80,7 @@ def create_project_by_ai(request) -> str:
         ai_text_model,
         ai_image_model,
         get_project_dao_ref,
-        request.callback,
+        new_project_id,
     )
 
     return new_project_id
