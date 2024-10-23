@@ -28,6 +28,7 @@ class Project(BaseModel):
     id: ObjectId = Field(alias="_id", default=None)
     name: str
     description: str
+    readme: str
     owner: ObjectId
     for_who: str
     doing_what: str

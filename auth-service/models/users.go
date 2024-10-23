@@ -10,7 +10,7 @@ type User struct {
 	Email        string             `json:"email"`
 	Password     string             `json:"-"`
 	Token        string             `json:"token"`
-	RefreshToken string             `json:"refreshtoken"`
+	RefreshToken string             `json:"refresh_token"`
 	Friends      []Friend           `json:"friends"`
 	Projects     []int              `json:"projects"`
 	AvatarURL    string             `json:"avatarurl"`
