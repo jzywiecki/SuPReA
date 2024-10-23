@@ -31,12 +31,6 @@ const managersList = [
     { id: "manager3", name: "Manager Three" },
 ];
 
-const membersList = [
-    { id: "member1", name: "Member One" },
-    { id: "member2", name: "Member Two" },
-    { id: "member3", name: "Member Three" },
-];
-
 const ProjectSettings: React.FC = () => {
     const { user } = useUser();
     const { projectID } = useParams();
