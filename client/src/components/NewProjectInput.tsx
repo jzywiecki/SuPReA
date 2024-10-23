@@ -116,12 +116,7 @@ const NewProjectInput = () => {
     }
 
 
-
-
-    // TO DO:
     const submitButton = (): void => {
-
-
 
         const isCorrectName = validateNameField();
         const isCorrectForWhoField = validateForWhoField();
@@ -132,7 +127,16 @@ const NewProjectInput = () => {
             return;
         }
 
-        // send api request to server
+        if (usedAi) {
+            createProjectByAi();
+        }
+        else {
+            createEmptyProject();
+        }
+    }
+
+
+    const createProjectByAi = () => {
         const request = {
             name: nameFieldRef.current?.value,
             for_who: forWhoFieldRef.current?.value,
@@ -148,15 +152,34 @@ const NewProjectInput = () => {
                 'Content-Type': 'application/json',
             },
         })
-            .then(response => {
-                console.log('Response:', response.data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-
-        alert("ok.");
+        .then(response => {
+            alert(`Created by AI! New project id: ${response.data}`);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
     }
+
+
+    const createEmptyProject = () => {
+        const request = {
+            name: nameFieldRef.current?.value,
+            owner_id: user?.id,
+        }
+
+        axiosInstance.post(`${API_URLS.API_SERVER_URL}/projects/create-empty`, request, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            alert(`Created empty! New project id: ${response.data}`);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
 
     return (
         <div className="isolate px-6 py-24 sm:py-32 lg:px-8">
