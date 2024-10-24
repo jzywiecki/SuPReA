@@ -148,8 +148,10 @@ class ProjectAIGenerationActor:
                         component_identify = ray.get(
                             actor.get_component_identify.remote()
                         )
-                        realtime_server.notify_generation_complete(
-                            component_identify.value, self.callback
+                        realtime_server.notify_task.remote(
+                            realtime_server.notify_generation_complete,
+                            component_identify.value,
+                            self.callback,
                         )
 
                     else:
@@ -170,8 +172,10 @@ class ProjectAIGenerationActor:
                 actor, error = ray.get(actor_ref)
                 if error is None:
                     component_identify = ray.get(actor.get_component_identify.remote())
-                    realtime_server.notify_generation_complete(
-                        component_identify.value, self.callback
+                    realtime_server.notify_task.remote(
+                        realtime_server.notify_generation_complete,
+                        component_identify.value,
+                        self.callback,
                     )
 
                 else:
