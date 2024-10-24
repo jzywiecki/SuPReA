@@ -64,7 +64,7 @@ function Profile() {
       })
       .catch(error => {
         console.error("There was an error resetting the avatar!", error);
-        enqueueSnackbar(`There was an error! ${error.response.status}`, { variant: 'error' });
+        enqueueSnackbar(`There was an error! ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
       });
   }
 
@@ -97,7 +97,7 @@ function Profile() {
         setIsEditing({ ...isEditing, [field]: false });
       })
       .catch(error => {
-        enqueueSnackbar(`There was an error updating the ${field}! ${error.response.status}`, { variant: 'error' });
+        enqueueSnackbar(`There was an error updating the ${field}! ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
         console.log(error)
       });
   };
@@ -121,7 +121,7 @@ function Profile() {
         setIsAvatarModalOpen(false);
       })
       .catch(error => {
-        enqueueSnackbar(`There was an error updating the avatar! ${error.response.status}`, { variant: 'error' });
+        enqueueSnackbar(`There was an error updating the avatar! ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
         console.log(error)
       });
   };

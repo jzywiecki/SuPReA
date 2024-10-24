@@ -72,15 +72,19 @@ const ProjectsView = () => {
 
     useEffect(() => {
         const fetchProjects = async () => {
+            if (!user?.id) {
+                return;
+            }
             try {
-                const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/list/${user?.id}`);
-                console.log(response.data); // Log the response data to check its structure
+                const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/list/${user.id}`);
+                console.log(response.data);
+                console.log(response.data.owner[0]);
                 setProjects(response.data);
             } catch (error) {
                 console.error('Error fetching projects:', error);
-                enqueueSnackbar(`Error fetching projects: ${error.response.status}`, { variant: 'error' });
+                enqueueSnackbar(`Error fetching projects ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
 
-                setProjects({ owner: [], member: [] }); // Ensure empty arrays on error
+                // setProjects({ owner: [], member: [] }); // Ensure empty arrays on error
             } finally {
                 setLoading(false); // Stop loading after the request is complete
             }
@@ -101,7 +105,8 @@ const ProjectsView = () => {
         <div className="p-6">
             <h1 className="text-2xl font-bold mb-4">Projects</h1>
 
-            {projects.owner.length > 0 && (
+            {/* Show owned projects */}
+            {user.id && projects.owner.length > 0 && (
                 <>
                     <h2 className="text-xl font-semibold mb-2">Owned Projects</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -112,7 +117,15 @@ const ProjectsView = () => {
                                     <CardDescription>{project.description}</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <p><strong>Created At:</strong> {new Date(project.created_at).toLocaleDateString()}</p>
+                                    <p><strong>Created At:</strong> {new Date(project.created_at).toLocaleDateString("pl-PL",
+                                        {
+                                            year: "numeric",
+                                            month: "long",  // "long" daje nazwę miesiąca
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        }
+                                    )}</p>
                                     <p><strong>Owner:</strong> {project.owner}</p>
                                     <p><strong>Additional Info:</strong> {project.additional_info}</p>
                                     <p><strong>Doing What:</strong> {project.doing_what}</p>
@@ -120,7 +133,7 @@ const ProjectsView = () => {
                                 </CardContent>
                                 <CardFooter className="flex justify-between">
                                     <Link to={`/projects/${project.id}/settings`}>
-                                    <Button variant="outline">Settings</Button>
+                                        <Button variant="outline">Settings</Button>
                                     </Link>
                                     <Link to={`/projects/${project.id}`}>
                                         <Button>Show project</Button>

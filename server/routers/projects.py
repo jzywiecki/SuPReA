@@ -2,6 +2,7 @@
 This module contains the routers for the projects.
 """
 
+from datetime import datetime
 from bson import ObjectId
 from typing import List
 from fastapi import APIRouter, status, Response
@@ -122,6 +123,7 @@ class ProjectsListResponse(BaseModel):
         name: str
         description: str
         owner: ObjectId
+        created_at: datetime
 
         class Config:
             arbitrary_types_allowed = True

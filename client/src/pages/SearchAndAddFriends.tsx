@@ -36,7 +36,7 @@ const SearchAndAddFriends: React.FC = () => {
             const response = await axiosInstance.get<User[]>(`${API_URLS.BASE_URL}/users/friends?id=${user?.id}`);
             setFriends(response.data);
         } catch (error) {
-            enqueueSnackbar(`Error fetching friends: ${error.response.status}`, { variant: 'error' });
+            enqueueSnackbar(`Error fetching friends: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error('Error fetching friends:', error);
         }
     };
@@ -46,7 +46,7 @@ const SearchAndAddFriends: React.FC = () => {
             const response = await axiosInstance.get<User[]>(`${API_URLS.BASE_URL}/users/filter?user_id=${user?.id}&filter=${searchQuery}`);
             setSearchResults(response.data);
         } catch (error) {
-            enqueueSnackbar(`Error searching users: ${error.response.status}`, { variant: 'error' });
+            enqueueSnackbar(`Error searching users: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error('Error searching users:', error);
         }
     };
@@ -57,7 +57,7 @@ const SearchAndAddFriends: React.FC = () => {
             await axiosInstance.post(url);
             fetchFriends();
         } catch (error) {
-            enqueueSnackbar(`Error adding friend: ${error.response.status}`, { variant: 'error' });
+            enqueueSnackbar(`Error adding friend: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error('Error adding friend:', error);
         }
     };
@@ -67,7 +67,7 @@ const SearchAndAddFriends: React.FC = () => {
             await axiosInstance.post(`${API_URLS.BASE_URL}/users/friends/accept`, { user_id: user?.id, friend_id: friendId });
             fetchFriends();
         } catch (error) {
-            enqueueSnackbar(`Error accepting invitation: ${error.response.status}`, { variant: 'error' });
+            enqueueSnackbar(`Error accepting invitation: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error('Error accepting invitation:', error);
         }
     };
@@ -77,7 +77,7 @@ const SearchAndAddFriends: React.FC = () => {
             await axiosInstance.post(`${API_URLS.BASE_URL}/users/friends/reject`, { user_id: user?.id, friend_id: friendId });
             fetchFriends();
         } catch (error) {
-            enqueueSnackbar(`Error rejecting invitation: ${error.response.status}`, { variant: 'error' });
+            enqueueSnackbar(`Error rejecting invitation: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error('Error rejecting invitation:', error);
         }
     };
@@ -87,7 +87,7 @@ const SearchAndAddFriends: React.FC = () => {
             await axiosInstance.post(`${API_URLS.BASE_URL}/users/friends/remove`, { user_id: user?.id, friend_id: friendId });
             fetchFriends();
         } catch (error) {
-            enqueueSnackbar(`Error rejecting invitation: ${error.response.status}`, { variant: 'error' });
+            enqueueSnackbar(`Error rejecting invitation: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error('Error rejecting invitation:', error);
         }
     };

@@ -159,7 +159,7 @@ const NewProjectInput = () => {
             })
             .catch(error => {
                 console.error('Error:', error);
-                enqueueSnackbar(`Error occured: ${error.response.status}`, { variant: 'error' });
+                enqueueSnackbar(`Error occured: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             });
 
 

@@ -119,7 +119,7 @@ const ProjectView = ({ }) => {
             const response = await axiosInstance.get<User[]>(`${API_URLS.BASE_URL}/users/filter?user_id=${user?.id}&filter=${searchQuery}`);
             setSearchResults(response.data);
         } catch (error) {
-            enqueueSnackbar(`Error searching users: ${error.response.status}`, { variant: 'error' });
+            enqueueSnackbar(`Error searching users: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error('Error searching users:', error);
         }
     };
@@ -131,7 +131,7 @@ const ProjectView = ({ }) => {
             await axiosInstance.post(url);
             closeInviteModal();
         } catch (error) {
-            enqueueSnackbar(`Error adding member: ${error.response.status}`, { variant: 'error' });
+            enqueueSnackbar(`Error adding member: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error('Error adding member:', error);
         }
     }
