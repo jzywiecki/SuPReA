@@ -41,8 +41,11 @@ def update_component_by_ai_task(
 
         component_identify = ray.get(update_component.get_component_identify.remote())
         component_value = ray.get(update_component.get_value.remote())
-        realtime_server.notify_update_complete(
-            component_identify.value, component_value.json(), callback
+        realtime_server.notify_task.remote(
+            realtime_server.notify_update_complete,
+            component_identify.value,
+            component_value.json(),
+            callback,
         )
 
     except Exception as e:
@@ -66,8 +69,11 @@ def regenerate_component_by_ai_task(
 
         component_identify = ray.get(update_component.get_component_identify.remote())
         component_value = ray.get(update_component.get_value.remote())
-        realtime_server.notify_regeneration_complete(
-            component_identify.value, component_value.json(), callback
+        realtime_server.notify_task.remote(
+            realtime_server.notify_regeneration_complete,
+            component_identify.value,
+            component_value.json(),
+            callback,
         )
 
     except Exception as e:

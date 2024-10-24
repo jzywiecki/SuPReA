@@ -8,7 +8,8 @@ regeneration complete, and updates.
 
 import requests
 import os
-import threading
+import ray
+from utils.loggers import logger
 
 URL = os.environ["REALTIME_SERVER_URL"]
 
@@ -19,41 +20,34 @@ def notify_generation_complete(component, callback: str):
     data = {"component": component, "callback": callback}
     url = URL + "/event/generation-complete"
 
-    def send_request():
-        requests.post(url, json=data, headers=headers)
-
-    thread = threading.Thread(target=send_request)
-    thread.start()
+    requests.post(url, json=data, headers=headers)
 
 
 def notify_regeneration_complete(component, value, callback: str):
     data = {"component": component, "value": value, "callback": callback}
     url = URL + "/event/regeneration-complete"
 
-    def send_request():
-        requests.post(url, json=data, headers=headers)
-
-    thread = threading.Thread(target=send_request)
-    thread.start()
+    requests.post(url, json=data, headers=headers)
 
 
 def notify_update_complete(component, value, callback: str):
     data = {"component": component, "value": value, "callback": callback}
     url = URL + "/event/update-complete"
 
-    def send_request():
-        requests.post(url, json=data, headers=headers)
-
-    thread = threading.Thread(target=send_request)
-    thread.start()
+    requests.post(url, json=data, headers=headers)
 
 
 def send_question_answer(content, callback: str):
     data = {"content": content, "callback": callback}
     url = URL + "/event/message"
 
-    def send_request():
-        requests.post(url, json=data, headers=headers)
+    requests.post(url, json=data, headers=headers)
 
-    thread = threading.Thread(target=send_request)
-    thread.start()
+
+@ray.remote
+def notify_task(func, *data):
+    try:
+        func(*data)
+    except Exception as e:
+        logger.error("Unreachable realtime server.")
+        logger.error(f"Error: {e}")
