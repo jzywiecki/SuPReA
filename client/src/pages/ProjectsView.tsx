@@ -13,6 +13,8 @@ import { Link } from 'react-router-dom';
 import { useUser } from '@/components/UserProvider';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
+import { useSnackbar } from 'notistack';
+
 
 type Project = {
     id: string;
@@ -66,6 +68,7 @@ const ProjectsView = () => {
     const { user } = useUser();
     const [projects, setProjects] = useState<ProjectResponse>({ owner: [], member: [] });
     const [loading, setLoading] = useState(true);  // Loading state to handle the data fetching process
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -75,6 +78,8 @@ const ProjectsView = () => {
                 setProjects(response.data);
             } catch (error) {
                 console.error('Error fetching projects:', error);
+                enqueueSnackbar(`Error fetching projects: ${error.response.status}`, { variant: 'error' });
+
                 setProjects({ owner: [], member: [] }); // Ensure empty arrays on error
             } finally {
                 setLoading(false); // Stop loading after the request is complete

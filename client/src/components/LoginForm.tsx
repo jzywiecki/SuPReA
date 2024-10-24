@@ -1,15 +1,19 @@
 import React, { useState, useRef } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import axios from 'axios';
 import { useUser } from './UserProvider';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
+import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 const LoginForm: React.FC = () => {
+    const navigate = useNavigate();
+    const { enqueueSnackbar } = useSnackbar();
     const { login } = useUser();
     const [emailFieldError, setEmailFieldError] = useState<string>("");
     const [passwordFieldError, setPasswordFieldError] = useState<string>("");
+
 
     const emailFieldRef = useRef<HTMLInputElement>(null);
     const passwordFieldRef = useRef<HTMLInputElement>(null);
@@ -57,23 +61,24 @@ const LoginForm: React.FC = () => {
                 'Content-Type': 'application/json',
             },
         })
-        .then(response => {
-            console.log(response.data);
-            const userData = {
-                email: response.data.email,
-                username: response.data.username,
-                avatarurl: response.data.avatarurl,
-                id: response.data.id,
-            };
-            login(userData, response.data.access_token, response.data.refresh_token);
-            alert('Logged in!');
-        })
-        .catch(error => {
-            console.error('Error logging in:', error);
-            alert('Error logging in. Please try again.');
-        });
+            .then(response => {
+                console.log(response.data);
+                const userData = {
+                    email: response.data.email,
+                    username: response.data.username,
+                    avatarurl: response.data.avatarurl,
+                    id: response.data.id,
+                };
+                login(userData, response.data.access_token, response.data.refresh_token);
+                navigate("/projects")
+                enqueueSnackbar('Logged in!', { variant: 'success' });
+            })
+            .catch(error => {
+                console.error('Error logging in:', error);
+                enqueueSnackbar('Error logging in.', { variant: 'error' });
+            });
     };
- 
+
     return (
         <div className="isolate px-6 py-24 sm:py-32 lg:px-8">
             <div

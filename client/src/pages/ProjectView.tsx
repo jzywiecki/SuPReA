@@ -12,15 +12,15 @@ import {
 import ConnectionStatus from '@/components/ui/connection-status';
 import InviteModal from '@/components/InviteModal';
 import Search from '@/components/Search';
-import axios from 'axios';
 import { User } from '@/pages/SearchAndAddFriends';
 import { useUser } from '@/components/UserProvider';
 import { API_URLS } from '@/services/apiUrls';
 import axiosInstance from '@/services/api';
-import {socket} from '@/utils/sockets';
+import { socket } from '@/utils/sockets';
 import { getComponentById } from '@/utils/enums';
 import { GenerationResponse } from '@/utils/generation';
 
+import { useSnackbar } from 'notistack';
 
 const ProjectView = ({ }) => {
     const { user } = useUser();
@@ -96,6 +96,7 @@ const ProjectView = ({ }) => {
         };
     }, []);
 
+    const { enqueueSnackbar } = useSnackbar();
 
     const openInviteModal = () => {
         setIsInviteModalOpen(true);
@@ -118,6 +119,7 @@ const ProjectView = ({ }) => {
             const response = await axiosInstance.get<User[]>(`${API_URLS.BASE_URL}/users/filter?user_id=${user?.id}&filter=${searchQuery}`);
             setSearchResults(response.data);
         } catch (error) {
+            enqueueSnackbar(`Error searching users: ${error.response.status}`, { variant: 'error' });
             console.error('Error searching users:', error);
         }
     };
@@ -129,6 +131,7 @@ const ProjectView = ({ }) => {
             await axiosInstance.post(url);
             closeInviteModal();
         } catch (error) {
+            enqueueSnackbar(`Error adding member: ${error.response.status}`, { variant: 'error' });
             console.error('Error adding member:', error);
         }
     }
@@ -158,7 +161,7 @@ const ProjectView = ({ }) => {
                 </Button>
             </div>
 
-             <ResizablePanelGroup
+            <ResizablePanelGroup
                 direction="horizontal"
                 className="w-full border"
             >
@@ -192,8 +195,8 @@ const ProjectView = ({ }) => {
                         </Button>
 
                     </div>
-                    <Chat 
-                        isCollapsed={isCollapsedRight} 
+                    <Chat
+                        isCollapsed={isCollapsedRight}
                     />
                 </ResizablePanel>
             </ResizablePanelGroup>

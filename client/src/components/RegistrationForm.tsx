@@ -1,16 +1,18 @@
 import React, { useState, useRef } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import axios from 'axios';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
+import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterForm: React.FC = () => {
     const [emailFieldError, setEmailFieldError] = useState<string>("");
     const [passwordFieldError, setPasswordFieldError] = useState<string>("");
     const [confirmPasswordFieldError, setConfirmPasswordFieldError] = useState<string>("");
     const [nameFieldError, setNameFieldError] = useState<string>("");
-
+    const { enqueueSnackbar } = useSnackbar();
+    const navigate = useNavigate();
     const emailFieldRef = useRef<HTMLInputElement>(null);
     const passwordFieldRef = useRef<HTMLInputElement>(null);
     const confirmPasswordFieldRef = useRef<HTMLInputElement>(null);
@@ -88,15 +90,17 @@ const RegisterForm: React.FC = () => {
                 'Content-Type': 'application/json',
             },
         })
-        .then(response => {
-            console.log(response.data);
-            alert("Registration successful.");
-        })
-        .catch(error => {
-            console.error('Error registering:', error);
-            alert("Error registering.");
-            return;
-        });
+            .then(response => {
+                console.log(response.data);
+                navigate("/create-project")
+                enqueueSnackbar('Registration successful.', { variant: 'success' });
+
+            })
+            .catch(error => {
+                console.error('Error registering:', error);
+                enqueueSnackbar('Error registering.', { variant: 'error' });
+                return;
+            });
 
     };
 
@@ -123,7 +127,7 @@ const RegisterForm: React.FC = () => {
             <div className="mx-auto mt-16 max-w-xl sm:mt-20">
                 <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
                     <div className="sm:col-span-2">
-                    <label htmlFor="name" className="block text-sm font-semibold leading-6 ">
+                        <label htmlFor="name" className="block text-sm font-semibold leading-6 ">
                             username
                         </label>
                         <div className="mt-2.5">
