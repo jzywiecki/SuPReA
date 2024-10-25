@@ -78,7 +78,9 @@ const ProjectSettings: React.FC = () => {
             try {
                 const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/${projectID}`);
                 const projectData = response.data;
-                
+
+                const members = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`)
+                console.log(members) 
                 // Ensure members and managers are initialized as arrays
                 setValue("name", projectData.name || "");
                 setValue("description", projectData.description || "");
@@ -163,11 +165,11 @@ const ProjectSettings: React.FC = () => {
             </div>
 
             <div>
-                <Label htmlFor="owner" className="block text-sm font-medium text-gray-700">Owner ID</Label>
+                <Label htmlFor="owner" className="block text-sm font-medium text-gray-700">Owner</Label>
                 <Input
                     id="owner"
                     {...register("owner", { required: true })}
-                    placeholder="Owner ObjectId"
+                    placeholder="Owner"
                     className="mt-1 block w-full"
                 />
                 {errors.owner && <p className="text-red-500 text-sm mt-1">This field is required</p>}

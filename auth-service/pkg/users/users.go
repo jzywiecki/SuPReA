@@ -23,6 +23,7 @@ func NewUsersRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Get("/", GetUsers)
 	r.Get("/{id}", GetUserByID)
+	r.Get("/projects/{project_id}", GetUsersByProjectID)
 	r.Patch("/{id}", PatchUser)
 	r.Post("/{id}/reset-avatar", ResetAvatar)
 	r.Get("/friends", GetUserFriends)
@@ -111,6 +112,89 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	usersView := make([]view.UserView, 0, len(users))
+	for _, user := range users {
+		usersView = append(usersView, view.NewUserView(user))
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(usersView)
+}
+
+func GetUsersByProjectID(w http.ResponseWriter, r *http.Request) {
+	isAuthenticated, err := auth.Authenticate(r)
+	if !isAuthenticated {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	client := database.GetDatabaseConnection()
+
+	projectID := chi.URLParam(r, "project_id")
+	if projectID == "" {
+		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+
+	// Convert user ID string to MongoDB ObjectID
+	projectObjectID, err := primitive.ObjectIDFromHex(projectID)
+	if err != nil {
+		http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+		return
+	}
+
+	var projectDoc bson.M
+	projectsCollection := database.GetCollection(client, "Projects", "projects")
+	err = projectsCollection.FindOne(context.Background(), bson.M{"_id": projectObjectID}).Decode(&projectDoc)
+	if err != nil {
+		http.Error(w, "Project not found", http.StatusNotFound)
+		return
+	}
+
+	// Extract the "members" array from the project document
+	membersIDs, ok := projectDoc["members"].(bson.A)
+	if !ok || len(membersIDs) == 0 {
+		http.Error(w, "No members found in the project", http.StatusNotFound)
+		return
+	}
+
+	var objectIDs []primitive.ObjectID
+	for _, id := range membersIDs {
+		objectID, ok := id.(primitive.ObjectID)
+		if ok {
+			objectIDs = append(objectIDs, objectID)
+		} else {
+			log.Printf("Invalid member ID found: %v", id)
+		}
+	}
+
+	var users []models.User
+	usersCollection := database.GetCollection(client, "Users", "users")
+	cursor, err := usersCollection.Find(context.Background(), bson.M{
+		"_id": bson.M{"$in": objectIDs},
+	})
+	if err != nil {
+		http.Error(w, "Error retrieving users", http.StatusInternalServerError)
+		return
+	}
+	defer cursor.Close(context.Background())
+
+	// Decode the users from the cursor
+	for cursor.Next(context.Background()) {
+		var user models.User
+		if err := cursor.Decode(&user); err != nil {
+			http.Error(w, "Error decoding user", http.StatusInternalServerError)
+			return
+		}
+		users = append(users, user)
+	}
+
+	if err := cursor.Err(); err != nil {
+		http.Error(w, "Cursor error", http.StatusInternalServerError)
+		return
+	}
+
+	// Create user views and return them as JSON
 	usersView := make([]view.UserView, 0, len(users))
 	for _, user := range users {
 		usersView = append(usersView, view.NewUserView(user))
