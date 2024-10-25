@@ -7,7 +7,6 @@ import {
     CardContent,
 } from '@/components/ui/card';
 import './styles.css';
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import RegenerateContext from '@/components/contexts/RegenerateContext';
 import axiosInstance from "@/services/api";

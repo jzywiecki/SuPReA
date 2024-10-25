@@ -21,7 +21,7 @@ const Navbar = () => {
 
     return (
         <nav className="flex items-center justify-between px-6 py-4 h-16 z-50 relative">
-            <Link to="/" className="text-xl font-semibold">Visio</Link>
+            <Link to="/" className="text-3xl font-semibold">Visio</Link>
             <ul className="flex items-center gap-6 font-medium">
                 {user ? (
                     <>
