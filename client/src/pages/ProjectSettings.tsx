@@ -22,7 +22,7 @@ interface ProjectSettings {
     readme: string;
     owner: string;
     members: Members[];
-    managers: string[];
+    managers: Members[]; // Change to Members[]
 }
 
 interface Members {
@@ -32,18 +32,13 @@ interface Members {
     avatarurl: string;
 }
 
-const managersList = [
-    { id: "manager1", name: "Manager One" },
-    { id: "manager2", name: "Manager Two" },
-    { id: "manager3", name: "Manager Three" },
-];
-
 const ProjectSettings: React.FC = () => {
     const { user } = useUser();
     const { projectID } = useParams();
     const [loading, setLoading] = useState(true);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [searchResults, setSearchResults] = useState<User[]>([]);
+    const [allMembers, setAllMembers] = useState<Members[]>([]); // Store all members
 
     const openInviteModal = () => {
         setIsInviteModalOpen(true);
@@ -89,6 +84,7 @@ const ProjectSettings: React.FC = () => {
                 // Fetch members with full details (name, email, etc.)
                 const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
                 const usersData = membersResponse.data as Members[];
+                setAllMembers(usersData); // Store all members for manager selection
                 console.log(usersData);
                 
                 // Set form values with fetched project data and members
@@ -97,7 +93,7 @@ const ProjectSettings: React.FC = () => {
                 setValue("readme", projectData.readme || "");
                 setValue("owner", projectData.owner || "");
                 setValue("members", usersData || []);
-                setValue("managers", projectData.managers || []);
+                setValue("managers", projectData.managers.map(managerId => usersData.find(member => member.id === managerId)).filter(Boolean) || []);
             } catch (error) {
                 console.error("Failed to fetch project settings", error);
             } finally {
@@ -127,12 +123,15 @@ const ProjectSettings: React.FC = () => {
         }
     };
 
-    const handleManagerSelect = (managerId: string) => {
-        setValue("managers", [...new Set([...control._formValues.managers || [], managerId])]);
+    const handleManagerSelect = (manager: Members) => {
+        const currentManagers = control._formValues.managers || [];
+        if (!currentManagers.find((m: Members) => m.id === manager.id)) {
+            setValue("managers", [...currentManagers, manager]);
+        }
     };
 
     const handleManagerRemove = (managerId: string) => {
-        setValue("managers", (control._formValues.managers || []).filter(id => id !== managerId));
+        setValue("managers", (control._formValues.managers || []).filter((manager: Members) => manager.id !== managerId));
     };
 
     const handleMemberRemove = (memberId: string) => {
@@ -207,25 +206,25 @@ const ProjectSettings: React.FC = () => {
                         <Button className="mt-1 w-full">Select Managers</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        {managersList.length > 0 ? (
-                            managersList.map((manager) => (
+                        {allMembers.length > 0 ? (
+                            allMembers.map((member) => (
                                 <DropdownMenuItem
-                                    key={manager.id}
-                                    onClick={() => handleManagerSelect(manager.id)}
+                                    key={member.id}
+                                    onClick={() => handleManagerSelect(member)}
                                 >
-                                    {manager.name}
+                                    {member.name}
                                 </DropdownMenuItem>
                             ))
                         ) : (
-                            <DropdownMenuItem disabled>No managers available</DropdownMenuItem>
+                            <DropdownMenuItem disabled>No members available</DropdownMenuItem>
                         )}
                     </DropdownMenuContent>
                 </DropdownMenu>
                 <div className="mt-2">
-                    {(control._formValues.managers || []).map((id, index) => (
+                    {(control._formValues.managers || []).map((manager, index) => (
                         <span key={index} className="inline-flex items-center bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full mr-2">
-                            {id}
-                            <button onClick={() => handleManagerRemove(id)} className="ml-1 text-red-500 hover:text-red-700">&times;</button>
+                            {manager.name}
+                            <button onClick={() => handleManagerRemove(manager.id)} className="ml-1 text-red-500 hover:text-red-700">&times;</button>
                         </span>
                     ))}
                 </div>
