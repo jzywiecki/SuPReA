@@ -20,7 +20,7 @@ interface ProjectSettings {
     name: string;
     description: string;
     readme: string;
-    owner: Members | null; // Updated to store full member object or null
+    owner: Members | null; 
     members: Members[];
     managers: Members[];
 }
@@ -29,7 +29,6 @@ interface Members {
     id: string;
     name: string;
     email: string;
-    avatarurl: string;
 }
 
 const ProjectSettings: React.FC = () => {
@@ -38,7 +37,7 @@ const ProjectSettings: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [searchResults, setSearchResults] = useState<User[]>([]);
-    const [allMembers, setAllMembers] = useState<Members[]>([]); // Store all members
+    const [allMembers, setAllMembers] = useState<Members[]>([]); 
 
     const openInviteModal = () => {
         setIsInviteModalOpen(true);
@@ -59,7 +58,7 @@ const ProjectSettings: React.FC = () => {
             name: "",
             description: "",
             readme: "",
-            owner: null, // Initialize as null
+            owner: null, 
             members: [],
             managers: [],
         },
@@ -81,13 +80,11 @@ const ProjectSettings: React.FC = () => {
                 const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/${projectID}`);
                 const projectData = response.data;
 
-                // Fetch members with full details (name, email, etc.)
                 const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
                 const usersData = membersResponse.data as Members[];
-                setAllMembers(usersData); // Store all members for dropdown selection
+                setAllMembers(usersData); 
                 console.log(usersData);
                 
-                // Set form values with fetched project data and members
                 setValue("name", projectData.name || "");
                 setValue("description", projectData.description || "");
                 setValue("readme", projectData.readme || "");
@@ -106,7 +103,6 @@ const ProjectSettings: React.FC = () => {
 
     const onSubmit = async (data: ProjectSettings) => {
         try {
-            // handle submission logic
         } catch (error) {
             console.error('Error submitting project settings:', error);
         }
