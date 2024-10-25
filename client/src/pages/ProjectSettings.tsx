@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -20,9 +20,9 @@ interface ProjectSettings {
     name: string;
     description: string;
     readme: string;
-    owner: string;
+    owner: Members | null; // Updated to store full member object or null
     members: Members[];
-    managers: Members[]; // Change to Members[]
+    managers: Members[];
 }
 
 interface Members {
@@ -59,7 +59,7 @@ const ProjectSettings: React.FC = () => {
             name: "",
             description: "",
             readme: "",
-            owner: "",
+            owner: null, // Initialize as null
             members: [],
             managers: [],
         },
@@ -84,14 +84,14 @@ const ProjectSettings: React.FC = () => {
                 // Fetch members with full details (name, email, etc.)
                 const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
                 const usersData = membersResponse.data as Members[];
-                setAllMembers(usersData); // Store all members for manager selection
+                setAllMembers(usersData); // Store all members for dropdown selection
                 console.log(usersData);
                 
                 // Set form values with fetched project data and members
                 setValue("name", projectData.name || "");
                 setValue("description", projectData.description || "");
                 setValue("readme", projectData.readme || "");
-                setValue("owner", projectData.owner || "");
+                setValue("owner", usersData.find(member => member.id === projectData.owner) || null);
                 setValue("members", usersData || []);
                 setValue("managers", projectData.managers.map(managerId => usersData.find(member => member.id === managerId)).filter(Boolean) || []);
             } catch (error) {
@@ -138,6 +138,10 @@ const ProjectSettings: React.FC = () => {
         setValue("members", (control._formValues.members || []).filter(member => member.id !== memberId));
     };
 
+    const handleOwnerSelect = (owner: Members) => {
+        setValue("owner", owner);
+    };
+
     if (loading) {
         return <p>Loading...</p>;
     }
@@ -177,13 +181,27 @@ const ProjectSettings: React.FC = () => {
 
             <div>
                 <Label htmlFor="owner" className="block text-sm font-medium text-gray-700">Owner</Label>
-                <Input
-                    id="owner"
-                    {...register("owner", { required: true })}
-                    placeholder="Owner"
-                    className="mt-1 block w-full"
-                />
-                {errors.owner && <p className="text-red-500 text-sm mt-1">This field is required</p>}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button className="mt-1 w-full">
+                            {control._formValues.owner ? control._formValues.owner.name : "Select Owner"}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        {allMembers.length > 0 ? (
+                            allMembers.map((member) => (
+                                <DropdownMenuItem
+                                    key={member.id}
+                                    onClick={() => handleOwnerSelect(member)}
+                                >
+                                    {member.name}
+                                </DropdownMenuItem>
+                            ))
+                        ) : (
+                            <DropdownMenuItem disabled>No members available</DropdownMenuItem>
+                        )}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             <div>
