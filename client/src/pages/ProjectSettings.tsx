@@ -21,8 +21,15 @@ interface ProjectSettings {
     description: string;
     readme: string;
     owner: string;
-    members: string[];
+    members: Members[];
     managers: string[];
+}
+
+interface Members {
+    id: string;
+    name: string;
+    email: string;
+    avatarurl: string;
 }
 
 const managersList = [
@@ -79,14 +86,17 @@ const ProjectSettings: React.FC = () => {
                 const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/${projectID}`);
                 const projectData = response.data;
 
-                const members = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`)
-                console.log(members) 
-                // Ensure members and managers are initialized as arrays
+                // Fetch members with full details (name, email, etc.)
+                const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
+                const usersData = membersResponse.data as Members[];
+                console.log(usersData);
+                
+                // Set form values with fetched project data and members
                 setValue("name", projectData.name || "");
                 setValue("description", projectData.description || "");
                 setValue("readme", projectData.readme || "");
                 setValue("owner", projectData.owner || "");
-                setValue("members", projectData.members || []);
+                setValue("members", usersData || []);
                 setValue("managers", projectData.managers || []);
             } catch (error) {
                 console.error("Failed to fetch project settings", error);
@@ -100,7 +110,9 @@ const ProjectSettings: React.FC = () => {
 
     const onSubmit = async (data: ProjectSettings) => {
         try {
+            // handle submission logic
         } catch (error) {
+            console.error('Error submitting project settings:', error);
         }
     };
 
@@ -113,7 +125,7 @@ const ProjectSettings: React.FC = () => {
         } catch (error) {
             console.error('Error adding member:', error);
         }
-    }
+    };
 
     const handleManagerSelect = (managerId: string) => {
         setValue("managers", [...new Set([...control._formValues.managers || [], managerId])]);
@@ -124,7 +136,7 @@ const ProjectSettings: React.FC = () => {
     };
 
     const handleMemberRemove = (memberId: string) => {
-        setValue("members", (control._formValues.members || []).filter(id => id !== memberId));
+        setValue("members", (control._formValues.members || []).filter(member => member.id !== memberId));
     };
 
     if (loading) {
@@ -179,10 +191,10 @@ const ProjectSettings: React.FC = () => {
                 <Label htmlFor="members" className="block text-sm font-medium text-gray-700">Members</Label>
                 <Button className="mt-1 w-full" onClick={openInviteModal}>Add Members</Button>
                 <div className="mt-2">
-                    {(control._formValues.members || []).map((id, index) => (
+                    {(control._formValues.members || []).map((member, index) => (
                         <span key={index} className="inline-flex items-center bg-green-100 text-green-800 text-sm px-2 py-1 rounded-full mr-2">
-                            {id}
-                            <button onClick={() => handleMemberRemove(id)} className="ml-1 text-red-500 hover:text-red-700">&times;</button>
+                            {member.name}
+                            <button onClick={() => handleMemberRemove(member.id)} className="ml-1 text-red-500 hover:text-red-700">&times;</button>
                         </span>
                     ))}
                 </div>
@@ -231,7 +243,6 @@ const ProjectSettings: React.FC = () => {
                 />
             </InviteModal>
         </form>
-        
     );
 };
 
