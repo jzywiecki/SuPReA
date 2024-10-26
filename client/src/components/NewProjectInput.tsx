@@ -5,14 +5,21 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useUser } from '@/components/UserProvider';
-import axios from 'axios';
 import axiosInstance from '@/services/api'
 import { API_URLS } from '@/services/apiUrls'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 
 const NewProjectInput = () => {
     const { user } = useUser();
-
+    const [textAiModel, setTextAiModel] = useState('');
+    const [imageAiModel, setImageAiModel] = useState('');
     const [usedAi, setUsedAi] = useState<boolean>(true);
 
     const [nameFieldError, setNameFieldError] = useState<string>("");
@@ -109,7 +116,6 @@ const NewProjectInput = () => {
     }
 
 
-    // TO DO:
     const submitButton = (): void => {
 
         const isCorrectName = validateNameField();
@@ -121,31 +127,59 @@ const NewProjectInput = () => {
             return;
         }
 
-        // send api request to server
+        if (usedAi) {
+            createProjectByAi();
+        }
+        else {
+            createEmptyProject();
+        }
+    }
+
+
+    const createProjectByAi = () => {
         const request = {
             name: nameFieldRef.current?.value,
             for_who: forWhoFieldRef.current?.value,
             doing_what: doingWhatFieldRef.current?.value,
             additional_info: additionalInfoFieldRef.current?.value,
             owner_id: user?.id,
+            text_ai_model: textAiModel,
+            image_ai_model: imageAiModel,
         }
-
 
         axiosInstance.post(`${API_URLS.API_SERVER_URL}/projects/create`, request, {
             headers: {
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+            },
         })
         .then(response => {
-            console.log('Response:', response.data);
+            alert(`Created by AI! New project id: ${response.data}`);
         })
         .catch(error => {
             console.error('Error:', error);
         });
-
-
-        alert("ok.");
     }
+
+
+    const createEmptyProject = () => {
+        const request = {
+            name: nameFieldRef.current?.value,
+            owner_id: user?.id,
+        }
+
+        axiosInstance.post(`${API_URLS.API_SERVER_URL}/projects/create-empty`, request, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            alert(`Created empty! New project id: ${response.data}`);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
 
     return (
         <div className="isolate px-6 py-24 sm:py-32 lg:px-8">
@@ -176,57 +210,90 @@ const NewProjectInput = () => {
                         </label>
                         <div className="mt-2.5">
                             <Input type="email" ref={nameFieldRef} onChange={() => validateNameField()} />
-                            {nameFieldError && <p className='text-xs mt-1 text-red-500	'>{nameFieldError}</p>}
+                            {nameFieldError && <p className='text-xs mt-1 text-red-500'>{nameFieldError}</p>}
                         </div>
                     </div>
 
-
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center h-20 space-x-2">
                         <Switch id="airplane-mode" checked={usedAi}
                             onCheckedChange={setUsedAi} />
-                        <Label htmlFor="airplane-mode">Generate using AI.</Label>
+                        <Label htmlFor="airplane-mode" style={{ minWidth: "fit-content" }}>Generate using AI.</Label>
+                        {usedAi && <div style={{
+                            display: "flex",
+                            flexDirection: "row"
+                        }}>
+                            <div className="sm:col-span-2 mx-2">
+                                <div className="mt-2.5">
+                                    <Select onValueChange={setTextAiModel} value={textAiModel}>
+                                        <SelectTrigger className="w-[180px]">
+                                            <SelectValue placeholder="Text AI Model" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="gpt-4o-mini">GPT-4o mini</SelectItem>
+                                            <SelectItem value="gpt-35-turbo">GPT-3.5 turbo</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+
+                            <div className="sm:col-span-2 mx-2">
+                                <div className="mt-2.5">
+                                    <Select onValueChange={setImageAiModel} value={imageAiModel}>
+                                        <SelectTrigger className="w-[180px]">
+                                            <SelectValue placeholder="Image AI Model" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="dall-e-3">DALL·E 3</SelectItem>
+                                            <SelectItem value="dall-e-2">DALL·E 2</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </div>
+                        }
                     </div>
                 </div>
+
                 {usedAi && <div>
                     <div className="sm:col-span-2 mt-2.5">
-                        <label htmlFor="message" className="block text-sm font-semibold leading-6">
+                        <label htmlFor="forWho" className="block text-sm font-semibold leading-6">
                             For who?
                         </label>
                         <div className="mt-2.5">
                             <Textarea ref={forWhoFieldRef} onChange={() => validateForWhoField()} />
-                            {forWhoFieldError && <p className='text-xs mt-1 text-red-500	'>{forWhoFieldError}</p>}
-
+                            {forWhoFieldError && <p className='text-xs mt-1 text-red-500'>{forWhoFieldError}</p>}
                         </div>
                     </div>
                     <div className="sm:col-span-2 mt-2.5">
-                        <label htmlFor="message" className="block text-sm font-semibold leading-6">
+                        <label htmlFor="doingWhat" className="block text-sm font-semibold leading-6">
                             Doing what?
                         </label>
                         <div className="mt-2.5">
                             <Textarea ref={doingWhatFieldRef} onChange={() => validateDoingWhatField()} />
-                            {doingWhatFieldError && <p className='text-xs mt-1 text-red-500	'>{doingWhatFieldError}</p>}
-
+                            {doingWhatFieldError && <p className='text-xs mt-1 text-red-500'>{doingWhatFieldError}</p>}
                         </div>
                     </div>
 
                     <div className="sm:col-span-2 mt-2.5">
-                        <label htmlFor="message" className="block text-sm font-semibold leading-6">
+                        <label htmlFor="additionalInfo" className="block text-sm font-semibold leading-6">
                             Additional information?
                         </label>
                         <div className="mt-2.5">
                             <Textarea ref={additionalInfoFieldRef} onChange={() => validateAdditionalInfoField()} />
-                            {additionalInfoFieldError && <p className='text-xs mt-1 text-red-500	'>{additionalInfoFieldError}</p>}
-
+                            {additionalInfoFieldError && <p className='text-xs mt-1 text-red-500'>{additionalInfoFieldError}</p>}
                         </div>
                     </div>
-                </div>}
 
+
+                </div>
+
+                }
 
                 <div className="mt-10">
                     <Button
                         onClick={() => submitButton()}
                         type="submit"
-                        className="block w-full rounded-md  px-3.5 py-2.5 text-center text-sm font-semibold shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        className="block w-full rounded-md px-3.5 py-2.5 text-center text-sm font-semibold shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                         Generate
                     </Button>
@@ -235,5 +302,4 @@ const NewProjectInput = () => {
         </div>
     )
 }
-
 export default NewProjectInput;

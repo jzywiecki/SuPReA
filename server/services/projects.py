@@ -57,9 +57,6 @@ def create_project_by_ai(request) -> str:
     if not request.text_ai_model or not request.image_ai_model:
         raise InvalidParameter("AI model cannot be empty")
 
-    if not request.callback:
-        raise InvalidParameter("Callback cannot be empty")
-
     ai_text_model = get_text_model_remote_ref_enum(request.text_ai_model)
     ai_image_model = get_image_model_remote_ref_enum(request.image_ai_model)
 
@@ -81,7 +78,7 @@ def create_project_by_ai(request) -> str:
         ai_text_model,
         ai_image_model,
         get_project_dao_ref,
-        request.callback,
+        new_project_id,
     )
 
     return new_project_id

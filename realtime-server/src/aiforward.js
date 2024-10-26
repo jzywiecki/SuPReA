@@ -74,7 +74,7 @@ export const serveUserMessageToAI = (session, message, editionRegister) => {
         case RequestType.QUESTION:
             aiModel = selectAiModelForQuestion(message?.ai, message?.component);
 
-            serveQuestionToAI(message, aiModel);
+            serveQuestionToAI(session, message, aiModel);
             break;
         case RequestType.REGENERATION:
             validGenerationRequest(message, session);
@@ -92,10 +92,12 @@ export const serveUserMessageToAI = (session, message, editionRegister) => {
 }
 
 
-const serveQuestionToAI = async (message, aiModel) => {
+const serveQuestionToAI = async (session, message, aiModel) => {
     const requestData = {
         content: message.content,
         ai_model: aiModel.name,
+        project_id: session.projectId,
+        callback: session.projectId,
     };
     questionToAiAPI(requestData);
 }
