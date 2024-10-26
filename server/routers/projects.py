@@ -2,12 +2,13 @@
 This module contains the routers for the projects.
 """
 
+from ctypes import Array
 from datetime import datetime
 from bson import ObjectId
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, status, Response
 from pydantic import BaseModel, Field
-from models import Project
+from models import Project, Motto, ElevatorSpeech
 from services import (
     create_empty_project,
     create_project_by_ai,
@@ -19,6 +20,7 @@ from services import (
     assign_manager_role_to_user_by_id,
     unassign_member_role_from_user_by_id,
 )
+
 
 router = APIRouter(tags=["projects"], prefix="/projects")
 
@@ -112,7 +114,6 @@ def delete_project(project_id: str):
     delete_project_by_id(project_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-
 class ProjectsListResponse(BaseModel):
     """
     Response object for retrieving the list of projects where the specified user is the owner or a member.
@@ -123,7 +124,14 @@ class ProjectsListResponse(BaseModel):
         name: str
         description: str
         owner: ObjectId
+        for_who: str
+        doing_what: str
+        additional_info: str
+        members: List[ObjectId]
         created_at: datetime
+        motto: Optional[Motto] = None
+        elevator_speech: Optional[ElevatorSpeech] = None
+          
 
         class Config:
             arbitrary_types_allowed = True

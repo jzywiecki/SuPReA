@@ -27,6 +27,8 @@ import ProjectsSettings from './pages/ProjectSettings';
 import { SnackbarProvider } from 'notistack';
 import { closeSnackbar } from 'notistack'
 import { IoIosClose } from "react-icons/io";
+import './styles/styles.css'
+
 function App() {
   return (
     <SnackbarProvider maxSnack={3} autoHideDuration={1000}
