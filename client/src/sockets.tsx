@@ -1,10 +1,7 @@
 import { io } from 'socket.io-client';
 
-const URL = 'http://localhost:3333';
+const URL = 'http://localhost:3000';
 
-const socketChats = io(URL, {
+export const socket = io(URL, {
     autoConnect: false,
-    path: "/realtime-server/socket.io/"
 });
-
-export { socketChats };

@@ -70,7 +70,7 @@ export const connectionService = (io, db, editionRegister) => {
             registerEditionEvents(socket, io, session, editionRegister);
 
             // Join the room for the project (using in broadcast communicates for project)
-            socket.join(socket.projectId);
+            socket.join(session.projectId);
 
             socket.onAny(async (eventName, ...args) => {
                 /**

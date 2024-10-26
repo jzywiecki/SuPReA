@@ -21,5 +21,5 @@ export const isMessageValid = (message) => {
 
 
 export const isNumericIdCorrect = (id) => {
-    return !id || typeof id !== 'number' || id < 0;
+    return typeof id === "number" && id >= 0 || typeof id === "string" && !isNaN(id) && Number(id) >= 0;
 }

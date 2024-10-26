@@ -2,23 +2,25 @@ import ChatMessage from "@/components/ChatMessage";
 import * as ScrollArea from '@radix-ui/react-scroll-area';
 import { useState, useEffect, useRef, MutableRefObject } from "react";
 import { Message, LoadOlderMessages } from "@/components/Chat";
+import { useUser } from "@/components/UserProvider";
 import { Button } from "./ui/button";
 
 
 interface ChatTabProps {
     messages: Message[];
     unconfirmedMessages: string[];
-    userNick: string;
     loadOlderMessages: LoadOlderMessages;
     onLoadMoreMessages: () => void;
 }
 
 
-const ChatTab = ({ messages, unconfirmedMessages, userNick, loadOlderMessages, onLoadMoreMessages }: ChatTabProps) => {
+const ChatTab = ({ messages, unconfirmedMessages, loadOlderMessages, onLoadMoreMessages }: ChatTabProps) => {
 
     const [scrollHeight, setScrollHeight] = useState<number>(0);
     const [scrollTop, setScrollCTop] = useState<number>(0);
     const [clientHeight, setClientHeight] = useState<number>(0);
+
+    const { user } = useUser();
 
     function useChatScroll<T>(deps: T): MutableRefObject<HTMLDivElement> {
         const ref = useRef<HTMLDivElement>(null);
@@ -62,12 +64,12 @@ const ChatTab = ({ messages, unconfirmedMessages, userNick, loadOlderMessages, o
                     )}
 
                     {messages.map((message, index) => {
-                        const messageType = message.author === userNick ? "user" : "other";
+                        const messageType = message.author === user.id ? "user" : "other";
                         return <ChatMessage key={index} text={message.text} sender={message.author} date={message.date} messageType={messageType} confirmed={true} />;
                     })}
 
                     {unconfirmedMessages.map((message, index) => {
-                        return <ChatMessage key={index} text={message} sender={userNick} date={undefined} messageType="user" confirmed={false} />;
+                        return <ChatMessage key={index} text={message} sender={user.id} date={undefined} messageType="user" confirmed={false} />;
                     })}
                 </ScrollArea.Viewport>
                 <ScrollArea.Scrollbar className="scroll-area-scrollbar" orientation="vertical">
