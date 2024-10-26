@@ -17,7 +17,7 @@ import { User } from '@/pages/SearchAndAddFriends';
 import { useUser } from '@/components/UserProvider';
 import { API_URLS } from '@/services/apiUrls';
 import axiosInstance from '@/services/api';
-import {socket} from '@/sockets';
+import {socket} from '@/utils/sockets';
 
 const ProjectView = ({ }) => {
     const { user } = useUser();
@@ -160,7 +160,7 @@ const ProjectView = ({ }) => {
                 </ResizablePanel>
                 <ResizableHandle />
                 <ResizablePanel
-                    maxSize={!isCollapsedRight ? 5 : 22}
+                    maxSize={!isCollapsedRight ? 5 : 30}
                     minSize={!isCollapsedRight ? 5 : 18}
                     defaultSize={!isCollapsedRight ? 5 : 20}
                 >
