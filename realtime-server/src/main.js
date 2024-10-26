@@ -15,6 +15,9 @@ const DATABASE_NAME = process.env.DATABASE_NAME;
 
 
 const app = express();
+
+app.use(express.json());
+
 const server = createServer(app);
 const io = new Server(server, {
     cors: {
@@ -39,6 +42,7 @@ connectionService(io, db, editionRegister);
 const aiService = new AIService(editionRegister, io, db);
 
 registerRouters(app, aiService);
+
 
 server.listen(3000, () => {
     console.log('server running at http://localhost:3000');

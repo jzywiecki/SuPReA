@@ -1,9 +1,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
-import { socket as socketChats } from '@/sockets';
+import { socket as socketChats } from '@/utils/sockets';
 import ChatTab from "./ChatTab";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "./ui/button";
+import { AiModels } from "@/utils/enums";
+import { AITextModels } from "@/utils/enums";
+import { getAiIdByName } from "@/utils/enums";
+import { RequestType } from "@/utils/enums";
 
 
 interface ChatProps {
@@ -39,6 +43,8 @@ const Chat = ({ isCollapsed }: ChatProps) => {
 
     const [loadOlderMessagesAiChat, setLoadOlderMessagesAiChat] = useState<LoadOlderMessages>('none');
     const [loadOlderMessagesDiscussionChat, setLoadOlderMessagesDiscussionChat] = useState<LoadOlderMessages>('none');
+
+    const [selectedAi, setSelectedAi] = useState<AiModels>("gpt-35-turbo");
 
     type ActiveTab = "ai" | "discussion";
     const [activeTab, setActiveTab] = useState<ActiveTab>("ai");
@@ -91,6 +97,15 @@ const Chat = ({ isCollapsed }: ChatProps) => {
 
         if (activeTab === "ai") {
             unconfirmedMessagesAiChat.push(messageInput);
+
+            const message = {
+                content: messageInput,
+                ai: getAiIdByName(selectedAi),
+                component: null,
+                requestType: RequestType.QUESTION,
+
+            }
+
             socketChats.emit('send-message-to-ai-chat', message);
         }
         else {
@@ -159,6 +174,11 @@ const Chat = ({ isCollapsed }: ChatProps) => {
         }
     };
 
+    
+    const handleAiModelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setSelectedAi(event.target.value as AiModels);
+    };
+
 
     const onLoadMoreMessagesDiscussionChat = () => {
         setLoadOlderMessagesDiscussionChat('loading');
@@ -220,9 +240,13 @@ const Chat = ({ isCollapsed }: ChatProps) => {
                         <div className="flex items-center mt-2">
                             <Button onClick={handleSendMessage}>Send message</Button>
                             {activeTab === "ai" && ( // Warunkowe renderowanie dropdownu
-                                <select className="ml-2 border rounded p-1">
-                                    <option value="GPT3.5">GPT3.5</option>
-                                    <option value="GPT4.0">GPT4o</option>
+                                <select 
+                                    className="ml-2 border rounded p-1" 
+                                    value={selectedAi}
+                                    onChange={handleAiModelChange}
+                                >
+                                    <option value={AITextModels.GPT35Turbo.name}>GPT3.5</option>
+                                    <option value={AITextModels.GPT4oMini.name}>GPT4o</option>
                                 </select>
                             )}
                         </div>
@@ -231,7 +255,6 @@ const Chat = ({ isCollapsed }: ChatProps) => {
             )}
         </div>
     );
-    
 }
 
 export default Chat;

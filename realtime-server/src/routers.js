@@ -33,7 +33,7 @@ export const registerRouters = (app, aiService) => {
     
 
     app.post('/event/message', (req, res) => {
-        aiService.sendMessageOnChat(req);
+        aiService.sendMessageOnChat(req.body);
         res.status(200).send({});
     });
 

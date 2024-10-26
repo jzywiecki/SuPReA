@@ -20,6 +20,7 @@ export class Session {
     socket;
     userId;
     projectId;
+    projectIdStr;
 
     constructor(socket) {
         this.socket = socket;
@@ -53,6 +54,7 @@ export const connectionService = (io, db, editionRegister) => {
             const userId = socket?.handshake?.auth?.userId;
             const projectId = socket?.handshake?.auth?.projectId;
 
+            session.projectIdStr = projectId;
             session.projectId = ObjectId.createFromHexString(projectId);
             session.userId = ObjectId.createFromHexString(userId);
 
@@ -70,7 +72,7 @@ export const connectionService = (io, db, editionRegister) => {
             registerEditionEvents(socket, io, session, editionRegister);
 
             // Join the room for the project (using in broadcast communicates for project)
-            socket.join(session.projectId);
+            socket.join(projectId);
 
             socket.onAny(async (eventName, ...args) => {
                 /**

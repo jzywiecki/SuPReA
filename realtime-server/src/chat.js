@@ -108,7 +108,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
                 olderMessagesExist: null
             }
     
-            io.to(session.projectId).emit(broadcastMessageEvent, response);
+            io.to(session.projectIdStr).emit(broadcastMessageEvent, response);
     
             return true;
     
@@ -167,7 +167,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
     //      requestType: int (code)
     // }
     socket.on('send-message-to-ai-chat', (message) => {
-        const isMessageSent = handleSendMessageByUser(socket, session.projectId, session.userId, projectChatsReference.aiChatId, message.content, 'receive-message-from-ai-chat');
+        const isMessageSent = handleSendMessageByUser(projectChatsReference.aiChatId, message.content, 'receive-message-from-ai-chat');
         if (isMessageSent) {
             forwardMessageToAi(message);
         }
@@ -263,15 +263,14 @@ export const sendMessageByAI = async (io, db, projectId, text) => {
      * @param {Object} db - The database instance for interacting with message storage.
      * @param {string} projectId - The ID of the project to which the message belongs in string representation.
      * @param {string} text - The content of the message to be sent.
-     * @param {string} broadcastMessageEvent - The event name to broadcast the message to all users.
      * 
     */
 
     try {
-        const chatId = await db.getAiChatIdFromProject(projectId);
-        projectId = ObjectId.createFromHexString(projectId);
+        const projectObjectId = ObjectId.createFromHexString(projectId);
+        const chatId = await db.getAiChatIdFromProject(projectObjectId);
 
-        const message = await db.addMessage(projectId, chatId, text, AI_ID);
+        const message = await db.addMessage(projectObjectId, chatId, text, AI_ID);
         const broadcastMessageEvent = 'receive-message-from-ai-chat';
 
         const response = {
