@@ -36,7 +36,7 @@ export class AIService {
         const component = getComponentyByName(message?.component)
 
         this.io.to(message?.callback).emit(
-            'notify', 
+            'notify-generation-complete', 
             new ComponentCreatedCommunicate(component?.id)
         );
     }
@@ -56,7 +56,7 @@ export class AIService {
         const component = getComponentyByName(result?.component)
 
         socket.emit (
-            'notify',
+            'notify-edition',
             new ComponentGeneratedCommunicate(component?.id, result?.value)
         )
     }

@@ -74,7 +74,7 @@ export const transmitEditionsStatusOnConnection = async (socket, session, editio
         const activeSessions = editionRegister.getUsersWithActiveEditionSessionForProject(session.projectId);
     
         socket.emit(
-            'notify',
+            'edition-register',
             new RefreshEditionSessionsCommunicate(activeSessions)
         );
     }
@@ -111,13 +111,13 @@ const editComponentRequestHandler = (componentId, socket, io, session, editionRe
         editionRegister.registerEditionSession(session, componentId);
         
         socket.emit(
-            'notify',
+            'notify-edition',
             new ConfirmationRegisterEditionSessionCommunicate()
         )
 
         const broadcastMessage = new RegisterEditSessionCommunicate(componentId, session.userId);
         
-        io.to(socket.projectId).emit('notify', broadcastMessage);
+        io.to(socket.projectId).emit('edition-register', broadcastMessage);
 
         logger.info(`User ${session.userId} started editing component: ${componentId}`);
     }
@@ -126,7 +126,7 @@ const editComponentRequestHandler = (componentId, socket, io, session, editionRe
             logger.info(`User ${session.userId} tried to edit a non-existent component: ${componentId}`);
 
             socket.emit(
-                'notify',
+                'notify-edition',
                 new RejectedEditionSessionRegisterRequestCommunicate('Component does not exist.')
             );
         }
@@ -134,7 +134,7 @@ const editComponentRequestHandler = (componentId, socket, io, session, editionRe
             logger.info(`User ${session.userId} tried to edit an already edited component: ${componentId}`);
 
             socket.emit(
-                'notify',
+                'notify-edition',
                 new RejectedEditionSessionRegisterRequestCommunicate('Component is already being edited.')
             );
         }
@@ -175,13 +175,13 @@ const finishedEditionRequestHandler = (componentId, session, socket, io, edition
         }
 
         socket.emit(
-            'notify',
+            'notify-edition',
             new ConfirmationUnregisterEditionSessionCommunicate()
         )
 
         const broadcastMessage = new UnregisterEditSessionCommunicate(componentId);
         
-        io.to(socket.projectId).emit('notify', broadcastMessage);
+        io.to(socket.projectId).emit('edition-register', broadcastMessage);
 
         logger.info(`User ${session.userId} finished editing component: ${componentId}`);
     }
@@ -228,7 +228,7 @@ const updateComponentRequestHandler = async (componentId, session, socket, editi
             logger.info(`User ${session.userId} tried to update a component that is not being edited: ${componentId}`);
             
             socket.emit(
-                'notify',
+                'notify-edition',
                 new RejectedUpdateRequestCommunicate('Session is not being edited.')
             );
             return;
@@ -246,7 +246,7 @@ const updateComponentRequestHandler = async (componentId, session, socket, editi
         logger.info(`User ${session.userId} updated component: ${component.name}`);
         
         socket.emit(
-            'notify',
+            'notify-edition',
             new ConfirmedUpdateRequestCommunicate()
         );
     } 
@@ -262,7 +262,7 @@ const updateComponentRequestHandler = async (componentId, session, socket, editi
                 );
             } else {
                 logger.error('Error updating a component:', error.response.data);
-                socket.emit('notify',
+                socket.emit('notify-edition',
                     new RejectedUpdateRequestCommunicate(error.response.data)
                 );
             }
