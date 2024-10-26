@@ -194,19 +194,22 @@ def remove_member_by_id(sender_id: str, project_id: str, member_id: str):
         raise ProjectNotFound(project_id)
 
     project = project_dao.get_project(project_id)
-    if project["owner"] != ObjectId(sender_id) or ObjectId(sender_id) != ObjectId(member_id):
+
+    if project["owner"] == ObjectId(member_id):
+        raise InvalidParameter(
+            "Owner can not be removed from the project"
+        )
+
+    if project["owner"] != ObjectId(sender_id) or ObjectId(sender_id) == ObjectId(member_id):
         raise InvalidParameter(
             "Only the project owner can remove members or the user can leave the project"
         )
-
+    
     if ObjectId(member_id) not in project["members"]:
         raise InvalidParameter("User is not a member of the project")
 
     if ObjectId(member_id) in project["managers"]:
         result = project_dao.unassign_manager_from_project(project_id, member_id)
-
-    if result.modified_count == 0:
-        raise InvalidParameter("Error removing user as manager")
 
     project_dao.remove_member_from_project(project_id, member_id)
     return True
