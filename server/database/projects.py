@@ -254,6 +254,34 @@ class ProjectDAO:
             {"_id": ObjectId(project_id)},
             {"$addToSet": {"managers": ObjectId(manager_id)}},
         )
+        
+    def assign_new_project_owner(self, project_id: str, new_owner_id: str, old_owner_id: str):
+        """
+        Changes a project owner. 
+
+        :param str project_id: The id of the project.
+        :param str new_owner_id: The id of the new owner.
+        :param str old_owner_id: The id of the previous owner.
+        """
+        try:
+            result = self.collection.update_one(
+                {
+                    "_id": ObjectId(project_id), 
+                    "owner": ObjectId(old_owner_id)  # Ensure the current owner is the old owner
+                },
+                {
+                    "$set": {"owner": ObjectId(new_owner_id)}
+                }
+            )
+
+            if result.matched_count == 0:
+                print("No project found or the old owner doesn't match.")
+            elif result.modified_count == 1:
+                print("Project owner changed successfully.")
+            return result
+        except Exception as e:
+            print(f"Error changing project owner: {e}")
+            return None
 
     def get_project_model_and_basic_information(self, project_id: str):
         """

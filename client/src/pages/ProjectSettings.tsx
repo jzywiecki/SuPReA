@@ -160,8 +160,16 @@ const ProjectSettings: React.FC = () => {
         }
     };
 
-    const handleOwnerSelect = (owner: Members) => {
-        setValue("owner", owner);
+    const handleOwnerSelect = async (ownerID: Members) => {
+        try {
+            const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/owner/assign`;
+            await axiosInstance.post(url, { sender_id: user?.id, member_id: ownerID.id });
+            
+            // Update the local state after successfully removing the member
+            setValue("owner", (control._formValues.owner || []));
+        } catch (error) {
+            console.error('Error removing member:', error);
+        }
     };
 
     if (loading) {

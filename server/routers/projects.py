@@ -17,6 +17,7 @@ from services import (
     remove_member_by_id,
     assign_manager_role_to_user_by_id,
     unassign_member_role_from_user_by_id,
+    assign_owner_role_for_user_by_id,
 )
 
 router = APIRouter(tags=["projects"], prefix="/projects")
@@ -201,7 +202,7 @@ def assign_manager(project_id: str, assignment: MemberAction):
     Assigns a manager to the project with the specified ID.
 
     :param str project_id: The unique identifier of the project.
-    :param str manager_id: The unique identifier of the manager.
+    :param MemberAction assignment: The unique identifier of the manager and sender.
     """
     return assign_manager_role_to_user_by_id(
         assignment.sender_id, project_id, assignment.member_id
@@ -217,8 +218,24 @@ def unassign_manager(project_id: str, assignment: MemberAction):
     Unassigns a manager from the project with the specified ID.
 
     :param str project_id: The unique identifier of the project.
-    :param str manager_id: The unique identifier of the manager.
+    :param MemberAction assignment: The unique identifier of the manager and sender.
     """
     return unassign_member_role_from_user_by_id(
+        assignment.sender_id, project_id, assignment.member_id
+    )
+
+@router.post(
+    "/{project_id}/owner/assign",
+    status_code=status.HTTP_200_OK,
+)
+def assign_owner(project_id: str, assignment: MemberAction):
+    """
+    Transfers a role of a project owner.
+
+    Args:
+        project_id (str): 
+        :param MemberAction assignment: The unique identifier of the new owner and sender.
+    """
+    return assign_owner_role_for_user_by_id(
         assignment.sender_id, project_id, assignment.member_id
     )

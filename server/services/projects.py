@@ -273,6 +273,9 @@ def unassign_member_role_from_user_by_id(
     project = project_dao.get_project(project_id)
     if project["owner"] != ObjectId(sender_id):
         raise InvalidParameter("Only the project owner can unassign managers")
+    
+    if project["owner"] == ObjectId(member_id):
+        raise InvalidParameter("Project owner cannot be unassigned from being a manager.")
 
     if ObjectId(member_id) not in project["members"]:
         raise InvalidParameter("User is not a member of the project")
@@ -282,3 +285,36 @@ def unassign_member_role_from_user_by_id(
 
     project_dao.unassign_manager_from_project(project_id, member_id)
     return True
+
+
+def assign_owner_role_for_user_by_id(
+    sender_id: str, project_id: str, new_owner_id: str
+):
+    """
+    Assigns new user as a project owner.
+    
+    :param sender_id: The unique identifier of the user transfering their owner role.
+    :type sender_id: str
+
+    :param project_id: The unique identifier of the project.
+    :type project_id: str
+
+    :param new_owner_id: The unique identifier of the user being assigned as a owner.
+    :type new_owner_id: str
+
+    :raises ProjectNotFound: If no project is found with the provided ID.
+    """
+
+    if not project_dao.is_project_exist(project_id):
+        raise ProjectNotFound(project_id)
+
+    project = project_dao.get_project(project_id)
+    if project["owner"] != ObjectId(sender_id):
+        raise InvalidParameter("Only the project owner can transfer ownership")
+    
+    if ObjectId(new_owner_id) not in project["managers"]:
+        raise InvalidParameter("User is not a manager of the project")
+    
+    project_dao.assign_new_project_owner(project_id, new_owner_id, sender_id)
+    return True 
+    
