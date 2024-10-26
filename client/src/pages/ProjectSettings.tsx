@@ -199,7 +199,7 @@ const ProjectSettings: React.FC = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-lg mx-auto p-6 bg-white rounded-lg">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-lg mx-auto p-6 rounded-lg">
             <div>
                 <Label htmlFor="name" className="block text-sm font-medium text-gray-700">Project Name</Label>
                 <Input
