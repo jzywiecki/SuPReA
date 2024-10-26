@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState, useEffect } from "react";
-import { socketChats } from '@/sockets';
+import { socket as socketChats } from '@/sockets';
 import ChatTab from "./ChatTab";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "./ui/button";
@@ -46,40 +46,7 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
 
 
     useEffect(() => {
-        socketChats.auth = {
-            projectId: projectId,
-            userId: userId,
-            token: authToken,
-            discussionChatOffset: 0,
-            aiChatOffset: 0
-        };
-
-        socketChats.connect();
-
-
-        function onConnect(): void {
-            console.log("Connected to server.");
-            setConnected(true);
-        }
-
-
-        function onDisconnect(): void {
-            console.log("Disconnected from server.");
-            setConnected(false);
-        }
-
-
-        function onConnectionError(err: Error): void {
-            setConnected(false);
-            console.log("[CONNECTION ERROR] " + err);
-        }
-
-
-        function onError(err: string): void {
-            console.log("[ERROR] " + err);
-        }
-
-
+        
         function onReceiveMessagesFromDiscussionChat(messages: Message[]): void {
             handleReceivedMessage(messages, setMessagesDiscussionChat, setUnconfirmedMessagesDiscussionChat);
             updateOffset(messages, "discussion");
@@ -110,19 +77,13 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
         }
 
 
-        socketChats.on('connect', onConnect);
-        socketChats.on('disconnect', onDisconnect);
-        socketChats.on('connect_error', onConnectionError);
+
         socketChats.on('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
         socketChats.on('receive-message-from-ai-chat', onReceiveMessagesFromAiChat);
         socketChats.on('receive-is-more-older-messages-on-discussion-chat', handleOlderMessagesOnDiscussionChat);
         socketChats.on('receive-is-more-older-messages-on-ai-chat', handleOlderMessagesOnAiChat);
-        socketChats.on('error', onError);
 
         return () => {
-            socketChats.off('connect', onConnect);
-            socketChats.off('disconnect', onDisconnect);
-            socketChats.off('connect_error', onConnectionError);
             socketChats.off('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
             socketChats.off('receive-message-from-ai-chat', onReceiveMessagesFromAiChat);
             socketChats.off('receive-is-more-older-messages-on-discussion-chat', handleOlderMessagesOnAiChat);

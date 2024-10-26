@@ -2,7 +2,7 @@ import ProjectElementsList from '@/components/ProjectElementsList';
 import Chat from '../components/Chat';
 import { Button } from '@/components/ui/button';
 import { MenuIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from "react";
 import { Outlet, useParams } from 'react-router-dom';
 import RegenerateProjectButton from '@/components/RegenerateProjectButton';
 import {
@@ -17,11 +17,65 @@ import { User } from '@/pages/SearchAndAddFriends';
 import { useUser } from '@/components/UserProvider';
 import { API_URLS } from '@/services/apiUrls';
 import axiosInstance from '@/services/api';
+import {socket} from '@/sockets';
 
 const ProjectView = ({ }) => {
     const { user } = useUser();
     const [searchResults, setSearchResults] = useState<User[]>([]);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
+    const { projectID } = useParams();
+    const [isCollapsedLeft, setIsCollapsedLeft] = useState(true);
+    const [isCollapsedRight, setIsCollapsedRight] = useState(true);
+
+    const [connected, setConnected] = useState<boolean>(false);
+
+    useEffect(() => {
+        socket.auth = {
+            projectId: projectID,
+            userId: user.id,
+            discussionChatOffset: 0,
+            aiChatOffset: 0
+        };
+
+        socket.connect();
+
+        function onConnect(): void {
+            console.log("Connected to server.");
+            setConnected(true);
+        }
+
+
+        function onDisconnect(): void {
+            console.log("Disconnected from server.");
+            setConnected(false);
+        }
+
+
+        function onConnectionError(err: Error): void {
+            setConnected(false);
+            console.log("[CONNECTION ERROR] " + err);
+        }
+
+
+        function onError(err: string): void {
+            console.log("[ERROR] " + err);
+        }
+
+        socket.on('connect', onConnect);
+        socket.on('disconnect', onDisconnect);
+        socket.on('connect_error', onConnectionError);
+        socket.on('error', onError);
+
+
+        return () => {
+            socket.off('connect', onConnect);
+            socket.off('disconnect', onDisconnect);
+            socket.off('connect_error', onConnectionError);
+            socket.disconnect();
+        };
+    }, []);
+
 
     const openInviteModal = () => {
         setIsInviteModalOpen(true);
@@ -30,10 +84,6 @@ const ProjectView = ({ }) => {
     const closeInviteModal = () => {
         setIsInviteModalOpen(false);
     };
-
-    const { projectID } = useParams();
-    const [isCollapsedLeft, setIsCollapsedLeft] = useState(true);
-    const [isCollapsedRight, setIsCollapsedRight] = useState(true);
 
     const toggleCollapseLeft = () => {
         setIsCollapsedLeft(!isCollapsedLeft);
