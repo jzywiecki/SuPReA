@@ -304,4 +304,5 @@ const NewProjectInput = () => {
             </div>
         )
     }
-    export default NewProjectInput;
+}
+export default NewProjectInput;

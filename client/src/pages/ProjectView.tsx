@@ -3,7 +3,7 @@ import Chat from '../components/Chat';
 import { Button } from '@/components/ui/button';
 import { MenuIcon } from 'lucide-react';
 import { useState, useEffect } from "react";
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import {
     ResizableHandle,
     ResizablePanel,
@@ -33,7 +33,10 @@ const ProjectView = ({ }) => {
 
     const [connected, setConnected] = useState<boolean>(false);
 
+    const navigation = useNavigate();
+
     useEffect(() => {
+        if (!user?.id) return;
         socket.auth = {
             projectId: projectID,
             userId: user.id,
@@ -86,7 +89,7 @@ const ProjectView = ({ }) => {
         socket.on('notify-generation-complete', onGenerationComplete)
         socket.on('error', onError);
 
-
+        navigation("summary") //TODO: veryfy if this doasnt collide with anything
         return () => {
             socket.off('connect', onConnect);
             socket.off('disconnect', onDisconnect);
@@ -94,7 +97,7 @@ const ProjectView = ({ }) => {
             socket.off('notify-generation-complete', onGenerationComplete);
             socket.disconnect();
         };
-    }, []);
+    }, [user?.id]);
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -138,7 +141,8 @@ const ProjectView = ({ }) => {
 
 
     const elements = [
-        { id: 1, name: "Name", description: "Name for your project" },
+        { id: 1, name: "Summary", description: "Sumary for project" },
+        { id: 2, name: "Name", description: "Name for your project" },
         { id: 3, name: "Specifications", description: "Specifications of the project" },
         { id: 4, name: "Requirements", description: "Functional and non-functional requirements" },
         { id: 5, name: "Actors", description: "Defining actors of the project" },
@@ -208,7 +212,7 @@ const ProjectView = ({ }) => {
                     searchResults={searchResults}
                     friends={[]}
                     onClick={handleAddMember}
-                    userId={user.id}
+                    userId={user?.id}
                     actionType='addMember'
                 />
             </InviteModal>
