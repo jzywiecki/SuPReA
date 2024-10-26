@@ -112,24 +112,6 @@ export class ConfirmedUpdateRequestCommunicate {
 }
 
 
-export class DiscussionChatNoOlderMessagesCommunicate {
-    /**
-     * Notification informing that there are no more new messages in the discussion chat.
-     * Sent to the client to indicate that all messages have been read.
-     */
-    code = 9;
-}
-
-
-export class AIChatNoOlderMessagesCommunicate {
-    /**
-     * Notification informing that there are no more new messages in the AI chat.
-     * Sent to the client to indicate that all messages have been read.
-     */
-    code = 10;
-}
-
-
 export class RefreshEditionSessionsCommunicate {
     /**
      * Notification sent after a client reconnects, informing which components are currently being edited by users.
