@@ -118,6 +118,9 @@ const ProjectSettings: React.FC = () => {
                 name: data.name,
                 description: data.description,
                 readme: data.readme,
+                additional_info: data.additional_info, 
+                for_who: data.for_who,                  
+                doing_what: data.doing_what,             
             };
 
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}`;
