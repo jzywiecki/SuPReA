@@ -64,6 +64,7 @@ const ProjectView = ({ }) => {
             //TODO: here should be error pop-up.
         }
 
+
         function onGenerationComplete(response: GenerationResponse): void {
             const component = getComponentById(response.component);
             console.log("Generated: ")

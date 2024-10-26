@@ -56,7 +56,7 @@ export class AIService {
         const component = getComponentyByName(result?.component)
 
         socket.emit (
-            'notify',
+            'notify-edition',
             new ComponentGeneratedCommunicate(component?.id, result?.value)
         )
     }
