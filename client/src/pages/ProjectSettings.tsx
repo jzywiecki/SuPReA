@@ -131,8 +131,16 @@ const ProjectSettings: React.FC = () => {
         setValue("managers", (control._formValues.managers || []).filter((manager: Members) => manager.id !== managerId));
     };
 
-    const handleMemberRemove = (memberId: string) => {
-        setValue("members", (control._formValues.members || []).filter(member => member.id !== memberId));
+    const handleMemberRemove = async (memberId: string) => {
+        try {
+            const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/members/remove`;
+            await axiosInstance.post(url, { sender_id: user?.id, member_id: memberId });
+            
+            // Update the local state after successfully removing the member
+            setValue("members", (control._formValues.members || []).filter(member => member.id !== memberId));
+        } catch (error) {
+            console.error('Error removing member:', error);
+        }
     };
 
     const handleOwnerSelect = (owner: Members) => {
@@ -222,14 +230,17 @@ const ProjectSettings: React.FC = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         {allMembers.length > 0 ? (
-                            allMembers.map((member) => (
-                                <DropdownMenuItem
-                                    key={member.id}
-                                    onClick={() => handleManagerSelect(member)}
-                                >
-                                    {member.username}
-                                </DropdownMenuItem>
-                            ))
+                            allMembers
+                                // Filter out members who are already selected as managers
+                                .filter((member) => !(control._formValues.managers || []).some((m) => m.id === member.id))
+                                .map((member) => (
+                                    <DropdownMenuItem
+                                        key={member.id}
+                                        onClick={() => handleManagerSelect(member)}
+                                    >
+                                        {member.username}
+                                    </DropdownMenuItem>
+                                ))
                         ) : (
                             <DropdownMenuItem disabled>No members available</DropdownMenuItem>
                         )}
