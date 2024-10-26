@@ -87,4 +87,4 @@ class ProjectPatchRequest(BaseModel):
     # readme: Optional[str] = None
     for_who: Optional[str] = None
     doing_what: Optional[str] = None
-    additional_info: Optional[str] = None  
+    additional_info: Optional[str] = None

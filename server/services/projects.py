@@ -129,14 +129,15 @@ def update_project_info(project_id: str, body: ProjectPatchRequest):
     Update project information.
 
     :param project_id: The unique identifier of the project.
-    
-    :raises ProjectNotFound: If no project is found with the provided ID. 
+
+    :raises ProjectNotFound: If no project is found with the provided ID.
     :return: The result of the mongodb update operation.
     """
     if not project_dao.is_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
     return project_dao.update_project_info(project_id, body)
+
 
 def get_project_list_by_user_id(user_id: str) -> Dict:
     """
@@ -288,9 +289,11 @@ def unassign_member_role_from_user_by_id(
     project = project_dao.get_project(project_id)
     if project["owner"] != ObjectId(sender_id):
         raise InvalidParameter("Only the project owner can unassign managers")
-    
+
     if project["owner"] == ObjectId(member_id):
-        raise InvalidParameter("Project owner cannot be unassigned from being a manager.")
+        raise InvalidParameter(
+            "Project owner cannot be unassigned from being a manager."
+        )
 
     if ObjectId(member_id) not in project["members"]:
         raise InvalidParameter("User is not a member of the project")
@@ -307,7 +310,7 @@ def assign_owner_role_for_user_by_id(
 ):
     """
     Assigns new user as a project owner.
-    
+
     :param sender_id: The unique identifier of the user transfering their owner role.
     :type sender_id: str
 
@@ -326,10 +329,9 @@ def assign_owner_role_for_user_by_id(
     project = project_dao.get_project(project_id)
     if project["owner"] != ObjectId(sender_id):
         raise InvalidParameter("Only the project owner can transfer ownership")
-    
+
     if ObjectId(new_owner_id) not in project["managers"]:
         raise InvalidParameter("User is not a manager of the project")
-    
+
     project_dao.assign_new_project_owner(project_id, new_owner_id, sender_id)
-    return True 
-    
+    return True

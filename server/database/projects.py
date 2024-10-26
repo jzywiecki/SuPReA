@@ -204,7 +204,7 @@ class ProjectDAO:
         :rtype: bool
         """
         return self.collection.count_documents({"_id": ObjectId(project_id)}) > 0
-    
+
     def update_project_info(self, project_id: str, body: ProjectPatchRequest):
         """
         Update projects with given data.
@@ -220,8 +220,7 @@ class ProjectDAO:
         try:
             # Update the project in MongoDB using $set to update only the provided fields
             result = self.collection.update_one(
-                {"_id": ObjectId(project_id)},
-                {"$set": update_fields}
+                {"_id": ObjectId(project_id)}, {"$set": update_fields}
             )
 
             if result.matched_count == 0:
@@ -241,7 +240,6 @@ class ProjectDAO:
         except Exception as e:
             print(f"Error updating project: {e}")
             return None
-        
 
     def add_member_to_project(self, project_id: str, member_id: str):
         """
@@ -293,10 +291,12 @@ class ProjectDAO:
             {"_id": ObjectId(project_id)},
             {"$addToSet": {"managers": ObjectId(manager_id)}},
         )
-        
-    def assign_new_project_owner(self, project_id: str, new_owner_id: str, old_owner_id: str):
+
+    def assign_new_project_owner(
+        self, project_id: str, new_owner_id: str, old_owner_id: str
+    ):
         """
-        Changes a project owner. 
+        Changes a project owner.
 
         :param str project_id: The id of the project.
         :param str new_owner_id: The id of the new owner.
@@ -305,12 +305,12 @@ class ProjectDAO:
         try:
             result = self.collection.update_one(
                 {
-                    "_id": ObjectId(project_id), 
-                    "owner": ObjectId(old_owner_id)  # Ensure the current owner is the old owner
+                    "_id": ObjectId(project_id),
+                    "owner": ObjectId(
+                        old_owner_id
+                    ),  # Ensure the current owner is the old owner
                 },
-                {
-                    "$set": {"owner": ObjectId(new_owner_id)}
-                }
+                {"$set": {"owner": ObjectId(new_owner_id)}},
             )
 
             if result.matched_count == 0:

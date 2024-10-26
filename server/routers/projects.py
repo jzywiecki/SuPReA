@@ -33,7 +33,7 @@ class EmptyProjectCreateRequest(BaseModel):
 
     name: str
     owner_id: str
-    
+
 
 class ProjectsListResponse(BaseModel):
     """
@@ -53,7 +53,7 @@ class ProjectsListResponse(BaseModel):
     owner: List[ProjectListElement]
     member: List[ProjectListElement]
 
-    
+
 class ProjectCreateByAIRequest(BaseModel):
     """
     Request object for creating a project using AI-based generation.
@@ -67,8 +67,8 @@ class ProjectCreateByAIRequest(BaseModel):
     text_ai_model: str
     image_ai_model: str
     callback: str
-    
-    
+
+
 class ProjectAddMemberRequest(BaseModel):
     """
     Request object for adding a member to a project.
@@ -76,7 +76,7 @@ class ProjectAddMemberRequest(BaseModel):
 
     sender_id: str
     member_id: str
-    
+
 
 class MemberAction(BaseModel):
     sender_id: str
@@ -143,7 +143,7 @@ def patch_project(project_id: str, body: ProjectPatchRequest):
 
     """
     return update_project_info(project_id, body)
-    
+
 
 @router.delete(
     "/{project_id}",
@@ -156,7 +156,6 @@ def delete_project(project_id: str):
     """
     delete_project_by_id(project_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-
 
 
 @router.get(
@@ -235,6 +234,7 @@ def unassign_manager(project_id: str, assignment: MemberAction):
         assignment.sender_id, project_id, assignment.member_id
     )
 
+
 @router.post(
     "/{project_id}/owner/assign",
     status_code=status.HTTP_200_OK,
@@ -244,7 +244,7 @@ def assign_owner(project_id: str, assignment: MemberAction):
     Transfers a role of a project owner.
 
     Args:
-        project_id (str): 
+        project_id (str):
         :param MemberAction assignment: The unique identifier of the new owner and sender.
     """
     return assign_owner_role_for_user_by_id(
