@@ -5,8 +5,6 @@
 import { logger } from "./utils.js";
 import { isMessageValid } from "./utils.js";
 import { isNumericIdCorrect } from "./utils.js";
-import { DiscussionChatNoOlderMessagesCommunicate } from "./notifications.js";
-import { AIChatNoOlderMessagesCommunicate } from "./notifications.js";
 import { serveUserMessageToAI } from './aiforward.js';
 
 import { 
@@ -33,10 +31,6 @@ export class ProjectChatsReference {
 }
 
 
-const noOlderMessagesOnDiscussionChat = new DiscussionChatNoOlderMessagesCommunicate();
-const noOlderMessagesOnAIChat = new AIChatNoOlderMessagesCommunicate();
-
-
 export const registerChatEvents = (socket, io, db, session, projectChatsReference, editionRegister) => {
     /**
      * Registers chat events for the given socket.
@@ -49,14 +43,13 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
     */
 
 
-    const handleGetOlderMessages = async (chatId, oldestReceivedMessageId, reciveOlderMessageEvent, noOlderCommuniate) => {
+    const handleGetOlderMessages = async (chatId, oldestReceivedMessageId, reciveOlderMessageEvent) => {
         /**
          * Handles fetching older messages from a chat and sending them via socket.
          * 
          * @param {ObjectId} chatId - The ID of the chat from which to fetch older messages.
          * @param {number} oldestReceivedMessageId - The ID of the last received message to fetch older ones.
          * @param {string} reciveOlderMessageEvent - The event name used to send older messages to the client.
-         * @param {Object} noOlderCommuniate - The message to notify the client when no older messages are available.
          * 
         */
         try {
@@ -69,11 +62,17 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
             const olderMessagesQuantity = 10;
     
             const messages = await db.getOlderMessages(chatId, oldestReceivedMessageId, olderMessagesQuantity);
-            socket.emit(reciveOlderMessageEvent, messages);
-            
-            if (messages.length < olderMessagesQuantity) {
-                socket.emit('notify', noOlderCommuniate);
+
+            let olderMessagesExist;
+
+            messages.length < olderMessagesQuantity ? olderMessagesExist = false : olderMessagesExist = true;
+
+            const response = {
+                messages: messages,
+                olderMessagesExist: olderMessagesExist
             }
+
+            socket.emit(reciveOlderMessageEvent, response);
     
         } catch (error) {
             logger.error(`Cannot get older messages from chat ${chatId}.`)
@@ -88,7 +87,6 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
         /**
          * Handles sending a new message in a chat and broadcasting it to all users in the project.
          * 
-         * @param {ObjectId} userId - The ID of the user sending the message.
          * @param {ObjectId} chatId - The ID of the chat where the message will be sent.
          * @param {string} text - The content of the message being sent.
          * @param {string} broadcastMessageEvent - The event name used to broadcast the new message.
@@ -104,8 +102,13 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
             }
     
             const message = await db.addMessage(session.projectId, chatId, text, session.userId);
+
+            const response = {
+                messages: [message],
+                olderMessagesExist: null
+            }
     
-            io.to(session.projectId).emit(broadcastMessageEvent, message);
+            io.to(session.projectId).emit(broadcastMessageEvent, response);
     
             return true;
     
@@ -152,7 +155,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
     //      content: string
     // }
     socket.on('send-message-to-discussion-chat', (message) => {
-        handleSendMessageByUser(socket, session.projectId, session.userId, projectChatsReference.discussionChatId, message.content, 'receive-message-from-discussion-chat');
+        handleSendMessageByUser(projectChatsReference.discussionChatId, message.content, 'receive-message-from-discussion-chat');
     });
 
 
@@ -173,22 +176,18 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
 
     socket.on('get-older-messages-from-discussion-chat', (oldestReceivedMessageId) => {
         handleGetOlderMessages(
-            socket, 
-            session.discussionChatId, 
+            projectChatsReference.discussionChatId, 
             oldestReceivedMessageId, 
-            'receive-message-from-discussion-chat',
-            noOlderMessagesOnDiscussionChat
+            'receive-message-from-discussion-chat'
         );
     });
 
 
     socket.on('get-older-messages-from-ai-chat', (oldestReceivedMessageId) => {
         handleGetOlderMessages(
-            socket, 
-            session.aiChatId, 
+            projectChatsReference.aiChatId, 
             oldestReceivedMessageId, 
-            'receive-message-from-ai-chat',
-            noOlderMessagesOnAIChat
+            'receive-message-from-ai-chat'
         );
     });
 }
@@ -209,19 +208,29 @@ export const transmitMessagesOnConnection = async (socket, db, projectChatsRefer
     const initConnectionMessageQuantity = 15;
 
     try {        
-        const getMessagesForChat = async (chatId, chatOffset, receiveMessagesEvent, noOlderCommuniate) => {
+        const getMessagesForChat = async (chatId, chatOffset, receiveMessagesEvent) => {
             if (chatOffset > 0) { 
                 /** reconnection case */ 
                 const messages = await db.getNewerMessages(chatId, chatOffset);
-                socket.emit(receiveMessagesEvent, messages);
+
+                const response = {
+                    messages: messages,
+                    olderMessagesExist: null
+                }
+
+                socket.emit(receiveMessagesEvent, response);
             } else { 
                 /** initial connection case */ 
                 const messages = await db.getNewestMessages(chatId, initConnectionMessageQuantity);
-                socket.emit(receiveMessagesEvent, messages);
 
-                if (messages.length < initConnectionMessageQuantity) {
-                    socket.emit('notify', noOlderCommuniate);
+                const olderMessagesExist = messages.length >= initConnectionMessageQuantity;
+
+                const response = {
+                    messages: messages,
+                    olderMessagesExist: olderMessagesExist
                 }
+
+                socket.emit(receiveMessagesEvent, response);
             }
         };
 
@@ -229,10 +238,10 @@ export const transmitMessagesOnConnection = async (socket, db, projectChatsRefer
         const aiChatOffset = socket?.handshake?.auth?.aiChatOffset || 0;
 
         // Handle discussion chat
-        await getMessagesForChat(projectChatsReference?.discussionChatId, discussionChatOffset, 'receive-message-from-discussion-chat', noOlderMessagesOnDiscussionChat);
+        await getMessagesForChat(projectChatsReference?.discussionChatId, discussionChatOffset, 'receive-message-from-discussion-chat');
 
         // Handle AI chat
-        await getMessagesForChat(projectChatsReference?.aiChatId, aiChatOffset, 'receive-message-from-ai-chat', noOlderMessagesOnAIChat);
+        await getMessagesForChat(projectChatsReference?.aiChatId, aiChatOffset, 'receive-message-from-ai-chat');
 
     } catch (error) {
         logger.error(`Cannot retransmit lost data.`);
@@ -265,7 +274,12 @@ export const sendMessageByAI = async (io, db, projectId, text) => {
         const message = await db.addMessage(projectId, chatId, text, AI_ID);
         const broadcastMessageEvent = 'receive-message-from-ai-chat';
 
-        io.to(projectId).emit(broadcastMessageEvent, message);
+        const response = {
+            messages: [message],
+            olderMessagesExist: null
+        }
+
+        io.to(projectId).emit(broadcastMessageEvent, response);
     } catch (error) {
         logger.error(`Unexpected Error ${error}.`);
     }

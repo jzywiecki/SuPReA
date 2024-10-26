@@ -72,9 +72,7 @@ class Database {
 
             //await session.commitTransaction();
         
-            result = [
-                newMessage
-            ];
+            result = newMessage;
         } catch (error) {
             //await session.abortTransaction();
             throw error;

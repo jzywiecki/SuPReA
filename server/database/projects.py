@@ -29,9 +29,8 @@ class ProjectDAO:
         :return: The project with the specified id.
         :rtype: dict
         """
-        project = self.collection.find_one({"_id": ObjectId(project_id)})
-        print(project)
-        return project
+        return self.collection.find_one({"_id": ObjectId(project_id)})
+
 
     def get_projects_by_owner(self, owner_id: str) -> List[Dict]:
         """

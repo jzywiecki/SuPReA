@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { MenuIcon } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { Outlet, useParams } from 'react-router-dom';
-import RegenerateProjectButton from '@/components/RegenerateProjectButton';
 import {
     ResizableHandle,
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
+import ConnectionStatus from '@/components/ui/connection-status';
 import InviteModal from '@/components/InviteModal';
 import Search from '@/components/Search';
 import axios from 'axios';
@@ -41,13 +41,11 @@ const ProjectView = ({ }) => {
         socket.connect();
 
         function onConnect(): void {
-            console.log("Connected to server.");
             setConnected(true);
         }
 
 
         function onDisconnect(): void {
-            console.log("Disconnected from server.");
             setConnected(false);
         }
 
@@ -131,10 +129,14 @@ const ProjectView = ({ }) => {
 
     return (
         <div style={{ height: 'calc(100vh - 64px)' }}>
-                                    <Button variant="secondary" onClick={openInviteModal} className="">
-                Invite Members
-            </Button>
-            <ResizablePanelGroup
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginLeft: '16px' }}>
+                <ConnectionStatus connected={connected} />
+                <Button variant="secondary" onClick={openInviteModal}>
+                    Invite Members
+                </Button>
+            </div>
+
+             <ResizablePanelGroup
                 direction="horizontal"
                 className="w-full border"
             >
@@ -158,9 +160,9 @@ const ProjectView = ({ }) => {
                 </ResizablePanel>
                 <ResizableHandle />
                 <ResizablePanel
-                    maxSize={!isCollapsedRight ? 5 : 30}
-                    minSize={!isCollapsedRight ? 5 : 15}
-                    defaultSize={!isCollapsedRight ? 5 : 15}
+                    maxSize={!isCollapsedRight ? 5 : 22}
+                    minSize={!isCollapsedRight ? 5 : 18}
+                    defaultSize={!isCollapsedRight ? 5 : 20}
                 >
                     <div className={`flex h-10 m-4 ${isCollapsedRight ? 'justify-start' : 'justify-center'}`}>
                         <Button variant="outline" size="icon" onClick={toggleCollapseRight}>
@@ -168,13 +170,8 @@ const ProjectView = ({ }) => {
                         </Button>
 
                     </div>
-                    <RegenerateProjectButton />
                     <Chat 
                         isCollapsed={isCollapsedRight} 
-                        projectId={ projectID } 
-                        userId={ user.id }
-                        userNick={ user.username }
-                        authToken="1"
                     />
                 </ResizablePanel>
             </ResizablePanelGroup>

@@ -8,10 +8,6 @@ import { Button } from "./ui/button";
 
 interface ChatProps {
     isCollapsed: boolean;
-    projectId: string;
-    userId: string;
-    userNick: string;
-    authToken: string;
 }
 
 
@@ -23,12 +19,17 @@ export interface Message {
 }
 
 
+interface MessageResponse {
+    messages: Message[];
+    olderMessagesExist: boolean;
+}
+
+
 export type LoadOlderMessages = 'display-load-button' | 'loading' | 'none';
 
 
-const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps) => {
+const Chat = ({ isCollapsed }: ChatProps) => {
 
-    const [connected, setConnected] = useState<boolean>(false);
 
     const [unconfirmedMessagesAiChat, setUnconfirmedMessagesAiChat] = useState<string[]>([]);
     const [unconfirmedMessagesDiscussionChat, setUnconfirmedMessagesDiscussionChat] = useState<string[]>([]);
@@ -46,49 +47,37 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
 
 
     useEffect(() => {
-        
-        function onReceiveMessagesFromDiscussionChat(messages: Message[]): void {
-            handleReceivedMessage(messages, setMessagesDiscussionChat, setUnconfirmedMessagesDiscussionChat);
-            updateOffset(messages, "discussion");
+
+        function onReceiveMessagesFromDiscussionChat(result: MessageResponse): void {
+            loadMoreMessagesButtonService(result.olderMessagesExist, setLoadOlderMessagesDiscussionChat);
+            handleReceivedMessage(result.messages, setMessagesDiscussionChat, setUnconfirmedMessagesDiscussionChat);
+            updateOffset(result.messages, "discussion");
         }
 
 
-        function onReceiveMessagesFromAiChat(messages: Message[]): void {
-            handleReceivedMessage(messages, setMessagesAiChat, setUnconfirmedMessagesAiChat);
-            updateOffset(messages, "ai");
+        function onReceiveMessagesFromAiChat(result: MessageResponse): void {
+            loadMoreMessagesButtonService(result.olderMessagesExist, setLoadOlderMessagesAiChat);
+            handleReceivedMessage(result.messages, setMessagesAiChat, setUnconfirmedMessagesAiChat);
+            updateOffset(result.messages, "ai");
         }
 
 
-        function handleOlderMessagesOnDiscussionChat(moreMessage: boolean): void {
-            if (moreMessage) {
-                setLoadOlderMessagesDiscussionChat('display-load-button');
-            } else {
-                setLoadOlderMessagesDiscussionChat('none');
+        function loadMoreMessagesButtonService(olderMessagesExist: boolean, setStateFun: React.Dispatch<React.SetStateAction<LoadOlderMessages>>, ): void {
+            if (olderMessagesExist === true) {
+                setStateFun('display-load-button');
+            }
+            else if (olderMessagesExist === false) {
+                setStateFun('none');
             }
         }
-
-
-        function handleOlderMessagesOnAiChat(moreMessage: boolean): void {
-            if (moreMessage) {
-                setLoadOlderMessagesAiChat('display-load-button')
-            } else {
-                setLoadOlderMessagesAiChat('none');
-            }
-        }
-
 
 
         socketChats.on('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
         socketChats.on('receive-message-from-ai-chat', onReceiveMessagesFromAiChat);
-        socketChats.on('receive-is-more-older-messages-on-discussion-chat', handleOlderMessagesOnDiscussionChat);
-        socketChats.on('receive-is-more-older-messages-on-ai-chat', handleOlderMessagesOnAiChat);
 
         return () => {
             socketChats.off('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
             socketChats.off('receive-message-from-ai-chat', onReceiveMessagesFromAiChat);
-            socketChats.off('receive-is-more-older-messages-on-discussion-chat', handleOlderMessagesOnAiChat);
-            socketChats.off('receive-is-more-older-messages-on-ai-chat', handleOlderMessagesOnDiscussionChat);
-            socketChats.disconnect();
         };
     }, []);
 
@@ -96,13 +85,17 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
     const handleSendMessage = () => {
         if (!messageInput || messageInput.trim() === "") return;
 
+        const message = {
+            content: messageInput,
+        }
+
         if (activeTab === "ai") {
             unconfirmedMessagesAiChat.push(messageInput);
-            socketChats.emit('send-message-to-ai-chat', messageInput);
+            socketChats.emit('send-message-to-ai-chat', message);
         }
         else {
             unconfirmedMessagesDiscussionChat.push(messageInput);
-            socketChats.emit('send-message-to-discussion-chat', messageInput);
+            socketChats.emit('send-message-to-discussion-chat', message);
         }
 
         setMessageInput("");
@@ -114,6 +107,11 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
         setMessagesFun: React.Dispatch<React.SetStateAction<Message[]>>,
         setUnconfirmedMessagesFun: React.Dispatch<React.SetStateAction<string[]>>
     ) => {
+        /**
+         * 1. We search for messages we haven't received yet
+         * 2. We add them to the list of messages and sort them by message_id
+         * 3. We remove the message from the list of unconfirmed messages 
+         */
 
         setMessagesFun(prevMessages => {
             const existingMessageIds = new Set(prevMessages.map(message => message.message_id));
@@ -155,7 +153,6 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
     };
 
 
-
     const handleSetActiveTab = (value: string) => {
         if (value === "ai" || value === "discussion") {
             setActiveTab(value as ActiveTab);
@@ -191,30 +188,50 @@ const Chat = ({ isCollapsed, projectId, userId, userNick, authToken }: ChatProps
                             <TabsTrigger value="ai">AI Chat</TabsTrigger>
                             <TabsTrigger value="discussion">Discussion</TabsTrigger>
                         </TabsList>
-
+    
                         <TabsContent value="ai">
-                            <ChatTab key="ai-chat" userNick={userNick} messages={messagesAiChat} unconfirmedMessages={unconfirmedMessagesAiChat} loadOlderMessages={loadOlderMessagesAiChat} onLoadMoreMessages={onLoadMoreMessagesAiChat} />
+                            <ChatTab 
+                                key="ai-chat" 
+                                messages={messagesAiChat} 
+                                unconfirmedMessages={unconfirmedMessagesAiChat} 
+                                loadOlderMessages={loadOlderMessagesAiChat} 
+                                onLoadMoreMessages={onLoadMoreMessagesAiChat} 
+                            />
                         </TabsContent>
-
+    
                         <TabsContent value="discussion">
-                            <ChatTab key="discussion-chat" userNick={userNick} messages={messagesDiscussionChat} unconfirmedMessages={unconfirmedMessagesDiscussionChat} loadOlderMessages={loadOlderMessagesDiscussionChat} onLoadMoreMessages={onLoadMoreMessagesDiscussionChat} />
+                            <ChatTab 
+                                key="discussion-chat" 
+                                messages={messagesDiscussionChat} 
+                                unconfirmedMessages={unconfirmedMessagesDiscussionChat} 
+                                loadOlderMessages={loadOlderMessagesDiscussionChat} 
+                                onLoadMoreMessages={onLoadMoreMessagesDiscussionChat} 
+                            />
                         </TabsContent>
                     </Tabs>
-                    <div className="w-full flex items-center bg-muted ">
-                        <Textarea placeholder="Aa"
+    
+                    <div className="w-full items-center bg-white">
+                        <Textarea
+                            placeholder="Aa"
+                            className="h-1"
                             value={messageInput}
                             onChange={(e) => setMessageInput(e.target.value)}
                         />
-                        <Button className="m-2" onClick={handleSendMessage}>Send message</Button>
-                    </div>
-
-                    <div className="bg-muted text-center text-sm text-muted-foreground p-2 h-18">
-                        {connected ? "Connected" : "No connection."}
+                        <div className="flex items-center mt-2">
+                            <Button onClick={handleSendMessage}>Send message</Button>
+                            {activeTab === "ai" && ( // Warunkowe renderowanie dropdownu
+                                <select className="ml-2 border rounded p-1">
+                                    <option value="GPT3.5">GPT3.5</option>
+                                    <option value="GPT4.0">GPT4o</option>
+                                </select>
+                            )}
+                        </div>
                     </div>
                 </>
             )}
         </div>
     );
+    
 }
 
 export default Chat;
