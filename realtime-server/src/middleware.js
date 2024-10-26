@@ -1,5 +1,6 @@
 import pkg from 'mongodb';
-const { ObjectId, BSONError } = pkg;
+const { ObjectId } = pkg;
+import { BSONError } from 'mongodb/lib/bson.js';
 import { logger } from "./utils.js";
 import { UserIsNotProjectMemberException } from "./exceptions.js";
 
@@ -21,7 +22,7 @@ export const authenticationMiddleware = (io, db) => {
             const userId = socket?.handshake?.auth?.userId;
             const projectId = socket?.handshake?.auth?.projectId;
     
-            const isProjectMember = await db.isUserIsProjectMember(
+            const isProjectMember = await db.isUserProjectMember(
                 ObjectId.createFromHexString(projectId),
                 ObjectId.createFromHexString(userId)
             ); 
