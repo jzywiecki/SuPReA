@@ -99,15 +99,16 @@ def get_project(project_id: str):
     """
     return get_project_by_id(project_id)
 
+
 @router.patch(
     "/{project_id}",
     response_model=Project,
     status_code=status.HTTP_200_OK,
     response_model_by_alias=False,
 )
-
 def patch_project(project_id: str):
     pass
+
 
 @router.delete(
     "/{project_id}",
@@ -154,9 +155,12 @@ def get_project_list(user_id: str):
     :param str user_id: The unique identifier of the user.
     """
     return get_project_list_by_user_id(user_id)
+
+
 class MemberAction(BaseModel):
     sender_id: str
     member_id: str
+
 
 @router.post(
     "/{project_id}/members/add",
@@ -171,6 +175,7 @@ def invite_member(project_id: str, invite: MemberAction):
     :param MemberInvite invite: The data containing sender_id and member_id.
     """
     return invite_member_by_id(invite.sender_id, project_id, invite.member_id)
+
 
 @router.post(
     "/{project_id}/members/remove",
@@ -198,7 +203,9 @@ def assign_manager(project_id: str, assignment: MemberAction):
     :param str project_id: The unique identifier of the project.
     :param str manager_id: The unique identifier of the manager.
     """
-    return assign_manager_role_to_user_by_id(assignment.sender_id, project_id, assignment.member_id)
+    return assign_manager_role_to_user_by_id(
+        assignment.sender_id, project_id, assignment.member_id
+    )
 
 
 @router.post(
@@ -212,4 +219,6 @@ def unassign_manager(project_id: str, assignment: MemberAction):
     :param str project_id: The unique identifier of the project.
     :param str manager_id: The unique identifier of the manager.
     """
-    return unassign_member_role_from_user_by_id(assignment.sender_id, project_id, assignment.member_id)
+    return unassign_member_role_from_user_by_id(
+        assignment.sender_id, project_id, assignment.member_id
+    )

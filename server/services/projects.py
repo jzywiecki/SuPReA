@@ -166,7 +166,10 @@ def invite_member_by_id(sender_id: str, project_id: str, member_id: str):
 
     project = project_dao.get_project(project_id)
     if project["owner"] != ObjectId(sender_id):
-        raise InvalidParameter("Only the project owner can invite members - owner is" + str(project["owner"]))
+        raise InvalidParameter(
+            "Only the project owner can invite members - owner is"
+            + str(project["owner"])
+        )
 
     if ObjectId(member_id) in project["members"]:
         raise InvalidParameter("User is already a member of the project")
@@ -196,15 +199,15 @@ def remove_member_by_id(sender_id: str, project_id: str, member_id: str):
     project = project_dao.get_project(project_id)
 
     if project["owner"] == ObjectId(member_id):
-        raise InvalidParameter(
-            "Owner can not be removed from the project"
-        )
+        raise InvalidParameter("Owner can not be removed from the project")
 
-    if project["owner"] != ObjectId(sender_id) or ObjectId(sender_id) == ObjectId(member_id):
+    if project["owner"] != ObjectId(sender_id) or ObjectId(sender_id) == ObjectId(
+        member_id
+    ):
         raise InvalidParameter(
             "Only the project owner can remove members or the user can leave the project"
         )
-    
+
     if ObjectId(member_id) not in project["members"]:
         raise InvalidParameter("User is not a member of the project")
 
