@@ -120,15 +120,32 @@ const ProjectSettings: React.FC = () => {
         }
     };
 
-    const handleManagerSelect = (manager: Members) => {
+    const handleManagerSelect = async (manager: Members) => {
         const currentManagers = control._formValues.managers || [];
         if (!currentManagers.find((m: Members) => m.id === manager.id)) {
-            setValue("managers", [...currentManagers, manager]);
+            try {
+                const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/managers/assign`;
+                await axiosInstance.post(url, { sender_id: user?.id, member_id: manager.id });
+    
+                // If the request succeeds, update the local form state
+                setValue("managers", [...currentManagers, manager]);
+            } catch (error) {
+                console.error('Error adding manager:', error);
+            }
         }
     };
 
-    const handleManagerRemove = (managerId: string) => {
-        setValue("managers", (control._formValues.managers || []).filter((manager: Members) => manager.id !== managerId));
+
+    const handleManagerRemove = async (managerId: string) => {
+        try {
+            const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/managers/unassign`;
+            await axiosInstance.post(url, { sender_id: user?.id, member_id: managerId });
+
+            // If the request succeeds, update the local form state
+            setValue("managers", (control._formValues.managers || []).filter((manager: Members) => manager.id !== managerId));
+        } catch (error) {
+            console.error('Error removing manager:', error);
+        }
     };
 
     const handleMemberRemove = async (memberId: string) => {
