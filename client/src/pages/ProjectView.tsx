@@ -3,7 +3,7 @@ import Chat from '../components/Chat';
 import { Button } from '@/components/ui/button';
 import { MenuIcon } from 'lucide-react';
 import { useState, useEffect } from "react";
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import {
     ResizableHandle,
     ResizablePanel,
@@ -12,15 +12,15 @@ import {
 import ConnectionStatus from '@/components/ui/connection-status';
 import InviteModal from '@/components/InviteModal';
 import Search from '@/components/Search';
-import axios from 'axios';
 import { User } from '@/pages/SearchAndAddFriends';
 import { useUser } from '@/components/UserProvider';
 import { API_URLS } from '@/services/apiUrls';
 import axiosInstance from '@/services/api';
-import {socket} from '@/utils/sockets';
+import { socket } from '@/utils/sockets';
 import { getComponentById } from '@/utils/enums';
 import { GenerationResponse } from '@/utils/generation';
 
+import { useSnackbar } from 'notistack';
 
 const ProjectView = ({ }) => {
     const { user } = useUser();
@@ -33,7 +33,10 @@ const ProjectView = ({ }) => {
 
     const [connected, setConnected] = useState<boolean>(false);
 
+    const navigation = useNavigate();
+
     useEffect(() => {
+        if (!user?.id) return;
         socket.auth = {
             projectId: projectID,
             userId: user.id,
@@ -86,7 +89,7 @@ const ProjectView = ({ }) => {
         socket.on('notify-generation-complete', onGenerationComplete)
         socket.on('error', onError);
 
-
+        navigation("summary") //TODO: veryfy if this doasnt collide with anything
         return () => {
             socket.off('connect', onConnect);
             socket.off('disconnect', onDisconnect);
@@ -94,8 +97,9 @@ const ProjectView = ({ }) => {
             socket.off('notify-generation-complete', onGenerationComplete);
             socket.disconnect();
         };
-    }, []);
+    }, [user?.id]);
 
+    const { enqueueSnackbar } = useSnackbar();
 
     const openInviteModal = () => {
         setIsInviteModalOpen(true);
@@ -118,6 +122,7 @@ const ProjectView = ({ }) => {
             const response = await axiosInstance.get<User[]>(`${API_URLS.BASE_URL}/users/filter?user_id=${user?.id}&filter=${searchQuery}`);
             setSearchResults(response.data);
         } catch (error) {
+            enqueueSnackbar(`Error searching users: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error('Error searching users:', error);
         }
     };
@@ -129,13 +134,15 @@ const ProjectView = ({ }) => {
             await axiosInstance.post(url);
             closeInviteModal();
         } catch (error) {
+            enqueueSnackbar(`Error adding member: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error('Error adding member:', error);
         }
     }
 
 
     const elements = [
-        { id: 1, name: "Name", description: "Name for your project" },
+        { id: 1, name: "Summary", description: "Sumary for project" },
+        { id: 2, name: "Name", description: "Name for your project" },
         { id: 3, name: "Specifications", description: "Specifications of the project" },
         { id: 4, name: "Requirements", description: "Functional and non-functional requirements" },
         { id: 5, name: "Actors", description: "Defining actors of the project" },
@@ -158,7 +165,7 @@ const ProjectView = ({ }) => {
                 </Button>
             </div>
 
-             <ResizablePanelGroup
+            <ResizablePanelGroup
                 direction="horizontal"
                 className="w-full border"
             >
@@ -192,8 +199,8 @@ const ProjectView = ({ }) => {
                         </Button>
 
                     </div>
-                    <Chat 
-                        isCollapsed={isCollapsedRight} 
+                    <Chat
+                        isCollapsed={isCollapsedRight}
                     />
                 </ResizablePanel>
             </ResizablePanelGroup>
@@ -205,7 +212,7 @@ const ProjectView = ({ }) => {
                     searchResults={searchResults}
                     friends={[]}
                     onClick={handleAddMember}
-                    userId={user.id}
+                    userId={user?.id}
                     actionType='addMember'
                 />
             </InviteModal>

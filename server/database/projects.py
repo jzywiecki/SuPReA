@@ -43,7 +43,7 @@ class ProjectDAO:
         return list(
             self.collection.find(
                 {"owner": ObjectId(owner_id)},
-                {"_id": 1, "name": 1, "description": 1, "owner": 1},
+                {"_id": 1, "name": 1, "description": 1, "owner": 1, "for_who":1, "doing_what":1, "additional_info":1, "members":1, "created_at":1, "mottto": 1, "elevator_speech":1  },
             )
         )
 
@@ -58,7 +58,7 @@ class ProjectDAO:
         return list(
             self.collection.find(
                 {"members": ObjectId(member_id), "owner": {"$ne": ObjectId(member_id)}},
-                {"_id": 1, "name": 1, "description": 1, "owner": 1},
+                {"_id": 1, "name": 1, "description": 1, "owner": 1, "for_who":1, "doing_what":1, "additional_info":1, "members":1, "created_at":1, "mottto": 1, "elevator_speech":1   },
             )
         )
 
@@ -73,7 +73,7 @@ class ProjectDAO:
         return list(
             self.collection.find(
                 {"$or": [{"owner": ObjectId(user_id)}, {"members": ObjectId(user_id)}]},
-                {"_id": 1, "name": 1, "description": 1, "owner": 1},
+                {"_id": 1, "name": 1, "description": 1, "owner": 1, "for_who":1, "doing_what":1, "additional_info":1, "members":1, "created_at":1, "mottto": 1, "elevator_speech":1  },
             )
         )
 
