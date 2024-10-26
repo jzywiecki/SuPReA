@@ -80,37 +80,37 @@ const ProjectSettings: React.FC = () => {
         }
     };
 
-    // Fetch current project settings
+    const fetchProjectSettings = async () => {
+        try {
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/${projectID}`);
+            const projectData = response.data;
+    
+            const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
+            const usersData = membersResponse.data as Members[];
+            setAllMembers(usersData); 
+    
+            setValue("name", projectData.name || "");
+            setValue("description", projectData.description || "");
+            setValue("readme", projectData.readme || "");
+            setValue("additional_info", projectData.additional_info || ""); 
+            setValue("for_who", projectData.for_who || "");                 
+            setValue("doing_what", projectData.doing_what || "");           
+            setValue("owner", usersData.find(member => member.id === projectData.owner) || null);
+            setValue("members", usersData || []);
+            setValue("managers", projectData.managers.map(managerId => usersData.find(member => member.id === managerId)).filter(Boolean) || []);
+    
+        } catch (error) {
+            console.error("Failed to fetch project settings", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    // Call fetchProjectSettings within useEffect for the initial data load
     useEffect(() => {
-        const fetchProjectSettings = async () => {
-            try {
-                const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/${projectID}`);
-                const projectData = response.data;
-
-                const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
-                const usersData = membersResponse.data as Members[];
-                setAllMembers(usersData); 
-                console.log(usersData);
-                
-                setValue("name", projectData.name || "");
-                setValue("description", projectData.description || "");
-                setValue("readme", projectData.readme || "");
-                setValue("additional_info", projectData.additional_info || ""); 
-                setValue("for_who", projectData.for_who || "");                 
-                setValue("doing_what", projectData.doing_what || "");           
-                setValue("owner", usersData.find(member => member.id === projectData.owner) || null);
-                setValue("members", usersData || []);
-                setValue("managers", projectData.managers.map(managerId => usersData.find(member => member.id === managerId)).filter(Boolean) || []);
-
-            } catch (error) {
-                console.error("Failed to fetch project settings", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchProjectSettings();
     }, [projectID, setValue]);
+    
 
     const onSubmit = async (data: ProjectSettings) => {
         try {
@@ -126,6 +126,7 @@ const ProjectSettings: React.FC = () => {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}`;
             await axiosInstance.patch(url, patchData);
             console.log("Project settings updated successfully");
+            await fetchProjectSettings(); 
         } catch (error) {
             console.error('Error submitting project settings:', error);
         }
@@ -137,6 +138,7 @@ const ProjectSettings: React.FC = () => {
             console.log(user?.id, friendId)
             await axiosInstance.post(url, { sender_id: user?.id, member_id: friendId });
             closeInviteModal();
+            await fetchProjectSettings(); 
         } catch (error) {
             console.error('Error adding member:', error);
         }
@@ -149,8 +151,7 @@ const ProjectSettings: React.FC = () => {
                 const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/managers/assign`;
                 await axiosInstance.post(url, { sender_id: user?.id, member_id: manager.id });
     
-                // If the request succeeds, update the local form state
-                setValue("managers", [...currentManagers, manager]);
+                await fetchProjectSettings(); 
             } catch (error) {
                 console.error('Error adding manager:', error);
             }
@@ -163,8 +164,7 @@ const ProjectSettings: React.FC = () => {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/managers/unassign`;
             await axiosInstance.post(url, { sender_id: user?.id, member_id: managerId });
 
-            // If the request succeeds, update the local form state
-            setValue("managers", (control._formValues.managers || []).filter((manager: Members) => manager.id !== managerId));
+            await fetchProjectSettings(); 
         } catch (error) {
             console.error('Error removing manager:', error);
         }
@@ -175,8 +175,7 @@ const ProjectSettings: React.FC = () => {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/members/remove`;
             await axiosInstance.post(url, { sender_id: user?.id, member_id: memberId });
             
-            // Update the local state after successfully removing the member
-            setValue("members", (control._formValues.members || []).filter(member => member.id !== memberId));
+            await fetchProjectSettings(); 
         } catch (error) {
             console.error('Error removing member:', error);
         }
@@ -187,8 +186,7 @@ const ProjectSettings: React.FC = () => {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/owner/assign`;
             await axiosInstance.post(url, { sender_id: user?.id, member_id: ownerID.id });
             
-            // Update the local state after successfully removing the member
-            setValue("owner", (control._formValues.owner || []));
+            await fetchProjectSettings(); 
         } catch (error) {
             console.error('Error removing member:', error);
         }
