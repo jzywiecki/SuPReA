@@ -26,6 +26,7 @@ interface ProjectSettings {
 }
 
 interface Members {
+    username: string;
     id: string;
     name: string;
     email: string;
@@ -111,8 +112,8 @@ const ProjectSettings: React.FC = () => {
     const handleAddMember = async (friendId: string) => {
         try {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/members/add`;
-
-            await axiosInstance.post(url);
+            console.log(user?.id, friendId)
+            await axiosInstance.post(url, { sender_id: user?.id, member_id: friendId });
             closeInviteModal();
         } catch (error) {
             console.error('Error adding member:', error);
@@ -180,7 +181,7 @@ const ProjectSettings: React.FC = () => {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button className="mt-1 w-full">
-                            {control._formValues.owner ? control._formValues.owner.name : "Select Owner"}
+                            {control._formValues.owner ? control._formValues.owner.username : "Select Owner"}
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
@@ -190,7 +191,7 @@ const ProjectSettings: React.FC = () => {
                                     key={member.id}
                                     onClick={() => handleOwnerSelect(member)}
                                 >
-                                    {member.name}
+                                    {member.username}
                                 </DropdownMenuItem>
                             ))
                         ) : (
@@ -206,7 +207,7 @@ const ProjectSettings: React.FC = () => {
                 <div className="mt-2">
                     {(control._formValues.members || []).map((member, index) => (
                         <span key={index} className="inline-flex items-center bg-green-100 text-green-800 text-sm px-2 py-1 rounded-full mr-2">
-                            {member.name}
+                            {member.username}
                             <button onClick={() => handleMemberRemove(member.id)} className="ml-1 text-red-500 hover:text-red-700">&times;</button>
                         </span>
                     ))}
@@ -226,7 +227,7 @@ const ProjectSettings: React.FC = () => {
                                     key={member.id}
                                     onClick={() => handleManagerSelect(member)}
                                 >
-                                    {member.name}
+                                    {member.username}
                                 </DropdownMenuItem>
                             ))
                         ) : (
@@ -237,7 +238,7 @@ const ProjectSettings: React.FC = () => {
                 <div className="mt-2">
                     {(control._formValues.managers || []).map((manager, index) => (
                         <span key={index} className="inline-flex items-center bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full mr-2">
-                            {manager.name}
+                            {manager.username}
                             <button onClick={() => handleManagerRemove(manager.id)} className="ml-1 text-red-500 hover:text-red-700">&times;</button>
                         </span>
                     ))}

@@ -6,7 +6,7 @@ It also integrates with AI models to generate project components.
 from typing import Dict
 
 from pymongo.results import DeleteResult
-
+from bson import ObjectId
 from utils import InvalidParameter, ProjectNotFound
 from generation.project import generate_project_components_task
 from ai import get_text_model_remote_ref_enum, get_image_model_remote_ref_enum
@@ -165,10 +165,10 @@ def invite_member_by_id(sender_id: str, project_id: str, member_id: str):
         raise ProjectNotFound(project_id)
 
     project = project_dao.get_project(project_id)
-    if project.owner != sender_id:
-        raise InvalidParameter("Only the project owner can invite members")
+    if project["owner"] != ObjectId(sender_id):
+        raise InvalidParameter("Only the project owner can invite members - owner is" + str(project["owner"]))
 
-    if member_id in project.members:
+    if ObjectId(member_id) in project["members"]:
         raise InvalidParameter("User is already a member of the project")
 
     project_dao.add_member_to_project(project_id, member_id)
@@ -194,15 +194,15 @@ def remove_member_by_id(sender_id: str, project_id: str, member_id: str):
         raise ProjectNotFound(project_id)
 
     project = project_dao.get_project(project_id)
-    if project.owner != sender_id or sender_id != member_id:
+    if project["owner"] != ObjectId(sender_id) or ObjectId(sender_id) != ObjectId(member_id):
         raise InvalidParameter(
             "Only the project owner can remove members or the user can leave the project"
         )
 
-    if member_id not in project.members:
+    if ObjectId(member_id) not in project["members"]:
         raise InvalidParameter("User is not a member of the project")
 
-    if member_id in project.managers:
+    if ObjectId(member_id) in project["managers"]:
         result = project_dao.unassign_manager_from_project(project_id, member_id)
 
     if result.modified_count == 0:
@@ -231,13 +231,13 @@ def assign_manager_role_to_user_by_id(sender_id: str, project_id: str, member_id
         raise ProjectNotFound(project_id)
 
     project = project_dao.get_project(project_id)
-    if project.owner != sender_id:
+    if project["owner"] != ObjectId(sender_id):
         raise InvalidParameter("Only the project owner can assign managers")
 
-    if member_id not in project.members:
+    if ObjectId(member_id) not in project["members"]:
         raise InvalidParameter("User is not a member of the project")
 
-    if member_id in project.managers:
+    if ObjectId(member_id) in project["managers"]:
         raise InvalidParameter("User is already a manager of the project")
 
     project_dao.assign_manager_to_project(project_id, member_id)
@@ -265,13 +265,13 @@ def unassign_member_role_from_user_by_id(
         raise ProjectNotFound(project_id)
 
     project = project_dao.get_project(project_id)
-    if project.owner != sender_id:
+    if project["owner"] != ObjectId(sender_id):
         raise InvalidParameter("Only the project owner can unassign managers")
 
-    if member_id not in project.members:
+    if ObjectId(member_id) not in project["members"]:
         raise InvalidParameter("User is not a member of the project")
 
-    if member_id not in project.managers:
+    if ObjectId(member_id) not in project["managers"]:
         raise InvalidParameter("User is not a manager of the project")
 
     project_dao.unassign_manager_from_project(project_id, member_id)

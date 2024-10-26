@@ -30,7 +30,6 @@ class ProjectDAO:
         :rtype: dict
         """
         project = self.collection.find_one({"_id": ObjectId(project_id)})
-        print(project)
         return project
 
     def get_projects_by_owner(self, owner_id: str) -> List[Dict]:
