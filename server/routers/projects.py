@@ -6,6 +6,7 @@ from bson import ObjectId
 from typing import List
 from fastapi import APIRouter, status, Response
 from pydantic import BaseModel, Field
+from typing import Optional
 from models import Project
 from services import (
     create_empty_project,
@@ -18,7 +19,9 @@ from services import (
     assign_manager_role_to_user_by_id,
     unassign_member_role_from_user_by_id,
     assign_owner_role_for_user_by_id,
+    update_project_info,
 )
+from models import ProjectPatchRequest
 
 router = APIRouter(tags=["projects"], prefix="/projects")
 
@@ -30,6 +33,54 @@ class EmptyProjectCreateRequest(BaseModel):
 
     name: str
     owner_id: str
+    
+
+class ProjectsListResponse(BaseModel):
+    """
+    Response object for retrieving the list of projects where the specified user is the owner or a member.
+    """
+
+    class ProjectListElement(BaseModel):
+        id: ObjectId = Field(alias="_id", default=None)
+        name: str
+        description: str
+        owner: ObjectId
+
+        class Config:
+            arbitrary_types_allowed = True
+            json_encoders = {ObjectId: str}
+
+    owner: List[ProjectListElement]
+    member: List[ProjectListElement]
+
+    
+class ProjectCreateByAIRequest(BaseModel):
+    """
+    Request object for creating a project using AI-based generation.
+    """
+
+    name: str
+    for_who: str
+    doing_what: str
+    additional_info: str
+    owner_id: str
+    text_ai_model: str
+    image_ai_model: str
+    callback: str
+    
+    
+class ProjectAddMemberRequest(BaseModel):
+    """
+    Request object for adding a member to a project.
+    """
+
+    sender_id: str
+    member_id: str
+    
+
+class MemberAction(BaseModel):
+    sender_id: str
+    member_id: str
 
 
 @router.post(
@@ -45,30 +96,6 @@ def create_empty(request: EmptyProjectCreateRequest):
     """
     new_project_id = create_empty_project(request)
     return new_project_id
-
-
-class ProjectCreateByAIRequest(BaseModel):
-    """
-    Request object for creating a project using AI-based generation.
-    """
-
-    name: str
-    for_who: str
-    doing_what: str
-    additional_info: str
-    owner_id: str
-    text_ai_model: str
-    image_ai_model: str
-    callback: str
-
-
-class ProjectAddMemberRequest(BaseModel):
-    """
-    Request object for adding a member to a project.
-    """
-
-    sender_id: str
-    member_id: str
 
 
 @router.post(
@@ -107,9 +134,16 @@ def get_project(project_id: str):
     status_code=status.HTTP_200_OK,
     response_model_by_alias=False,
 )
-def patch_project(project_id: str):
-    pass
+def patch_project(project_id: str, body: ProjectPatchRequest):
+    """
+    Patches the project with specified id.
 
+     :param str project_id: The unique identifier of the project.
+     :param ProjectPatchRequest: The project patch fields request
+
+    """
+    return update_project_info(project_id, body)
+    
 
 @router.delete(
     "/{project_id}",
@@ -123,24 +157,6 @@ def delete_project(project_id: str):
     delete_project_by_id(project_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-
-class ProjectsListResponse(BaseModel):
-    """
-    Response object for retrieving the list of projects where the specified user is the owner or a member.
-    """
-
-    class ProjectListElement(BaseModel):
-        id: ObjectId = Field(alias="_id", default=None)
-        name: str
-        description: str
-        owner: ObjectId
-
-        class Config:
-            arbitrary_types_allowed = True
-            json_encoders = {ObjectId: str}
-
-    owner: List[ProjectListElement]
-    member: List[ProjectListElement]
 
 
 @router.get(
@@ -156,11 +172,6 @@ def get_project_list(user_id: str):
     :param str user_id: The unique identifier of the user.
     """
     return get_project_list_by_user_id(user_id)
-
-
-class MemberAction(BaseModel):
-    sender_id: str
-    member_id: str
 
 
 @router.post(

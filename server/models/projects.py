@@ -79,3 +79,12 @@ class ComponentIdentify(Enum):
     TITLE = "title"
     DATABASE_SCHEMA = "database_schema"
     LOGO = "logo"
+
+
+class ProjectPatchRequest(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    # readme: Optional[str] = None
+    for_who: Optional[str] = None
+    doing_what: Optional[str] = None
+    additional_info: Optional[str] = None  

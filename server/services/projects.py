@@ -11,6 +11,7 @@ from utils import InvalidParameter, ProjectNotFound
 from generation.project import generate_project_components_task
 from ai import get_text_model_remote_ref_enum, get_image_model_remote_ref_enum
 from database import project_dao, chat_dao, get_project_dao_ref
+from models import ProjectPatchRequest
 
 
 def create_empty_project(request) -> str:
@@ -122,6 +123,20 @@ def delete_project_by_id(project_id: str) -> DeleteResult | None:
 
     return project_dao.delete_project(project_id, chat_dao)
 
+
+def update_project_info(project_id: str, body: ProjectPatchRequest):
+    """
+    Update project information.
+
+    :param project_id: The unique identifier of the project.
+    
+    :raises ProjectNotFound: If no project is found with the provided ID. 
+    :return: The result of the mongodb update operation.
+    """
+    if not project_dao.is_project_exist(project_id):
+        raise ProjectNotFound(project_id)
+
+    return project_dao.update_project_info(project_id, body)
 
 def get_project_list_by_user_id(user_id: str) -> Dict:
     """

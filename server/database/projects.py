@@ -13,6 +13,7 @@ from pymongo.results import UpdateResult, InsertOneResult, DeleteResult
 from models import Project
 
 from .chats import ChatDAO
+from models import ProjectPatchRequest
 
 
 class ProjectDAO:
@@ -203,6 +204,44 @@ class ProjectDAO:
         :rtype: bool
         """
         return self.collection.count_documents({"_id": ObjectId(project_id)}) > 0
+    
+    def update_project_info(self, project_id: str, body: ProjectPatchRequest):
+        """
+        Update projects with given data.
+        :param str project_id: The id of the project to check.
+        :param ProjectPatchRequest body: The body of patch request
+        :return: The result of the MongoDB update operation.
+        """
+        update_fields = {k: v for k, v in body.dict().items() if v is not None}
+
+        if not update_fields:
+            raise ValueError("No fields provided for update.")
+
+        try:
+            # Update the project in MongoDB using $set to update only the provided fields
+            result = self.collection.update_one(
+                {"_id": ObjectId(project_id)},
+                {"$set": update_fields}
+            )
+
+            if result.matched_count == 0:
+                print("No project found with the specified ID.")
+                return None
+
+            # Fetch the updated project to return
+            updated_project = self.collection.find_one({"_id": ObjectId(project_id)})
+
+            if not updated_project:
+                print("Project updated but could not retrieve the updated data.")
+                return None
+
+            print("Project updated successfully.")
+            return updated_project
+
+        except Exception as e:
+            print(f"Error updating project: {e}")
+            return None
+        
 
     def add_member_to_project(self, project_id: str, member_id: str):
         """

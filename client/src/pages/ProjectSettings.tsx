@@ -23,6 +23,9 @@ interface ProjectSettings {
     owner: Members | null; 
     members: Members[];
     managers: Members[];
+    additional_info: string;
+    for_who: string;         
+    doing_what: string; 
 }
 
 interface Members {
@@ -59,6 +62,9 @@ const ProjectSettings: React.FC = () => {
             name: "",
             description: "",
             readme: "",
+            additional_info: "",
+            for_who: "",
+            doing_what: "",
             owner: null, 
             members: [],
             managers: [],
@@ -89,9 +95,13 @@ const ProjectSettings: React.FC = () => {
                 setValue("name", projectData.name || "");
                 setValue("description", projectData.description || "");
                 setValue("readme", projectData.readme || "");
+                setValue("additional_info", projectData.additional_info || ""); 
+                setValue("for_who", projectData.for_who || "");                 
+                setValue("doing_what", projectData.doing_what || "");           
                 setValue("owner", usersData.find(member => member.id === projectData.owner) || null);
                 setValue("members", usersData || []);
                 setValue("managers", projectData.managers.map(managerId => usersData.find(member => member.id === managerId)).filter(Boolean) || []);
+
             } catch (error) {
                 console.error("Failed to fetch project settings", error);
             } finally {
@@ -104,6 +114,15 @@ const ProjectSettings: React.FC = () => {
 
     const onSubmit = async (data: ProjectSettings) => {
         try {
+            const patchData = {
+                name: data.name,
+                description: data.description,
+                readme: data.readme,
+            };
+
+            const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}`;
+            await axiosInstance.patch(url, patchData);
+            console.log("Project settings updated successfully");
         } catch (error) {
             console.error('Error submitting project settings:', error);
         }
@@ -204,6 +223,36 @@ const ProjectSettings: React.FC = () => {
                 <Textarea
                     id="readme"
                     {...register("readme")}
+                    placeholder="Enter readme content"
+                    className="mt-1 block w-full"
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="for_who" className="block text-sm font-medium text-gray-700">For who</Label>
+                <Textarea
+                    id="for_who"
+                    {...register("for_who")}
+                    placeholder="Enter readme content"
+                    className="mt-1 block w-full"
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="doing_what" className="block text-sm font-medium text-gray-700">Doing what</Label>
+                <Textarea
+                    id="doing_what"
+                    {...register("doing_what")}
+                    placeholder="Enter readme content"
+                    className="mt-1 block w-full"
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="additional_info" className="block text-sm font-medium text-gray-700">Additional info</Label>
+                <Textarea
+                    id="additional_info"
+                    {...register("additional_info")}
                     placeholder="Enter readme content"
                     className="mt-1 block w-full"
                 />
