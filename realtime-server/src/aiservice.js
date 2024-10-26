@@ -36,7 +36,7 @@ export class AIService {
         const component = getComponentyByName(message?.component)
 
         this.io.to(message?.callback).emit(
-            'notify', 
+            'notify-generation-complete', 
             new ComponentCreatedCommunicate(component?.id)
         );
     }

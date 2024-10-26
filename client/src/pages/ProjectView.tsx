@@ -18,6 +18,9 @@ import { useUser } from '@/components/UserProvider';
 import { API_URLS } from '@/services/apiUrls';
 import axiosInstance from '@/services/api';
 import {socket} from '@/utils/sockets';
+import { getComponentById } from '@/utils/enums';
+import { GenerationResponse } from '@/utils/generation';
+
 
 const ProjectView = ({ }) => {
     const { user } = useUser();
@@ -58,11 +61,28 @@ const ProjectView = ({ }) => {
 
         function onError(err: string): void {
             console.log("[ERROR] " + err);
+            //TODO: here should be error pop-up.
         }
+
+        function onGenerationComplete(response: GenerationResponse): void {
+            const component = getComponentById(response.component);
+            console.log("Generated: ")
+            console.log(component)
+            // For Krzysiek.
+            // After components generation (after creating a project), we receive notifications here.
+            // You receive a notification in the format (GenerationResponse):
+            // {
+            //     component: "<specific id>",
+            //     code: 1
+            // }
+            // where "component" is the ID of the component, and "code" is a constant indicating the notification type.
+        }
+
 
         socket.on('connect', onConnect);
         socket.on('disconnect', onDisconnect);
         socket.on('connect_error', onConnectionError);
+        socket.on('notify-generation-complete', onGenerationComplete)
         socket.on('error', onError);
 
 
@@ -70,6 +90,7 @@ const ProjectView = ({ }) => {
             socket.off('connect', onConnect);
             socket.off('disconnect', onDisconnect);
             socket.off('connect_error', onConnectionError);
+            socket.off('notify-generation-complete', onGenerationComplete);
             socket.disconnect();
         };
     }, []);

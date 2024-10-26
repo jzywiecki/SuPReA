@@ -15,19 +15,19 @@ import { logger } from './utils.js';
 export const registerRouters = (app, aiService) => {
 
     app.post('/event/generation-complete', (req, res) => {
-        aiService.notifyComponentCreated(req);
+        aiService.notifyComponentCreated(req.body);
         res.status(200).send({});
     });
     
 
     app.post('/event/regeneration-complete', (req, res) => {
-        aiService.sendGeneratedComponent(req);
+        aiService.sendGeneratedComponent(req.body);
         res.status(200).send({});
     });
 
 
     app.post('/event/update-complete', (req, res) => {
-        aiService.sendGeneratedComponent(req);
+        aiService.sendGeneratedComponent(req.body);
         res.status(200).send({});
     });
     
