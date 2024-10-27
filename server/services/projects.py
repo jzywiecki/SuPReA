@@ -12,6 +12,7 @@ from generation.project import generate_project_components_task
 from ai import get_text_model_remote_ref_enum, get_image_model_remote_ref_enum
 from database import project_dao, chat_dao, get_project_dao_ref
 from models import ProjectPatchRequest
+from utils import logger
 
 
 def create_empty_project(request) -> str:
@@ -132,8 +133,33 @@ def update_project_info(project_id: str, body: ProjectPatchRequest):
     """
     if not project_dao.is_project_exist(project_id):
         raise ProjectNotFound(project_id)
+    
+    update_fields = {k: v for k, v in body.dict().items() if v is not None}
 
-    return project_dao.update_project_info(project_id, body)
+    if not update_fields:
+        raise ValueError("No fields provided for update.")
+
+    try:
+        # Update the project in MongoDB using $set to update only the provided fields
+        result = project_dao.update_project_info(project_id, update_fields)
+
+        if result.matched_count == 0:
+            logger.error("No project found with the specified ID.")
+            return None
+
+        # Fetch the updated project to return
+        updated_project = project_dao.get_project(project_id)
+
+        if not updated_project:
+            logger.error("Project updated but could not retrieve the updated data.")
+            return None
+
+        logger.error("Project updated successfully.")
+        return updated_project
+
+    except Exception as e:
+        logger.error(f"Error updating project: {e}")
+        return None
 
 
 def get_project_list_by_user_id(user_id: str) -> Dict:
@@ -330,5 +356,16 @@ def assign_owner_role_for_user_by_id(
     if ObjectId(new_owner_id) not in project["managers"]:
         raise InvalidParameter("User is not a manager of the project")
 
-    project_dao.assign_new_project_owner(project_id, new_owner_id, sender_id)
-    return True
+    try:
+        result = project_dao.assign_new_project_owner(project_id, new_owner_id, sender_id)
+
+        if result.matched_count == 0:
+            logger.error("No project found or the old owner doesn't match.")
+            return None
+        elif result.modified_count == 1:
+            logger.error("Project owner changed successfully.")
+    except Exception as e:
+        logger.error(f"Error changing project owner: {e}")
+        return None
+
+

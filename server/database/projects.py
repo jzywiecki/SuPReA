@@ -205,41 +205,17 @@ class ProjectDAO:
         """
         return self.collection.count_documents({"_id": ObjectId(project_id)}) > 0
 
-    def update_project_info(self, project_id: str, body: ProjectPatchRequest):
+    def update_project_info(self, project_id: str, update_fields: dict):
         """
         Update projects with given data.
         :param str project_id: The id of the project to check.
         :param ProjectPatchRequest body: The body of patch request
         :return: The result of the MongoDB update operation.
         """
-        update_fields = {k: v for k, v in body.dict().items() if v is not None}
-
-        if not update_fields:
-            raise ValueError("No fields provided for update.")
-
-        try:
-            # Update the project in MongoDB using $set to update only the provided fields
-            result = self.collection.update_one(
-                {"_id": ObjectId(project_id)}, {"$set": update_fields}
-            )
-
-            if result.matched_count == 0:
-                logger.error("No project found with the specified ID.")
-                return None
-
-            # Fetch the updated project to return
-            updated_project = self.collection.find_one({"_id": ObjectId(project_id)})
-
-            if not updated_project:
-                logger.error("Project updated but could not retrieve the updated data.")
-                return None
-
-            logger.error("Project updated successfully.")
-            return updated_project
-
-        except Exception as e:
-            logger.error(f"Error updating project: {e}")
-            return None
+        return self.collection.update_one(
+            {"_id": ObjectId(project_id)}, {"$set": update_fields}
+        )
+        
 
     def add_member_to_project(self, project_id: str, member_id: str):
         """
@@ -302,25 +278,15 @@ class ProjectDAO:
         :param str new_owner_id: The id of the new owner.
         :param str old_owner_id: The id of the previous owner.
         """
-        try:
-            result = self.collection.update_one(
-                {
-                    "_id": ObjectId(project_id),
-                    "owner": ObjectId(
-                        old_owner_id
-                    ),  # Ensure the current owner is the old owner
-                },
-                {"$set": {"owner": ObjectId(new_owner_id)}},
-            )
-
-            if result.matched_count == 0:
-                logger.error("No project found or the old owner doesn't match.")
-            elif result.modified_count == 1:
-                logger.error("Project owner changed successfully.")
-            return result
-        except Exception as e:
-            logger.error(f"Error changing project owner: {e}")
-            return None
+        return self.collection.update_one(
+            {
+                "_id": ObjectId(project_id),
+                "owner": ObjectId(
+                    old_owner_id
+                ),  # Ensure the current owner is the old owner
+            },
+            {"$set": {"owner": ObjectId(new_owner_id)}},
+        )
 
     def get_project_model_and_basic_information(self, project_id: str):
         """
