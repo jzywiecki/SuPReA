@@ -23,9 +23,13 @@ interface ProjectSettings {
     owner: Members | null; 
     members: Members[];
     managers: Members[];
+    additional_info: string;
+    for_who: string;         
+    doing_what: string; 
 }
 
 interface Members {
+    username: string;
     id: string;
     name: string;
     email: string;
@@ -58,6 +62,9 @@ const ProjectSettings: React.FC = () => {
             name: "",
             description: "",
             readme: "",
+            additional_info: "",
+            for_who: "",
+            doing_what: "",
             owner: null, 
             members: [],
             managers: [],
@@ -73,36 +80,53 @@ const ProjectSettings: React.FC = () => {
         }
     };
 
-    // Fetch current project settings
+    const fetchProjectSettings = async () => {
+        try {
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/${projectID}`);
+            const projectData = response.data;
+    
+            const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
+            const usersData = membersResponse.data as Members[];
+            setAllMembers(usersData); 
+    
+            setValue("name", projectData.name || "");
+            setValue("description", projectData.description || "");
+            setValue("readme", projectData.readme || "");
+            setValue("additional_info", projectData.additional_info || ""); 
+            setValue("for_who", projectData.for_who || "");                 
+            setValue("doing_what", projectData.doing_what || "");           
+            setValue("owner", usersData.find(member => member.id === projectData.owner) || null);
+            setValue("members", usersData || []);
+            setValue("managers", projectData.managers.map(managerId => usersData.find(member => member.id === managerId)).filter(Boolean) || []);
+    
+        } catch (error) {
+            console.error("Failed to fetch project settings", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    // Call fetchProjectSettings within useEffect for the initial data load
     useEffect(() => {
-        const fetchProjectSettings = async () => {
-            try {
-                const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/${projectID}`);
-                const projectData = response.data;
-
-                const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
-                const usersData = membersResponse.data as Members[];
-                setAllMembers(usersData); 
-                console.log(usersData);
-                
-                setValue("name", projectData.name || "");
-                setValue("description", projectData.description || "");
-                setValue("readme", projectData.readme || "");
-                setValue("owner", usersData.find(member => member.id === projectData.owner) || null);
-                setValue("members", usersData || []);
-                setValue("managers", projectData.managers.map(managerId => usersData.find(member => member.id === managerId)).filter(Boolean) || []);
-            } catch (error) {
-                console.error("Failed to fetch project settings", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchProjectSettings();
     }, [projectID, setValue]);
+    
 
     const onSubmit = async (data: ProjectSettings) => {
         try {
+            const patchData = {
+                name: data.name,
+                description: data.description,
+                readme: data.readme,
+                additional_info: data.additional_info, 
+                for_who: data.for_who,                  
+                doing_what: data.doing_what,             
+            };
+
+            const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}`;
+            await axiosInstance.patch(url, patchData);
+            console.log("Project settings updated successfully");
+            await fetchProjectSettings(); 
         } catch (error) {
             console.error('Error submitting project settings:', error);
         }
@@ -111,31 +135,61 @@ const ProjectSettings: React.FC = () => {
     const handleAddMember = async (friendId: string) => {
         try {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/members/add`;
-
-            await axiosInstance.post(url);
+            console.log(user?.id, friendId)
+            await axiosInstance.post(url, { sender_id: user?.id, member_id: friendId });
             closeInviteModal();
+            await fetchProjectSettings(); 
         } catch (error) {
             console.error('Error adding member:', error);
         }
     };
 
-    const handleManagerSelect = (manager: Members) => {
+    const handleManagerSelect = async (manager: Members) => {
         const currentManagers = control._formValues.managers || [];
         if (!currentManagers.find((m: Members) => m.id === manager.id)) {
-            setValue("managers", [...currentManagers, manager]);
+            try {
+                const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/managers/assign`;
+                await axiosInstance.post(url, { sender_id: user?.id, member_id: manager.id });
+    
+                await fetchProjectSettings(); 
+            } catch (error) {
+                console.error('Error adding manager:', error);
+            }
         }
     };
 
-    const handleManagerRemove = (managerId: string) => {
-        setValue("managers", (control._formValues.managers || []).filter((manager: Members) => manager.id !== managerId));
+
+    const handleManagerRemove = async (managerId: string) => {
+        try {
+            const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/managers/unassign`;
+            await axiosInstance.post(url, { sender_id: user?.id, member_id: managerId });
+
+            await fetchProjectSettings(); 
+        } catch (error) {
+            console.error('Error removing manager:', error);
+        }
     };
 
-    const handleMemberRemove = (memberId: string) => {
-        setValue("members", (control._formValues.members || []).filter(member => member.id !== memberId));
+    const handleMemberRemove = async (memberId: string) => {
+        try {
+            const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/members/remove`;
+            await axiosInstance.post(url, { sender_id: user?.id, member_id: memberId });
+            
+            await fetchProjectSettings(); 
+        } catch (error) {
+            console.error('Error removing member:', error);
+        }
     };
 
-    const handleOwnerSelect = (owner: Members) => {
-        setValue("owner", owner);
+    const handleOwnerSelect = async (ownerID: Members) => {
+        try {
+            const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/owner/assign`;
+            await axiosInstance.post(url, { sender_id: user?.id, member_id: ownerID.id });
+            
+            await fetchProjectSettings(); 
+        } catch (error) {
+            console.error('Error removing member:', error);
+        }
     };
 
     if (loading) {
@@ -143,7 +197,7 @@ const ProjectSettings: React.FC = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-lg mx-auto p-6 bg-white rounded-lg">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-lg mx-auto p-6 rounded-lg">
             <div>
                 <Label htmlFor="name" className="block text-sm font-medium text-gray-700">Project Name</Label>
                 <Input
@@ -176,11 +230,41 @@ const ProjectSettings: React.FC = () => {
             </div>
 
             <div>
+                <Label htmlFor="for_who" className="block text-sm font-medium text-gray-700">For who</Label>
+                <Textarea
+                    id="for_who"
+                    {...register("for_who")}
+                    placeholder="Enter readme content"
+                    className="mt-1 block w-full"
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="doing_what" className="block text-sm font-medium text-gray-700">Doing what</Label>
+                <Textarea
+                    id="doing_what"
+                    {...register("doing_what")}
+                    placeholder="Enter readme content"
+                    className="mt-1 block w-full"
+                />
+            </div>
+
+            <div>
+                <Label htmlFor="additional_info" className="block text-sm font-medium text-gray-700">Additional info</Label>
+                <Textarea
+                    id="additional_info"
+                    {...register("additional_info")}
+                    placeholder="Enter readme content"
+                    className="mt-1 block w-full"
+                />
+            </div>
+
+            <div>
                 <Label htmlFor="owner" className="block text-sm font-medium text-gray-700">Owner</Label>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button className="mt-1 w-full">
-                            {control._formValues.owner ? control._formValues.owner.name : "Select Owner"}
+                            {control._formValues.owner ? control._formValues.owner.username : "Select Owner"}
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
@@ -190,7 +274,7 @@ const ProjectSettings: React.FC = () => {
                                     key={member.id}
                                     onClick={() => handleOwnerSelect(member)}
                                 >
-                                    {member.name}
+                                    {member.username}
                                 </DropdownMenuItem>
                             ))
                         ) : (
@@ -206,7 +290,7 @@ const ProjectSettings: React.FC = () => {
                 <div className="mt-2">
                     {(control._formValues.members || []).map((member, index) => (
                         <span key={index} className="inline-flex items-center bg-green-100 text-green-800 text-sm px-2 py-1 rounded-full mr-2">
-                            {member.name}
+                            {member.username}
                             <button onClick={() => handleMemberRemove(member.id)} className="ml-1 text-red-500 hover:text-red-700">&times;</button>
                         </span>
                     ))}
@@ -221,14 +305,17 @@ const ProjectSettings: React.FC = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                         {allMembers.length > 0 ? (
-                            allMembers.map((member) => (
-                                <DropdownMenuItem
-                                    key={member.id}
-                                    onClick={() => handleManagerSelect(member)}
-                                >
-                                    {member.name}
-                                </DropdownMenuItem>
-                            ))
+                            allMembers
+                                // Filter out members who are already selected as managers
+                                .filter((member) => !(control._formValues.managers || []).some((m) => m.id === member.id))
+                                .map((member) => (
+                                    <DropdownMenuItem
+                                        key={member.id}
+                                        onClick={() => handleManagerSelect(member)}
+                                    >
+                                        {member.username}
+                                    </DropdownMenuItem>
+                                ))
                         ) : (
                             <DropdownMenuItem disabled>No members available</DropdownMenuItem>
                         )}
@@ -237,7 +324,7 @@ const ProjectSettings: React.FC = () => {
                 <div className="mt-2">
                     {(control._formValues.managers || []).map((manager, index) => (
                         <span key={index} className="inline-flex items-center bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full mr-2">
-                            {manager.name}
+                            {manager.username}
                             <button onClick={() => handleManagerRemove(manager.id)} className="ml-1 text-red-500 hover:text-red-700">&times;</button>
                         </span>
                     ))}

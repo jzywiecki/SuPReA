@@ -13,6 +13,8 @@ from pymongo.results import UpdateResult, InsertOneResult, DeleteResult
 from models import Project
 
 from .chats import ChatDAO
+from models import ProjectPatchRequest
+from utils import logger
 
 
 class ProjectDAO:
@@ -31,7 +33,6 @@ class ProjectDAO:
         """
         return self.collection.find_one({"_id": ObjectId(project_id)})
 
-
     def get_projects_by_owner(self, owner_id: str) -> List[Dict]:
         """
         Returns the projects where the specified user is the owner.
@@ -43,7 +44,19 @@ class ProjectDAO:
         return list(
             self.collection.find(
                 {"owner": ObjectId(owner_id)},
-                {"_id": 1, "name": 1, "description": 1, "owner": 1, "for_who":1, "doing_what":1, "additional_info":1, "members":1, "created_at":1, "mottto": 1, "elevator_speech":1  },
+                {
+                    "_id": 1,
+                    "name": 1,
+                    "description": 1,
+                    "owner": 1,
+                    "for_who": 1,
+                    "doing_what": 1,
+                    "additional_info": 1,
+                    "members": 1,
+                    "created_at": 1,
+                    "mottto": 1,
+                    "elevator_speech": 1,
+                },
             )
         )
 
@@ -58,7 +71,19 @@ class ProjectDAO:
         return list(
             self.collection.find(
                 {"members": ObjectId(member_id), "owner": {"$ne": ObjectId(member_id)}},
-                {"_id": 1, "name": 1, "description": 1, "owner": 1, "for_who":1, "doing_what":1, "additional_info":1, "members":1, "created_at":1, "mottto": 1, "elevator_speech":1   },
+                {
+                    "_id": 1,
+                    "name": 1,
+                    "description": 1,
+                    "owner": 1,
+                    "for_who": 1,
+                    "doing_what": 1,
+                    "additional_info": 1,
+                    "members": 1,
+                    "created_at": 1,
+                    "mottto": 1,
+                    "elevator_speech": 1,
+                },
             )
         )
 
@@ -73,7 +98,19 @@ class ProjectDAO:
         return list(
             self.collection.find(
                 {"$or": [{"owner": ObjectId(user_id)}, {"members": ObjectId(user_id)}]},
-                {"_id": 1, "name": 1, "description": 1, "owner": 1, "for_who":1, "doing_what":1, "additional_info":1, "members":1, "created_at":1, "mottto": 1, "elevator_speech":1  },
+                {
+                    "_id": 1,
+                    "name": 1,
+                    "description": 1,
+                    "owner": 1,
+                    "for_who": 1,
+                    "doing_what": 1,
+                    "additional_info": 1,
+                    "members": 1,
+                    "created_at": 1,
+                    "mottto": 1,
+                    "elevator_speech": 1,
+                },
             )
         )
 
@@ -204,6 +241,17 @@ class ProjectDAO:
         """
         return self.collection.count_documents({"_id": ObjectId(project_id)}) > 0
 
+    def update_project_info(self, project_id: str, update_fields: dict):
+        """
+        Update projects with given data.
+        :param str project_id: The id of the project to check.
+        :param ProjectPatchRequest body: The body of patch request
+        :return: The result of the MongoDB update operation.
+        """
+        return self.collection.update_one(
+            {"_id": ObjectId(project_id)}, {"$set": update_fields}
+        )
+
     def add_member_to_project(self, project_id: str, member_id: str):
         """
         Adds a member to the project.
@@ -253,6 +301,26 @@ class ProjectDAO:
         return self.collection.update_one(
             {"_id": ObjectId(project_id)},
             {"$addToSet": {"managers": ObjectId(manager_id)}},
+        )
+
+    def assign_new_project_owner(
+        self, project_id: str, new_owner_id: str, old_owner_id: str
+    ):
+        """
+        Changes a project owner.
+
+        :param str project_id: The id of the project.
+        :param str new_owner_id: The id of the new owner.
+        :param str old_owner_id: The id of the previous owner.
+        """
+        return self.collection.update_one(
+            {
+                "_id": ObjectId(project_id),
+                "owner": ObjectId(
+                    old_owner_id
+                ),  # Ensure the current owner is the old owner
+            },
+            {"$set": {"owner": ObjectId(new_owner_id)}},
         )
 
     def get_project_model_and_basic_information(self, project_id: str):

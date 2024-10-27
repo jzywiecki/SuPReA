@@ -8,6 +8,7 @@ from bson import ObjectId
 from typing import List, Optional
 from fastapi import APIRouter, status, Response
 from pydantic import BaseModel, Field
+from typing import Optional
 from models import Project, Motto, ElevatorSpeech
 from services import (
     create_empty_project,
@@ -19,7 +20,10 @@ from services import (
     remove_member_by_id,
     assign_manager_role_to_user_by_id,
     unassign_member_role_from_user_by_id,
+    assign_owner_role_for_user_by_id,
+    update_project_info,
 )
+from models import ProjectPatchRequest
 
 
 router = APIRouter(tags=["projects"], prefix="/projects")
@@ -34,19 +38,23 @@ class EmptyProjectCreateRequest(BaseModel):
     owner_id: str
 
 
-@router.post(
-    "/create-empty",
-    status_code=status.HTTP_201_CREATED,
-    response_model_by_alias=False,
-)
-def create_empty(request: EmptyProjectCreateRequest):
+class ProjectsListResponse(BaseModel):
     """
-    Creates an empty project with the specified name and owner ID.
+    Response object for retrieving the list of projects where the specified user is the owner or a member.
+    """
 
-    :param EmptyProjectCreateRequest request: The request object containing the name and owner ID.
-    """
-    new_project_id = create_empty_project(request)
-    return new_project_id
+    class ProjectListElement(BaseModel):
+        id: ObjectId = Field(alias="_id", default=None)
+        name: str
+        description: str
+        owner: ObjectId
+
+        class Config:
+            arbitrary_types_allowed = True
+            json_encoders = {ObjectId: str}
+
+    owner: List[ProjectListElement]
+    member: List[ProjectListElement]
 
 
 class ProjectCreateByAIRequest(BaseModel):
@@ -70,6 +78,26 @@ class ProjectAddMemberRequest(BaseModel):
 
     sender_id: str
     member_id: str
+
+
+class MemberAction(BaseModel):
+    sender_id: str
+    member_id: str
+
+
+@router.post(
+    "/create-empty",
+    status_code=status.HTTP_201_CREATED,
+    response_model_by_alias=False,
+)
+def create_empty(request: EmptyProjectCreateRequest):
+    """
+    Creates an empty project with the specified name and owner ID.
+
+    :param EmptyProjectCreateRequest request: The request object containing the name and owner ID.
+    """
+    new_project_id = create_empty_project(request)
+    return new_project_id
 
 
 @router.post(
@@ -102,6 +130,23 @@ def get_project(project_id: str):
     return get_project_by_id(project_id)
 
 
+@router.patch(
+    "/{project_id}",
+    response_model=Project,
+    status_code=status.HTTP_200_OK,
+    response_model_by_alias=False,
+)
+def patch_project(project_id: str, body: ProjectPatchRequest):
+    """
+    Patches the project with specified id.
+
+     :param str project_id: The unique identifier of the project.
+     :param ProjectPatchRequest: The project patch fields request
+
+    """
+    return update_project_info(project_id, body)
+
+
 @router.delete(
     "/{project_id}",
 )
@@ -113,6 +158,7 @@ def delete_project(project_id: str):
     """
     delete_project_by_id(project_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
 
 class ProjectsListResponse(BaseModel):
     """
@@ -131,7 +177,6 @@ class ProjectsListResponse(BaseModel):
         created_at: datetime
         motto: Optional[Motto] = None
         elevator_speech: Optional[ElevatorSpeech] = None
-          
 
         class Config:
             arbitrary_types_allowed = True
@@ -161,28 +206,28 @@ def get_project_list(user_id: str):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-def invite_member(project_id: str, sender_id: str, member_id: str):
+def invite_member(project_id: str, invite: MemberAction):
     """
     Adds a member to the project with the specified ID.
 
     :param str project_id: The unique identifier of the project.
-    :param str member_id: The unique identifier of the member.
+    :param MemberInvite invite: The data containing sender_id and member_id.
     """
-    return invite_member_by_id(sender_id, project_id, member_id)
+    return invite_member_by_id(invite.sender_id, project_id, invite.member_id)
 
 
 @router.post(
     "/{project_id}/members/remove",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-def remove_member(project_id: str, sender_id: str, member_id: str):
+def remove_member(project_id: str, removal: MemberAction):
     """
     Removes a member from the project with the specified ID.
 
     :param str project_id: The unique identifier of the project.
     :param str member_id: The unique identifier of the member.
     """
-    return remove_member_by_id(sender_id, project_id, member_id)
+    return remove_member_by_id(removal.sender_id, project_id, removal.member_id)
 
 
 @router.post(
@@ -190,25 +235,46 @@ def remove_member(project_id: str, sender_id: str, member_id: str):
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
 )
-def assign_manager(project_id: str, sender_id: str, manager_id: str):
+def assign_manager(project_id: str, assignment: MemberAction):
     """
     Assigns a manager to the project with the specified ID.
 
     :param str project_id: The unique identifier of the project.
-    :param str manager_id: The unique identifier of the manager.
+    :param MemberAction assignment: The unique identifier of the manager and sender.
     """
-    return assign_manager_role_to_user_by_id(sender_id, project_id, manager_id)
+    return assign_manager_role_to_user_by_id(
+        assignment.sender_id, project_id, assignment.member_id
+    )
 
 
 @router.post(
     "/{project_id}/managers/unassign",
     status_code=status.HTTP_204_NO_CONTENT,
 )
-def unassign_manager(project_id: str, sender_id: str, manager_id: str):
+def unassign_manager(project_id: str, assignment: MemberAction):
     """
     Unassigns a manager from the project with the specified ID.
 
     :param str project_id: The unique identifier of the project.
-    :param str manager_id: The unique identifier of the manager.
+    :param MemberAction assignment: The unique identifier of the manager and sender.
     """
-    return unassign_member_role_from_user_by_id(sender_id, project_id, manager_id)
+    return unassign_member_role_from_user_by_id(
+        assignment.sender_id, project_id, assignment.member_id
+    )
+
+
+@router.post(
+    "/{project_id}/owner/assign",
+    status_code=status.HTTP_200_OK,
+)
+def assign_owner(project_id: str, assignment: MemberAction):
+    """
+    Transfers a role of a project owner.
+
+    Args:
+        project_id (str):
+        :param MemberAction assignment: The unique identifier of the new owner and sender.
+    """
+    return assign_owner_role_for_user_by_id(
+        assignment.sender_id, project_id, assignment.member_id
+    )
