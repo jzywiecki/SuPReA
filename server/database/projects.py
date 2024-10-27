@@ -14,6 +14,7 @@ from models import Project
 
 from .chats import ChatDAO
 from models import ProjectPatchRequest
+from utils import logger
 
 
 class ProjectDAO:
@@ -223,21 +224,21 @@ class ProjectDAO:
             )
 
             if result.matched_count == 0:
-                print("No project found with the specified ID.")
+                logger.error("No project found with the specified ID.")
                 return None
 
             # Fetch the updated project to return
             updated_project = self.collection.find_one({"_id": ObjectId(project_id)})
 
             if not updated_project:
-                print("Project updated but could not retrieve the updated data.")
+                logger.error("Project updated but could not retrieve the updated data.")
                 return None
 
-            print("Project updated successfully.")
+            logger.error("Project updated successfully.")
             return updated_project
 
         except Exception as e:
-            print(f"Error updating project: {e}")
+            logger.error(f"Error updating project: {e}")
             return None
 
     def add_member_to_project(self, project_id: str, member_id: str):
@@ -313,12 +314,12 @@ class ProjectDAO:
             )
 
             if result.matched_count == 0:
-                print("No project found or the old owner doesn't match.")
+                logger.error("No project found or the old owner doesn't match.")
             elif result.modified_count == 1:
-                print("Project owner changed successfully.")
+                logger.error("Project owner changed successfully.")
             return result
         except Exception as e:
-            print(f"Error changing project owner: {e}")
+            logger.error(f"Error changing project owner: {e}")
             return None
 
     def get_project_model_and_basic_information(self, project_id: str):
