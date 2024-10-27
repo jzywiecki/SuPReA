@@ -20,7 +20,7 @@ const Search: React.FC<SearchProps> = ({ onSearch, searchResults, friends, onCli
 
     const handleSearch = () => {
         if (searchQuery.trim()) {
-            onSearch(searchQuery); 
+            onSearch(searchQuery);
         }
     };
 
@@ -53,12 +53,12 @@ const Search: React.FC<SearchProps> = ({ onSearch, searchResults, friends, onCli
                         {searchResults
                             .filter(result => userId !== result.id && !friends.flatMap(friend => friend.id).includes(result.id))
                             .map(user => (
-                                
-                                    <UserCard
-                                        user={user}
-                                        actionType={actionType}  // Pass the actionType prop here
-                                        onAction={() => onClick(user.id)}
-                                    />
+
+                                <UserCard
+                                    user={user}
+                                    actionType={actionType}  // Pass the actionType prop here
+                                    onAction={() => onClick(user.id)}
+                                />
                             ))}
                     </div>
                 </div>

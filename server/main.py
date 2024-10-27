@@ -23,15 +23,6 @@ from utils import register_fastapi_exception_handlers
 app = FastAPI()
 register_fastapi_exception_handlers(app)
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins="*",
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 app.include_router(projects.router)
 app.include_router(actors.router)
 app.include_router(business_scenarios.router)

@@ -1,27 +1,28 @@
-import { useState, useRef } from 'react'
-import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { useState, useRef } from 'react';
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { useUser } from '@/components/UserProvider';
-import axiosInstance from '@/services/api'
-import { API_URLS } from '@/services/apiUrls'
+import axiosInstance from '@/services/api';
+import { API_URLS } from '@/services/apiUrls';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
-
+} from "@/components/ui/select";
+import { useSnackbar } from 'notistack';
 
 const NewProjectInput = () => {
     const { user } = useUser();
+    const { enqueueSnackbar } = useSnackbar();
+
     const [textAiModel, setTextAiModel] = useState('');
     const [imageAiModel, setImageAiModel] = useState('');
     const [usedAi, setUsedAi] = useState<boolean>(true);
-
     const [nameFieldError, setNameFieldError] = useState<string>("");
     const [forWhoFieldError, setForWhoFieldError] = useState<string>("");
     const [doingWhatFieldError, setDoingWhatFieldError] = useState<string>("");
@@ -33,9 +34,9 @@ const NewProjectInput = () => {
     const additionalInfoFieldRef = useRef<HTMLTextAreaElement>(null);
 
     /**
-     * check if the name field is valid
-     * @returns true if the name field is valid, false otherwise
-     */
+       * check if the name field is valid
+       * @returns true if the name field is valid, false otherwise
+       */
     const validateNameField = (): boolean => {
         const name = nameFieldRef.current?.value || '';
 
@@ -53,9 +54,9 @@ const NewProjectInput = () => {
     }
 
     /**
-     * check if the for who field is valid
-     * @returns true if the for who field is valid or user do not use AI, false otherwise
-     */
+       * check if the for who field is valid
+       * @returns true if the for who field is valid or user do not use AI, false otherwise
+       */
     const validateForWhoField = (): boolean => {
         if (!usedAi) return true;
 
@@ -115,9 +116,7 @@ const NewProjectInput = () => {
         return true;
     }
 
-
     const submitButton = (): void => {
-
         const isCorrectName = validateNameField();
         const isCorrectForWhoField = validateForWhoField();
         const isCorrectDoingWhatField = validateDoingWhatField();
@@ -129,12 +128,10 @@ const NewProjectInput = () => {
 
         if (usedAi) {
             createProjectByAi();
-        }
-        else {
+        } else {
             createEmptyProject();
         }
-    }
-
+    };
 
     const createProjectByAi = () => {
         const request = {
@@ -145,41 +142,42 @@ const NewProjectInput = () => {
             owner_id: user?.id,
             text_ai_model: textAiModel,
             image_ai_model: imageAiModel,
-        }
+        };
 
         axiosInstance.post(`${API_URLS.API_SERVER_URL}/projects/create`, request, {
             headers: {
                 'Content-Type': 'application/json',
             },
         })
-        .then(response => {
-            alert(`Created by AI! New project id: ${response.data}`);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    }
-
+            .then(response => {
+                console.log('Response:', response.data);
+                enqueueSnackbar('Started generation', { variant: 'success' });
+                //TODO: navigate to generation
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                enqueueSnackbar(`Error occured: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
+            });
+    };
 
     const createEmptyProject = () => {
         const request = {
             name: nameFieldRef.current?.value,
             owner_id: user?.id,
-        }
+        };
 
         axiosInstance.post(`${API_URLS.API_SERVER_URL}/projects/create-empty`, request, {
             headers: {
                 'Content-Type': 'application/json',
             },
         })
-        .then(response => {
-            alert(`Created empty! New project id: ${response.data}`);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    }
-
+            .then(response => {
+                alert(`Created empty! New project id: ${response.data}`);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    };
 
     return (
         <div className="isolate px-6 py-24 sm:py-32 lg:px-8">

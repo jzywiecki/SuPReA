@@ -1,18 +1,31 @@
 import { useEffect, useState } from 'react';
-import {
-    Card,
-    CardHeader,
-    CardContent,
-    CardTitle,
-    CardDescription,
-    CardFooter,
-} from "@/components/ui/card";
 import 'tailwindcss/tailwind.css';
 import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
 import { useUser } from '@/components/UserProvider';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
+import { useSnackbar } from 'notistack';
+import { Separator } from "@/components/ui/separator"
+import { Input } from "@/components/ui/input"
+import { CiSettings } from "react-icons/ci";
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
+import {
+    ResizableHandle,
+    ResizablePanel,
+    ResizablePanelGroup,
+} from "@/components/ui/resizable"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { MdSupervisorAccount } from "react-icons/md";
+import { FaPlay } from "react-icons/fa";
+import { Skeleton } from "@/components/ui/skeleton"
+import { MdOutlineFreeCancellation } from "react-icons/md";
+import ProjectDetails from './ProjectDetails';
 
 type Project = {
     id: string;
@@ -57,105 +70,153 @@ type Project = {
     };
 };
 
-type ProjectResponse = {
-    owner: Project[];
-    member: Project[];
+
+const ProjectList = ({ projects, onSelect, selectedProjectId, sortOrder, toggleSortOrder, searchQuery, setSearchQuery }) => {
+    const filteredProjects = projects
+        .filter((project) => project.name.toLowerCase().includes(searchQuery.toLowerCase()) || project.description.toLowerCase().includes(searchQuery.toLowerCase()))
+        .sort((a, b) => sortOrder === "newest" ? new Date(b.created_at) - new Date(a.created_at) : new Date(a.created_at) - new Date(b.created_at));
+
+    return (
+        <div className="h-[calc(100vh-5rem)]">
+            <div className='project-list-header'>
+                <h1>Your Projects</h1>
+                <TabsList>
+                    <TabsTrigger value="owned">Owned</TabsTrigger>
+                    <TabsTrigger value="member">Member</TabsTrigger>
+                </TabsList>
+            </div>
+            <Separator />
+            <div className="project-list-searchbar">
+                <Input type="search" placeholder="Search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                <button onClick={toggleSortOrder} className="project-list-sortbutton">
+                    {sortOrder === "newest" ? "Newest" : "Oldest"}
+                </button>
+            </div>
+            <ScrollArea className="project-list-container">
+                {filteredProjects.map((project) => (
+                    <div
+                        key={project.id}
+                        className={`project-list-menu-item ${selectedProjectId === project.id ? 'bg-gray-200' : ''}`}
+                        onClick={() => onSelect(project)}
+                    >
+                        <div className='project-list-menu-item-header'>
+                            <h1>{project.name}</h1>
+                            <p>{new Date(project.created_at).toLocaleDateString("pl-PL", { month: "numeric", day: "numeric" })}</p>
+                        </div>
+                        <p className='project-list-menu-item-description'>{project.description}</p>
+                        <p className='project-list-menu-item-members'><MdSupervisorAccount /> {project.members.length}</p>
+                    </div>
+                ))}
+            </ScrollArea>
+        </div>
+    );
 };
+
+const SkeletonLoading = () => (
+    <div className="flex justify-center items-around">
+        <div className="w-[35%] h-30 space-y-3">
+            <Skeleton className="h-40 w-80" />
+            <Skeleton className="h-40 w-80" />
+            <Skeleton className="h-40 w-80" />
+        </div>
+        <div className="w-[60%] flex justify-center items-center">
+            <Skeleton className="h-[80vh] w-full rounded-xl" />
+        </div>
+    </div>
+);
+
+const NoProjects = () => (
+    <div className="flex flex-col items-center justify-center h-4/5">
+        <MdOutlineFreeCancellation size={50} className="text-red-700" />
+        <h2 className="my-4 text-4xl font-medium">You seem to not participate in any project.</h2>
+        <div className='flex space-x-4'>
+            <Link to={`/collaborators`}><Button>Search for project owner</Button></Link>
+            <Link to={`/create-project`}><Button className='bg-green-600 text-white'>Create your own</Button></Link>
+        </div>
+    </div>
+);
 
 const ProjectsView = () => {
     const { user } = useUser();
-    const [projects, setProjects] = useState<ProjectResponse>({ owner: [], member: [] });
-    const [loading, setLoading] = useState(true);  // Loading state to handle the data fetching process
+    const [projects, setProjects] = useState({ owner: [], member: [] });
+    const [loading, setLoading] = useState(true);
+    const { enqueueSnackbar } = useSnackbar();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [selectedProject, setSelectedProject] = useState(null);
+    const [sortOrder, setSortOrder] = useState("newest");
 
     useEffect(() => {
         const fetchProjects = async () => {
+            if (!user?.id) return;
             try {
-                const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/list/${user?.id}`);
-                console.log(response.data); // Log the response data to check its structure
-                setProjects(response.data);
+                const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/list/${user.id}`);
+                const processedOwnerProjects = response.data.owner.map((project) => ({
+                    ...project,
+                    members: project.members.filter(member => member !== project.owner),
+                }));
+                const processedMemberProjects = response.data.member.map((project) => ({
+                    ...project,
+                    members: project.members.filter(member => member !== project.owner),
+                }));
+                setProjects({ owner: processedOwnerProjects, member: processedMemberProjects });
+                setSelectedProject(processedOwnerProjects[0] || null);
             } catch (error) {
-                console.error('Error fetching projects:', error);
-                setProjects({ owner: [], member: [] }); // Ensure empty arrays on error
+                enqueueSnackbar(`Error fetching projects ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             } finally {
-                setLoading(false); // Stop loading after the request is complete
+                setLoading(false);
             }
         };
-
         fetchProjects();
     }, [user?.id]);
 
-    if (loading) {
-        return <div className="p-6">Loading projects...</div>; // Display a loading message while data is being fetched
-    }
+    const toggleSortOrder = () => setSortOrder((prevSortOrder) => prevSortOrder === "newest" ? "oldest" : "newest");
 
-    if ((!projects.owner.length && !projects.member.length)) {
-        return <div className="p-6">No projects available.</div>; // Display a message if no projects are found
-    }
+    if (loading) return <SkeletonLoading />;
+    if (!projects.owner.length && !projects.member.length) return <NoProjects />;
 
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Projects</h1>
+        <div className="h-[calc(100vh-5rem)]" style={{ padding: '0 1rem 1rem 1rem' }}>
+            <Tabs defaultValue="owned">
+                <TabsContent value="owned">
+                    <ResizablePanelGroup direction="horizontal" className="rounded-lg border">
+                        <ResizablePanel defaultSize={35} minSize={25}>
+                            <ProjectList
+                                projects={projects.owner}
+                                onSelect={setSelectedProject}
+                                selectedProjectId={selectedProject?.id}
+                                sortOrder={sortOrder}
+                                toggleSortOrder={toggleSortOrder}
+                                searchQuery={searchQuery}
+                                setSearchQuery={setSearchQuery}
+                            />
+                        </ResizablePanel>
+                        <ResizableHandle withHandle />
+                        <ResizablePanel>
+                            <ProjectDetails project={selectedProject} />
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
+                </TabsContent>
 
-            {projects.owner.length > 0 && (
-                <>
-                    <h2 className="text-xl font-semibold mb-2">Owned Projects</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                        {projects.owner.map((project) => (
-                            <Card key={project.id} className="w-[350px]">
-                                <CardHeader>
-                                    <CardTitle>{project.name}</CardTitle>
-                                    <CardDescription>{project.description}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <p><strong>Created At:</strong> {new Date(project.created_at).toLocaleDateString()}</p>
-                                    <p><strong>Owner:</strong> {project.owner}</p>
-                                    <p><strong>Additional Info:</strong> {project.additional_info}</p>
-                                    <p><strong>Doing What:</strong> {project.doing_what}</p>
-                                    <p><strong>For Who:</strong> {project.for_who}</p>
-                                </CardContent>
-                                <CardFooter className="flex justify-between">
-                                    <Link to={`/projects/${project.id}/settings`}>
-                                    <Button variant="outline">Settings</Button>
-                                    </Link>
-                                    <Link to={`/projects/${project.id}`}>
-                                        <Button>Show project</Button>
-                                    </Link>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
-                </>
-            )}
-
-            {/* Show member projects */}
-            {projects.member.length > 0 && (
-                <>
-                    <h2 className="text-xl font-semibold mb-2">Member Projects</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {projects.member.map((project) => (
-                            <Card key={project.id} className="w-[350px]">
-                                <CardHeader>
-                                    <CardTitle>{project.name}</CardTitle>
-                                    <CardDescription>{project.description}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <p><strong>Created At:</strong> {new Date(project.created_at).toLocaleDateString()}</p>
-                                    <p><strong>Owner:</strong> {project.owner}</p>
-                                    <p><strong>Additional Info:</strong> {project.additional_info}</p>
-                                    <p><strong>Doing What:</strong> {project.doing_what}</p>
-                                    <p><strong>For Who:</strong> {project.for_who}</p>
-                                </CardContent>
-                                <CardFooter className="flex justify-between">
-                                    <Button variant="outline">Settings</Button>
-                                    <Link to={`/projects/${project.id}`}>
-                                        <Button>Show project</Button>
-                                    </Link>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
-                </>
-            )}
+                <TabsContent value="member">
+                    <ResizablePanelGroup direction="horizontal" className="rounded-lg border">
+                        <ResizablePanel defaultSize={35} minSize={25}>
+                            <ProjectList
+                                projects={projects.member}
+                                onSelect={setSelectedProject}
+                                selectedProjectId={selectedProject?.id}
+                                sortOrder={sortOrder}
+                                toggleSortOrder={toggleSortOrder}
+                                searchQuery={searchQuery}
+                                setSearchQuery={setSearchQuery}
+                            />
+                        </ResizablePanel>
+                        <ResizableHandle withHandle />
+                        <ResizablePanel>
+                            <ProjectDetails project={selectedProject} />
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 };

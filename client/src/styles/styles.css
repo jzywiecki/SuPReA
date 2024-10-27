@@ -1,0 +1,212 @@
+::-webkit-scrollbar {
+    width: 5px;
+    height: 12px;
+    position: absolute;
+}
+
+::-webkit-scrollbar-track {
+    background: #ffffff00;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+    border: 0px solid #f0f0f0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+/* ----------------------------navbar */
+.navbar-deactive {
+    padding: 0 0 5px 0;
+    border-bottom: 2px solid rgb(255, 255, 255);
+}
+
+.navbar-active {
+    transition: 0.1s ease-in;
+    /* background-color: red; */
+    /* padding: 3px 6px; */
+    /* border-radius: 5px; */
+    padding: 0 0 5px 0;
+    border-bottom: 2px solid rgb(81, 81, 81);
+}
+
+.dropdown-navbar-menu {
+    margin-right: 20px;
+    text-align: center;
+}
+
+/* -------------------project list */
+.project-list-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2%;
+
+}
+
+.project-list-header>h1 {
+    padding: 0;
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: 700;
+}
+
+.project-list-searchbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 10px 20px 10px;
+    position: relative;
+
+    /* background-color: red; */
+}
+
+.project-list-sortbutton {
+    color: #888;
+    position: absolute;
+    bottom: 0px;
+    right: 20px;
+    background-color: transparent;
+    font-size: 0.8em;
+
+}
+
+.project-list-container {
+    /* background-color: aqua; */
+    height: 100%;
+}
+
+.project-list-menu-item {
+    margin: 10px;
+    height: fit-content;
+    max-height: 100px;
+    padding: 0px;
+    border: 1px solid rgb(156, 156, 156);
+    padding: 10px;
+    border-radius: 10px;
+    position: relative;
+    display: flex;
+    justify-content: start;
+    flex-direction: column;
+    align-items: start;
+}
+
+.project-list-menu-item-header {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.project-list-menu-item-header>p {
+    color: #888;
+    font-size: 0.9em;
+}
+
+.project-list-menu-item-header>h1 {
+    font-weight: 500;
+    font-size: 1.2em;
+}
+
+.project-list-menu-item-description {
+    font-weight: 400;
+    font-size: 1.1em;
+}
+
+.project-list-menu-item-members {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: #888;
+}
+
+.project-element-readme-container {
+    background-color: #f1f1f1;
+    padding: 15px 0 0 0;
+    height: 100vh;
+}
+
+.project-element-readme-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    position: relative;
+    padding: 0 15px;
+}
+
+.project-element-readme-header>div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+}
+
+.project-element-readme-date {
+    position: absolute;
+    top: 0;
+    right: 15px;
+    color: #4a4a4a;
+    font-size: 0.9em;
+}
+
+.project-element-readme-box {
+    background-color: white;
+    border-radius: 10px;
+    /* border: 2px solid rgb(177, 177, 177); */
+    box-shadow: 0px 0px 5px 1px rgb(198, 198, 198);
+    padding: 20px;
+    margin: 15px;
+
+}
+
+.box-name {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+}
+
+.box-name>h2 {
+    font-size: 2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    text-align: center;
+    width: 80%;
+}
+
+.box-name>img {
+    width: 200px;
+    height: 200px;
+    border-radius: 30px;
+}
+
+.box-description>div>p {
+    color: rgb(60, 60, 60);
+    text-align: center;
+}
+
+.project-element-readme-box-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.project-element-readme-box-image-container>p {
+    width: 60%;
+    text-align: center;
+    padding: 20px;
+}
+
+.project-element-readme-box-image-container>img {
+    width: 35%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px 1px rgb(198, 198, 198);
+
+}
