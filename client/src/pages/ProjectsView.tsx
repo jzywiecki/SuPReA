@@ -77,7 +77,7 @@ const ProjectList = ({ projects, onSelect, selectedProjectId, sortOrder, toggleS
         .sort((a, b) => sortOrder === "newest" ? new Date(b.created_at) - new Date(a.created_at) : new Date(a.created_at) - new Date(b.created_at));
 
     return (
-        <div>
+        <div className="h-[calc(100vh-5rem)]">
             <div className='project-list-header'>
                 <h1>Your Projects</h1>
                 <TabsList>
@@ -175,7 +175,7 @@ const ProjectsView = () => {
     if (!projects.owner.length && !projects.member.length) return <NoProjects />;
 
     return (
-        <div className="p-6">
+        <div className="h-[calc(100vh-5rem)]" style={{ padding: '0 1rem 1rem 1rem' }}>
             <Tabs defaultValue="owned">
                 <TabsContent value="owned">
                     <ResizablePanelGroup direction="horizontal" className="rounded-lg border">

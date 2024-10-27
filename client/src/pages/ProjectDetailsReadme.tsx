@@ -8,6 +8,7 @@ import axiosInstance from "@/services/api";
 import { API_URLS } from "@/services/apiUrls";
 import { useEffect, useState } from "react";
 import ProjectDetailsInfo from "./ProjectDetailsInfo";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ProjectDetailsReadme = () => {
 
@@ -37,9 +38,17 @@ const ProjectDetailsReadme = () => {
         }
     }, []);
 
-    // if (!project) return <p>Select a project to view details</p>;
+    const SkeletonLoading = () => (
+        <div className="flex justify-center items-around p-3">
+            <div className="w-[85%] space-y-3">
+                <Skeleton className="h-20 " />
+                <Skeleton className="h-40 " />
+                <Skeleton className="h-40 " />
+            </div>
 
-    if (loading || !project?.id) return <>loading</>;
+        </div>
+    );
+    if (loading || !project?.id) return < SkeletonLoading />;
     return (
         // <p>SS</p>
         <ScrollArea className="project-element-readme-container">

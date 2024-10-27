@@ -19,7 +19,11 @@ import { Link, useLocation } from "react-router-dom";
 const Navbar = () => {
     const { user, logout } = useUser();
     const location = useLocation();
+    if (location.pathname.startsWith('/projects/')) {
+        return null; // full screen for proejct editor
+    }
     return (
+
         <nav className="flex items-center justify-between px-6 py-4 h-16 z-50 relative">
             <Link to="/" className="text-3xl font-semibold">Visio</Link>
             <ul className="flex items-center gap-6 font-medium">
