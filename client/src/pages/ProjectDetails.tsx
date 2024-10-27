@@ -10,7 +10,7 @@ const ProjectDetails = ({ project }) => {
     if (!project) return <p>Select a project to view details</p>; //TODO: style this
 
     return (
-        <ScrollArea className="project-element-readme-container">
+        <ScrollArea className="h-[calc(100vh-5rem)] bg-[#f1f1f1] pt-4" >
             <div className="project-element-readme-header">
                 <div>
                     <Link to={`/projects/${project.id}`}>

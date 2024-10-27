@@ -46,7 +46,7 @@ function App() {
       <UserProvider>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
           <RegenerateProvider>
-            <div className='h-screen'>
+            <div className="">
               <Navbar />
               <Routes>
                 <Route path="/" element={<Hero />} />

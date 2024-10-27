@@ -1,5 +1,5 @@
 const ProjectDetailsInfo = ({ project }) => {
-    return (<>
+    return (<div style={{ height: "100%" }}>
         <div className="project-element-readme-box box-name" >
             <h2>{project.name}</h2>
             <img src='https://cdn.prod.website-files.com/624ac40503a527cf47af4192/659baa52498a8bb97b45ed7f_ai-logo-generator-12.png'></img>
@@ -30,16 +30,16 @@ const ProjectDetailsInfo = ({ project }) => {
         </div>
         <div className="project-element-readme-box box-images">
             <div className="project-element-readme-box-image-container">
-                {/* {project.motto ? <p>{project.motto}</p> : <p>No motto available. Run project and generate your unique motto</p>} */}
+                {(project.motto && project.motto.motto) ? <p>{project.motto.motto}</p> : <p>No motto available. Run project and generate your unique motto</p>}
                 <img src='https://contentdrips.com/wp-content/uploads/2023/08/Image-gen-scrnshot-3-1024x1024.png'></img>
             </div>
             <div className="project-element-readme-box-image-container">
                 <img src='https://uizard.io/blog/content/images/2023/08/Screenshot-2023-08-25-at-11.33.57.png'></img>
-                {/* {project.elevator_speech ? <p>{project.elevator_speech}</p> : <p>Create your personal elevator speech inside project</p>} */}
+                {(project.elevator_speech && project.elevator_speech.content) ? <p>{project.elevator_speech.content}</p> : <p>Create your personal elevator speech inside project</p>}
             </div>
         </div>
 
-    </>
+    </div>
     );
 };
 export default ProjectDetailsInfo;

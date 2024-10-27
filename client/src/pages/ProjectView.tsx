@@ -163,6 +163,9 @@ const ProjectView = ({ }) => {
                 <Button variant="secondary" onClick={openInviteModal}>
                     Invite Members
                 </Button>
+                <Button onClick={() => navigation('/projects')}>
+                    Exit
+                </Button>
             </div>
 
             <ResizablePanelGroup
