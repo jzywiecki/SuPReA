@@ -44,7 +44,19 @@ class ProjectDAO:
         return list(
             self.collection.find(
                 {"owner": ObjectId(owner_id)},
-                {"_id": 1, "name": 1, "description": 1, "owner": 1, "for_who":1, "doing_what":1, "additional_info":1, "members":1, "created_at":1, "mottto": 1, "elevator_speech":1  },
+                {
+                    "_id": 1,
+                    "name": 1,
+                    "description": 1,
+                    "owner": 1,
+                    "for_who": 1,
+                    "doing_what": 1,
+                    "additional_info": 1,
+                    "members": 1,
+                    "created_at": 1,
+                    "mottto": 1,
+                    "elevator_speech": 1,
+                },
             )
         )
 
@@ -59,7 +71,19 @@ class ProjectDAO:
         return list(
             self.collection.find(
                 {"members": ObjectId(member_id), "owner": {"$ne": ObjectId(member_id)}},
-                {"_id": 1, "name": 1, "description": 1, "owner": 1, "for_who":1, "doing_what":1, "additional_info":1, "members":1, "created_at":1, "mottto": 1, "elevator_speech":1   },
+                {
+                    "_id": 1,
+                    "name": 1,
+                    "description": 1,
+                    "owner": 1,
+                    "for_who": 1,
+                    "doing_what": 1,
+                    "additional_info": 1,
+                    "members": 1,
+                    "created_at": 1,
+                    "mottto": 1,
+                    "elevator_speech": 1,
+                },
             )
         )
 
@@ -74,7 +98,19 @@ class ProjectDAO:
         return list(
             self.collection.find(
                 {"$or": [{"owner": ObjectId(user_id)}, {"members": ObjectId(user_id)}]},
-                {"_id": 1, "name": 1, "description": 1, "owner": 1, "for_who":1, "doing_what":1, "additional_info":1, "members":1, "created_at":1, "mottto": 1, "elevator_speech":1  },
+                {
+                    "_id": 1,
+                    "name": 1,
+                    "description": 1,
+                    "owner": 1,
+                    "for_who": 1,
+                    "doing_what": 1,
+                    "additional_info": 1,
+                    "members": 1,
+                    "created_at": 1,
+                    "mottto": 1,
+                    "elevator_speech": 1,
+                },
             )
         )
 
@@ -215,7 +251,6 @@ class ProjectDAO:
         return self.collection.update_one(
             {"_id": ObjectId(project_id)}, {"$set": update_fields}
         )
-        
 
     def add_member_to_project(self, project_id: str, member_id: str):
         """

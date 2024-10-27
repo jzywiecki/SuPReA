@@ -133,7 +133,7 @@ def update_project_info(project_id: str, body: ProjectPatchRequest):
     """
     if not project_dao.is_project_exist(project_id):
         raise ProjectNotFound(project_id)
-    
+
     update_fields = {k: v for k, v in body.dict().items() if v is not None}
 
     if not update_fields:
@@ -357,7 +357,9 @@ def assign_owner_role_for_user_by_id(
         raise InvalidParameter("User is not a manager of the project")
 
     try:
-        result = project_dao.assign_new_project_owner(project_id, new_owner_id, sender_id)
+        result = project_dao.assign_new_project_owner(
+            project_id, new_owner_id, sender_id
+        )
 
         if result.matched_count == 0:
             logger.error("No project found or the old owner doesn't match.")
@@ -367,5 +369,3 @@ def assign_owner_role_for_user_by_id(
     except Exception as e:
         logger.error(f"Error changing project owner: {e}")
         return None
-
-

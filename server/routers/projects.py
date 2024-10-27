@@ -177,7 +177,6 @@ class ProjectsListResponse(BaseModel):
         created_at: datetime
         motto: Optional[Motto] = None
         elevator_speech: Optional[ElevatorSpeech] = None
-          
 
         class Config:
             arbitrary_types_allowed = True
