@@ -12,3 +12,4 @@ from .risks import Risk, Risks
 from .specifications import Specification, Specifications
 from .strategy import Strategy
 from .title import Title
+from .projects import User

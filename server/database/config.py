@@ -25,7 +25,7 @@ db = mongo_client.get_database(db_name)
 
 chat_dao = ChatDAO(db, "chats")
 
-project_dao = ProjectDAO(db, "projects")
+project_dao = ProjectDAO(db, "projects", "users")
 
 
 def get_chat_dao_ref() -> ChatDAO:

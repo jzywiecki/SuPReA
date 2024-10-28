@@ -18,6 +18,23 @@ from .database_schema import DatabaseSchema
 from .logo import Logo
 
 
+class User(BaseModel):
+    id: ObjectId = Field(alias="_id", default=None)
+    username: str
+    email: str
+    avatarURL: str
+    name: str
+    description: str
+    readme: str
+    organization: str
+    location: str
+    website: str
+    
+    class Config:
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+
+
 class Project(BaseModel):
     """
     Represents the project the client is working with.
@@ -33,7 +50,7 @@ class Project(BaseModel):
     for_who: str
     doing_what: str
     additional_info: str
-    members: List[ObjectId]
+    members: List[User]
     managers: List[ObjectId]
     created_at: datetime = Field(default=datetime.now())
     actors: Optional[Actors] = None
