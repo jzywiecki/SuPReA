@@ -7,6 +7,7 @@ from typing import Optional, List, Dict
 
 from bson import ObjectId
 from datetime import datetime
+from models import User
 
 from pymongo.results import UpdateResult, InsertOneResult, DeleteResult
 
@@ -22,8 +23,9 @@ class ProjectDAO:
     This class provides a DAO for projects in the MongoDB database.
     """
 
-    def __init__(self, mongo_db, collection_name):
+    def __init__(self, mongo_db, collection_name, users_collection_name):
         self.collection = mongo_db.get_collection(collection_name)
+        self.users_collection = mongo_db.get_collection(users_collection_name)
 
     def get_project(self, project_id: str) -> Optional[Dict]:
         """
@@ -31,7 +33,35 @@ class ProjectDAO:
         :return: The project with the specified id.
         :rtype: dict
         """
-        return self.collection.find_one({"_id": ObjectId(project_id)})
+        project = self.collection.find_one({"_id": ObjectId(project_id)})
+        
+        if not project:
+            return None
+        
+        # Get the list of user ObjectIDs from the members array
+        member_ids = project.get("members", [])
+        
+        # Retrieve user data for each ObjectId in the members list
+        members_data = list(self.users_collection.find({"_id": {"$in": member_ids}}))
+        
+        # Replace the members ObjectIDs with the actual user data
+        project["members"] = [
+        {
+            "id": member.get("_id"),
+            "username": member.get("username", "Unknown User"),
+            "email": member.get("email", ""),
+            "avatarURL": member.get("avatarURL", "https://default-avatar-url.com/default.png"),
+            "name": member.get("name", "Anonymous"),
+            "description": member.get("description", ""),
+            "readme": member.get("readme", ""),
+            "organization": member.get("organization", "N/A"),
+            "location": member.get("location", "Unknown"),
+            "website": member.get("website", ""),
+        }
+        for member in members_data
+        ]
+        
+        return project
 
     def get_projects_by_owner(self, owner_id: str) -> List[Dict]:
         """

@@ -36,7 +36,7 @@ func GetUserFriends(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	collection := database.GetCollection(client, "Users", "users")
+	collection := database.GetCollection(client, "Projects", "users")
 
 	var user models.User
 	err = collection.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&user)
@@ -143,7 +143,7 @@ func AddUserToFriends(w http.ResponseWriter, r *http.Request) {
 			return nil
 		}
 
-		collection := database.GetCollection(client, "Users", "users")
+		collection := database.GetCollection(client, "Projects", "users")
 
 		// Check if user and friend exist
 		var user models.User
@@ -261,7 +261,7 @@ func AcceptUserToFriends(w http.ResponseWriter, r *http.Request) {
 			return nil
 		}
 
-		collection := database.GetCollection(client, "Users", "users")
+		collection := database.GetCollection(client, "Projects", "users")
 
 		_, err = collection.UpdateOne(sc, bson.M{"_id": userObjID, "friends._id": friendObjID}, bson.M{
 			"$set": bson.M{"friends.$.status": models.Accepted},
@@ -346,7 +346,7 @@ func RejectUserToFriends(w http.ResponseWriter, r *http.Request) {
 			return nil
 		}
 
-		collection := database.GetCollection(client, "Users", "users")
+		collection := database.GetCollection(client, "Projects", "users")
 
 		_, err = collection.UpdateOne(sc, bson.M{"_id": userObjID}, bson.M{
 			"$pull": bson.M{"friends": bson.M{"_id": friendObjID}},
@@ -427,7 +427,7 @@ func RemoveFriend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	collection := database.GetCollection(client, "Users", "users")
+	collection := database.GetCollection(client, "Projects", "users")
 
 	// Start the transaction
 	err = mongo.WithSession(context.Background(), session, func(sc mongo.SessionContext) error {

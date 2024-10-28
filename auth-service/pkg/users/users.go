@@ -61,7 +61,7 @@ func GetUserByID(w http.ResponseWriter, r *http.Request) {
 	client := database.GetDatabaseConnection()
 
 	var user models.User
-	collection := database.GetCollection(client, "Users", "users")
+	collection := database.GetCollection(client, "Projects", "users")
 	err = collection.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -90,7 +90,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	client := database.GetDatabaseConnection()
 
 	var users []models.User
-	collection := database.GetCollection(client, "Users", "users")
+	collection := database.GetCollection(client, "Projects", "users")
 	cursor, err := collection.Find(context.Background(), bson.M{}, options.Find())
 	if err != nil {
 		http.Error(w, "Error retrieving users", http.StatusInternalServerError)
@@ -169,7 +169,7 @@ func GetUsersByProjectID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var users []models.User
-	usersCollection := database.GetCollection(client, "Users", "users")
+	usersCollection := database.GetCollection(client, "Projects", "users")
 	cursor, err := usersCollection.Find(context.Background(), bson.M{
 		"_id": bson.M{"$in": objectIDs},
 	})
@@ -216,7 +216,7 @@ func GetUsersWithFilterQuery(w http.ResponseWriter, r *http.Request) {
 	filter := r.URL.Query().Get("filter")
 
 	var users []models.User
-	collection := database.GetCollection(client, "Users", "users")
+	collection := database.GetCollection(client, "Projects", "users")
 	cursor, err := collection.Find(context.Background(), bson.M{
 		"$or": []bson.M{
 			{"username": bson.M{
@@ -283,7 +283,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	client := database.GetDatabaseConnection()
 
 	var user models.User
-	collection := database.GetCollection(client, "Users", "users")
+	collection := database.GetCollection(client, "Projects", "users")
 	err = collection.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -350,7 +350,7 @@ func PatchUser(w http.ResponseWriter, r *http.Request) {
 
 	// Get database connection and collection
 	client := database.GetDatabaseConnection()
-	collection := database.GetCollection(client, "Users", "users")
+	collection := database.GetCollection(client, "Projects", "users")
 
 	// Update the user document
 	result, err := collection.UpdateOne(context.Background(), bson.M{"_id": objID}, update)
@@ -394,7 +394,7 @@ func ResetAvatar(w http.ResponseWriter, r *http.Request) {
 	client := database.GetDatabaseConnection()
 
 	var user models.User
-	collection := database.GetCollection(client, "Users", "users")
+	collection := database.GetCollection(client, "Projects", "users")
 	err = collection.FindOne(context.Background(), bson.M{"_id": objID}).Decode(&user)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
