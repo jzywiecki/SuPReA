@@ -29,7 +29,7 @@ class User(BaseModel):
     organization: str
     location: str
     website: str
-    
+
     class Config:
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
