@@ -46,12 +46,12 @@ class Project(BaseModel):
     name: str
     description: str
     # readme: str
-    owner: ObjectId
+    owner: User
     for_who: str
     doing_what: str
     additional_info: str
     members: List[User]
-    managers: List[ObjectId]
+    managers: List[User]
     created_at: datetime = Field(default=datetime.now())
     actors: Optional[Actors] = None
     business_scenarios: Optional[BusinessScenarios] = None
