@@ -27,41 +27,75 @@ class ProjectDAO:
         self.collection = mongo_db.get_collection(collection_name)
         self.users_collection = mongo_db.get_collection(users_collection_name)
 
+
+    def _get_user_data(self, user_ids: List[ObjectId]) -> List[Dict]:
+        """
+        Helper method to retrieve and format user data from the database.
+        
+        :param user_ids: List of ObjectIds representing user IDs.
+        :return: List of formatted user data dictionaries.
+        """
+        users_data = self.users_collection.find({"_id": {"$in": user_ids}}, {
+            "_id": 1,
+            "username": 1,
+            "email": 1,
+            "avatarURL": 1,
+            "name": 1,
+            "description": 1,
+            "readme": 1,
+            "organization": 1,
+            "location": 1,
+            "website": 1
+        })
+        
+        return [
+            {
+                "_id": ObjectId(user.get("_id")),
+                "username": user.get("username", ""),
+                "email": user.get("email", ""),
+                "avatarURL": user.get("avatarURL", ""),
+                "name": user.get("name", ""),
+                "description": user.get("description", ""),
+                "readme": user.get("readme", ""),
+                "organization": user.get("organization", ""),
+                "location": user.get("location", ""),
+                "website": user.get("website", ""),
+            }
+            for user in users_data
+        ]
+        
     def get_project(self, project_id: str) -> Optional[Dict]:
         """
+        Retrieve a project with the specified ID, including detailed user data
+        for members, managers, and the owner.
+        
         :param str project_id: The id of the project to retrieve.
-        :return: The project with the specified id.
+        :return: The project with detailed user data.
         :rtype: dict
         """
         project = self.collection.find_one({"_id": ObjectId(project_id)})
         
         if not project:
             return None
-        
-        # Get the list of user ObjectIDs from the members array
+
+        # Get the ObjectIds for members, managers, and owner
         member_ids = project.get("members", [])
+        manager_ids = project.get("managers", [])
+        owner_id = project.get("owner")
         
-        # Retrieve user data for each ObjectId in the members list
-        members_data = list(self.users_collection.find({"_id": {"$in": member_ids}}))
+        # Fetch and format data for members and managers
+        project["members"] = self._get_user_data(member_ids)
+        project["managers"] = self._get_user_data(manager_ids)
         
-        # Replace the members ObjectIDs with the actual user data
-        project["members"] = [
-        {
-            "id": member.get("_id"),
-            "username": member.get("username", "Unknown User"),
-            "email": member.get("email", ""),
-            "avatarURL": member.get("avatarURL", "https://default-avatar-url.com/default.png"),
-            "name": member.get("name", "Anonymous"),
-            "description": member.get("description", ""),
-            "readme": member.get("readme", ""),
-            "organization": member.get("organization", "N/A"),
-            "location": member.get("location", "Unknown"),
-            "website": member.get("website", ""),
-        }
-        for member in members_data
-        ]
+        # Fetch and format data for the owner if an owner_id exists
+        if owner_id:
+            owner_data = self._get_user_data([owner_id])
+            project["owner"] = owner_data[0] if owner_data else None
+        else:
+            project["owner"] = None
         
         return project
+
 
     def get_projects_by_owner(self, owner_id: str) -> List[Dict]:
         """
