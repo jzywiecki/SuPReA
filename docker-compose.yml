@@ -31,3 +31,11 @@ services:
       dockerfile: Dockerfile
     container_name: "realtime-server"
     restart:always
+
+  proxy:
+    platform: linux/amd64
+    build: ./nginx
+    container_name: "proxy"
+    restart: always
+    ports:
+      - "80:80"
