@@ -30,7 +30,7 @@ func init() {
 		log.Panic("could not load env file")
 	}
 
-	DatabaseUrl = os.Getenv("DATABASE_URL")
+	DatabaseUrl = os.Getenv("MONGODB_URL")
 }
 
 func connectDBClient() *mongo.Client {
