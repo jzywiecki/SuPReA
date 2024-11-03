@@ -51,6 +51,7 @@ import { getComponentById } from '@/utils/enums';
 import { GenerationResponse } from '@/utils/generation';
 
 import { useSnackbar } from 'notistack';
+import { Skeleton } from "./ui/skeleton"
 const data = {
   user: {
     name: "placeholdervalue",
@@ -389,7 +390,17 @@ export function AppSidebar({ onProjectClick, ...props }: React.ComponentProps<ty
         <SidebarRail />
       </Sidebar>
     ) : (
-      <>Loading</>
+      <div style={{ width: "25vw", display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexDirection: "column" }}>
+        <Skeleton style={{ width: "90%", height: "10%" }} />
+        <Skeleton style={{ width: "90%", height: "10%" }} />
+        <Skeleton style={{ width: "90%", height: "10%" }} />
+        <Skeleton style={{ width: "90%", height: "10%" }} />
+        <Skeleton style={{ width: "90%", height: "10%" }} />
+        <Skeleton style={{ width: "90%", height: "10%" }} />
+        <Skeleton style={{ width: "90%", height: "10%" }} />
+        <Skeleton style={{ width: "90%", height: "10%" }} />
+      </div>
+
     )
   );
 }
