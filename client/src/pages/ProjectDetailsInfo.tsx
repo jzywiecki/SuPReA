@@ -24,7 +24,7 @@ const ProjectDetailsInfo = ({ project }) => {
                 <h3 className="font-semibold text-lg mb-2">Members</h3>
                 {project.members?.map((member, index) => (
                     <p key={index} className="inline-flex items-center bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full mb-2">
-                        {member}
+                        {member.username}
                     </p>))}
             </div>
         </div>

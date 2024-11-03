@@ -29,6 +29,7 @@ import { closeSnackbar } from 'notistack'
 import { IoIosClose } from "react-icons/io";
 import './styles/styles.css'
 import ProjectDetailsReadme from './pages/ProjectDetailsReadme';
+import Layout from './pages/Layout';
 
 function App() {
   return (
@@ -53,8 +54,9 @@ function App() {
                 <Route path="register" element={<RegisterView />} />
                 <Route path="login" element={<LoginView />} />
                 <Route path="/projects" element={<ProjectsView />} />
-                <Route path="/projects/:projectID/settings" element={<ProjectsSettings />} />
-                <Route path="/projects/:projectID" element={<ProjectView />}>
+                {/* <Route path="/projects/:projectID" element={<ProjectView />}> */}
+                <Route path="/projects/:projectID/editor" element={<Layout />}>
+                  <Route path="settings" element={<ProjectsSettings />} />
                   <Route path="summary" element={<ProjectDetailsReadme />} />
                   <Route path="name" element={<NameList />} />
                   <Route path="requirements" element={<RequirementsList />} />
@@ -69,6 +71,8 @@ function App() {
                   <Route path="schedule" element={<ProjectTimeline />} />
                   <Route path="database-diagram" element={<DatabaseDiagram />} />
                 </Route>
+                <Route path="/projects/:projectID/settings" element={<ProjectsSettings />} />
+
                 <Route path="/create-project" element={<CreateProject />} />
                 <Route path="/profile/:id" element={<Profile />} />
                 <Route path="/collaborators" element={<SearchAndAddFriends />} />

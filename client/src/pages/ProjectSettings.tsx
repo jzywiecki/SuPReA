@@ -20,12 +20,12 @@ interface ProjectSettings {
     name: string;
     description: string;
     readme: string;
-    owner: Members | null; 
+    owner: Members | null;
     members: Members[];
     managers: Members[];
     additional_info: string;
-    for_who: string;         
-    doing_what: string; 
+    for_who: string;
+    doing_what: string;
 }
 
 interface Members {
@@ -41,7 +41,7 @@ const ProjectSettings: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [searchResults, setSearchResults] = useState<User[]>([]);
-    const [allMembers, setAllMembers] = useState<Members[]>([]); 
+    const [allMembers, setAllMembers] = useState<Members[]>([]);
 
     const openInviteModal = () => {
         setIsInviteModalOpen(true);
@@ -65,7 +65,7 @@ const ProjectSettings: React.FC = () => {
             additional_info: "",
             for_who: "",
             doing_what: "",
-            owner: null, 
+            owner: null,
             members: [],
             managers: [],
         },
@@ -84,33 +84,33 @@ const ProjectSettings: React.FC = () => {
         try {
             const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/${projectID}`);
             const projectData = response.data;
-    
+
             const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
             const usersData = membersResponse.data as Members[];
-            setAllMembers(usersData); 
-    
+            setAllMembers(usersData);
+
             setValue("name", projectData.name || "");
             setValue("description", projectData.description || "");
             setValue("readme", projectData.readme || "");
-            setValue("additional_info", projectData.additional_info || ""); 
-            setValue("for_who", projectData.for_who || "");                 
-            setValue("doing_what", projectData.doing_what || "");           
+            setValue("additional_info", projectData.additional_info || "");
+            setValue("for_who", projectData.for_who || "");
+            setValue("doing_what", projectData.doing_what || "");
             setValue("owner", usersData.find(member => member.id === projectData.owner) || null);
             setValue("members", usersData || []);
             setValue("managers", projectData.managers.map(managerId => usersData.find(member => member.id === managerId)).filter(Boolean) || []);
-    
+
         } catch (error) {
             console.error("Failed to fetch project settings", error);
         } finally {
             setLoading(false);
         }
     };
-    
+
     // Call fetchProjectSettings within useEffect for the initial data load
     useEffect(() => {
         fetchProjectSettings();
     }, [projectID, setValue]);
-    
+
 
     const onSubmit = async (data: ProjectSettings) => {
         try {
@@ -118,15 +118,15 @@ const ProjectSettings: React.FC = () => {
                 name: data.name,
                 description: data.description,
                 readme: data.readme,
-                additional_info: data.additional_info, 
-                for_who: data.for_who,                  
-                doing_what: data.doing_what,             
+                additional_info: data.additional_info,
+                for_who: data.for_who,
+                doing_what: data.doing_what,
             };
 
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}`;
             await axiosInstance.patch(url, patchData);
             console.log("Project settings updated successfully");
-            await fetchProjectSettings(); 
+            await fetchProjectSettings();
         } catch (error) {
             console.error('Error submitting project settings:', error);
         }
@@ -138,7 +138,7 @@ const ProjectSettings: React.FC = () => {
             console.log(user?.id, friendId)
             await axiosInstance.post(url, { sender_id: user?.id, member_id: friendId });
             closeInviteModal();
-            await fetchProjectSettings(); 
+            await fetchProjectSettings();
         } catch (error) {
             console.error('Error adding member:', error);
         }
@@ -150,8 +150,8 @@ const ProjectSettings: React.FC = () => {
             try {
                 const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/managers/assign`;
                 await axiosInstance.post(url, { sender_id: user?.id, member_id: manager.id });
-    
-                await fetchProjectSettings(); 
+
+                await fetchProjectSettings();
             } catch (error) {
                 console.error('Error adding manager:', error);
             }
@@ -164,7 +164,7 @@ const ProjectSettings: React.FC = () => {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/managers/unassign`;
             await axiosInstance.post(url, { sender_id: user?.id, member_id: managerId });
 
-            await fetchProjectSettings(); 
+            await fetchProjectSettings();
         } catch (error) {
             console.error('Error removing manager:', error);
         }
@@ -174,8 +174,8 @@ const ProjectSettings: React.FC = () => {
         try {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/members/remove`;
             await axiosInstance.post(url, { sender_id: user?.id, member_id: memberId });
-            
-            await fetchProjectSettings(); 
+
+            await fetchProjectSettings();
         } catch (error) {
             console.error('Error removing member:', error);
         }
@@ -185,8 +185,8 @@ const ProjectSettings: React.FC = () => {
         try {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/owner/assign`;
             await axiosInstance.post(url, { sender_id: user?.id, member_id: ownerID.id });
-            
-            await fetchProjectSettings(); 
+
+            await fetchProjectSettings();
         } catch (error) {
             console.error('Error removing member:', error);
         }

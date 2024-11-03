@@ -3,6 +3,7 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar";
+import { RiRobot3Fill } from "react-icons/ri";
 
 type MessageType = "user" | "other";
 
@@ -14,7 +15,7 @@ interface ChatMessageProps {
     messageType: MessageType;
 }
 
-const ChatMessage = ({ text, sender, date, confirmed, messageType }: ChatMessageProps) => {
+const ChatMessage = ({ isAI, text, sender, date, confirmed, messageType, senderInfo }: ChatMessageProps) => {
 
     const formatDate = (dateTimeString: string): string => {
         try {
@@ -41,18 +42,27 @@ const ChatMessage = ({ text, sender, date, confirmed, messageType }: ChatMessage
         }
         return null;
     };
-    
+
 
     return (
-        <div className={`flex p-3 ${messageType === "other" ? 'justify-start bg-accent' : 'justify-end bg-background'}`}>
-            <Avatar className="m-2">
-                <AvatarImage src="" alt={`@${sender}`} />
+        <div className={`flex p-3 ${messageType === "other" ? 'justify-start bg-accent' : 'justify-end bg-background'}`} style={{ width: '25vw' }}>
+            {isAI ? <Avatar className="m-2">
+                {/* <AvatarImage src={senderInfo?.avatarurl} alt={`@${sender}`} /> */}
+                <AvatarFallback><RiRobot3Fill size={30} /></AvatarFallback>
+            </Avatar> : <Avatar className="m-2">
+                <AvatarImage src={senderInfo?.avatarurl} alt={`@${sender}`} />
                 <AvatarFallback>?</AvatarFallback>
-            </Avatar>
-            <div className="flex-col">
-                <div className="font-bold">{sender}</div>
-                <div>{text}</div>
-                {!confirmed && (
+            </Avatar>}
+            <div className="flex-col" style={{ width: "80%" }}>
+                <div className="font-bold">{senderInfo?.username}</div>
+                <div style={{
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
+                    width: "100%",
+                    height: "fit-content"
+                }}>
+                    {text}
+                </div>                {!confirmed && (
                     <div className="text-sm text-gray-500">Sending...</div>
                 )}
                 {renderDate(date)}
