@@ -23,6 +23,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         if (!projectID) return;
 
         try {
+            enqueueSnackbar(`Exporting...`, { variant: 'info' });
             const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/download/pdf/${projectID}`, { responseType: 'blob' });
             const blob = new Blob([response.data], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
@@ -49,7 +50,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             case "Settings":
                 navigate("settings");
                 break;
+            case "Export":
+                break;
             case "Export pdf":
+                setSidePanel(sidePanel);
                 handleDownloadPDF();
                 break;
             default:

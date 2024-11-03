@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import ProjectDetailsInfo from "./ProjectDetailsInfo";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUser } from "@/components/UserProvider";
+import { useSnackbar } from "notistack";
 interface Members {
     username: string;
     id: string;
@@ -18,6 +19,7 @@ const ProjectDetailsReadme = () => {
     const { user } = useUser();
     const [loading, setLoading] = useState(true);
     const [project, setProject] = useState(null);
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         const fetchProjectData = async () => {
@@ -39,6 +41,8 @@ const ProjectDetailsReadme = () => {
                 setProject(processedProject);
             } catch (error) {
                 console.error("Failed to fetch project or members data", error);
+                enqueueSnackbar(`Failed to fetch project or members data: ${error}`, { variant: "error" });
+
             } finally {
                 setLoading(false);
             }

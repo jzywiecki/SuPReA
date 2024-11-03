@@ -3,6 +3,7 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar";
+import { useSnackbar } from "notistack";
 import { RiRobot3Fill } from "react-icons/ri";
 
 type MessageType = "user" | "other";
@@ -23,6 +24,8 @@ interface ChatMessageProps {
 }
 
 const ChatMessage = ({ isAI, text, sender, date, confirmed, messageType, senderInfo }: ChatMessageProps) => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const formatDate = (dateTimeString: string): string => {
         try {
             const dateObj = new Date(dateTimeString);
@@ -31,6 +34,8 @@ const ChatMessage = ({ isAI, text, sender, date, confirmed, messageType, senderI
             return `${formattedDate} ${formattedTime}`;
         } catch (error) {
             console.error(`Invalid date format: ${dateTimeString}`);
+            enqueueSnackbar(`Invalid date format: ${dateTimeString}`, { variant: "error" });
+
             return "Invalid date";
         }
     };

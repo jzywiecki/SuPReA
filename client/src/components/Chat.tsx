@@ -55,6 +55,7 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
     const [messageInput, setMessageInput] = useState<string>("");
     const [userData, setUserData] = useState<Members[] | null>(null);
 
+
     useEffect(() => {
         setActiveTab(key_info === "ai" ? "ai" : "discussion");
     }, [key_info]);
@@ -74,7 +75,12 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
 
     useEffect(() => {
         socketChats.on('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
+        // enqueueSnackbar("Team chat connected", { variant: "success" });
+
+
         socketChats.on('receive-message-from-ai-chat', onReceiveMessagesFromAiChat);
+        // enqueueSnackbar("AI chat connected", { variant: "success" });
+
 
         return () => {
             socketChats.off('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
@@ -86,12 +92,16 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
         handleLoadMoreMessages(result.olderMessagesExist, setLoadOlderMessagesDiscussionChat);
         handleReceivedMessage(result.messages, setMessagesDiscussionChat, setUnconfirmedMessagesDiscussionChat);
         updateOffset(result.messages, "discussion");
+
     };
 
     const onReceiveMessagesFromAiChat = (result: MessageResponse) => {
         handleLoadMoreMessages(result.olderMessagesExist, setLoadOlderMessagesAiChat);
         handleReceivedMessage(result.messages, setMessagesAiChat, setUnconfirmedMessagesAiChat);
         updateOffset(result.messages, "ai");
+        // if (user?.id && !(result.messages[0].author === user.id)) {
+        //     enqueueSnackbar("AI responded", { variant: "info" });
+        // }
     };
 
     const handleSendMessage = () => {
