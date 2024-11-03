@@ -13,7 +13,7 @@ const ProjectDetails = ({ project }) => {
         <ScrollArea className="h-[calc(100vh-5rem)] bg-[#f1f1f1] pt-4" >
             <div className="project-element-readme-header">
                 <div>
-                    <Link to={`/projects/${project.id}`}>
+                    <Link to={`/projects/${project.id}/editor`}>
                         <Button style={{ backgroundColor: "green", marginRight: "10px" }}><p style={{ marginRight: "10px" }}>Start</p><FaPlay /></Button>
                     </Link>
                     <Link to={`/projects/${project.id}/settings`}>

@@ -1,43 +1,55 @@
-import { CiSettings } from "react-icons/ci";
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Link } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { FaPlay } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import axiosInstance from "@/services/api";
 import { API_URLS } from "@/services/apiUrls";
 import { useEffect, useState } from "react";
 import ProjectDetailsInfo from "./ProjectDetailsInfo";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUser } from "@/components/UserProvider";
+interface Members {
+    username: string;
+    id: string;
+    name: string;
+    email: string;
+}
 
 const ProjectDetailsReadme = () => {
-
     const { projectID } = useParams();
+    const { user } = useUser();
     const [loading, setLoading] = useState(true);
     const [project, setProject] = useState(null);
+    const [members, setAllMembers] = useState<Members[] | null>(null);
 
     useEffect(() => {
-        try {
-            axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/${projectID}`)
-                .then(response => {
-                    console.log(response.data)
-                    const processedProject = {
-                        ...response.data,
-                        members: response.data.members.filter(member => member !== response.data.owner),
-                    };
-                    setProject(processedProject);
-                })
-                .catch(error => {
-                    console.error("There was an error fetching the user data!", error);
-                });
+        const fetchProjectData = async () => {
+            try {
 
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        } finally {
-            setLoading(false);
+                const projectResponse = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/${projectID}`);
+                const projectData = projectResponse.data;
+                const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
+                const usersData = membersResponse.data as Members[];
+
+                const filteredMembers = usersData.filter(member => member.id !== projectData.owner);
+
+                const processedProject = {
+                    ...projectData,
+                    members: filteredMembers,
+                    owner: user?.username
+                };
+
+                setProject(processedProject);
+                setAllMembers(filteredMembers);
+            } catch (error) {
+                console.error("Failed to fetch project or members data", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        if (user?.id) {
+            fetchProjectData();
+
         }
-    }, []);
-
+    }, [projectID, user?.id]);
     const SkeletonLoading = () => (
         <div className="flex justify-center items-around p-3">
             <div className="w-[85%] space-y-3">

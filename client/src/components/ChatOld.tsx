@@ -8,15 +8,10 @@ import { AiModels } from "@/utils/enums";
 import { AITextModels } from "@/utils/enums";
 import { getAiIdByName } from "@/utils/enums";
 import { RequestType } from "@/utils/enums";
-import { IoClose } from "react-icons/io5";
-import axiosInstance from "@/services/api";
-import { API_URLS } from "@/services/apiUrls";
-import { useParams } from "react-router-dom";
-import { useUser } from "./UserProvider";
+
 
 interface ChatProps {
     isCollapsed: boolean;
-    key_info: string
 }
 
 
@@ -33,18 +28,12 @@ interface MessageResponse {
     olderMessagesExist: boolean;
 }
 
-interface Members {
-    username: string;
-    id: string;
-    name: string;
-    email: string;
-}
+
 export type LoadOlderMessages = 'display-load-button' | 'loading' | 'none';
 
 
-const Chat = ({ isCollapsed, key_info, onProjectClick }: ChatProps) => {
-    const { projectID } = useParams();
-    const { user } = useUser();
+const Chat = ({ isCollapsed }: ChatProps) => {
+
 
     const [unconfirmedMessagesAiChat, setUnconfirmedMessagesAiChat] = useState<string[]>([]);
     const [unconfirmedMessagesDiscussionChat, setUnconfirmedMessagesDiscussionChat] = useState<string[]>([]);
@@ -62,38 +51,6 @@ const Chat = ({ isCollapsed, key_info, onProjectClick }: ChatProps) => {
 
     const [messageInput, setMessageInput] = useState<string>("");
 
-    useEffect(() => {
-        if (key_info === "ai") {
-            handleSetActiveTab("ai");
-
-        }
-        else {
-            handleSetActiveTab("discussion");
-
-        }
-    }, [key_info]);
-
-    const [userData, setUserData] = useState<Members[] | null>(null);
-
-
-    useEffect(() => {
-        const fetchProjectData = async () => {
-            try {
-
-                const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
-                const usersData = membersResponse.data as Members[];
-
-                setUserData(usersData);
-            } catch (error) {
-                console.error("Failed to fetch userData", error);
-            }
-            // finally {
-            //     setLoading(false);
-            // }
-        };
-
-        fetchProjectData();
-    }, [projectID]);
 
     useEffect(() => {
 
@@ -206,7 +163,6 @@ const Chat = ({ isCollapsed, key_info, onProjectClick }: ChatProps) => {
         if (type === "ai") {
             socketChats.auth.discussionChatOffset = maxMessageId;
         } else {
-            console.log("aj")
             socketChats.auth.aiChatOffset = maxMessageId;
         }
     };
@@ -242,103 +198,64 @@ const Chat = ({ isCollapsed, key_info, onProjectClick }: ChatProps) => {
         return messages.reduce((prev, current) => (prev.message_id < current.message_id) ? prev : current);
     }
 
+
     return (
-        key_info ? (
-            <div style={{ width: "25vw", height: "100%" }}>
 
-                <div className="h-full w-full flex-col justify-center">
-                    {isCollapsed && (
-                        <>
-                            <div className="flex items-center justify-between p-4 border-b bg-white shadow-sm">
-                                <div className="flex items-center space-x-4">
-                                    <h2 className="text-lg font-semibold">
-                                        {activeTab === 'ai' ? 'AI Chat' : 'Team Chat'}
-                                    </h2>
+        <div className="h-full w-full flex-col justify-center">
+            {isCollapsed && (
+                <>
+                    <Tabs defaultValue="ai" onValueChange={handleSetActiveTab}>
+                        <TabsList className="grid w-full grid-cols-2 h-10">
+                            <TabsTrigger value="ai">AI Chat</TabsTrigger>
+                            <TabsTrigger value="discussion">Discussion</TabsTrigger>
+                        </TabsList>
 
-                                    {activeTab === 'ai' && (
-                                        <select
-                                            className="border rounded-md p-1 text-sm bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                            value={selectedAi}
-                                            onChange={handleAiModelChange}
-                                        >
-                                            <option value="GPT3.5">GPT3.5</option>
-                                            <option value="GPT4o">GPT4o</option>
-                                        </select>
-                                    )}
-                                </div>
+                        <TabsContent value="ai">
+                            <ChatTab
+                                key="ai-chat"
+                                messages={messagesAiChat}
+                                unconfirmedMessages={unconfirmedMessagesAiChat}
+                                loadOlderMessages={loadOlderMessagesAiChat}
+                                onLoadMoreMessages={onLoadMoreMessagesAiChat}
+                            />
+                        </TabsContent>
 
-                                <button
-                                    onClick={() => onProjectClick(null)}
-                                    aria-label="Close chat"
-                                    className="text-gray-500 hover:text-gray-700 transition-colors"
+                        <TabsContent value="discussion">
+                            <ChatTab
+                                key="discussion-chat"
+                                messages={messagesDiscussionChat}
+                                unconfirmedMessages={unconfirmedMessagesDiscussionChat}
+                                loadOlderMessages={loadOlderMessagesDiscussionChat}
+                                onLoadMoreMessages={onLoadMoreMessagesDiscussionChat}
+                            />
+                        </TabsContent>
+                    </Tabs>
+
+                    <div className="w-full items-center bg-white">
+                        <Textarea
+                            placeholder="Aa"
+                            className="h-1"
+                            value={messageInput}
+                            onChange={(e) => setMessageInput(e.target.value)}
+                        />
+                        <div className="flex items-center mt-2">
+                            <Button onClick={handleSendMessage}>Send message</Button>
+                            {activeTab === "ai" && ( // Warunkowe renderowanie dropdownu
+                                <select
+                                    className="ml-2 border rounded p-1"
+                                    value={selectedAi}
+                                    onChange={handleAiModelChange}
                                 >
-                                    <IoClose size={24} />
-                                </button>
-                            </div>
-
-                            {activeTab === 'ai' ? (
-                                <ChatTab
-                                    key="ai-chat"
-                                    isAI={true}
-                                    messages={messagesAiChat}
-                                    unconfirmedMessages={unconfirmedMessagesAiChat}
-                                    loadOlderMessages={loadOlderMessagesAiChat}
-                                    onLoadMoreMessages={onLoadMoreMessagesAiChat}
-                                    userData={userData}
-                                />
-                            ) : (
-                                <></>
+                                    <option value={AITextModels.GPT35Turbo.name}>GPT3.5</option>
+                                    <option value={AITextModels.GPT4oMini.name}>GPT4o</option>
+                                </select>
                             )}
-                            {activeTab === 'discussion' ? (
-                                <ChatTab
-                                    key="discussion-chat"
-                                    isAI={false}
-                                    messages={messagesDiscussionChat}
-                                    unconfirmedMessages={unconfirmedMessagesDiscussionChat}
-                                    loadOlderMessages={loadOlderMessagesDiscussionChat}
-                                    onLoadMoreMessages={onLoadMoreMessagesDiscussionChat}
-                                    userData={userData}
-
-                                />
-                            ) : (
-                                <></>
-                            )}
-
-                            <div className="w-full items-center bg-white">
-                                <div className="messageBox">
-                                    <textarea
-                                        required
-                                        placeholder="Message..."
-                                        value={messageInput}
-                                        onChange={(e) => setMessageInput(e.target.value)}
-                                        id="messageInput"
-                                        className="custom-textarea"
-                                    />
-                                    <button id="sendButton" onClick={handleSendMessage}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 664 663">
-                                            <path
-                                                fill="none"
-                                                d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888"
-                                            ></path>
-                                            <path
-                                                stroke-linejoin="round"
-                                                stroke-linecap="round"
-                                                stroke-width="33.67"
-                                                stroke="#6c6c6c"
-                                                d="M646.293 331.888L17.7538 17.6187L155.245 331.888M646.293 331.888L17.753 646.157L155.245 331.888M646.293 331.888L318.735 330.228L155.245 331.888"
-                                            ></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
-
-        ) : (
-            <></>
-        )
+                        </div>
+                    </div>
+                </>
+            )}
+        </div>
     );
 }
+
 export default Chat;
