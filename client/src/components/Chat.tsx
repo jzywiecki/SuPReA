@@ -9,6 +9,8 @@ import axiosInstance from "@/services/api";
 import { API_URLS } from "@/services/apiUrls";
 import { useParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
+import { Skeleton } from "./ui/skeleton";
+import { set } from "react-hook-form";
 
 interface ChatProps {
     isCollapsed: boolean;
@@ -54,6 +56,8 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
     const [activeTab, setActiveTab] = useState<ActiveTab>("ai");
     const [messageInput, setMessageInput] = useState<string>("");
     const [userData, setUserData] = useState<Members[] | null>(null);
+    const [loading, setLoading] = useState(true);
+
 
 
     useEffect(() => {
@@ -63,17 +67,23 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
     useEffect(() => {
         const fetchProjectData = async () => {
             try {
+                setLoading(true);
                 const response = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
                 setUserData(response.data as Members[]);
             } catch (error) {
                 enqueueSnackbar("Failed to fetch user data", { variant: "error" });
                 console.error("Failed to fetch userData", error);
             }
+            finally {
+                setLoading(false);
+            }
         };
         fetchProjectData();
     }, [projectID, enqueueSnackbar]);
 
     useEffect(() => {
+        setLoading(true);
+
         socketChats.on('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
         // enqueueSnackbar("Team chat connected", { variant: "success" });
 
@@ -81,6 +91,7 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
         socketChats.on('receive-message-from-ai-chat', onReceiveMessagesFromAiChat);
         // enqueueSnackbar("AI chat connected", { variant: "success" });
 
+        setLoading(false);
 
         return () => {
             socketChats.off('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
@@ -180,7 +191,45 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
     const getOldestMessageId = (messages: Message[]) => {
         return messages.reduce((min, msg) => Math.min(min, msg.message_id), Infinity);
     };
+    const SkeletonLoading = () => (
+        <div style={{ width: "25vw", height: "100%" }}>
+            <div className="h-full w-full flex-col justify-center">
+                <div className="flex items-center justify-between p-4 border-b bg-white shadow-sm">
+                    <div className="flex items-center space-x-4">
+                        <h2 className="text-lg font-semibold">
+                            {activeTab === 'ai' ? 'AI Chat' : 'Team Chat'}
+                        </h2>
+                        {activeTab === 'ai' && (
+                            <select
+                                className="border rounded-md p-1 text-sm bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                value={selectedAi}
+                                onChange={handleAiModelChange}
+                            >
+                                <option value="GPT3.5">GPT3.5</option>
+                                <option value="GPT4o">GPT4o</option>
+                            </select>
+                        )}
+                    </div>
+                    <button
+                        onClick={() => onProjectClick(null)}
+                        aria-label="Close chat"
+                        className="text-gray-500 hover:text-gray-700 transition-colors"
+                    >
+                        <IoClose size={24} />
+                    </button>
+                </div>
+            </div>
+            <div className="flex justify-center items-around p-3" style={{ width: "25vw", height: "100%" }}>
+                <div className="w-[85%] space-y-3">
+                    <Skeleton className="h-80 " />
+                    <Skeleton className="h-20 " />
+                    <Skeleton className="h-20 " />
+                </div>
 
+            </div>
+        </div>
+    );
+    if (loading) return < SkeletonLoading />;
     return key_info ? (
         <div style={{ width: "25vw", height: "100%" }}>
             <div className="h-full w-full flex-col justify-center">

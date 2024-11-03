@@ -52,6 +52,7 @@ const ProjectDetailsReadme = () => {
 
         }
     }, [projectID, user?.id]);
+
     const SkeletonLoading = () => (
         <div className="flex justify-center items-around p-3">
             <div className="w-[85%] space-y-3">

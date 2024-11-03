@@ -7,7 +7,13 @@ import ProjectDetailsInfo from "./ProjectDetailsInfo";
 
 const ProjectDetails = ({ project }) => {
 
-    if (!project) return <p>Select a project to view details</p>; //TODO: style this
+    if (!project) {
+        return (
+            <p className="w-full h-full text-2xl flex justify-center items-center font-bold uppercase text-gray-500">
+                Select a project to view details
+            </p>
+        );
+    }
 
     return (
         <ScrollArea className="h-[calc(100vh-5rem)] bg-[#f1f1f1] pt-4" >
