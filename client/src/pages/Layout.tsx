@@ -1,60 +1,61 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
-import { Outlet, useNavigate, useParams } from "react-router-dom"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Chat from "@/components/Chat";
-import { useUser } from "@/components/UserProvider";
 import { API_URLS } from "@/services/apiUrls";
 import axiosInstance from "@/services/api";
+import { useSnackbar } from 'notistack';
 
+type SidePanelType = 'ai' | 'discussion' | null;
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-    const navigate = useNavigate()
-    const { projectID } = useParams();
-    const { user } = useUser();
+    const navigate = useNavigate();
+    const { projectID } = useParams<{ projectID: string }>();
+    const { enqueueSnackbar } = useSnackbar();
+    const [sidePanel, setSidePanel] = useState<SidePanelType>(null);
 
     useEffect(() => {
-        navigate("summary")
+        navigate("summary");
     }, []);
-    const [isCollapsedRight, setIsCollapsedRight] = useState(true);
 
-    const handleProjectClick = (projectName) => {
-        if (projectName === "AI chat") {
-            setSidePanel('ai')
-        }
-        else if (projectName === "Team chat") {
-            setSidePanel('discussion')
-        }
-        else if (projectName === "Settings") {
-            navigate("settings")
-        }
-        else if (projectName === "Export pdf") {
-            console.log(`${API_URLS.API_SERVER_URL}/download/pdf/${projectID}`)
+    const handleDownloadPDF = async () => {
+        if (!projectID) return;
 
-            axiosInstance.get(`${API_URLS.API_SERVER_URL}/download/pdf/${projectID}`)
-                .then(response => { // TODO: test if this works
-                    console.log(response.data);
-                    const blob = response.blob();
-                    const url = window.URL.createObjectURL(blob);
+        try {
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/download/pdf/${projectID}`, { responseType: 'blob' });
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
 
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `project_${projectID}.pdf`;
-                    link.click();
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `project_${projectID}.pdf`;
+            link.click();
 
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(link);
-                })
-                .catch(error => {
-                    console.error("There was an error fetching dowloading pdf!", error);
-                });
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            enqueueSnackbar(`Error downloading PDF: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
         }
-        else {
-            setSidePanel(null)
-        }
-
     };
-    const [sidePanel, setSidePanel] = useState(null);
+
+    const handleProjectClick = (projectName: string) => {
+        switch (projectName) {
+            case "AI chat":
+                setSidePanel('ai');
+                break;
+            case "Team chat":
+                setSidePanel('discussion');
+                break;
+            case "Settings":
+                navigate("settings");
+                break;
+            case "Export pdf":
+                handleDownloadPDF();
+                break;
+            default:
+                setSidePanel(null);
+        }
+    };
 
     return (
         <SidebarProvider>
@@ -66,12 +67,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <Outlet />
                 </main>
                 <Chat
-                    isCollapsed={isCollapsedRight}
                     key_info={sidePanel}
                     onProjectClick={handleProjectClick}
                 />
             </div>
-
         </SidebarProvider>
-    )
+    );
 }

@@ -32,7 +32,6 @@ import InviteModal from "./InviteModal"
 import Search from "./Search"
 import { useState } from "react"
 
-import React, { useEffect } from "react";
 
 import { API_URLS } from "@/services/apiUrls";
 import axiosInstance from "@/services/api";

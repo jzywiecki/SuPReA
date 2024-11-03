@@ -18,7 +18,6 @@ const ProjectDetailsReadme = () => {
     const { user } = useUser();
     const [loading, setLoading] = useState(true);
     const [project, setProject] = useState(null);
-    const [members, setAllMembers] = useState<Members[] | null>(null);
 
     useEffect(() => {
         const fetchProjectData = async () => {
@@ -38,7 +37,6 @@ const ProjectDetailsReadme = () => {
                 };
 
                 setProject(processedProject);
-                setAllMembers(filteredMembers);
             } catch (error) {
                 console.error("Failed to fetch project or members data", error);
             } finally {
