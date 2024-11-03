@@ -8,7 +8,6 @@ import { API_URLS } from '@/services/apiUrls';
 import { useSnackbar } from 'notistack';
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
-import { CiSettings } from "react-icons/ci";
 import {
     Tabs,
     TabsContent,
@@ -22,54 +21,52 @@ import {
 } from "@/components/ui/resizable"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { MdSupervisorAccount } from "react-icons/md";
-import { FaPlay } from "react-icons/fa";
 import { Skeleton } from "@/components/ui/skeleton"
 import { MdOutlineFreeCancellation } from "react-icons/md";
 import ProjectDetails from './ProjectDetails';
 
-type Project = {
-    id: string;
-    name: string;
-    description: string;
-    created_at: string;
-    additional_info: string;
-    doing_what: string;
-    for_who: string;
-    owner: string;
-    members: string[];
-    actors: {
-        actors: string[];
-    };
-    business_scenarios: {
-        business_scenario: Record<string, unknown>;
-    };
-    elevator_speech: {
-        content: string;
-    };
-    motto: {
-        motto: string;
-    };
-    project_schedule: {
-        milestones: Record<string, unknown>[];
-    };
-    requirements: {
-        functional_requirements: Record<string, unknown>[];
-        non_functional_requirements: Record<string, unknown>[];
-    };
-    risks: {
-        risks: Record<string, unknown>[];
-    };
-    specifications: {
-        specifications: Record<string, unknown>[];
-    };
-    strategy: {
-        strategy: string;
-    };
-    title: {
-        names: string[];
-    };
-};
-
+// type Project = {
+//     id: string;
+//     name: string;
+//     description: string;
+//     created_at: string;
+//     additional_info: string;
+//     doing_what: string;
+//     for_who: string;
+//     owner: string;
+//     members: string[];
+//     actors: {
+//         actors: string[];
+//     };
+//     business_scenarios: {
+//         business_scenario: Record<string, unknown>;
+//     };
+//     elevator_speech: {
+//         content: string;
+//     };
+//     motto: {
+//         motto: string;
+//     };
+//     project_schedule: {
+//         milestones: Record<string, unknown>[];
+//     };
+//     requirements: {
+//         functional_requirements: Record<string, unknown>[];
+//         non_functional_requirements: Record<string, unknown>[];
+//     };
+//     risks: {
+//         risks: Record<string, unknown>[];
+//     };
+//     specifications: {
+//         specifications: Record<string, unknown>[];
+//     };
+//     strategy: {
+//         strategy: string;
+//     };
+//     title: {
+//         names: string[];
+//     };
+// };
 
 const ProjectList = ({ projects, onSelect, selectedProjectId, sortOrder, toggleSortOrder, searchQuery, setSearchQuery }) => {
     const filteredProjects = projects
