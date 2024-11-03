@@ -54,7 +54,6 @@ function App() {
                 <Route path="register" element={<RegisterView />} />
                 <Route path="login" element={<LoginView />} />
                 <Route path="/projects" element={<ProjectsView />} />
-                {/* <Route path="/projects/:projectID" element={<ProjectView />}> */}
                 <Route path="/projects/:projectID/editor" element={<Layout />}>
                   <Route path="settings" element={<ProjectsSettings />} />
                   <Route path="summary" element={<ProjectDetailsReadme />} />

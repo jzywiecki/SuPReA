@@ -4,7 +4,6 @@ import { ChevronRight, type LucideIcon } from "lucide-react"
 
 import {
   Collapsible,
-  CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import {
@@ -13,9 +12,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
@@ -43,7 +39,6 @@ export function NavMain({
     if (location) {
       let tmp = String(location.pathname).slice(String(location.pathname).lastIndexOf("/"), String(location.pathname).length);
       setPathName(tmp);
-      console.log(tmp)
     }
   }, [location])
   return (
