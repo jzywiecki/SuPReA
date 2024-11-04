@@ -43,6 +43,8 @@ def parse_relationship_to_erdiagram_mermaid(relationship: dict) -> str:
         result += " ||--|| "
     elif relationship["relationship_type"] == "one-to-many":
         result += " ||--o{ "
+    elif relationship["relationship_type"] == "many-to-one":
+        result += " }o--|| "
     elif relationship["relationship_type"] == "many-to-many":
         result += " }o--o{ "
     else:
