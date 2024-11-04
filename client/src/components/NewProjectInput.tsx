@@ -229,6 +229,7 @@ const NewProjectInput = () => {
                                         <SelectContent>
                                             <SelectItem value="gpt-4o-mini">GPT-4o mini</SelectItem>
                                             <SelectItem value="gpt-35-turbo">GPT-3.5 turbo</SelectItem>
+                                            <SelectItem value="llama-3.2">Llama-3.2</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
