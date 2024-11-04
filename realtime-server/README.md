@@ -8,6 +8,7 @@ Create a .env file in the root directory of project and fill it with the followi
 MONGODB_URL=mongodb+srv://your_url
 DATABASE_NAME=database_name
 SERVER_URL=server_url
+AI_ID="651ffd7ac0f14c3aaf123456"
 ```
 
 ## Step 2
