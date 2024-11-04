@@ -51,7 +51,7 @@ const Search: React.FC<SearchProps> = ({ onSearch, searchResults, friends, onCli
                     <h3 className="text-lg font-semibold mb-4">Search Results</h3>
                     <div className="space-y-4 overflow-y-auto" style={{ maxHeight: '300px' }}>
                         {searchResults
-                            .filter(result => userId !== result.id && !friends.flatMap(friend => friend.id).includes(result.id))
+                            .filter(result => userId !== result.id && !friends?.flatMap(friend => friend.id).includes(result.id))
                             .map(user => (
 
                                 <UserCard
