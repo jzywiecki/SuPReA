@@ -4,7 +4,6 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import ProjectsView from './pages/ProjectsView';
 import CreateProject from './pages/CreateProject';
 import Profile from './pages/Profile';
-import ProjectView from './pages/ProjectView';
 import NameList from './pages/projectPages/NameList';
 import RequirementsList from './pages/projectPages/RequirementsList';
 import RiskList from './pages/projectPages/RisksList';
@@ -30,6 +29,7 @@ import { IoIosClose } from "react-icons/io";
 import './styles/styles.css'
 import ProjectDetailsReadme from './pages/ProjectDetailsReadme';
 import Layout from './pages/Layout';
+import LogoList from './pages/projectPages/LogoList';
 
 function App() {
   return (
@@ -69,6 +69,7 @@ function App() {
                   <Route path="uml" element={<UMLDiagrams />} />
                   <Route path="schedule" element={<ProjectTimeline />} />
                   <Route path="database-diagram" element={<DatabaseDiagram />} />
+                  <Route path="logo" element={<LogoList />} />
                 </Route>
                 <Route path="/projects/:projectID/settings" element={<ProjectsSettings />} />
 

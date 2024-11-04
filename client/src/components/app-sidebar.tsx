@@ -24,8 +24,8 @@ import {
   View,
   CalendarCheck,
   Database,
-  FileDown
-
+  FileDown,
+  Image
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -233,6 +233,18 @@ const data = {
         },
       ],
     },
+    {
+      title: "Logo",
+      url: "logo",
+      icon: Image,
+      items: [
+        {
+          title: "#",
+          url: "#",
+          description: "Get logos for your app"
+        },
+      ],
+    },
   ],
   projects: [
     {
@@ -256,7 +268,7 @@ const data = {
       url: "#",
       options: ["pdf"],
       icon: FileDown,
-    },
+    }
   ],
 }
 
