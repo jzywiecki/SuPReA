@@ -205,8 +205,9 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
                                 value={selectedAi}
                                 onChange={handleAiModelChange}
                             >
-                                <option value="GPT3.5">GPT3.5</option>
-                                <option value="GPT4o">GPT4o</option>
+                                <option value="gpt-35-turbo">GPT3.5</option>
+                                <option value="gpt-4o-mini">GPT4o</option>
+                                <option value="llama-3.2">Llama3.2</option>
                             </select>
                         )}
                     </div>
@@ -244,8 +245,9 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
                                 value={selectedAi}
                                 onChange={handleAiModelChange}
                             >
-                                <option value="GPT3.5">GPT3.5</option>
-                                <option value="GPT4o">GPT4o</option>
+                                <option value="gpt-35-turbo">GPT3.5</option>
+                                <option value="gpt-4o-mini">GPT4o</option>
+                                <option value="llama-3.2">Llama3.2</option>
                             </select>
                         )}
                     </div>

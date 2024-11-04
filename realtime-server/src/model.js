@@ -45,6 +45,7 @@ export const isComponentIdCorrect = (id) => {
 export const AITextModels = Object.freeze({
     GPT35Turbo: {id: 1, name: "gpt-35-turbo"},
     GPT4oMini: {id: 2, name: "gpt-4o-mini"},
+    Llama32: {id: 3, name: "llama-3.2"}
 });
 
 

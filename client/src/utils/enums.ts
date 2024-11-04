@@ -29,12 +29,13 @@ export const isComponentIdCorrect = (id: number) => {
 }
 
 
-export type AiModels = 'gpt-35-turbo' | 'gpt-4o-mini' | 'dall-e-3' | 'dall-e-2';
+export type AiModels = 'gpt-35-turbo' | 'gpt-4o-mini' | 'llama-3.2' | 'dall-e-3' | 'dall-e-2';
 
 
 export const AITextModels = Object.freeze({
     GPT35Turbo: {id: 1, name: "gpt-35-turbo"},
     GPT4oMini: {id: 2, name: "gpt-4o-mini"},
+    Llama32: {id: 3, name: "llama-3.2"}
 });
 
 
