@@ -3,9 +3,8 @@ import ray
 from openai import OpenAI
 from utils.decorators import override
 
-local_client = OpenAI(
-    base_url="http://localhost:1234/v1"
-)
+local_client = OpenAI(base_url="http://localhost:1234/v1")
+
 
 class LocalModel(AI):
     """Base class for local models."""
@@ -28,6 +27,7 @@ class Llama32(LocalModel):
     def make_ai_call(self, query: str) -> str:
         """Make a call to the Llama-3.2 model and return the response."""
         return super().make_ai_call(query, "mlx-community/Llama-3.2-3B-Instruct-4bit")
+
 
 llama_32 = Llama32()
 
