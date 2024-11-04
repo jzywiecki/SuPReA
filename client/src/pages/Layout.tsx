@@ -6,6 +6,7 @@ import Chat from "@/components/Chat";
 import { API_URLS } from "@/services/apiUrls";
 import axiosInstance from "@/services/api";
 import { useSnackbar } from 'notistack';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type SidePanelType = 'ai' | 'discussion' | null;
 
@@ -68,7 +69,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <main style={{ width: "100%", position: 'relative' }}>
                     <SidebarTrigger style={{ position: 'absolute', left: '0', zIndex: '10' }} />
                     {children}
-                    <Outlet />
+                    <ScrollArea className="h-screen w-full rounded-md border p-0">
+                        <Outlet />
+                    </ScrollArea>
                 </main>
                 <Chat
                     key_info={sidePanel}
