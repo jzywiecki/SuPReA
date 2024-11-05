@@ -295,8 +295,6 @@ export function AppSidebar({ onProjectClick, ...props }: React.ComponentProps<ty
 
   const [projectName, setProjectName] = useState<string>(null);
   const [searchResults, setSearchResults] = useState<User[]>([]);
-  const [isCollapsedLeft, setIsCollapsedLeft] = useState(true);
-  const [isCollapsedRight, setIsCollapsedRight] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [connected, setConnected] = useState<boolean>(false);
 
@@ -419,8 +417,6 @@ export function AppSidebar({ onProjectClick, ...props }: React.ComponentProps<ty
     }
   };
 
-  const toggleCollapseLeft = () => setIsCollapsedLeft((prev) => !prev);
-  const toggleCollapseRight = () => setIsCollapsedRight((prev) => !prev);
 
   return (
     !isLoading ? (
