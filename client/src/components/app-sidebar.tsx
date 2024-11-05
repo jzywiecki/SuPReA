@@ -72,6 +72,7 @@ const data = {
       url: "summary",
       icon: Text,
       isActive: true,
+      id: 14,
       items: [
         {
           title: "#",
@@ -92,6 +93,7 @@ const data = {
       title: "Name",
       url: "name",
       icon: Lightbulb,
+      id: 10,
       items: [
         {
           title: "#",
@@ -105,6 +107,7 @@ const data = {
       title: "Specifications",
       url: "specifications",
       icon: Cpu,
+      id: 8,
       items: [
         {
           title: "#",
@@ -117,6 +120,7 @@ const data = {
       title: "Requirements",
       url: "requirements",
       icon: ShieldEllipsis,
+      id: 6,
       items: [
         {
           title: "#",
@@ -129,6 +133,7 @@ const data = {
       title: "Actors",
       url: "actors",
       icon: PersonStanding,
+      id: 1,
       items: [
         {
           title: "#",
@@ -141,6 +146,7 @@ const data = {
       title: "Risk",
       url: "risk",
       icon: Skull,
+      id: 7,
       items: [
         {
           title: "#",
@@ -153,6 +159,7 @@ const data = {
       title: "Motto",
       url: "motto",
       icon: ChevronsUp,
+      id: 4,
       items: [
         {
           title: "#",
@@ -165,6 +172,7 @@ const data = {
       title: "Strategy",
       url: "strategy",
       icon: Crosshair,
+      id: 9,
       items: [
         {
           title: "#",
@@ -177,6 +185,7 @@ const data = {
       title: "Elevator speech",
       url: "elevator-speech",
       icon: Speech,
+      id: 3,
       items: [
         {
           title: "#",
@@ -189,6 +198,7 @@ const data = {
       title: "Business scenario",
       url: "business-scenario",
       icon: Banknote,
+      id: 2,
       items: [
         {
           title: "#",
@@ -201,6 +211,7 @@ const data = {
       title: "UML",
       url: "uml",
       icon: View,
+      id: 13,
       items: [
         {
           title: "#",
@@ -213,6 +224,7 @@ const data = {
       title: "Schedule",
       url: "schedule",
       icon: CalendarCheck,
+      id: 5,
       items: [
         {
           title: "#",
@@ -225,6 +237,7 @@ const data = {
       title: "Database diagram",
       url: "database-diagram",
       icon: Database,
+      id: 11,
       items: [
         {
           title: "#",
@@ -237,6 +250,7 @@ const data = {
       title: "Logo",
       url: "logo",
       icon: Image,
+      id: 12,
       items: [
         {
           title: "#",
@@ -286,17 +300,51 @@ export function AppSidebar({ onProjectClick, ...props }: React.ComponentProps<ty
   const [isLoading, setIsLoading] = useState(true);
   const [connected, setConnected] = useState<boolean>(false);
 
+  const [generationStatus, setGenerationStatus] = useState(() => {
+    return data.navMain.reduce((status, item) => ({
+      ...status,
+      [item.id]: false,
+    }), {});
+  });
+  const getInitialGenerationStatus = (projectData) => {
+    return data.navMain.reduce((status, item) => {
+      const component = getComponentById(item.id);
+      if (component) {
+        const componentName = component.name
+        const isGenerated = projectData[componentName] != null;
+
+        return {
+          ...status,
+          [item.id]: isGenerated,
+        };
+      }
+      else {
+        return {
+          ...status,
+          [item.id]: true,
+        };
+      }
+
+    }, {});
+  };
+
   useEffect(() => {
     const fetchProjectName = async () => {
       try {
         const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/${projectID}`);
-        setProjectName(response.data.name);
+        const projectData = response.data;
+        setProjectName(projectData.name);
+
+        const initialGenerationStatus = getInitialGenerationStatus(projectData);
+        setGenerationStatus(initialGenerationStatus);
       } catch (error) {
         console.error("Error fetching project data:", error);
       }
     };
     fetchProjectName();
   }, [projectID]);
+
+
 
   useEffect(() => {
     if (!user?.id || !projectName) return;
@@ -335,16 +383,11 @@ export function AppSidebar({ onProjectClick, ...props }: React.ComponentProps<ty
 
     function handleGenerationComplete(response: GenerationResponse): void {
       const component = getComponentById(response.component);
-      console.log("Generated: ")
-      console.log(component)
-      // For Krzysiek.
-      // After components generation (after creating a project), we receive notifications here.
-      // You receive a notification in the format (GenerationResponse):
-      // {
-      //     component: "<specific id>",
-      //     code: 1
-      // }
-      // where "component" is the ID of the component, and "code" is a constant indicating the notification type.
+
+      setGenerationStatus((prevStatus) => ({
+        ...prevStatus,
+        [component.id]: true,
+      }));
     }
 
     socket.on('connect', handleConnect);
@@ -387,7 +430,7 @@ export function AppSidebar({ onProjectClick, ...props }: React.ComponentProps<ty
         </SidebarHeader>
         <SidebarContent>
           <NavProjects projects={data.projects} onProjectClick={onProjectClick} />
-          <NavMain items={data.navMain} />
+          <NavMain items={data.navMain} generationStatus={generationStatus} />
         </SidebarContent>
         <SidebarFooter>
           <NavUser

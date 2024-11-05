@@ -15,10 +15,12 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 
 const NewProjectInput = () => {
     const { user } = useUser();
     const { enqueueSnackbar } = useSnackbar();
+    const navigation = useNavigate();
 
     const [textAiModel, setTextAiModel] = useState('');
     const [imageAiModel, setImageAiModel] = useState('');
@@ -150,9 +152,8 @@ const NewProjectInput = () => {
             },
         })
             .then(response => {
-                console.log('Response:', response.data);
                 enqueueSnackbar('Started generation', { variant: 'success' });
-                //TODO: navigate to generation
+                navigation(`/projects/${response.data}/editor`)
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -172,7 +173,9 @@ const NewProjectInput = () => {
             },
         })
             .then(response => {
-                alert(`Created empty! New project id: ${response.data}`);
+                enqueueSnackbar('Created empty!', { variant: 'success' });
+                navigation(`/projects/${response.data}/editor`)
+
             })
             .catch(error => {
                 console.error('Error:', error);
