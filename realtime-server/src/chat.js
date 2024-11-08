@@ -8,6 +8,10 @@ import { isNumericIdCorrect } from "./utils.js";
 import { getAITextModelById } from "./model.js";
 import { ObjectId } from "mongodb";
 import { questionToAiAPI } from  './gateway.js';
+import { 
+    InternalServerErrorCommunicate,
+    InvalidRequestCommunicate,
+ } from "./notifications.js";
 import 'dotenv/config';
 
 
@@ -88,7 +92,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
         try {
             if (!isNumericIdCorrect(oldestReceivedMessageId)) {
                 logger.info("User requested older messages with wrong last message id.")
-                socket.emit('error', 'Cannot receive older messages. Invalid last message id parameter.');
+                socket.emit('error', new InvalidRequestCommunicate('Invalid last message id parameter.'));
                 return;
             }
     
@@ -111,7 +115,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
             logger.error(`Cannot get older messages from chat ${chatId}.`)
             logger.error(`Details: ${error.message}`);
             
-            socket.emit('error', 'Internal server error. Cannot receive older messages.');
+            socket.emit('error', new InternalServerErrorCommunicate('Cannot receive older messages.'));
         }
     }
     
@@ -130,7 +134,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
         try {
             if (!isMessageInvalid(text)) {
                 logger.info("User tried to send invalid message.");
-                socket.emit('error', 'Cannot send message. Invalid message format.');
+                socket.emit('error', new InvalidRequestCommunicate('Cannot send message. Invalid message format.'));
                 return false;
             }
     
@@ -149,7 +153,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
             logger.error(`Cannot add message to chat ${chatId}.`);
             logger.error(`Details: ${error.message}`);
     
-            socket.emit('error', 'Internal server error. Cannot send message.');
+            socket.emit('error', new InternalServerErrorCommunicate('Cannot send message.'));
     
             return false;
         }
@@ -177,7 +181,7 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
             logger.error("Cannot serve user message to AI.");
             logger.error(`Details: ${error.message}`);
             
-            socket.emit('error', 'Internal server error. Cannot forward message to AI.');
+            socket.emit('error', new InternalServerErrorCommunicate('Cannot forward message to AI.'));
         }
     };
 }
@@ -237,7 +241,7 @@ export const transmitMessagesOnConnection = async (socket, db, projectChatsRefer
         logger.error(`Cannot retransmit lost data.`);
         logger.error(`Details: ${error.message}`);
 
-        socket.emit('error', 'Internal server error. Cannot retransmit data on connection.');
+        socket.emit('error', new InternalServerErrorCommunicate('Cannot retransmit lost data.'));
         socket.disconnect();
     }
 };

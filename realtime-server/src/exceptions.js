@@ -14,14 +14,6 @@ export class ComponentIsNotExistException extends Error {
 }
 
 
-export class ComponentIsAlreadyEditedException extends Error {
-    constructor(message = 'Component is already being edited.') {
-        super(message);
-        this.name = 'ComponentIsAlreadyEditedException';
-    }
-}
-
-
 export class InvalidArgumentException extends Error {
     constructor(message = 'Invalid argument.') {
         super(message);
@@ -42,13 +34,5 @@ export class UserAlreadyHasActiveEditSessionException extends Error {
     constructor(message = 'User already has an active editing session.') {
         super(message);
         this.name = 'UserAlreadyHasActiveEditSessionException';
-    }
-}
-
-
-export class UnsupportedRequestTypeException extends Error {
-    constructor(message = 'Unsupported request type.') {
-        super(message);
-        this.name = 'UnsupportedRequestTypeException';
     }
 }
