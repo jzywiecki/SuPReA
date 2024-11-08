@@ -13,7 +13,7 @@ export const logger = pino({
 }, pino.destination('./logs/app.log'));
 
 
-export const isMessageValid = (message) => {
+export const isMessageInvalid = (message) => {
     const content = message?.content;
 
     return !content || typeof content !== 'string' || content.length > 1000;

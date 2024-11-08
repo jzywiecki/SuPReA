@@ -90,9 +90,9 @@ export class RejectedEditionSessionRegisterRequestCommunicate {
 }
 
 
-export class RejectedUpdateRequestCommunicate {
+export class RejectedEditRequestCommunicate {
     /**
-     * Notification informing about the rejection of an update request.
+     * Notification informing about the rejection of an edit (update, regenerate by ai, update by ai) request.
      * Sent to the client that made the request.
      */
     code = 7;

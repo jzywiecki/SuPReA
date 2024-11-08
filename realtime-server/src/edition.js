@@ -9,15 +9,21 @@ import { ConfirmationUnregisterEditionSessionCommunicate } from "./notifications
 import { RegisterEditSessionCommunicate } from "./notifications.js";
 import { UnregisterEditSessionCommunicate } from "./notifications.js";
 import { RejectedEditionSessionRegisterRequestCommunicate } from "./notifications.js";
-import { RejectedUpdateRequestCommunicate } from "./notifications.js";
+import { RejectedEditRequestCommunicate } from "./notifications.js";
 import { ConfirmedUpdateRequestCommunicate } from "./notifications.js";
 import { logger } from './utils.js';
-import { updateComponentAPI } from "./gateway.js";
+import {
+    updateComponentByAiAPI, 
+    regenerateComponentByAiAPI, 
+    updateComponentAPI,
+} from './gateway.js';
 
+import { getAiSpecifiedForComponent } from "./model.js";
 import {
     ComponentIsNotExistException,
     ComponentIsAlreadyEditedException,
-    SessionIsNotRegisteredException
+    SessionIsNotRegisteredException,
+    UserAlreadyHasActiveEditSessionException,
 } from "./exceptions.js";
 import { getComponentById } from "./model.js";
 
@@ -36,6 +42,8 @@ export const registerEditionEvents = (socket, session, io, editionRegister) => {
      * - `edit-component`: Triggers `editComponentRequestHandler` to start editing a component.
      * - `finish-edition`: Triggers `finishedEditionRequestHandler` to finish the current edition.
      * - `update-component`: Triggers `updateComponentRequestHandler` to update a component with new data.
+     * - `update-component-by-ai`: Triggers `updateComponentByAIRequestHandler` to update a component with new data using AI.
+     * - `regenerate-component-by-ai`: Triggers `regenerateComponentByAIRequestHandler` to regenerate a component with new data using AI.
     */
     
     socket.on('edit-component', (request) => {
@@ -47,10 +55,17 @@ export const registerEditionEvents = (socket, session, io, editionRegister) => {
         finishedEditionRequestHandler(request?.component, session, socket, io, editionRegister);
     });
 
-
     socket.on('update-component', (request) => {
         updateComponentRequestHandler(request?.component, session, editionRegister, request?.new_val);
     });
+
+    socket.on('update-component-by-ai', (request) => {
+        updateComponentByAIRequestHandler(socket, session, request?.component, request?.query, request?.ai_model, editionRegister);
+    })
+
+    socket.on('regenerate-component-by-ai', (request) => {
+        regenerateComponentByAIRequestHandler(socket, session, request?.component, request?.query, request?.ai_model, editionRegister);
+    })
 }
 
 
@@ -79,12 +94,7 @@ export const transmitEditionsStatusOnConnection = async (socket, session, editio
         );
     }
     catch (error) {
-        logger.error("Unexpected error", error);
-
-        socket.emit(
-            'error',
-            "INTERNAL SERVER ERROR"
-        );
+        editionExceptionHandler(error, socket, session);
     }
 };
 
@@ -111,7 +121,7 @@ const editComponentRequestHandler = (componentId, socket, io, session, editionRe
         editionRegister.registerEditionSession(session, componentId);
         
         socket.emit(
-            'notify-edition',
+            'notify-edition-pending',
             new ConfirmationRegisterEditionSessionCommunicate()
         )
 
@@ -122,30 +132,7 @@ const editComponentRequestHandler = (componentId, socket, io, session, editionRe
         logger.info(`User ${session.userId} started editing component: ${componentId}`);
     }
     catch (error) {
-        if (error instanceof ComponentIsNotExistException) {
-            logger.info(`User ${session.userId} tried to edit a non-existent component: ${componentId}`);
-
-            socket.emit(
-                'notify-edition',
-                new RejectedEditionSessionRegisterRequestCommunicate('Component does not exist.')
-            );
-        }
-        else if (error instanceof ComponentIsAlreadyEditedException) {
-            logger.info(`User ${session.userId} tried to edit an already edited component: ${componentId}`);
-
-            socket.emit(
-                'notify-edition',
-                new RejectedEditionSessionRegisterRequestCommunicate('Component is already being edited.')
-            );
-        }
-        else {
-            logger.error("Unexpected error", error);
-
-            socket.emit(
-                'error',
-                "INTERNAL SERVER ERROR"
-            );
-        }
+        editionExceptionHandler(error, socket, session);
     }
 };
 
@@ -171,7 +158,7 @@ const finishedEditionRequestHandler = (componentId, session, socket, io, edition
     try {
         const isUnregistered = editionRegister.unregisterEditionSession(session);
         if (!isUnregistered) {
-            throw new SessionIsNotRegisteredException('Session is not being edited.');
+            throw new SessionIsNotRegisteredException(`User ${session.userId} tried to finish an edition session that is not registered.`);
         }
 
         socket.emit(
@@ -186,22 +173,7 @@ const finishedEditionRequestHandler = (componentId, session, socket, io, edition
         logger.info(`User ${session.userId} finished editing component: ${componentId}`);
     }
     catch (error) {
-        if (error instanceof SessionIsNotRegisteredException) {
-            logger.info(`User ${session.userId} tried to finish an edition session that is not registered.`);
-
-            socket.emit(
-                'error',
-                'Cannot unregistered editio session. Session is not exist.'
-            )
-        }
-        else {
-            logger.error("Unexpected error", error);
-
-            socket.emit(
-                'error',
-                "INTERNAL SERVER ERROR"
-            );
-        }            
+        editionExceptionHandler(error, socket, session);
     }
 }
 
@@ -229,7 +201,7 @@ const updateComponentRequestHandler = async (componentId, session, socket, editi
             
             socket.emit(
                 'notify-edition',
-                new RejectedUpdateRequestCommunicate('Session is not being edited.')
+                new RejectedEditRequestCommunicate('Session is not being edited.')
             );
             return;
         }
@@ -263,7 +235,7 @@ const updateComponentRequestHandler = async (componentId, session, socket, editi
             } else {
                 logger.error('Error updating a component:', error.response.data);
                 socket.emit('notify-edition',
-                    new RejectedUpdateRequestCommunicate(error.response.data)
+                    new RejectedEditRequestCommunicate(error.response.data)
                 );
             }
         } else {
@@ -275,3 +247,102 @@ const updateComponentRequestHandler = async (componentId, session, socket, editi
         }
     }
 };
+
+
+const updateComponentByAIRequestHandler = async (socket, session, componentValue, componentId, request, aiModelId, editionRegister) => {
+    try {
+        if (!editionRegister.isEditionSessionActive(session, componentId)) {
+            throw SessionIsNotRegisteredException("Edition session is not active. Cannot update component with id: " + componentId 
+                + " for user: " + session.userId);        }
+
+        const component = getComponentById(componentId);
+        
+        const aiModel = getAiSpecifiedForComponent(aiModelId, component);
+
+        const requestData = {
+            project_id: session.projectId,
+            session_id: session.id,
+            details: request,
+            ai_model: aiModel,
+            component_value: componentValue,
+        };
+    
+        regenerateComponentByAiAPI(component.name, requestData);
+
+    } catch (error) {
+        editionExceptionHandler(error, socket, session);
+    }
+};
+
+
+const regenerateComponentByAIRequestHandler = async (socket, session, componentId, request, aiModelId, editionRegister) => {
+    try {
+        if (!editionRegister.isEditionSessionActive(session, componentId)) {
+            throw SessionIsNotRegisteredException("Edition session is not active. Cannot regenerate component with id: " + componentId 
+            + " for user: " + session.userId);
+        }
+
+        const component = getComponentById(componentId);
+        
+        const aiModel = getAiSpecifiedForComponent(aiModelId, component);
+
+        const requestData = {
+            project_id: session.projectId,
+            session_id: session.id,
+            query: request,
+            ai_model: aiModel.name,
+        };
+    
+        updateComponentByAiAPI(component.name, requestData);
+    } catch (error) {
+        editionExceptionHandler(error, socket, session);
+    }
+};
+
+
+const editionExceptionHandler = (error, socket, session) => {
+    if (error instanceof SessionIsNotRegisteredException) {
+        logger.info(error.message);
+
+        socket.emit(
+            'notify-edition',
+            new RejectedEditRequestCommunicate("Edition session is not active.")
+        );
+    }
+
+    else if (error instanceof ComponentIsNotExistException) {
+        logger.info(`User ${session.userId} makes error: ${error.message}`);
+
+        socket.emit(
+            'notify-edition-pending',
+            new RejectedEditionSessionRegisterRequestCommunicate('Component does not exist.')
+        );
+    }
+
+    else if (error instanceof ComponentIsAlreadyEditedException) {
+        logger.info(`User ${session.userId} tried to edit an already edited component: ${error.message}`);
+
+        socket.emit(
+            'notify-edition-pending',
+            new RejectedEditionSessionRegisterRequestCommunicate('Component is already being edited.')
+        );
+    }
+
+    else if (error instanceof UserAlreadyHasActiveEditSessionException) {
+        logger.info(`User ${session.userId} tried to edit a component while already editing another component: ${error.message}`);
+
+        socket.emit(
+            'notify-edition-pending',
+            new RejectedEditionSessionRegisterRequestCommunicate('User already has an active edit session.')
+        );
+    }
+        
+    else {
+        logger.error("Unexpected error", error);
+
+        socket.emit(
+            'error',
+            "INTERNAL SERVER ERROR"
+        );
+    }
+}

@@ -3,17 +3,11 @@
  */
 
 import { logger } from "./utils.js";
-import { isMessageValid } from "./utils.js";
+import { isMessageInvalid } from "./utils.js";
 import { isNumericIdCorrect } from "./utils.js";
-import { serveUserMessageToAI } from './aiforward.js';
-
-import { 
-    InvalidArgumentException,
-    SessionIsNotRegisteredException,
-    UnsupportedRequestTypeException
-} from './exceptions.js'
-
+import { getAITextModelById } from "./model.js";
 import { ObjectId } from "mongodb";
+import { questionToAiAPI } from  './gateway.js';
 import 'dotenv/config';
 
 
@@ -31,7 +25,7 @@ export class ProjectChatsReference {
 }
 
 
-export const registerChatEvents = (socket, io, db, session, projectChatsReference, editionRegister) => {
+export const registerChatEvents = (socket, io, db, session, projectChatsReference) => {
     /**
      * Registers chat events for the given socket.
      * @param {Socket} socket - The socket object handling communication between the server and client.
@@ -41,6 +35,45 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
      * @param {ProjectChatsReference} projectChatsReference - References to the project's chats, containing properties like discussionChatId and aiChatId.
      * @param {EditionRegister} editionRegister - The register object containing the edition status of the project.
     */
+
+    // Messeage format send to discussion chat:
+    // {
+    //      content: string
+    // }
+    socket.on('send-message-to-discussion-chat', (message) => {
+        handleSendMessageByUser(projectChatsReference.discussionChatId, message.content, 'receive-message-from-discussion-chat');
+    });
+
+
+    // Message format send to ai chat:
+    // {
+    //      content: string
+    //      ai: int (code)
+    // }
+    socket.on('send-message-to-ai-chat', (message) => {
+        const isMessageSent = handleSendMessageByUser(projectChatsReference.aiChatId, message.content, 'receive-message-from-ai-chat');
+        if (isMessageSent) {
+            forwardMessageToAi(message);
+        }
+    }); 
+
+
+    socket.on('get-older-messages-from-discussion-chat', (oldestReceivedMessageId) => {
+        handleGetOlderMessages(
+            projectChatsReference.discussionChatId, 
+            oldestReceivedMessageId, 
+            'receive-message-from-discussion-chat'
+        );
+    });
+
+
+    socket.on('get-older-messages-from-ai-chat', (oldestReceivedMessageId) => {
+        handleGetOlderMessages(
+            projectChatsReference.aiChatId, 
+            oldestReceivedMessageId, 
+            'receive-message-from-ai-chat'
+        );
+    });
 
 
     const handleGetOlderMessages = async (chatId, oldestReceivedMessageId, reciveOlderMessageEvent) => {
@@ -95,10 +128,10 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
          * @returns {boolean} - Returns true if the message was sent successfully, false if there was an error.
          */
         try {
-            if (!isMessageValid(text)) {
+            if (!isMessageInvalid(text)) {
                 logger.info("User tried to send invalid message.");
                 socket.emit('error', 'Cannot send message. Invalid message format.');
-                return;
+                return false;
             }
     
             const message = await db.addMessage(session.projectId, chatId, text, session.userId);
@@ -129,67 +162,24 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
          * @param {Object} message - The message object containing the user's message.
          */
         try {
-            serveUserMessageToAI(session, message, editionRegister)
-        } catch (error) {
-            if (
-                error instanceof InvalidArgumentException ||
-                error instanceof SessionIsNotRegisteredException ||
-                error instanceof UnsupportedRequestTypeException
-            ) {
-                logger.info("User encountered an error while sending a message to AI.");
-                logger.info(`Details: ${error.message}`);
+            const aiModel = getAITextModelById(message?.ai);
 
-                socket.emit('error', "Error during forwarding message to AI. " + error.message);
-                return;
-            } else {
-                logger.error("Cannot serve user message to AI.");
-                logger.error(`Details: ${error.message}`);
-                
-                socket.emit('error', 'Internal server error. Cannot forward message to AI.');
-            }
+            const requestData = {
+                content: message?.content,
+                ai_model: aiModel?.name,
+                project_id: session?.projectId,
+                callback: session?.projectId,
+            };
+        
+            questionToAiAPI(requestData);
+
+        } catch (error) {
+            logger.error("Cannot serve user message to AI.");
+            logger.error(`Details: ${error.message}`);
+            
+            socket.emit('error', 'Internal server error. Cannot forward message to AI.');
         }
     };
-    
-    // Messeage format send to discussion chat:
-    // {
-    //      content: string
-    // }
-    socket.on('send-message-to-discussion-chat', (message) => {
-        handleSendMessageByUser(projectChatsReference.discussionChatId, message.content, 'receive-message-from-discussion-chat');
-    });
-
-
-    // Message format send to ai chat:
-    // {
-    //      content: string
-    //      ai: int (code)
-    //      component: int (code)
-    //      requestType: int (code)
-    // }
-    socket.on('send-message-to-ai-chat', (message) => {
-        const isMessageSent = handleSendMessageByUser(projectChatsReference.aiChatId, message.content, 'receive-message-from-ai-chat');
-        if (isMessageSent) {
-            forwardMessageToAi(message);
-        }
-    }); 
-
-
-    socket.on('get-older-messages-from-discussion-chat', (oldestReceivedMessageId) => {
-        handleGetOlderMessages(
-            projectChatsReference.discussionChatId, 
-            oldestReceivedMessageId, 
-            'receive-message-from-discussion-chat'
-        );
-    });
-
-
-    socket.on('get-older-messages-from-ai-chat', (oldestReceivedMessageId) => {
-        handleGetOlderMessages(
-            projectChatsReference.aiChatId, 
-            oldestReceivedMessageId, 
-            'receive-message-from-ai-chat'
-        );
-    });
 }
 
 
@@ -254,6 +244,7 @@ export const transmitMessagesOnConnection = async (socket, db, projectChatsRefer
 
 
 const AI_ID = ObjectId.createFromHexString(process.env.AI_ID);
+
 
 export const sendMessageByAI = async (io, db, projectId, text) => {
     /**
