@@ -17,6 +17,7 @@ import { useUser } from '@/components/UserProvider';
 import { User } from '@/pages/SearchAndAddFriends';
 import { useSnackbar } from 'notistack';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useNavigate } from 'react-router-dom';
 
 interface ProjectSettings {
     name: string;
@@ -38,6 +39,7 @@ interface Members {
 }
 
 const ProjectSettings: React.FC = () => {
+    const navigate = useNavigate(); 
     const { user } = useUser();
     const { projectID } = useParams();
     const [loading, setLoading] = useState(true);
@@ -47,6 +49,8 @@ const ProjectSettings: React.FC = () => {
     const { enqueueSnackbar } = useSnackbar();
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [selectedOwner, setSelectedOwner] = useState<Members | null>(null);
+    const [isOwner, setIsOwner] = useState(false);
+    const [isManager, setIsManager] = useState(false);
 
     const openInviteModal = () => {
         setIsInviteModalOpen(true);
@@ -82,7 +86,7 @@ const ProjectSettings: React.FC = () => {
             setSearchResults(response.data);
         } catch (error) {
             console.error('Error searching users:', error);
-            enqueueSnackbar(`Error searching users: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });}
+            enqueueSnackbar(`Error searching users: ${error.response?.data?.detail ?? 'Unknown error'}`, { variant: 'error' });}
     };
 
     const fetchProjectSettings = async () => {
@@ -103,10 +107,11 @@ const ProjectSettings: React.FC = () => {
             setValue("owner", usersData.find(member => member.id === projectData.owner) || null);
             setValue("members", usersData || []);
             setValue("managers", projectData.managers.map(managerId => usersData.find(member => member.id === managerId)).filter(Boolean) || []);
-
+            setIsManager(projectData.managers.includes(user?.id));
+            setIsOwner(projectData.owner === user?.id);
         } catch (error) {
             console.error("Failed to fetch project settings", error);
-            enqueueSnackbar(`Error fetching project settings: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
+            enqueueSnackbar(`Error fetching project settings: ${error.response?.data?.detail ?? 'Unknown error'}`, { variant: 'error' });
         } finally {
             setLoading(false);
         }
@@ -136,7 +141,7 @@ const ProjectSettings: React.FC = () => {
             await fetchProjectSettings();
         } catch (error) {
             console.error('Error submitting project settings:', error);
-            enqueueSnackbar(`Error submitting project settings: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
+            enqueueSnackbar(`Error submitting project settings: ${error.response?.data?.detail ?? 'Unknown error'}`, { variant: 'error' });
         }
     };
 
@@ -148,7 +153,7 @@ const ProjectSettings: React.FC = () => {
             await fetchProjectSettings();
         } catch (error) {
             console.error('Error adding member:', error);
-            enqueueSnackbar(`Error adding member: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
+            enqueueSnackbar(`Error adding member: ${error.response?.data?.detail ?? 'Unknown error'}`, { variant: 'error' });
         }
     };
 
@@ -215,6 +220,10 @@ const ProjectSettings: React.FC = () => {
         }
     };
 
+    const handleExit = () => {
+        navigate(`/projects/${projectID}/editor/summary`);
+    };
+
     if (loading) {
         return <p>Loading...</p>;
     }
@@ -228,6 +237,7 @@ const ProjectSettings: React.FC = () => {
                     {...register("name", { required: true })}
                     placeholder="Enter project name"
                     className="mt-1 block w-full"
+                    disabled={!isManager}
                 />
                 {errors.name && <p className="text-red-500 text-sm mt-1">This field is required</p>}
             </div>
@@ -239,6 +249,7 @@ const ProjectSettings: React.FC = () => {
                     {...register("description")}
                     placeholder="Enter project description"
                     className="mt-1 block w-full"
+                    disabled={!isManager}
                 />
             </div>
 
@@ -249,6 +260,7 @@ const ProjectSettings: React.FC = () => {
                     {...register("readme")}
                     placeholder="Enter readme content"
                     className="mt-1 block w-full"
+                    disabled={!isManager}
                 />
             </div>
 
@@ -259,6 +271,7 @@ const ProjectSettings: React.FC = () => {
                     {...register("for_who")}
                     placeholder="Enter readme content"
                     className="mt-1 block w-full"
+                    disabled={!isManager}
                 />
             </div>
 
@@ -269,6 +282,7 @@ const ProjectSettings: React.FC = () => {
                     {...register("doing_what")}
                     placeholder="Enter readme content"
                     className="mt-1 block w-full"
+                    disabled={!isManager}
                 />
             </div>
 
@@ -279,29 +293,34 @@ const ProjectSettings: React.FC = () => {
                     {...register("additional_info")}
                     placeholder="Enter readme content"
                     className="mt-1 block w-full"
+                    disabled={!isManager}
                 />
             </div>
 
             <div>
                 <Label htmlFor="owner" className="block text-sm font-medium text-gray-700">Owner</Label>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button className="mt-1 w-full">
-                            {control._formValues.owner ? control._formValues.owner.username : "Select Owner"}
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        {allMembers.length > 0 ? (
-                            allMembers.map((member) => (
-                                <DropdownMenuItem key={member.id} onClick={() => handleOwnerSelect(member)}>
-                                    {member.username}
-                                </DropdownMenuItem>
-                            ))
-                        ) : (
-                            <DropdownMenuItem disabled>No members available</DropdownMenuItem>
-                        )}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                    {isOwner ? (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button className="mt-1 w-full">
+                                {control._formValues.owner ? control._formValues.owner.username : "Select Owner"}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            {allMembers.length > 0 ? (
+                                allMembers.map((member) => (
+                                    <DropdownMenuItem key={member.id} onClick={() => handleOwnerSelect(member)}>
+                                        {member.username}
+                                    </DropdownMenuItem>
+                                ))
+                            ) : (
+                                <DropdownMenuItem disabled>No members available</DropdownMenuItem>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ) : (
+                    <p className="mt-1 text-sm text-gray-500">You are not authorized to change the project owner.</p>
+                )}
 
                 <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
                     <DialogContent>
@@ -323,12 +342,16 @@ const ProjectSettings: React.FC = () => {
 
             <div>
                 <Label htmlFor="members" className="block text-sm font-medium text-gray-700">Members</Label>
-                <Button className="mt-1 w-full" onClick={openInviteModal}>Add Members</Button>
+                    <Button className="mt-1 w-full" onClick={openInviteModal}>Add Members</Button>
                 <div className="mt-2">
                     {(control._formValues.members || []).map((member, index) => (
                         <span key={index} className="inline-flex items-center bg-green-100 text-green-800 text-sm px-2 py-1 rounded-full mr-2">
                             {member.username}
-                            <button onClick={() => handleMemberRemove(member.id)} className="ml-1 text-red-500 hover:text-red-700">&times;</button>
+                            {isManager && (
+                                <button onClick={() => handleMemberRemove(member.id)} className="ml-1 text-red-500 hover:text-red-700">
+                                    &times;
+                                </button>
+                            )}
                         </span>
                     ))}
                 </div>
@@ -336,39 +359,69 @@ const ProjectSettings: React.FC = () => {
 
             <div>
                 <Label htmlFor="managers" className="block text-sm font-medium text-gray-700">Managers</Label>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button className="mt-1 w-full">Select Managers</Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        {allMembers.length > 0 ? (
-                            allMembers
-                                // Filter out members who are already selected as managers
-                                .filter((member) => !(control._formValues.managers || []).some((m) => m.id === member.id))
-                                .map((member) => (
-                                    <DropdownMenuItem
-                                        key={member.id}
-                                        onClick={() => handleManagerSelect(member)}
-                                    >
-                                        {member.username}
-                                    </DropdownMenuItem>
-                                ))
-                        ) : (
-                            <DropdownMenuItem disabled>No members available</DropdownMenuItem>
-                        )}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-                <div className="mt-2">
-                    {(control._formValues.managers || []).map((manager, index) => (
-                        <span key={index} className="inline-flex items-center bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full mr-2">
-                            {manager.username}
-                            <button onClick={() => handleManagerRemove(manager.id)} className="ml-1 text-red-500 hover:text-red-700">&times;</button>
-                        </span>
-                    ))}
-                </div>
+                {isOwner ? (
+                    <>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button className="mt-1 w-full">Select Managers</Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                {allMembers.length > 0 ? (
+                                    allMembers
+                                        .filter((member) => !(control._formValues.managers || []).some((m) => m.id === member.id))
+                                        .map((member) => (
+                                            <DropdownMenuItem
+                                                key={member.id}
+                                                onClick={() => handleManagerSelect(member)}
+                                            >
+                                                {member.username}
+                                            </DropdownMenuItem>
+                                        ))
+                                ) : (
+                                    <DropdownMenuItem disabled>No members available</DropdownMenuItem>
+                                )}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <div className="mt-2">
+                            {(control._formValues.managers || []).map((manager, index) => (
+                                <span
+                                    key={index}
+                                    className="inline-flex items-center bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full mr-2 cursor-pointer"
+                                    onClick={() => navigate(`/profile/${manager.id}`)} 
+                                >
+                                    {manager.username}
+                                    <button onClick={() => handleManagerRemove(manager.id)} className="ml-1 text-red-500 hover:text-red-700">
+                                        &times;
+                                    </button>
+                                </span>
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <div className="mt-2">
+                        {(control._formValues.managers || []).map((manager, index) => (
+                            <span
+                                key={index}
+                                className="inline-flex items-center bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full mr-2 cursor-pointer"
+                                onClick={() => navigate(`/profile/${manager.id}`)} 
+                            >
+                                {manager.username}
+                            </span>
+                        ))}
+                        <p className="mt-1 text-sm text-gray-500">Only the project owner can assign or remove managers.</p>
+                    </div>
+                )}
             </div>
 
-            <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white">Save Settings</Button>
+            <div className="flex justify-between">
+                <Button type="submit" className={`w-1/2 mr-2 ${isManager ? "bg-blue-500 hover:bg-blue-600" : "bg-gray-300 cursor-not-allowed"} text-white`} disabled={!isManager}>
+                    Save Settings
+                </Button>
+                <Button type="button" className="w-1/2 bg-red-500 hover:bg-red-600 text-white" onClick={handleExit}>
+                    Exit Settings
+                </Button>
+            </div>
+
             <InviteModal isOpen={isInviteModalOpen} onClose={closeInviteModal}>
                 <Search
                     onSearch={handleSearch}
