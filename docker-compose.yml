@@ -14,7 +14,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     container_name: "server"
-    restart:always
+    restart: always
 
   app-auth-service:
     platform: linux/amd64
@@ -22,7 +22,7 @@ services:
       context: ./auth-service
       dockerfile: Dockerfile
     container_name: "auth-service"
-    restart:always
+    restart: always
 
   app-realtime-server:
     platform: linux/amd64
@@ -30,7 +30,7 @@ services:
       context: ./realtime-server
       dockerfile: Dockerfile
     container_name: "realtime-server"
-    restart:always
+    restart: always
 
   proxy:
     platform: linux/amd64
