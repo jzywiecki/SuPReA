@@ -9,6 +9,7 @@ import { registerRouters } from './routers.js';
 import { EditionRegister } from './register.js';
 import { AIService } from './aiservice.js';
 import 'dotenv/config';
+import cors from 'cors';
 
 const URL = process.env.MONGODB_URL;
 const DATABASE_NAME = process.env.DATABASE_NAME;
@@ -16,15 +17,23 @@ const DATABASE_NAME = process.env.DATABASE_NAME;
 
 const app = express();
 
-app.use(express.json());
+const corsOptions = {
+  origin: '*', 
+  credentials: true,
+  optionSuccessStatus: 200,
+}
+
+app.use(cors(corsOptions));
 
 const server = createServer(app);
+
 const io = new Server(server, {
     cors: {
-      origin: ["*"],
+      origin: "*",
+      methods: ["GET", "POST"],
       credentials: true
     }
-  });
+});
 
 instrument(io, {
     auth: false,
