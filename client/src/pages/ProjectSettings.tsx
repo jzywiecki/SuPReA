@@ -15,6 +15,7 @@ import InviteModal from '@/components/InviteModal';
 import Search from '@/components/Search';
 import { useUser } from '@/components/UserProvider';
 import { User } from '@/pages/SearchAndAddFriends';
+import { useSnackbar } from 'notistack';
 
 interface ProjectSettings {
     name: string;
@@ -42,6 +43,7 @@ const ProjectSettings: React.FC = () => {
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [searchResults, setSearchResults] = useState<User[]>([]);
     const [allMembers, setAllMembers] = useState<Members[]>([]);
+    const { enqueueSnackbar } = useSnackbar();
 
     const openInviteModal = () => {
         setIsInviteModalOpen(true);
@@ -77,7 +79,7 @@ const ProjectSettings: React.FC = () => {
             setSearchResults(response.data);
         } catch (error) {
             console.error('Error searching users:', error);
-        }
+            enqueueSnackbar(`Error searching users: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });}
     };
 
     const fetchProjectSettings = async () => {
@@ -101,6 +103,7 @@ const ProjectSettings: React.FC = () => {
 
         } catch (error) {
             console.error("Failed to fetch project settings", error);
+            enqueueSnackbar(`Error fetching project settings: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
         } finally {
             setLoading(false);
         }
@@ -126,21 +129,23 @@ const ProjectSettings: React.FC = () => {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}`;
             await axiosInstance.patch(url, patchData);
             console.log("Project settings updated successfully");
+            enqueueSnackbar(`Project settings updated successfully`, { variant: 'success' });
             await fetchProjectSettings();
         } catch (error) {
             console.error('Error submitting project settings:', error);
+            enqueueSnackbar(`Error submitting project settings: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
         }
     };
 
     const handleAddMember = async (friendId: string) => {
         try {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/members/add`;
-            console.log(user?.id, friendId)
             await axiosInstance.post(url, { sender_id: user?.id, member_id: friendId });
             closeInviteModal();
             await fetchProjectSettings();
         } catch (error) {
             console.error('Error adding member:', error);
+            enqueueSnackbar(`Error adding member: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
         }
     };
 
@@ -154,6 +159,7 @@ const ProjectSettings: React.FC = () => {
                 await fetchProjectSettings();
             } catch (error) {
                 console.error('Error adding manager:', error);
+                enqueueSnackbar(`Error adding manager: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             }
         }
     };
@@ -167,6 +173,7 @@ const ProjectSettings: React.FC = () => {
             await fetchProjectSettings();
         } catch (error) {
             console.error('Error removing manager:', error);
+            enqueueSnackbar(`Error removing manager: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
         }
     };
 
@@ -178,6 +185,7 @@ const ProjectSettings: React.FC = () => {
             await fetchProjectSettings();
         } catch (error) {
             console.error('Error removing member:', error);
+            enqueueSnackbar(`Error removing member: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
         }
     };
 
@@ -188,7 +196,8 @@ const ProjectSettings: React.FC = () => {
 
             await fetchProjectSettings();
         } catch (error) {
-            console.error('Error removing member:', error);
+            console.error('Error selecting new owner:', error);
+            enqueueSnackbar(`Error selecting new owner: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
         }
     };
 
