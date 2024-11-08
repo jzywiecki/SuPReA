@@ -16,6 +16,7 @@ import Search from '@/components/Search';
 import { useUser } from '@/components/UserProvider';
 import { User } from '@/pages/SearchAndAddFriends';
 import { useSnackbar } from 'notistack';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface ProjectSettings {
     name: string;
@@ -44,6 +45,8 @@ const ProjectSettings: React.FC = () => {
     const [searchResults, setSearchResults] = useState<User[]>([]);
     const [allMembers, setAllMembers] = useState<Members[]>([]);
     const { enqueueSnackbar } = useSnackbar();
+    const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+    const [selectedOwner, setSelectedOwner] = useState<Members | null>(null);
 
     const openInviteModal = () => {
         setIsInviteModalOpen(true);
@@ -159,7 +162,7 @@ const ProjectSettings: React.FC = () => {
                 await fetchProjectSettings();
             } catch (error) {
                 console.error('Error adding manager:', error);
-                enqueueSnackbar(`Error adding manager: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
+                enqueueSnackbar(`Error adding manager: ${error.response?.data?.detail ?? 'Unknown error'}`, { variant: 'error' });
             }
         }
     };
@@ -173,7 +176,7 @@ const ProjectSettings: React.FC = () => {
             await fetchProjectSettings();
         } catch (error) {
             console.error('Error removing manager:', error);
-            enqueueSnackbar(`Error removing manager: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
+            enqueueSnackbar(`Error removing manager: ${error.response?.data?.detail ?? 'Unknown error'}`, { variant: 'error' });
         }
     };
 
@@ -185,19 +188,30 @@ const ProjectSettings: React.FC = () => {
             await fetchProjectSettings();
         } catch (error) {
             console.error('Error removing member:', error);
-            enqueueSnackbar(`Error removing member: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
+            enqueueSnackbar(`Error removing member: ${error.response?.data?.detail ?? 'Unknown error'}`, { variant: 'error' });
         }
     };
 
-    const handleOwnerSelect = async (ownerID: Members) => {
+    const handleOwnerSelect = (owner: Members) => {
+        setSelectedOwner(owner);
+        setIsConfirmDialogOpen(true);
+    };
+    
+    const confirmOwnerAssignment = async () => {
+        if (!selectedOwner) return;
+    
         try {
             const url = `${API_URLS.API_SERVER_URL}/projects/${projectID}/owner/assign`;
-            await axiosInstance.post(url, { sender_id: user?.id, member_id: ownerID.id });
-
+            await axiosInstance.post(url, { sender_id: user?.id, member_id: selectedOwner.id });
+            enqueueSnackbar(`New owner assigned successfully`, { variant: 'success' });
             await fetchProjectSettings();
         } catch (error) {
             console.error('Error selecting new owner:', error);
-            enqueueSnackbar(`Error selecting new owner: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
+            console.log(user.id, selectedOwner.id)
+            enqueueSnackbar(`Error selecting new owner: ${error.response?.data?.detail ?? 'Unknown error'}`, { variant: 'error' });
+        } finally {
+            setIsConfirmDialogOpen(false);
+            setSelectedOwner(null);
         }
     };
 
@@ -279,10 +293,7 @@ const ProjectSettings: React.FC = () => {
                     <DropdownMenuContent>
                         {allMembers.length > 0 ? (
                             allMembers.map((member) => (
-                                <DropdownMenuItem
-                                    key={member.id}
-                                    onClick={() => handleOwnerSelect(member)}
-                                >
+                                <DropdownMenuItem key={member.id} onClick={() => handleOwnerSelect(member)}>
                                     {member.username}
                                 </DropdownMenuItem>
                             ))
@@ -291,6 +302,23 @@ const ProjectSettings: React.FC = () => {
                         )}
                     </DropdownMenuContent>
                 </DropdownMenu>
+
+                <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Confirm Ownership Transfer</DialogTitle>
+                        </DialogHeader>
+                        <p>Are you sure you want to assign <strong>{selectedOwner?.username}</strong> as the new owner?</p>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsConfirmDialogOpen(false)}>
+                                Cancel
+                            </Button>
+                            <Button onClick={confirmOwnerAssignment} className="bg-blue-500 text-white">
+                                Confirm
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
 
             <div>
