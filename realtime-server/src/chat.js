@@ -3,17 +3,15 @@
  */
 
 import { logger } from "./utils.js";
-import { isMessageValid } from "./utils.js";
+import { isMessageInvalid } from "./utils.js";
 import { isNumericIdCorrect } from "./utils.js";
-import { serveUserMessageToAI } from './aiforward.js';
-
-import { 
-    InvalidArgumentException,
-    SessionIsNotRegisteredException,
-    UnsupportedRequestTypeException
-} from './exceptions.js'
-
+import { getAITextModelById } from "./model.js";
 import { ObjectId } from "mongodb";
+import { questionToAiAPI } from  './gateway.js';
+import { 
+    InternalServerErrorCommunicate,
+    InvalidRequestCommunicate,
+ } from "./notifications.js";
 import 'dotenv/config';
 
 
@@ -31,7 +29,7 @@ export class ProjectChatsReference {
 }
 
 
-export const registerChatEvents = (socket, io, db, session, projectChatsReference, editionRegister) => {
+export const registerChatEvents = (socket, io, db, session, projectChatsReference) => {
     /**
      * Registers chat events for the given socket.
      * @param {Socket} socket - The socket object handling communication between the server and client.
@@ -42,114 +40,6 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
      * @param {EditionRegister} editionRegister - The register object containing the edition status of the project.
     */
 
-
-    const handleGetOlderMessages = async (chatId, oldestReceivedMessageId, reciveOlderMessageEvent) => {
-        /**
-         * Handles fetching older messages from a chat and sending them via socket.
-         * 
-         * @param {ObjectId} chatId - The ID of the chat from which to fetch older messages.
-         * @param {number} oldestReceivedMessageId - The ID of the last received message to fetch older ones.
-         * @param {string} reciveOlderMessageEvent - The event name used to send older messages to the client.
-         * 
-        */
-        try {
-            if (!isNumericIdCorrect(oldestReceivedMessageId)) {
-                logger.info("User requested older messages with wrong last message id.")
-                socket.emit('error', 'Cannot receive older messages. Invalid last message id parameter.');
-                return;
-            }
-    
-            const olderMessagesQuantity = 10;
-    
-            const messages = await db.getOlderMessages(chatId, oldestReceivedMessageId, olderMessagesQuantity);
-
-            let olderMessagesExist;
-
-            messages.length < olderMessagesQuantity ? olderMessagesExist = false : olderMessagesExist = true;
-
-            const response = {
-                messages: messages,
-                olderMessagesExist: olderMessagesExist
-            }
-
-            socket.emit(reciveOlderMessageEvent, response);
-    
-        } catch (error) {
-            logger.error(`Cannot get older messages from chat ${chatId}.`)
-            logger.error(`Details: ${error.message}`);
-            
-            socket.emit('error', 'Internal server error. Cannot receive older messages.');
-        }
-    }
-    
-    
-    const handleSendMessageByUser = async (chatId, text, broadcastMessageEvent) => {    
-        /**
-         * Handles sending a new message in a chat and broadcasting it to all users in the project.
-         * 
-         * @param {ObjectId} chatId - The ID of the chat where the message will be sent.
-         * @param {string} text - The content of the message being sent.
-         * @param {string} broadcastMessageEvent - The event name used to broadcast the new message.
-         * 
-         * 
-         * @returns {boolean} - Returns true if the message was sent successfully, false if there was an error.
-         */
-        try {
-            if (!isMessageValid(text)) {
-                logger.info("User tried to send invalid message.");
-                socket.emit('error', 'Cannot send message. Invalid message format.');
-                return;
-            }
-    
-            const message = await db.addMessage(session.projectId, chatId, text, session.userId);
-
-            const response = {
-                messages: [message],
-                olderMessagesExist: null
-            }
-    
-            io.to(session.projectIdStr).emit(broadcastMessageEvent, response);
-    
-            return true;
-    
-        } catch (error) {
-            logger.error(`Cannot add message to chat ${chatId}.`);
-            logger.error(`Details: ${error.message}`);
-    
-            socket.emit('error', 'Internal server error. Cannot send message.');
-    
-            return false;
-        }
-    }
-
-
-    const forwardMessageToAi = async (message) => {
-        /**
-         * Forwards a user message to the AI service for processing.
-         * @param {Object} message - The message object containing the user's message.
-         */
-        try {
-            serveUserMessageToAI(session, message, editionRegister)
-        } catch (error) {
-            if (
-                error instanceof InvalidArgumentException ||
-                error instanceof SessionIsNotRegisteredException ||
-                error instanceof UnsupportedRequestTypeException
-            ) {
-                logger.info("User encountered an error while sending a message to AI.");
-                logger.info(`Details: ${error.message}`);
-
-                socket.emit('error', "Error during forwarding message to AI. " + error.message);
-                return;
-            } else {
-                logger.error("Cannot serve user message to AI.");
-                logger.error(`Details: ${error.message}`);
-                
-                socket.emit('error', 'Internal server error. Cannot forward message to AI.');
-            }
-        }
-    };
-    
     // Messeage format send to discussion chat:
     // {
     //      content: string
@@ -163,8 +53,6 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
     // {
     //      content: string
     //      ai: int (code)
-    //      component: int (code)
-    //      requestType: int (code)
     // }
     socket.on('send-message-to-ai-chat', (message) => {
         const isMessageSent = handleSendMessageByUser(projectChatsReference.aiChatId, message.content, 'receive-message-from-ai-chat');
@@ -190,6 +78,112 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
             'receive-message-from-ai-chat'
         );
     });
+
+
+    const handleGetOlderMessages = async (chatId, oldestReceivedMessageId, reciveOlderMessageEvent) => {
+        /**
+         * Handles fetching older messages from a chat and sending them via socket.
+         * 
+         * @param {ObjectId} chatId - The ID of the chat from which to fetch older messages.
+         * @param {number} oldestReceivedMessageId - The ID of the last received message to fetch older ones.
+         * @param {string} reciveOlderMessageEvent - The event name used to send older messages to the client.
+         * 
+        */
+        try {
+            if (!isNumericIdCorrect(oldestReceivedMessageId)) {
+                logger.info("User requested older messages with wrong last message id.")
+                socket.emit('error', new InvalidRequestCommunicate('Invalid last message id parameter.'));
+                return;
+            }
+    
+            const olderMessagesQuantity = 10;
+    
+            const messages = await db.getOlderMessages(chatId, oldestReceivedMessageId, olderMessagesQuantity);
+
+            let olderMessagesExist;
+
+            messages.length < olderMessagesQuantity ? olderMessagesExist = false : olderMessagesExist = true;
+
+            const response = {
+                messages: messages,
+                olderMessagesExist: olderMessagesExist
+            }
+
+            socket.emit(reciveOlderMessageEvent, response);
+    
+        } catch (error) {
+            logger.error(`Cannot get older messages from chat ${chatId}.`)
+            logger.error(`Details: ${error.message}`);
+            
+            socket.emit('error', new InternalServerErrorCommunicate('Cannot receive older messages.'));
+        }
+    }
+    
+    
+    const handleSendMessageByUser = async (chatId, text, broadcastMessageEvent) => {    
+        /**
+         * Handles sending a new message in a chat and broadcasting it to all users in the project.
+         * 
+         * @param {ObjectId} chatId - The ID of the chat where the message will be sent.
+         * @param {string} text - The content of the message being sent.
+         * @param {string} broadcastMessageEvent - The event name used to broadcast the new message.
+         * 
+         * 
+         * @returns {boolean} - Returns true if the message was sent successfully, false if there was an error.
+         */
+        try {
+            if (!isMessageInvalid(text)) {
+                logger.info("User tried to send invalid message.");
+                socket.emit('error', new InvalidRequestCommunicate('Cannot send message. Invalid message format.'));
+                return false;
+            }
+    
+            const message = await db.addMessage(session.projectId, chatId, text, session.userId);
+
+            const response = {
+                messages: [message],
+                olderMessagesExist: null
+            }
+    
+            io.to(session.projectIdStr).emit(broadcastMessageEvent, response);
+    
+            return true;
+    
+        } catch (error) {
+            logger.error(`Cannot add message to chat ${chatId}.`);
+            logger.error(`Details: ${error.message}`);
+    
+            socket.emit('error', new InternalServerErrorCommunicate('Cannot send message.'));
+    
+            return false;
+        }
+    }
+
+
+    const forwardMessageToAi = async (message) => {
+        /**
+         * Forwards a user message to the AI service for processing.
+         * @param {Object} message - The message object containing the user's message.
+         */
+        try {
+            const aiModel = getAITextModelById(message?.ai);
+
+            const requestData = {
+                content: message?.content,
+                ai_model: aiModel?.name,
+                project_id: session?.projectId,
+                callback: session?.projectId,
+            };
+        
+            questionToAiAPI(requestData);
+
+        } catch (error) {
+            logger.error("Cannot serve user message to AI.");
+            logger.error(`Details: ${error.message}`);
+            
+            socket.emit('error', new InternalServerErrorCommunicate('Cannot forward message to AI.'));
+        }
+    };
 }
 
 
@@ -247,13 +241,14 @@ export const transmitMessagesOnConnection = async (socket, db, projectChatsRefer
         logger.error(`Cannot retransmit lost data.`);
         logger.error(`Details: ${error.message}`);
 
-        socket.emit('error', 'Internal server error. Cannot retransmit data on connection.');
+        socket.emit('error', new InternalServerErrorCommunicate('Cannot retransmit lost data.'));
         socket.disconnect();
     }
 };
 
 
 const AI_ID = ObjectId.createFromHexString(process.env.AI_ID);
+
 
 export const sendMessageByAI = async (io, db, projectId, text) => {
     /**

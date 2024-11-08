@@ -15,10 +15,9 @@ import callback.realtime_server as realtime_server
 
 @ray.remote
 def update_component_by_ai_task(
-    project_id: str,
+    component_val: dict,
     query: str,
     ai_model: AI,
-    get_project_dao_ref,
     generate_component_class: type(Generate),
     callback: str,
 ) -> None:
@@ -29,9 +28,7 @@ def update_component_by_ai_task(
     update_component = GenerateActor.remote(generate_with_monitor)
 
     try:
-        _, err = ray.get(
-            update_component.fetch_from_database.remote(get_project_dao_ref, project_id)
-        )
+        _, err = ray.get(update_component.update.remote(component_val))
         if err:
             raise err
 

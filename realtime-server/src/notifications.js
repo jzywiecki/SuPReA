@@ -53,46 +53,16 @@ export class UnregisterEditSessionCommunicate {
      */
     code = 3;
 
-    constructor(componentId) {
+    constructor(componentId, userId) {
         this.component = componentId;
+        this.userId = userId;
     }
 }
 
 
-export class ConfirmationRegisterEditionSessionCommunicate {
+export class EditSessionIsNotActiveCommunicate {
     /**
-     * Notification informing about the successful registration of an editing session.
-     * Sent to the client that requested the editing session.
-     */
-    code = 4;
-}
-
-
-export class ConfirmationUnregisterEditionSessionCommunicate {
-    /**
-     * Notification informing about the successful unregistration of an editing session.
-     * Sent to the client that requested the editing session.
-     */
-    code = 5;
-}
-
-
-export class RejectedEditionSessionRegisterRequestCommunicate {
-    /**
-     * Notification informing about the rejection registration of an editing session.
-     * Sent to the client that requested the editing session.
-     */
-    code = 6;
-
-    constructor(details) {
-        this.details = details;
-    }
-}
-
-
-export class RejectedUpdateRequestCommunicate {
-    /**
-     * Notification informing about the rejection of an update request.
+     * Notification informing about the rejection of an edit (update, regenerate by ai, update by ai) request.
      * Sent to the client that made the request.
      */
     code = 7;
@@ -112,6 +82,15 @@ export class ConfirmedUpdateRequestCommunicate {
 }
 
 
+export class ConfirmedForwardRequestToAICommunicate {
+    /**
+     * Notification informing about the confirmation of a request to forward the update to the AI.
+     * Sent to the client that made the request.
+     */
+    code = 9;
+}
+
+
 export class RefreshEditionSessionsCommunicate {
     /**
      * Notification sent after a client reconnects, informing which components are currently being edited by users.
@@ -122,5 +101,31 @@ export class RefreshEditionSessionsCommunicate {
 
     constructor(componentsToUserMap) {
         this.componentsToUserMap = componentsToUserMap;
+    }
+}
+
+
+export class InvalidRequestCommunicate {
+    /**
+     * Notification sent when the server receives an invalid request.
+     * Sent to the client that made the request.
+     */
+    code = 12;
+
+    constructor(details) {
+        this.details = details;
+    }
+}
+
+
+export class InternalServerErrorCommunicate {
+    /**
+     * Notification sent when an unexpected error occurs on the server.
+     * Sent to the client that made the request.
+     */
+    code = 13;
+
+    constructor(details) {
+        this.details = details;
     }
 }

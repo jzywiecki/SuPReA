@@ -65,3 +65,11 @@ export const getAIImageModelById = (id) => {
     const model = Object.values(AIImageModels).find(model => model.id == id);
     return model || AIImageModels.DALL_E3;
 }
+
+export const getAiSpecifiedForComponent = (aiId, component) => {
+    if (component.LOGO) {
+        return getAIImageModelById(aiId);
+    }
+
+    return getAITextModelById(aiId);
+}

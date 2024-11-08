@@ -1,7 +1,6 @@
 import { EditionRegister } from '../src/register';
 import { Session } from '../src/connection';
-import { UserAlreadyHasActiveEditSessionException } from '../src/exceptions';
-import { ComponentIsAlreadyEdited } from '../src/exceptions';
+import { SessionIsNotRegisteredException, UserAlreadyHasActiveEditSessionException } from '../src/exceptions';
 import { InvalidArgument } from '../src/exceptions';
 import { Components } from '../src/model';
 
@@ -29,9 +28,9 @@ test('registration of independent users for diffrent component should add them t
     const result = editionRegister.getUsersWithActiveEditionSessionForProject(PROJECT_ID);
 
     expect(result).toEqual([
-        {componentId: Components.ACTORS.id, userId: 1},
-        {componentId: Components.BUSINESS_SCENARIOS.id, userId: 2},
-        {componentId: Components.ELEVATOR_SPEECH.id, userId: 3}
+        {component: Components.ACTORS.id, users: [sessionOne.userId]},
+        {component: Components.BUSINESS_SCENARIOS.id, users: [sessionTwo.userId]},
+        {component: Components.ELEVATOR_SPEECH.id, users: [sessionThree.userId]},
     ]);
 });
 
@@ -54,7 +53,7 @@ test("registration two session for one user should throw error", () => {
 });
 
 
-test("registration two session for one component should throw error", () => {
+test("registration two independent session for one component should add this sessions to registry", () => {
     const PROJECT_ID = 1;
     
     const sessionOne = new Session({id: 1});
@@ -67,8 +66,13 @@ test("registration two session for one component should throw error", () => {
 
     const editionRegister = new EditionRegister();
     editionRegister.registerEditionSession(sessionOne, Components.ACTORS.id);
+    editionRegister.registerEditionSession(sessionTwo, Components.ACTORS.id);
 
-    expect(() => editionRegister.registerEditionSession(sessionTwo, Components.ACTORS.id)).toThrow(ComponentIsAlreadyEdited);
+    const result = editionRegister.getUsersWithActiveEditionSessionForProject(PROJECT_ID);
+
+    expect(result).toEqual([
+        {component: Components.ACTORS.id, users: [sessionOne.userId, sessionTwo.userId]},
+    ]);
 });
 
 
@@ -85,7 +89,7 @@ test("registration session with wrong componentId should throw error", () => {
 });
 
 
-test("unregistering existing session should return true", () => {
+test("unregistering existing session should unregist existing session", () => {
     const PROJECT_ID = 1;
     
     const sessionOne = new Session({id: 1});
@@ -95,13 +99,14 @@ test("unregistering existing session should return true", () => {
     const editionRegister = new EditionRegister();
     editionRegister.registerEditionSession(sessionOne, Components.ACTORS.id);
 
-    const result = editionRegister.unregisterEditionSession(sessionOne);
+    editionRegister.unregisterEditionSession(sessionOne);
+    const result = editionRegister.getUsersWithActiveEditionSessionForProject(PROJECT_ID);
 
-    expect(result).toBe(true);
+    expect(result).toEqual([]);
 });
 
 
-test("unregistering not existing session should return false", () => {
+test("unregistering not existing session should throw SessionIsNotRegisteredException", () => {
     const PROJECT_ID = 1;
     
     const sessionOne = new Session({id: 1});
@@ -110,9 +115,7 @@ test("unregistering not existing session should return false", () => {
 
     const editionRegister = new EditionRegister();
 
-    const result = editionRegister.unregisterEditionSession(sessionOne);
-
-    expect(result).toBe(false);
+    expect(() => editionRegister.unregisterEditionSession(sessionOne)).toThrow(SessionIsNotRegisteredException);
 });
 
 
@@ -141,13 +144,13 @@ test('unregistering session should remove it from the registry', () => {
     const result = editionRegister.getUsersWithActiveEditionSessionForProject(PROJECT_ID);
 
     expect(result).toEqual([
-        {componentId: Components.ACTORS.id, userId: 1},
-        {componentId: Components.ELEVATOR_SPEECH.id, userId: 3}
+        {component: Components.ACTORS.id, users: [sessionOne.userId]},
+        {component: Components.ELEVATOR_SPEECH.id, users: [sessionThree.userId]},
     ]);
 });
 
 
-test('unregistering unregisted session should return false', () => {
+test('unregistering unregisted session should throw SessionsIsNotRegisteredException', () => {
     const PROJECT_ID = 1;
 
     const sessionOne = new Session({id: 1});
@@ -158,7 +161,7 @@ test('unregistering unregisted session should return false', () => {
     editionRegister.registerEditionSession(sessionOne, Components.ACTORS.id);
     editionRegister.unregisterEditionSession(sessionOne);
 
-    expect(editionRegister.unregisterEditionSession(sessionOne)).toBe(false);
+    expect(() => editionRegister.unregisterEditionSession(sessionOne)).toThrow(SessionIsNotRegisteredException);
 });
 
 

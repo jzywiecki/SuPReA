@@ -8,7 +8,6 @@ from services import update_component_by_ai
 from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, Strategy
-from .common import UpdateComponentByAIRequest
 from .common import RegenerateComponentByAIRequest
 from generation.strategy import StrategyGenerate
 from pydantic import BaseModel
@@ -33,15 +32,24 @@ def get_strategy(project_id: str):
     return get_component(project_id, ComponentIdentify.STRATEGY.value)
 
 
+class UpdateStrategyByAIRequest(BaseModel):
+    """
+    The request object for updating a component using AI-based generation.
+    """
+
+    component_val: Strategy
+    query: str
+    ai_model: str
+    callback: str
+
+
 @router.post(
     "/strategy/ai-update",
     status_code=status.HTTP_200_OK,
 )
-def update_strategy_by_ai(request: UpdateComponentByAIRequest):
+def update_strategy_by_ai(request: UpdateStrategyByAIRequest):
     """
     Updates the strategy component for the specified project using AI-based generation.
-
-    :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
     """
     update_component_by_ai(request, StrategyGenerate)
     return Response(status_code=status.HTTP_200_OK)
