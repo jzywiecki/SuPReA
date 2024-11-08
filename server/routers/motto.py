@@ -8,7 +8,6 @@ from services import update_component_by_ai
 from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, Motto
-from .common import UpdateComponentByAIRequest
 from .common import RegenerateComponentByAIRequest
 from generation.motto import MottoGenerate
 from pydantic import BaseModel
@@ -33,15 +32,24 @@ def get_motto(project_id: str):
     return get_component(project_id, ComponentIdentify.MOTTO.value)
 
 
+class UpdateMottoByAIRequest(BaseModel):
+    """
+    The request object for updating a component using AI-based generation.
+    """
+
+    component_val: Motto
+    query: str
+    ai_model: str
+    callback: str
+
+
 @router.post(
     "/motto/ai-update",
     status_code=status.HTTP_200_OK,
 )
-def update_motto_by_ai(request: UpdateComponentByAIRequest):
+def update_motto_by_ai(request: UpdateMottoByAIRequest):
     """
     Updates the motto component for the specified project using AI-based generation.
-
-    :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
     """
     update_component_by_ai(request, MottoGenerate)
     return Response(status_code=status.HTTP_200_OK)

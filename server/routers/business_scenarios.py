@@ -8,7 +8,6 @@ from services import update_component_by_ai
 from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, BusinessScenarios
-from .common import UpdateComponentByAIRequest
 from .common import RegenerateComponentByAIRequest
 from generation.business_scenarios import BusinessScenariosGenerate
 from pydantic import BaseModel
@@ -33,15 +32,24 @@ def get_business_scenarios(project_id: str):
     return get_component(project_id, ComponentIdentify.BUSINESS_SCENARIOS.value)
 
 
+class UpdateBusinessScenariosByAIRequest(BaseModel):
+    """
+    The request object for updating a component using AI-based generation.
+    """
+
+    component_val: BusinessScenarios
+    query: str
+    ai_model: str
+    callback: str
+
+
 @router.post(
     "/business_scenarios/ai-update",
     status_code=status.HTTP_200_OK,
 )
-def update_business_scenarios_by_ai(request: UpdateComponentByAIRequest):
+def update_business_scenarios_by_ai(request: UpdateBusinessScenariosByAIRequest):
     """
     Updates the business scenarios component for the specified project using AI-based generation.
-
-    :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
     """
     update_component_by_ai(request, BusinessScenariosGenerate)
     return Response(status_code=status.HTTP_200_OK)

@@ -8,7 +8,6 @@ from services import update_component_by_ai
 from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, ProjectSchedule
-from .common import UpdateComponentByAIRequest
 from .common import RegenerateComponentByAIRequest
 from generation.project_schedule import ProjectScheduleGenerate
 from pydantic import BaseModel
@@ -33,15 +32,24 @@ def get_project_schedule(project_id: str):
     return get_component(project_id, ComponentIdentify.PROJECT_SCHEDULE.value)
 
 
+class UpdateProjectScheduleByAIRequest(BaseModel):
+    """
+    The request object for updating a component using AI-based generation.
+    """
+
+    component_val: ProjectSchedule
+    query: str
+    ai_model: str
+    callback: str
+
+
 @router.post(
     "/project_schedule/ai-update",
     status_code=status.HTTP_200_OK,
 )
-def update_project_schedule_by_ai(request: UpdateComponentByAIRequest):
+def update_project_schedule_by_ai(request: UpdateProjectScheduleByAIRequest):
     """
     Updates the project schedule component for the specified project using AI-based generation.
-
-    :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
     """
     update_component_by_ai(request, ProjectScheduleGenerate)
     return Response(status_code=status.HTTP_200_OK)
@@ -74,7 +82,7 @@ class UpdateProjectScheduleRequest(BaseModel):
     "/project_schedule/update",
     status_code=status.HTTP_200_OK,
 )
-def update_project_schedule(request: UpdateComponentByAIRequest):
+def update_project_schedule(request: UpdateProjectScheduleRequest):
     """
     Updates the project schedule component for the specified project using value provided by user.
 

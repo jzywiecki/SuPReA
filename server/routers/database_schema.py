@@ -8,7 +8,6 @@ from services import update_component_by_ai
 from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, DatabaseSchema
-from .common import UpdateComponentByAIRequest
 from .common import RegenerateComponentByAIRequest
 from generation.database_schema import DatabaseSchemaGenerate
 from pydantic import BaseModel
@@ -33,15 +32,24 @@ def get_database_schema(project_id: str):
     return get_component(project_id, ComponentIdentify.DATABASE_SCHEMA.value)
 
 
+class UpdateDatabaseSchemaByAIRequest(BaseModel):
+    """
+    The request object for updating a component using AI-based generation.
+    """
+
+    component_val: DatabaseSchema
+    query: str
+    ai_model: str
+    callback: str
+
+
 @router.post(
     "/database_schema/ai-update",
     status_code=status.HTTP_200_OK,
 )
-def update_database_schema_by_ai(request: UpdateComponentByAIRequest):
+def update_database_schema_by_ai(request: UpdateDatabaseSchemaByAIRequest):
     """
     Updates the database schema component for the specified project using AI-based generation.
-
-    :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
     """
     update_component_by_ai(request, DatabaseSchemaGenerate)
     return Response(status_code=status.HTTP_200_OK)
