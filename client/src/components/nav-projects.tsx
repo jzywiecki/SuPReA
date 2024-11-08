@@ -54,9 +54,9 @@ export function NavProjects({
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
               >
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onProjectClick("Export pdf")}>
                   {/* <Folder className="text-muted-foreground" /> */}
-                  <span onClick={() => onProjectClick("Export pdf")} >PDF</span>
+                  <span>PDF</span>
                 </DropdownMenuItem>
                 {/* <DropdownMenuItem>
                   <Forward className="text-muted-foreground" />
