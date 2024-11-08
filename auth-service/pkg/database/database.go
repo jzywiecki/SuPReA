@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -25,11 +24,6 @@ type Database interface {
 }
 
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Panic("could not load env file")
-	}
-
 	DatabaseUrl = os.Getenv("MONGODB_URL")
 }
 
