@@ -8,7 +8,6 @@ from services import update_component_by_ai
 from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, Risks
-from .common import UpdateComponentByAIRequest
 from .common import RegenerateComponentByAIRequest
 from generation.risks import RiskGenerate
 from pydantic import BaseModel
@@ -33,15 +32,24 @@ def get_risks(project_id: str):
     return get_component(project_id, ComponentIdentify.RISKS.value)
 
 
+class UpdateRisksByAIRequest(BaseModel):
+    """
+    The request object for updating a component using AI-based generation.
+    """
+
+    component_val: Risks
+    query: str
+    ai_model: str
+    callback: str
+
+
 @router.post(
     "/risks/ai-update",
     status_code=status.HTTP_200_OK,
 )
-def update_risks_by_ai(request: UpdateComponentByAIRequest):
+def update_risks_by_ai(request: UpdateRisksByAIRequest):
     """
     Updates the risks component for the specified project using AI-based generation.
-
-    :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
     """
     update_component_by_ai(request, RiskGenerate)
     return Response(status_code=status.HTTP_200_OK)

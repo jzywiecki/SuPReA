@@ -28,9 +28,6 @@ def update_component_by_ai(request, generate_component_class: type(Generate)) ->
     :raises InvalidParameter: If the project ID or query is missing.
     :raises ProjectNotFound: If the project with the specified ID does not exist.
     """
-    if not request.project_id:
-        raise InvalidParameter("Project id cannot be empty")
-
     if not request.ai_model:
         raise InvalidParameter("AI model cannot be empty")
 
@@ -40,15 +37,11 @@ def update_component_by_ai(request, generate_component_class: type(Generate)) ->
     if not request.callback:
         raise InvalidParameter("Invalid callback argument")
 
-    if not project_dao.is_project_exist(request.project_id):
-        raise ProjectNotFound(request.project_id)
-
     ai_model = get_model_remote_ref_enum(request.ai_model)
     update_component_by_ai_task.remote(
-        request.project_id,
+        request.component_val,
         request.query,
         ai_model,
-        get_project_dao_ref,
         generate_component_class,
         request.callback,
     )

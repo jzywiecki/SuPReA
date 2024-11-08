@@ -8,7 +8,6 @@ from services import update_component_by_ai
 from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, Specifications
-from .common import UpdateComponentByAIRequest
 from .common import RegenerateComponentByAIRequest
 from generation.specifications import SpecificationsGenerate
 from pydantic import BaseModel
@@ -33,15 +32,24 @@ def get_specifications(project_id: str):
     return get_component(project_id, ComponentIdentify.SPECIFICATIONS.value)
 
 
+class UpdateSpecificationsByAIRequest(BaseModel):
+    """
+    The request object for updating a component using AI-based generation.
+    """
+
+    component_val: Specifications
+    query: str
+    ai_model: str
+    callback: str
+
+
 @router.post(
     "/specifications/ai-update",
     status_code=status.HTTP_200_OK,
 )
-def update_specifications_by_ai(request: UpdateComponentByAIRequest):
+def update_specifications_by_ai(request: UpdateSpecificationsByAIRequest):
     """
     Updates the specifications component for the specified project using AI-based generation.
-
-    :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
     """
     update_component_by_ai(request, SpecificationsGenerate)
     return Response(status_code=status.HTTP_200_OK)

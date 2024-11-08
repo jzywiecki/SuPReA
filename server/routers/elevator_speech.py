@@ -8,7 +8,6 @@ from services import update_component_by_ai
 from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, ElevatorSpeech
-from .common import UpdateComponentByAIRequest
 from .common import RegenerateComponentByAIRequest
 from generation.elevator_speech import ElevatorSpeechGenerate
 from pydantic import BaseModel
@@ -33,15 +32,24 @@ def get_elevator_speech(project_id: str):
     return get_component(project_id, ComponentIdentify.ELEVATOR_SPEECH.value)
 
 
+class UpdateElevatorSpeechByAIRequest(BaseModel):
+    """
+    The request object for updating a component using AI-based generation.
+    """
+
+    component_val: ElevatorSpeech
+    query: str
+    ai_model: str
+    callback: str
+
+
 @router.post(
     "/elevator_speech/ai-update",
     status_code=status.HTTP_200_OK,
 )
-def update_elevator_speech_by_ai(request: UpdateComponentByAIRequest):
+def update_elevator_speech_by_ai(request: UpdateElevatorSpeechByAIRequest):
     """
     Updates the elevator speech component for the specified project using AI-based generation.
-
-    :param UpdateComponentByAIRequest request: The request object containing project ID and query for component update.
     """
     update_component_by_ai(request, ElevatorSpeechGenerate)
     return Response(status_code=status.HTTP_200_OK)
