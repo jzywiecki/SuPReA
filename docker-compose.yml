@@ -1,0 +1,41 @@
+version: '3'
+services:
+  app-client:
+    platform: linux/amd64
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: "client"
+    restart: always
+
+  app-server:
+    platform: linux/amd64
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: "server"
+    restart: always
+
+  app-auth-service:
+    platform: linux/amd64
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: "auth-service"
+    restart: always
+
+  app-realtime-server:
+    platform: linux/amd64
+    build:
+      context: ./realtime-server
+      dockerfile: Dockerfile
+    container_name: "realtime-server"
+    restart: always
+
+  proxy:
+    platform: linux/amd64
+    build: ./nginx
+    container_name: "proxy"
+    restart: always
+    ports:
+      - "80:80"

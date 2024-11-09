@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import axios from 'axios';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
 
@@ -67,7 +66,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
 
             const response = await axiosInstance.post(`${API_URLS.BASE_URL}/refresh`, {
-                token: refreshToken,
+                refresh_token: refreshToken,
             });
 
             const newAccessToken = response.data.accessToken;

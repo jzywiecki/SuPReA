@@ -12,7 +12,6 @@ import {
     InternalServerErrorCommunicate,
     InvalidRequestCommunicate,
  } from "./notifications.js";
-import 'dotenv/config';
 
 
 export class ProjectChatsReference {
