@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Column(BaseModel):
@@ -22,5 +22,5 @@ class Relationship(BaseModel):
 
 
 class DatabaseSchema(BaseModel):
-    tables: List[Table]
-    relationships: List[Relationship]
+    tables: List[Table] = Field(default_factory=list)
+    relationships: List[Relationship] = Field(default_factory=list)

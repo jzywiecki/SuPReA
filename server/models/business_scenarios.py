@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import List
+from pydantic import BaseModel, Field
+from typing import List, Optional
 
 
 class Feature(BaseModel):
@@ -14,4 +14,4 @@ class BusinessScenario(BaseModel):
 
 
 class BusinessScenarios(BaseModel):
-    business_scenario: BusinessScenario
+    business_scenario: Optional[BusinessScenario] = None

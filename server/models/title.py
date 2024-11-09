@@ -1,6 +1,6 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Title(BaseModel):
-    names: List[str]
+    names: List[str] = Field(default_factory=list)
