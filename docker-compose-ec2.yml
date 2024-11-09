@@ -1,44 +1,31 @@
 version: '3'
 services:
   app-client:
-    platform: linux/amd64
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+    image: jzywiecki/devx-app-client:latest
     container_name: "client"
     restart: always
     env_file: ".env"
 
   app-server:
-    platform: linux/amd64
-    build:
-      context: ./server
-      dockerfile: Dockerfile
+    image: jzywiecki/devx-app-server:latest
     container_name: "server"
     restart: always
     env_file: ".env"
 
   app-auth-service:
-    platform: linux/amd64
-    build:
-      context: ./auth-service
-      dockerfile: Dockerfile
+    image: jzywiecki/devx-app-auth-service:latest
     container_name: "auth-service"
     restart: always
     env_file: ".env"
 
   app-realtime-server:
-    platform: linux/amd64
-    build:
-      context: ./realtime-server
-      dockerfile: Dockerfile
+    image: jzywiecki/devx-app-realtime-server:latest
     container_name: "realtime-server"
     restart: always
     env_file: ".env"
 
   proxy:
-    platform: linux/amd64
-    build: ./nginx
+    image: jzywiecki/devx-app-proxy:latest
     container_name: "proxy"
     restart: always
     ports:

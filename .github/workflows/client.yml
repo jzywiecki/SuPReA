@@ -1,7 +1,4 @@
-env:
-  CI: false
-
-name: Node.js CI
+name: Docker
 
 on:
   push:
@@ -12,8 +9,6 @@ on:
 
 jobs:
   docker:
-
-    needs: build
     name: Docker Build and Push
     runs-on: ubuntu-latest
 
@@ -50,7 +45,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ./auth-service
-          file: ./authservice/Dockerfile
+          file: ./auth-service/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/devx-app-auth-service:latest
 
