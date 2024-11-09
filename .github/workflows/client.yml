@@ -45,7 +45,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ./auth-service
-          file: ./authservice/Dockerfile
+          file: ./auth-service/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/devx-app-auth-service:latest
 
