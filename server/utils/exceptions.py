@@ -9,9 +9,19 @@ from utils import logger
 from bson.errors import InvalidId
 
 
+class RayUnexpectedException(Exception):
+    """Exception raised when an unexpected error occurs in Ray."""
+
+    def __init__(self, details: str):
+        super().__init__(details)
+        self.details = details
+
+    def __str__(self):
+        return f"RayUnexpectedException: {self.details}"
+
+
 class WrongFormatGeneratedByAI(Exception):
     """Exception raised when an AI-generated format is incorrect."""
-
     pass
 
 

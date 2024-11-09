@@ -8,5 +8,6 @@ from .exceptions import ComponentNotFound
 from .exceptions import ProjectNotFound
 from .exceptions import InvalidParameter
 from .exceptions import AIModelNotFound
+from .exceptions import RayUnexpectedException
 
 from .pdf import PDFGenerator
