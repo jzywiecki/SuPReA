@@ -1,4 +1,4 @@
-FROM rayproject/ray:latest
+FROM rayproject/ray:latest-py311
 
 WORKDIR /code
 
