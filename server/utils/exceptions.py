@@ -22,6 +22,7 @@ class RayUnexpectedException(Exception):
 
 class WrongFormatGeneratedByAI(Exception):
     """Exception raised when an AI-generated format is incorrect."""
+
     pass
 
 

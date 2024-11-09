@@ -16,4 +16,6 @@ class NonFunctionalRequirement(BaseModel):
 
 class Requirements(BaseModel):
     functional_requirements: List[FunctionalRequirement] = Field(default_factory=list)
-    non_functional_requirements: List[NonFunctionalRequirement] = Field(default_factory=list)
+    non_functional_requirements: List[NonFunctionalRequirement] = Field(
+        default_factory=list
+    )
