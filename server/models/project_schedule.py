@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Milestone(BaseModel):
@@ -9,4 +9,4 @@ class Milestone(BaseModel):
 
 
 class ProjectSchedule(BaseModel):
-    milestones: List[Milestone]
+    milestones: List[Milestone] = Field(default_factory=list)

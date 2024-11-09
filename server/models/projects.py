@@ -68,6 +68,20 @@ class Project(BaseModel):
     chat_id: Optional[ObjectId] = None
     ai_chat_id: Optional[ObjectId] = None
 
+    def set_default_values(self):
+        self.actors = Actors()
+        self.business_scenarios = BusinessScenarios()
+        self.elevator_speech = ElevatorSpeech()
+        self.motto = Motto()
+        self.project_schedule = ProjectSchedule()
+        self.requirements = Requirements()
+        self.risks = Risks()
+        self.specifications = Specifications()
+        self.strategy = Strategy()
+        self.title = Title()
+        self.database_schema = DatabaseSchema()
+        self.logo = Logo()
+
     class Config:
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
