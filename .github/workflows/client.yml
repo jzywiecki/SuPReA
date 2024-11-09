@@ -1,7 +1,4 @@
-env:
-  CI: false
-
-name: Node.js CI
+name: Docker
 
 on:
   push:
@@ -12,8 +9,6 @@ on:
 
 jobs:
   docker:
-
-    needs: build
     name: Docker Build and Push
     runs-on: ubuntu-latest
 
