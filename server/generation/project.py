@@ -48,7 +48,9 @@ class ProjectAIGenerationActor:
         ]
         self.generate_future = []  # Contains futures of generation components by AI.
         self.db_future = []  # Contains futures of saving components to the database.
-        self.failure_actor = [] # Contains components that failed to generation or saving.
+        self.failure_actor = (
+            []
+        )  # Contains components that failed to generation or saving.
         self.callback_future = []
         self.callback = callback
 
@@ -147,11 +149,13 @@ class ProjectAIGenerationActor:
                         component_identify = ray.get(
                             actor.get_component_identify.remote()
                         )
-                        self.callback_future.append(realtime_server.notify_task.remote(
-                            realtime_server.notify_generation_complete,
-                            component_identify.value,
-                            self.callback,
-                        ))
+                        self.callback_future.append(
+                            realtime_server.notify_task.remote(
+                                realtime_server.notify_generation_complete,
+                                component_identify.value,
+                                self.callback,
+                            )
+                        )
 
                     else:
                         self.failure_actor.append(actor)
@@ -171,11 +175,13 @@ class ProjectAIGenerationActor:
                 actor, error = ray.get(actor_ref)
                 if error is None:
                     component_identify = ray.get(actor.get_component_identify.remote())
-                    self.callback_future.append(realtime_server.notify_task.remote(
-                        realtime_server.notify_generation_complete,
-                        component_identify.value,
-                        self.callback,
-                    ))
+                    self.callback_future.append(
+                        realtime_server.notify_task.remote(
+                            realtime_server.notify_generation_complete,
+                            component_identify.value,
+                            self.callback,
+                        )
+                    )
 
                 else:
                     self.failure_actor.append(actor)
@@ -188,16 +194,16 @@ class ProjectAIGenerationActor:
         for actor in self.failure_actor:
             try:
                 ray.get(actor.default_value.remote())
-                ray.get(actor.save_to_database.remote(
-                    get_project_dao_ref, project_id
-                ))
+                ray.get(actor.save_to_database.remote(get_project_dao_ref, project_id))
 
                 component_identify = ray.get(actor.get_component_identify.remote())
-                self.callback_future.append(realtime_server.notify_task.remote(
-                    realtime_server.notify_generation_complete,
-                    component_identify.value,
-                    self.callback,
-                ))
+                self.callback_future.append(
+                    realtime_server.notify_task.remote(
+                        realtime_server.notify_generation_complete,
+                        component_identify.value,
+                        self.callback,
+                    )
+                )
 
             except Exception as e:
                 logger.error(f"{e}")
@@ -240,7 +246,11 @@ def generate_project_components_task(
         )
     )
     save_check_task = project_ai_actor.save_to_database_service.remote()
-    set_default_value_task = project_ai_actor.set_default_value_for_failure_actor.remote(get_project_dao_ref, project_id)
+    set_default_value_task = (
+        project_ai_actor.set_default_value_for_failure_actor.remote(
+            get_project_dao_ref, project_id
+        )
+    )
     wait_for_callback_task = project_ai_actor.wait_for_callback_future.remote()
 
     try:
