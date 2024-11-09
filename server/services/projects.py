@@ -69,6 +69,7 @@ def create_project_by_ai(request) -> str:
         request.doing_what,
         request.additional_info,
         chat_dao,
+        False,
     )
 
     generate_project_components_task.remote(

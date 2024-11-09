@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Actor(BaseModel):
@@ -8,4 +8,4 @@ class Actor(BaseModel):
 
 
 class Actors(BaseModel):
-    actors: List[Actor]
+    actors: List[Actor] = Field(default_factory=list)

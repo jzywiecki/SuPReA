@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class UseCase(BaseModel):
@@ -12,4 +12,4 @@ class ActorUseCasesMapping(BaseModel):
 
 
 class UseCases(BaseModel):
-    actor_use_cases: List[ActorUseCasesMapping]
+    actor_use_cases: List[ActorUseCasesMapping] = Field(default_factory=list)

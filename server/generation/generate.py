@@ -16,6 +16,7 @@ from database import ProjectDAO
 from models import ComponentIdentify
 from ai import AI
 from utils import logger_ai, logger_db, logger, WrongFormatGeneratedByAI
+from utils import RayUnexpectedException
 
 
 class Generate(metaclass=abc.ABCMeta):
@@ -222,6 +223,13 @@ class Generate(metaclass=abc.ABCMeta):
         """
         return self.what
 
+    def default_value(self) -> BaseModel:
+        """
+        Sets the default value for the model component.
+        """
+        self.value = self.model_class()
+        return self.value
+
 
 def extract_json(text) -> str:
     """
@@ -303,7 +311,7 @@ class GenerateWithMonitor:
 
             raise WrongFormatGeneratedByAI()
 
-        except Exception as e:
+        except BaseException as e:
             logger_ai.error(
                 f"{e}",
                 extra={
@@ -341,7 +349,7 @@ class GenerateWithMonitor:
 
             raise WrongFormatGeneratedByAI()
 
-        except Exception as e:
+        except BaseException as e:
             logger_ai.error(
                 f"{e}",
                 extra={
@@ -380,7 +388,7 @@ class GenerateWithMonitor:
 
             raise WrongFormatGeneratedByAI()
 
-        except Exception as e:
+        except BaseException as e:
             logger_ai.error(
                 f"{e}",
                 extra={
@@ -410,7 +418,7 @@ class GenerateWithMonitor:
             )
             return res
 
-        except Exception as e:
+        except BaseException as e:
             logger_db.error(
                 f"{e}",
                 extra={
@@ -440,7 +448,7 @@ class GenerateWithMonitor:
             )
             return self.model_generate.get_value()
 
-        except Exception as e:
+        except BaseException as e:
             logger_db.error(
                 f"{e}",
                 extra={
@@ -459,7 +467,7 @@ class GenerateWithMonitor:
             self.model_generate.update(new_val)
             return self.model_generate.get_value()
 
-        except Exception as e:
+        except BaseException as e:
             logger.exception(f"{e}")
             raise e
 
@@ -474,6 +482,18 @@ class GenerateWithMonitor:
         Returns the component identify.
         """
         return self.model_generate.get_component_identify()
+
+    def default_value(self) -> BaseModel:
+        """
+        Update the model with a new value. Value must be of the correct type.
+        Method logs the process.
+        """
+        try:
+            return self.model_generate.default_value()
+
+        except BaseException as e:
+            logger.exception(f"{e}")
+            raise e
 
 
 @ray.remote
@@ -508,8 +528,8 @@ class GenerateActor:
 
             return self.current_actor(), None
 
-        except Exception as e:
-            return self.current_actor(), e
+        except BaseException as e:
+            return self.current_actor(), RayUnexpectedException(str(e))
 
     def regenerate_by_ai(self, ai_model: AI, details: str):
         """
@@ -521,8 +541,8 @@ class GenerateActor:
 
             return self.current_actor(), None
 
-        except Exception as e:
-            return self.current_actor(), e
+        except BaseException as e:
+            return self.current_actor(), RayUnexpectedException(str(e))
 
     def update_by_ai(self, ai_model: AI, changes_request: str):
         """
@@ -534,8 +554,8 @@ class GenerateActor:
 
             return self.current_actor(), None
 
-        except Exception as e:
-            return self.current_actor(), e
+        except BaseException as e:
+            return self.current_actor(), RayUnexpectedException(str(e))
 
     def save_to_database(self, get_project_dao_ref, project_id: str):
         """
@@ -547,9 +567,8 @@ class GenerateActor:
 
             return self.current_actor(), None
 
-        except Exception as e:
-
-            return self.current_actor(), e
+        except BaseException as e:
+            return self.current_actor(), RayUnexpectedException(str(e))
 
     def fetch_from_database(self, get_project_dao_ref, project_id: str):
         """
@@ -562,8 +581,8 @@ class GenerateActor:
 
             return self.current_actor(), None
 
-        except Exception as e:
-            return self.current_actor(), e
+        except BaseException as e:
+            return self.current_actor(), RayUnexpectedException(str(e))
 
     def update(self, new_val):
         """
@@ -576,8 +595,8 @@ class GenerateActor:
 
             return self.current_actor(), None
 
-        except Exception as e:
-            return self.current_actor(), e
+        except BaseException as e:
+            return self.current_actor(), RayUnexpectedException(str(e))
 
     def get_value(self):
         """
@@ -590,6 +609,16 @@ class GenerateActor:
         Returns the component identify.
         """
         return self.model_generate.get_component_identify()
+
+    def default_value(self):
+        """
+        Returns the component identify.
+        """
+        try:
+            return self.model_generate.default_value(), None
+
+        except BaseException as e:
+            return self.current_actor(), RayUnexpectedException(str(e))
 
     def current_actor(self):
         """

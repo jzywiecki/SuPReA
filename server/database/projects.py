@@ -14,7 +14,6 @@ from models import Project
 
 from .chats import ChatDAO
 from models import ProjectPatchRequest
-from utils import logger
 
 
 class ProjectDAO:
@@ -194,6 +193,7 @@ class ProjectDAO:
         doing_what: str,
         additional_info: str,
         chat_dao: ChatDAO,
+        set_default_values: bool = True,
     ) -> str:
         """
         Creates new empty project with the specified details and returns the project id.
@@ -206,6 +206,7 @@ class ProjectDAO:
         :param str doing_what: The purpose of the application.
         :param str additional_info: Additional information about the application.
         :param ChatDAO chat_dao: The chat DAO to use for creating chats.
+        :param bool set_default_values: Whether to set default values for the project.
 
         :return: The id of the newly created project.
         :rtype: str
@@ -227,6 +228,9 @@ class ProjectDAO:
             chat_id=ObjectId(discussion_chat_id),
             ai_chat_id=ObjectId(ai_chat_id),
         )
+
+        if set_default_values:
+            new_project.set_default_values()
 
         result = self.save_project(new_project)
         return str(result.inserted_id)

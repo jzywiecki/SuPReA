@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 
 
@@ -9,4 +9,4 @@ class Risk(BaseModel):
 
 
 class Risks(BaseModel):
-    risks: List[Risk]
+    risks: List[Risk] = Field(default_factory=list)

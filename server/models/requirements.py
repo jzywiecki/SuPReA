@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
 
 
@@ -15,5 +15,7 @@ class NonFunctionalRequirement(BaseModel):
 
 
 class Requirements(BaseModel):
-    functional_requirements: List[FunctionalRequirement]
-    non_functional_requirements: List[NonFunctionalRequirement]
+    functional_requirements: List[FunctionalRequirement] = Field(default_factory=list)
+    non_functional_requirements: List[NonFunctionalRequirement] = Field(
+        default_factory=list
+    )
