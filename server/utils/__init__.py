@@ -11,3 +11,5 @@ from .exceptions import AIModelNotFound
 from .exceptions import RayUnexpectedException
 
 from .pdf import PDFGenerator
+
+from .tasks_manager import RemoteTasksManager
