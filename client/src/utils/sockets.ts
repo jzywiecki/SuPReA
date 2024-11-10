@@ -1,7 +1,6 @@
 import { io } from 'socket.io-client';
+import { API_URLS } from "@/services/apiUrls";
 
-const URL = 'http://realtime-server:3000';
-
-export const socket = io(URL, {
+export const socket = io(API_URLS.REALTIME_SERVER_URL, {
     autoConnect: false,
 });
