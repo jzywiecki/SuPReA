@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import BusinessScenario, BusinessScenarios, Feature
-from generation.business_scenarios import BusinessScenariosGenerate
+from generation.model.business_scenarios import BusinessScenariosGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate

@@ -9,7 +9,7 @@ from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, BusinessScenarios
 from .common import RegenerateComponentByAIRequest
-from generation.business_scenarios import BusinessScenariosGenerate
+from generation.model.business_scenarios import BusinessScenariosGenerate
 from pydantic import BaseModel
 
 

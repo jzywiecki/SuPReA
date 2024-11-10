@@ -2,7 +2,7 @@
 This module is responsible for generating elevator speech content.
 """
 
-from .generate import Generate
+from generation.generate import Generate
 from models import ElevatorSpeech
 from models import ComponentIdentify
 

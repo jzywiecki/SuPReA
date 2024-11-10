@@ -2,7 +2,7 @@
 This module is responsible for generating the risks data.
 """
 
-from .generate import Generate
+from generation.generate import Generate
 from models import Risks
 from models import ComponentIdentify
 

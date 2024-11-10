@@ -9,7 +9,7 @@ from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, Risks
 from .common import RegenerateComponentByAIRequest
-from generation.risks import RiskGenerate
+from generation.model.risks import RiskGenerate
 from pydantic import BaseModel
 
 

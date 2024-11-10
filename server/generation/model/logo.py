@@ -5,7 +5,7 @@ This module contains the LogoGenerate class, which is responsible for generating
 import ray
 from pydantic import BaseModel
 
-from .generate import Generate
+from generation.generate import Generate
 from models import Logo
 from utils.decorators import override
 from ai import ai_call_task, AI
@@ -95,18 +95,19 @@ class LogoGenerate(Generate):
         request1 = ai_model.parse_update_query(
             self.what, "", changes_request, self.expected_format
         )
-        request2 = ai_model.parse_update_query(
-            self.what, "", changes_request, self.expected_format
-        )
-        request3 = ai_model.parse_update_query(
-            self.what, "", changes_request, self.expected_format
-        )
-        request4 = ai_model.parse_update_query(
-            self.what, "", changes_request, self.expected_format
-        )
+        # request2 = ai_model.parse_update_query(
+        #     self.what, "", changes_request, self.expected_format
+        # )
+        # request3 = ai_model.parse_update_query(
+        #     self.what, "", changes_request, self.expected_format
+        # )
+        # request4 = ai_model.parse_update_query(
+        #     self.what, "", changes_request, self.expected_format
+        # )
 
         list_value = process_ai_requests(
-            ai_model, request1, request2, request3, request4
+            ai_model,
+            request1,  # request2, request3, request4
         )
         self.value = make_model_from_reply(self.model_class, list_value)
 

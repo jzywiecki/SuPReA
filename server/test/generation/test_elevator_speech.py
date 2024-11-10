@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import ElevatorSpeech
-from generation.elevator_speech import ElevatorSpeechGenerate
+from generation.model.elevator_speech import ElevatorSpeechGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate

@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import Title
-from generation.title import TitleGenerate
+from generation.model.title import TitleGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate

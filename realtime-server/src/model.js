@@ -15,6 +15,7 @@ export const Components = Object.freeze({
     DATABASE_SCHEMA: {id: 11, name: "database_schema"},
     LOGO: {id: 12, name: "logo"},
     SUGGESTED_TECHNOLOGIES: {id: 13, name: "suggested_technologies"},
+    MOCKUPS: {id: 14, name: "mockups"},
 });
 
 

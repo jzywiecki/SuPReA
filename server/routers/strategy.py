@@ -9,7 +9,7 @@ from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, Strategy
 from .common import RegenerateComponentByAIRequest
-from generation.strategy import StrategyGenerate
+from generation.model.strategy import StrategyGenerate
 from pydantic import BaseModel
 
 
