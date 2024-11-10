@@ -222,6 +222,7 @@ class PDFGenerator:
                 "description",
             ),
             ("Logos", project.get("logo", {}).get("logo_urls"), self.add_pictures),
+            ("Mockups", project.get("mockups", {}).get("mockups_urls"), self.add_pictures),
         ]
 
         for field in fields:
