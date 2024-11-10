@@ -24,3 +24,6 @@ class Relationship(BaseModel):
 class DatabaseSchema(BaseModel):
     tables: List[Table] = Field(default_factory=list)
     relationships: List[Relationship] = Field(default_factory=list)
+
+    class Config:
+        extra = "forbid"

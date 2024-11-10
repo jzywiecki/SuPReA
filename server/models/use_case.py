@@ -13,3 +13,6 @@ class ActorUseCasesMapping(BaseModel):
 
 class UseCases(BaseModel):
     actor_use_cases: List[ActorUseCasesMapping] = Field(default_factory=list)
+
+    class Config:
+        extra = "forbid"

@@ -10,3 +10,6 @@ class Risk(BaseModel):
 
 class Risks(BaseModel):
     risks: List[Risk] = Field(default_factory=list)
+
+    class Config:
+        extra = "forbid"
