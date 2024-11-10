@@ -3,7 +3,7 @@ This module is responsible for generating a actors model.
 
 """
 
-from .generate import Generate
+from generation.generate import Generate
 from models import Actors
 from models import ComponentIdentify
 

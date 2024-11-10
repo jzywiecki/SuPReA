@@ -2,7 +2,7 @@
 This module is responsible for generating project schedule data.
 """
 
-from .generate import Generate
+from generation.generate import Generate
 from models import ProjectSchedule
 from models import ComponentIdentify
 

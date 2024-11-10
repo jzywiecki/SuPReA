@@ -2,7 +2,7 @@
 This module is responsible for generating a business scenarios model.
 """
 
-from .generate import Generate
+from generation.generate import Generate
 from models import BusinessScenarios
 from models import ComponentIdentify
 

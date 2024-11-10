@@ -4,19 +4,20 @@ Module contains general high-level functions for generate projects using AI mode
 
 import ray
 
-from .actors import ActorsGenerate
-from .business_scenarios import BusinessScenariosGenerate
-from .database_schema import DatabaseSchemaGenerate
-from .elevator_speech import ElevatorSpeechGenerate
-from .logo import LogoGenerate
-from .motto import MottoGenerate
-from .project_schedule import ProjectScheduleGenerate
-from .requirements import RequirementsGenerate
-from .risks import RiskGenerate
-from .specifications import SpecificationsGenerate
-from .strategy import StrategyGenerate
-from .title import TitleGenerate
-from .suggested_technologies import SuggestedTechnologiesGenerate
+from .model.actors import ActorsGenerate
+from .model.business_scenarios import BusinessScenariosGenerate
+from .model.database_schema import DatabaseSchemaGenerate
+from .model.elevator_speech import ElevatorSpeechGenerate
+from .model.logo import LogoGenerate
+from .model.motto import MottoGenerate
+from .model.project_schedule import ProjectScheduleGenerate
+from .model.requirements import RequirementsGenerate
+from .model.risks import RiskGenerate
+from .model.specifications import SpecificationsGenerate
+from .model.strategy import StrategyGenerate
+from .model.title import TitleGenerate
+from .model.suggested_technologies import SuggestedTechnologiesGenerate
+from .model.mockups import MockupsGenerate
 from .generate import GenerateActor, GenerateWithMonitor
 from utils import WrongFormatGeneratedByAI, logger
 from ai import AI
@@ -33,12 +34,14 @@ class ProjectAIGenerationActor:
 
     def __init__(self, callback):
         self.logo_actor = GenerateActor.remote(GenerateWithMonitor(LogoGenerate()))
+        self.mockups_actor = GenerateActor.remote(GenerateWithMonitor(MockupsGenerate()))
         self.actors = [
             GenerateActor.remote(GenerateWithMonitor(ActorsGenerate())),
             GenerateActor.remote(GenerateWithMonitor(BusinessScenariosGenerate())),
             GenerateActor.remote(GenerateWithMonitor(DatabaseSchemaGenerate())),
             GenerateActor.remote(GenerateWithMonitor(ElevatorSpeechGenerate())),
             self.logo_actor,
+            self.mockups_actor,
             GenerateActor.remote(GenerateWithMonitor(MottoGenerate())),
             GenerateActor.remote(GenerateWithMonitor(ProjectScheduleGenerate())),
             GenerateActor.remote(GenerateWithMonitor(RequirementsGenerate())),
@@ -68,7 +71,7 @@ class ProjectAIGenerationActor:
         Run remote tasks to generate components by AI.
         """
         for actor in self.actors:
-            if actor is self.logo_actor:
+            if actor is self.logo_actor or actor is self.mockups_actor:
                 self.generate_future.append(
                     actor.generate_by_ai.remote(
                         ai_image_model, for_what, doing_what, additional_info

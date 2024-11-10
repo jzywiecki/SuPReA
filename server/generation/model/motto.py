@@ -2,7 +2,7 @@
 This module is responsible for generating motto data.
 """
 
-from .generate import Generate
+from generation.generate import Generate
 from models import Motto
 from models import ComponentIdentify
 
