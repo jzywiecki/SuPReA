@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import SuggestedTechnologies, Technology
-from generation.suggested_technologies import SuggestedTechnologiesGenerate
+from generation.model.suggested_technologies import SuggestedTechnologiesGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate

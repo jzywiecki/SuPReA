@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import DatabaseSchema, Column, Table, Relationship
-from generation.database_schema import DatabaseSchemaGenerate
+from generation.model.database_schema import DatabaseSchemaGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate

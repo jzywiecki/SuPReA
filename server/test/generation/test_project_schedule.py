@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import Milestone, ProjectSchedule
-from generation.project_schedule import ProjectScheduleGenerate
+from generation.model.project_schedule import ProjectScheduleGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate

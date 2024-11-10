@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import Specification, Specifications
-from generation.specifications import SpecificationsGenerate
+from generation.model.specifications import SpecificationsGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate

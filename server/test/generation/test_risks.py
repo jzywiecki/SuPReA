@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import Risk, Risks
-from generation.risks import RiskGenerate
+from generation.model.risks import RiskGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate

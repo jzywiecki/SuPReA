@@ -3,7 +3,7 @@ import json
 from pydantic import ValidationError
 
 from models import Logo
-from generation.logo import LogoGenerate
+from generation.model.logo import LogoGenerate
 from ai.open_ai import gpt_35_turbo
 from unittest.mock import patch
 
@@ -49,7 +49,7 @@ class TestGenerateLogosByAI(unittest.TestCase):
         self.invalid_generated_data_format = invalid_format
         self.invalid_generated_json = json.dumps(invalid_data)
 
-    @patch("generation.logo.process_ai_requests")
+    @patch("generation.model.logo.process_ai_requests")
     def test_generate_when_ai_generate_correct_data_should_create_instance_value(
         self, mock_generate
     ):
@@ -60,7 +60,7 @@ class TestGenerateLogosByAI(unittest.TestCase):
         self.assertEqual(self.expected_value, result)
         self.assertEqual(self.expected_value, generate.get_value())
 
-    @patch("generation.logo.process_ai_requests")
+    @patch("generation.model.logo.process_ai_requests")
     def test_generate_when_ai_generate_invalid_data_format_should_raise_validation_exception(
         self, mock_generate
     ):
@@ -71,7 +71,7 @@ class TestGenerateLogosByAI(unittest.TestCase):
                 gpt_35_turbo, "example", "example", "example"
             )
 
-    @patch("generation.logo.process_ai_requests")
+    @patch("generation.model.logo.process_ai_requests")
     def test_generate_when_ai_dont_generate_any_data_should_raise_value_error(
         self, mock_generate
     ):
@@ -82,7 +82,7 @@ class TestGenerateLogosByAI(unittest.TestCase):
                 gpt_35_turbo, "example", "example", "example"
             )
 
-    @patch("generation.logo.process_ai_requests")
+    @patch("generation.model.logo.process_ai_requests")
     def test_generate_when_ai_generate_wrong_json_should_raise_validation_error(
         self, mock_generate
     ):
@@ -104,7 +104,7 @@ class TestUpdateLogosByAI(unittest.TestCase):
         self.invalid_generated_data_format = invalid_format
         self.invalid_generated_json = json.dumps(invalid_data)
 
-    @patch("generation.logo.process_ai_requests")
+    @patch("generation.model.logo.process_ai_requests")
     def test_update_by_ai_when_val_is_none_should_raise_value_error(
         self, mock_generate
     ):
@@ -113,7 +113,7 @@ class TestUpdateLogosByAI(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.generate_class().update_by_ai(gpt_35_turbo, "query")
 
-    @patch("generation.logo.process_ai_requests")
+    @patch("generation.model.logo.process_ai_requests")
     def test_update_by_ai_when_ai_generate_correct_data_should_create_instance_value(
         self, mock_generate
     ):
@@ -125,7 +125,7 @@ class TestUpdateLogosByAI(unittest.TestCase):
         self.assertEqual(self.expected_value, result)
         self.assertEqual(self.expected_value, generate.get_value())
 
-    @patch("generation.logo.process_ai_requests")
+    @patch("generation.model.logo.process_ai_requests")
     def test_update_by_when_ai_generate_invalid_data_format_should_raise_validation_exception(
         self, mock_generate
     ):
@@ -136,7 +136,7 @@ class TestUpdateLogosByAI(unittest.TestCase):
             generate.update(self.prev_expected_value)
             generate.update_by_ai(gpt_35_turbo, "query")
 
-    @patch("generation.logo.process_ai_requests")
+    @patch("generation.model.logo.process_ai_requests")
     def test_update_by_ai_when_ai_generate_wrong_json_should_raise_validation_error(
         self, mock_generate
     ):
@@ -147,7 +147,7 @@ class TestUpdateLogosByAI(unittest.TestCase):
             generate.update(self.prev_expected_value)
             generate.update_by_ai(gpt_35_turbo, "query")
 
-    @patch("generation.logo.process_ai_requests")
+    @patch("generation.model.logo.process_ai_requests")
     def test_update_by_ai_when_ai_dont_generate_any_value_should_raise_exception(
         self, mock_generate
     ):

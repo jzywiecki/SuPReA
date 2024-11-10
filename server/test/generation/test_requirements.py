@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import FunctionalRequirement, NonFunctionalRequirement, Requirements
-from generation.requirements import RequirementsGenerate
+from generation.model.requirements import RequirementsGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate
