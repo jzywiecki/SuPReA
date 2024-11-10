@@ -82,6 +82,12 @@ from test.generation.test_title import (
     TestGenerateTitlesByAI,
     TestUpdateTitlesByAI,
 )
+from test.generation.test_suggested_technologies import (
+    TestFetchSuggestedTechnologiesFromDatabase,
+    TestUpdateSuggestedTechnologies,
+    TestGenerateSuggestedTechnologiesByAI,
+    TestUpdateSuggestedTechnologiesByAI,
+)
 
 
 if __name__ == "__main__":
@@ -144,6 +150,10 @@ if __name__ == "__main__":
             TestUpdateTitles,
             TestGenerateTitlesByAI,
             TestUpdateTitlesByAI,
+            TestFetchSuggestedTechnologiesFromDatabase,
+            TestUpdateSuggestedTechnologies,
+            TestGenerateSuggestedTechnologiesByAI,
+            TestUpdateSuggestedTechnologiesByAI,
         )
     ]
     suite = TestSuite(tests)
