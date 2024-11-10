@@ -9,3 +9,6 @@ class Actor(BaseModel):
 
 class Actors(BaseModel):
     actors: List[Actor] = Field(default_factory=list)
+
+    class Config:
+        extra = "forbid"

@@ -19,3 +19,6 @@ class Requirements(BaseModel):
     non_functional_requirements: List[NonFunctionalRequirement] = Field(
         default_factory=list
     )
+
+    class Config:
+        extra = "forbid"
