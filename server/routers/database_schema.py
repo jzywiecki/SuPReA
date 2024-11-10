@@ -9,7 +9,7 @@ from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, DatabaseSchema
 from .common import RegenerateComponentByAIRequest
-from generation.database_schema import DatabaseSchemaGenerate
+from generation.model.database_schema import DatabaseSchemaGenerate
 from pydantic import BaseModel
 
 

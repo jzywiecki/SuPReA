@@ -9,7 +9,7 @@ from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, Actors
 from .common import RegenerateComponentByAIRequest
-from generation.actors import ActorsGenerate
+from generation.model.actors import ActorsGenerate
 from pydantic import BaseModel
 
 

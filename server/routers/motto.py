@@ -9,7 +9,7 @@ from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, Motto
 from .common import RegenerateComponentByAIRequest
-from generation.motto import MottoGenerate
+from generation.model.motto import MottoGenerate
 from pydantic import BaseModel
 
 

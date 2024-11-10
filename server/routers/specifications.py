@@ -9,7 +9,7 @@ from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, Specifications
 from .common import RegenerateComponentByAIRequest
-from generation.specifications import SpecificationsGenerate
+from generation.model.specifications import SpecificationsGenerate
 from pydantic import BaseModel
 
 
