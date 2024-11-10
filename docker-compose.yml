@@ -9,6 +9,8 @@ services:
     restart: always
     ports:
       - "5173:5173"
+    networks:
+      - app-network 
 
   app-server:
     platform: linux/amd64
@@ -18,6 +20,8 @@ services:
     container_name: "server"
     restart: always
     env_file: ".env"
+    networks:
+      - app-network
 
   app-auth-service:
     platform: linux/amd64
@@ -27,6 +31,8 @@ services:
     container_name: "auth-service"
     restart: always
     env_file: ".env"
+    networks:
+      - app-network
     ports:
       - "3333:3333"
 
@@ -38,3 +44,9 @@ services:
     container_name: "realtime-server"
     restart: always
     env_file: ".env"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
