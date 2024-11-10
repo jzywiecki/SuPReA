@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import Strategy
-from generation.strategy import StrategyGenerate
+from generation.model.strategy import StrategyGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate

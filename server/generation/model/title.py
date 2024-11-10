@@ -2,7 +2,7 @@
 This module is responsible for generating titles.
 """
 
-from .generate import Generate
+from generation.generate import Generate
 from models import Title
 from models import ComponentIdentify
 

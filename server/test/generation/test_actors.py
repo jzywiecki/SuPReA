@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import Actors, Actor
-from generation.actors import ActorsGenerate
+from generation.model.actors import ActorsGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate

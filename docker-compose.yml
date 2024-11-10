@@ -7,7 +7,10 @@ services:
       dockerfile: Dockerfile
     container_name: "client"
     restart: always
-    env_file: ".env"
+    ports:
+      - "5173:5173"
+    networks:
+      - app-network
 
   app-server:
     platform: linux/amd64
@@ -17,6 +20,10 @@ services:
     container_name: "server"
     restart: always
     env_file: ".env"
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
 
   app-auth-service:
     platform: linux/amd64
@@ -26,6 +33,10 @@ services:
     container_name: "auth-service"
     restart: always
     env_file: ".env"
+    ports:
+      - "3333:3333"
+    networks:
+      - app-network
 
   app-realtime-server:
     platform: linux/amd64
@@ -35,11 +46,11 @@ services:
     container_name: "realtime-server"
     restart: always
     env_file: ".env"
-
-  proxy:
-    platform: linux/amd64
-    build: ./nginx
-    container_name: "proxy"
-    restart: always
     ports:
-      - "80:80"
+      - "3000:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

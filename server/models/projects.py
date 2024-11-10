@@ -16,6 +16,8 @@ from .strategy import Strategy
 from .title import Title
 from .database_schema import DatabaseSchema
 from .logo import Logo
+from .mockups import Mockups
+from .suggested_technologies import SuggestedTechnologies
 
 
 class User(BaseModel):
@@ -64,6 +66,8 @@ class Project(BaseModel):
     strategy: Optional[Strategy] = None
     title: Optional[Title] = None
     database_schema: Optional[DatabaseSchema] = None
+    suggested_technologies: Optional[SuggestedTechnologies] = None
+    mockups: Optional[Mockups] = None
     logo: Optional[Logo] = None
     chat_id: Optional[ObjectId] = None
     ai_chat_id: Optional[ObjectId] = None
@@ -80,7 +84,9 @@ class Project(BaseModel):
         self.strategy = Strategy()
         self.title = Title()
         self.database_schema = DatabaseSchema()
+        self.suggested_technologies = SuggestedTechnologies()
         self.logo = Logo()
+        self.mockups = Mockups()
 
     class Config:
         arbitrary_types_allowed = True
@@ -110,6 +116,8 @@ class ComponentIdentify(Enum):
     TITLE = "title"
     DATABASE_SCHEMA = "database_schema"
     LOGO = "logo"
+    SUGGESTED_TECHNOLOGIES = "suggested_technologies"
+    MOCKUPS = "mockups"
 
 
 class ProjectPatchRequest(BaseModel):

@@ -6,7 +6,7 @@ import json
 
 from pydantic import BaseModel
 
-from .generate import Generate
+from generation.generate import Generate
 from models import DatabaseSchema
 from utils.decorators import override
 from generation.generate import extract_json

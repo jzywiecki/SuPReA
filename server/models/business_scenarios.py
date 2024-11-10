@@ -15,3 +15,6 @@ class BusinessScenario(BaseModel):
 
 class BusinessScenarios(BaseModel):
     business_scenario: Optional[BusinessScenario] = None
+
+    class Config:
+        extra = "forbid"

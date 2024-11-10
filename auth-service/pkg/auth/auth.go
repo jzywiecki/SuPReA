@@ -170,7 +170,7 @@ func Authenticate(r *http.Request) (bool, error) {
 	collection := database.GetCollection(client, "Projects", "users")
 	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email, "token": tokenStr}).Decode(&user)
 
-	return err == nil, err
+	return err == nil, fmt.Errorf("got token: %s and errored with: %w", tokenStr, err)
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {

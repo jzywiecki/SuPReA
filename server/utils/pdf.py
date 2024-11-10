@@ -167,6 +167,13 @@ class PDFGenerator:
                 "description",
             ),
             (
+                "Suggested technologies",
+                project.get("suggested_technologies", {}).get("suggested_technologies"),
+                self.add_two_elements_list,
+                "name",
+                "description",
+            ),
+            (
                 "Specifications",
                 project.get("specifications", {}).get("specifications"),
                 self.add_two_elements_list,
@@ -215,6 +222,11 @@ class PDFGenerator:
                 "description",
             ),
             ("Logos", project.get("logo", {}).get("logo_urls"), self.add_pictures),
+            (
+                "Mockups",
+                project.get("mockups", {}).get("mockups_urls"),
+                self.add_pictures,
+            ),
         ]
 
         for field in fields:

@@ -9,3 +9,6 @@ class Specification(BaseModel):
 
 class Specifications(BaseModel):
     specifications: List[Specification] = Field(default_factory=list)
+
+    class Config:
+        extra = "forbid"

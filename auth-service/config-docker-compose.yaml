@@ -1,0 +1,7 @@
+rateLimitTimeWindow: 60
+rateLimitCount: 100
+services:
+  server:
+    url: http://server:8000
+  realtime-server:
+    url: http://realtime-server:3000

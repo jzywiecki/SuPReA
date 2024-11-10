@@ -9,7 +9,7 @@ from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, Title
 from .common import RegenerateComponentByAIRequest
-from generation.title import TitleGenerate
+from generation.model.title import TitleGenerate
 from pydantic import BaseModel
 
 

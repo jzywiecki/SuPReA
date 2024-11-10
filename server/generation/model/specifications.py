@@ -2,7 +2,7 @@
 This module is responsible for generating the specifications component of the
 """
 
-from .generate import Generate
+from generation.generate import Generate
 from models import Specifications
 from models import ComponentIdentify
 

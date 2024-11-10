@@ -1,7 +1,7 @@
 import unittest
 import json
 from models import Motto
-from generation.motto import MottoGenerate
+from generation.model.motto import MottoGenerate
 
 from .base import BaseTestFetchValueFromDatabase
 from .base import BaseTestUpdate

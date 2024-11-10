@@ -12,4 +12,4 @@ EXPOSE 8000
 
 EXPOSE 8265
 
-CMD ["fastapi", "run", "main.py"]
+CMD ["fastapi", "run", "main.py", "--port", "8000"]

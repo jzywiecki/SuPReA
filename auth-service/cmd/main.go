@@ -8,6 +8,7 @@ import (
 	"auth-service/pkg/users"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -32,12 +33,17 @@ func main() {
 	})
 	r.Use(corsConfig.Handler)
 
-	config, err := config.LoadConfig("config", "yaml", ".")
+	usedConfig, err := config.LoadConfig("config", "yaml", ".")
+
+	if os.Getenv("DOCKER_COMPOSE_CONFIG") == "TRUE" {
+		usedConfig, err = config.LoadConfig("config-docker-compose", "yaml", ".")
+	}
+
 	if err != nil {
 		log.Fatalf("error in reading configuration.")
 	}
 
-	cache := cache.New(config.RateLimitTimeWindow, time.Minute*10)
+	cache := cache.New(usedConfig.RateLimitTimeWindow, time.Minute*10)
 
 	r.Post("/login", auth.LoginHandler)
 	r.Post("/register", auth.RegisterHandler)
@@ -45,7 +51,7 @@ func main() {
 	r.Post("/refresh", auth.RefreshTokenHandler)
 	r.Mount("/users", users.NewUsersRouter())
 
-	service.SetServices(r, config, cache)
+	service.SetServices(r, usedConfig, cache)
 
 	log.Default().Println("Starting server and listening on 3333")
 	if err := http.ListenAndServe(":3333", r); err != nil {

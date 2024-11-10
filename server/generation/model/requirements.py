@@ -2,7 +2,7 @@
 This module is responsible for generating requirements data.
 """
 
-from .generate import Generate
+from generation.generate import Generate
 from models import Requirements
 from models import ComponentIdentify
 

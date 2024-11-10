@@ -1,9 +1,9 @@
 """
-This module defines the API routes for interacting with project components, specifically logo.
+This module defines the API routes for interacting with project components, specifically mockups.
 """
 
 from fastapi import APIRouter, status, Response
-from generation.model.logo import LogoGenerate
+from generation.model.mockups import MockupsGenerate
 from services import get_component
 from services import regenerate_component_by_ai
 from .common import RegenerateComponentByAIRequest
@@ -17,27 +17,27 @@ router = APIRouter(
 
 
 @router.get(
-    "/logo/{project_id}",
+    "/mockups/{project_id}",
     status_code=status.HTTP_200_OK,
 )
-def get_logo(project_id: str):
+def get_mockups(project_id: str):
     """
-    Retrieves the logo component for the specified project.
+    Retrieves the mockups component for the specified project.
 
     :param str project_id: The unique identifier of the project.
     """
-    return get_component(project_id, ComponentIdentify.LOGO.value)
+    return get_component(project_id, ComponentIdentify.MOCKUPS.value)
 
 
 @router.post(
-    "/logo/ai-regenerate",
+    "/mockups/ai-regenerate",
     status_code=status.HTTP_200_OK,
 )
-def regenerate_logo_by_ai(request: RegenerateComponentByAIRequest):
+def regenerate_mockups_by_ai(request: RegenerateComponentByAIRequest):
     """
-    Regenerates the logo component for the specified project using AI-based generation.
+    Regenerates the mockups component for the specified project using AI-based generation.
 
     :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
     """
-    regenerate_component_by_ai(request, LogoGenerate)
+    regenerate_component_by_ai(request, MockupsGenerate)
     return Response(status_code=status.HTTP_200_OK)

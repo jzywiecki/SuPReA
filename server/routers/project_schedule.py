@@ -9,7 +9,7 @@ from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, ProjectSchedule
 from .common import RegenerateComponentByAIRequest
-from generation.project_schedule import ProjectScheduleGenerate
+from generation.model.project_schedule import ProjectScheduleGenerate
 from pydantic import BaseModel
 
 

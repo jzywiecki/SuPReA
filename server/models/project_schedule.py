@@ -10,3 +10,6 @@ class Milestone(BaseModel):
 
 class ProjectSchedule(BaseModel):
     milestones: List[Milestone] = Field(default_factory=list)
+
+    class Config:
+        extra = "forbid"

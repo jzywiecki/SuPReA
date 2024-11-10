@@ -2,7 +2,7 @@
 This module is responsible for generating the strategy component.
 """
 
-from .generate import Generate
+from generation.generate import Generate
 from models import Strategy
 from models import ComponentIdentify
 

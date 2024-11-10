@@ -9,7 +9,7 @@ from services import regenerate_component_by_ai
 from services import update_component
 from models import ComponentIdentify, ElevatorSpeech
 from .common import RegenerateComponentByAIRequest
-from generation.elevator_speech import ElevatorSpeechGenerate
+from generation.model.elevator_speech import ElevatorSpeechGenerate
 from pydantic import BaseModel
 
 
