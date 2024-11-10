@@ -167,6 +167,13 @@ class PDFGenerator:
                 "description",
             ),
             (
+                "Suggested technologies",
+                project.get("suggested_technologies", {}).get("suggested_technologies"),
+                self.add_two_elements_list,
+                "name",
+                "description",
+            ),
+            (
                 "Specifications",
                 project.get("specifications", {}).get("specifications"),
                 self.add_two_elements_list,

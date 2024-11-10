@@ -16,6 +16,7 @@ from .risks import RiskGenerate
 from .specifications import SpecificationsGenerate
 from .strategy import StrategyGenerate
 from .title import TitleGenerate
+from .suggested_technologies import SuggestedTechnologiesGenerate
 from .generate import GenerateActor, GenerateWithMonitor
 from utils import WrongFormatGeneratedByAI, logger
 from ai import AI
@@ -45,6 +46,7 @@ class ProjectAIGenerationActor:
             GenerateActor.remote(GenerateWithMonitor(SpecificationsGenerate())),
             GenerateActor.remote(GenerateWithMonitor(StrategyGenerate())),
             GenerateActor.remote(GenerateWithMonitor(TitleGenerate())),
+            GenerateActor.remote(GenerateWithMonitor(SuggestedTechnologiesGenerate())),
         ]
         self.generate_future = []  # Contains futures of generation components by AI.
         self.db_future = []  # Contains futures of saving components to the database.
