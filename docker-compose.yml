@@ -18,7 +18,7 @@ services:
     container_name: "server"
     restart: always
     env_file: ".env"
-        ports:
+    ports:
       - "8000:8000"
 
   app-auth-service:
@@ -42,5 +42,3 @@ services:
     env_file: ".env"
     ports:
       - "3000:3000"
-
-
