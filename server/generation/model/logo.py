@@ -106,7 +106,8 @@ class LogoGenerate(Generate):
         # )
 
         list_value = process_ai_requests(
-            ai_model, request1, #request2, request3, request4
+            ai_model,
+            request1,  # request2, request3, request4
         )
         self.value = make_model_from_reply(self.model_class, list_value)
 

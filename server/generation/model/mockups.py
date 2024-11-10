@@ -1,6 +1,7 @@
 """
 This module contains the MockupsGenerate class, which is responsible for generating a mockups model.
 """
+
 import ray
 from pydantic import BaseModel
 from generation.generate import Generate
@@ -27,7 +28,7 @@ class MockupsGenerate(Generate):
 
     @override
     def generate_by_ai(
-            self, ai_model: AI, for_what: str, doing_what: str, additional_info: str
+        self, ai_model: AI, for_what: str, doing_what: str, additional_info: str
     ) -> BaseModel | None:
         """
         Specify implementation for generating a model using the AI image-model.

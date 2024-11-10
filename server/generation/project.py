@@ -34,7 +34,9 @@ class ProjectAIGenerationActor:
 
     def __init__(self, callback):
         self.logo_actor = GenerateActor.remote(GenerateWithMonitor(LogoGenerate()))
-        self.mockups_actor = GenerateActor.remote(GenerateWithMonitor(MockupsGenerate()))
+        self.mockups_actor = GenerateActor.remote(
+            GenerateWithMonitor(MockupsGenerate())
+        )
         self.actors = [
             GenerateActor.remote(GenerateWithMonitor(ActorsGenerate())),
             GenerateActor.remote(GenerateWithMonitor(BusinessScenariosGenerate())),

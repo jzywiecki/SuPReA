@@ -47,7 +47,9 @@ class UpdateSuggestedTechnologiesByAIRequest(BaseModel):
     "/suggested_technologies/ai-update",
     status_code=status.HTTP_200_OK,
 )
-def update_suggested_technologies_by_ai(request: UpdateSuggestedTechnologiesByAIRequest):
+def update_suggested_technologies_by_ai(
+    request: UpdateSuggestedTechnologiesByAIRequest,
+):
     """
     Updates the suggested technologies component for the specified project using AI-based generation.
     """

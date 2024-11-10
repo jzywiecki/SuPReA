@@ -8,6 +8,7 @@ class RemoteTasksManager:
     specified number of tasks are running concurrently. If the limit is reached,
     it waits for a task to finish before adding a new one.
     """
+
     def __init__(self, max_tasks):
         self.task_queue = []
         self.max_tasks = max_tasks
