@@ -25,4 +25,9 @@ class SuggestedTechnologiesGenerate(Generate):
         """
         Initializes the `SuggestedTechnologies` instance
         """
-        super().__init__(SuggestedTechnologies, "suggested technologies", expected_format, ComponentIdentify.SUGGESTED_TECHNOLOGIES)
+        super().__init__(
+            SuggestedTechnologies,
+            "suggested technologies",
+            expected_format,
+            ComponentIdentify.SUGGESTED_TECHNOLOGIES,
+        )

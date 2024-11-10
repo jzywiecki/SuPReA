@@ -10,7 +10,12 @@ from .base import BaseTestUpdateByAI
 
 
 # Test data ===================================================
-correct_data = {"suggested_technologies": [{"name": "example", "description": "example description"}, {"name": "example2", "description": "example description2"}]}
+correct_data = {
+    "suggested_technologies": [
+        {"name": "example", "description": "example description"},
+        {"name": "example2", "description": "example description2"},
+    ]
+}
 
 invalid_data = {"content": "test test"}
 
@@ -19,14 +24,20 @@ invalid_format = "example sugessted technologies"
 technology_one = Technology(name="example", description="example description")
 technology_two = Technology(name="example2", description="example description2")
 
-suggested_technologies_one = SuggestedTechnologies(suggested_technologies=[technology_one, technology_two])
+suggested_technologies_one = SuggestedTechnologies(
+    suggested_technologies=[technology_one, technology_two]
+)
 
 technology_three = Technology(name="example3", description="example description3")
-suggested_technologies_two = SuggestedTechnologies(suggested_technologies=[technology_three])
+suggested_technologies_two = SuggestedTechnologies(
+    suggested_technologies=[technology_three]
+)
 # ============================================================
 
 
-class TestFetchSuggestedTechnologiesFromDatabase(BaseTestFetchValueFromDatabase, unittest.TestCase):
+class TestFetchSuggestedTechnologiesFromDatabase(
+    BaseTestFetchValueFromDatabase, unittest.TestCase
+):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.generate_class = SuggestedTechnologiesGenerate
