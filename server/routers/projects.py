@@ -6,7 +6,7 @@ from ctypes import Array
 from datetime import datetime
 from bson import ObjectId
 from typing import List, Optional
-from fastapi import APIRouter, status, Response
+from fastapi import APIRouter, status, Response, Depends
 from pydantic import BaseModel, Field
 from typing import Optional
 from models import Project, Motto, ElevatorSpeech
@@ -24,6 +24,7 @@ from services import (
     update_project_info,
 )
 from models import ProjectPatchRequest
+from utils import verify_project_membership
 
 
 router = APIRouter(tags=["projects"], prefix="/projects")
@@ -120,6 +121,7 @@ def create(request: ProjectCreateByAIRequest):
     response_model=Project,
     status_code=status.HTTP_200_OK,
     response_model_by_alias=False,
+    dependencies=[Depends(verify_project_membership)],
 )
 def get_project(project_id: str):
     """
