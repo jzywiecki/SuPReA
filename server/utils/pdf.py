@@ -50,9 +50,12 @@ class PDFGenerator:
         self.pdf_elements.append(ListFlowable(items, bulletType="bullet"))
         self.pdf_elements.append(Spacer(1, 12))
 
+
     def add_er_diagram(self, er_diagram_format: str, title: str) -> None:
-        """Adds an ER diagram to the PDF in Mermaid.js format."""
         self.pdf_elements.append(Paragraph(title, self.title_style))
+
+        max_width = A4[0] - 50
+        max_height = A4[1] - 100
 
         with tempfile.NamedTemporaryFile(suffix=".png", delete=True) as tmp:
             tmp_file_name = tmp.name
@@ -65,10 +68,18 @@ class PDFGenerator:
                 image_data = f.read()
 
         image_stream = BytesIO(image_data)
+
         img = Image(image_stream)
+        img.drawWidth, img.drawHeight = self.resize_image(img, max_width, max_height)
 
         self.pdf_elements.append(img)
         self.pdf_elements.append(Spacer(1, 12))
+
+    def resize_image(self, img, max_width, max_height):
+        img_width, img_height = img.imageWidth, img.imageHeight
+        scale = min(max_width / img_width, max_height / img_height, 1)
+        return img_width * scale, img_height * scale
+
 
     def add_two_elements_list(
         self, items: List[Dict[str, str]], title: str, name_one: str, name_two: str
