@@ -83,6 +83,8 @@ def create_er_diagram_mermaid(database: dict) -> str | None:
     :return: A string in Mermaid.js ER diagram format if successful, otherwise None.
     """
     try:
+        if database is None:
+            return None
         return parse_database_to_erdiagram_mermaid(database)
     except Exception as e:
         logger.exception(f"{e}")

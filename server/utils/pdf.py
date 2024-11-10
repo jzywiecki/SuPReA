@@ -50,7 +50,6 @@ class PDFGenerator:
         self.pdf_elements.append(ListFlowable(items, bulletType="bullet"))
         self.pdf_elements.append(Spacer(1, 12))
 
-
     def add_er_diagram(self, er_diagram_format: str, title: str) -> None:
         self.pdf_elements.append(Paragraph(title, self.title_style))
 
@@ -79,7 +78,6 @@ class PDFGenerator:
         img_width, img_height = img.imageWidth, img.imageHeight
         scale = min(max_width / img_width, max_height / img_height, 1)
         return img_width * scale, img_height * scale
-
 
     def add_two_elements_list(
         self, items: List[Dict[str, str]], title: str, name_one: str, name_two: str
@@ -149,10 +147,15 @@ class PDFGenerator:
             ("Description", project.get("description"), self.add_simple_text),
             (
                 "Created at",
-                project.get("created_at") and project["created_at"].strftime("%Y-%m-%d %H:%M:%S.%f"),
+                project.get("created_at")
+                and project["created_at"].strftime("%Y-%m-%d %H:%M:%S.%f"),
                 self.add_simple_text,
             ),
-            ("Titles", (project.get("title") or {}).get("names", []), self.add_simple_list),  # Adjusted line
+            (
+                "Titles",
+                (project.get("title") or {}).get("names", []),
+                self.add_simple_list,
+            ),  # Adjusted line
             (
                 "Elevator speech",
                 (project.get("elevator_speech") or {}).get("content"),
@@ -166,7 +169,12 @@ class PDFGenerator:
             ),
             (
                 "Database Schema",
-                create_er_diagram_mermaid(project.get("database_schema")),
+                (
+                    create_er_diagram_mermaid(project.get("database_schema"))
+                    if project.get("database_schema")
+                    != {"tables": [], "relationships": []}
+                    else None
+                ),
                 self.add_er_diagram,
             ),
             (
@@ -178,7 +186,9 @@ class PDFGenerator:
             ),
             (
                 "Suggested technologies",
-                (project.get("suggested_technologies") or {}).get("suggested_technologies", []),
+                (project.get("suggested_technologies") or {}).get(
+                    "suggested_technologies", []
+                ),
                 self.add_two_elements_list,
                 "name",
                 "description",
@@ -208,7 +218,9 @@ class PDFGenerator:
             ),
             (
                 "Non Functional Requirements",
-                (project.get("requirements") or {}).get("non_functional_requirements", []),
+                (project.get("requirements") or {}).get(
+                    "non_functional_requirements", []
+                ),
                 self.add_three_element_list,
                 "name",
                 "description",
@@ -224,14 +236,19 @@ class PDFGenerator:
             ),
             (
                 "Business Scenarios",
-                (project.get("business_scenarios") or {})
-                .get("business_scenario", {})
-                .get("features", []),
+                (
+                    (project.get("business_scenarios") or {}).get("business_scenario")
+                    or {}
+                ).get("features", []),
                 self.add_two_elements_list,
                 "feature_name",
                 "description",
             ),
-            ("Logos", (project.get("logo") or {}).get("logo_urls", []), self.add_pictures),
+            (
+                "Logos",
+                (project.get("logo") or {}).get("logo_urls", []),
+                self.add_pictures,
+            ),
             (
                 "Mockups",
                 (project.get("mockups") or {}).get("mockups_urls", []),
@@ -243,9 +260,9 @@ class PDFGenerator:
             title, data, func = field[0], field[1], field[2]
             if data:  # Only proceed if data is not None
                 if func in (
-                        self.add_simple_text,
-                        self.add_simple_list,
-                        self.add_pictures,
+                    self.add_simple_text,
+                    self.add_simple_list,
+                    self.add_pictures,
                 ):
                     func(title, data)
                 elif func == self.add_er_diagram:
