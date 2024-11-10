@@ -138,20 +138,19 @@ class PDFGenerator:
             ("Description", project.get("description"), self.add_simple_text),
             (
                 "Created at",
-                project.get("created_at")
-                and project["created_at"].strftime("%Y-%m-%d %H:%M:%S.%f"),
+                project.get("created_at") and project["created_at"].strftime("%Y-%m-%d %H:%M:%S.%f"),
                 self.add_simple_text,
             ),
-            ("Titles", project.get("title", {}).get("names"), self.add_simple_list),
+            ("Titles", (project.get("title") or {}).get("names", []), self.add_simple_list),  # Adjusted line
             (
                 "Elevator speech",
-                project.get("elevator_speech", {}).get("content"),
+                (project.get("elevator_speech") or {}).get("content"),
                 self.add_simple_text,
             ),
-            ("Motto", project.get("motto", {}).get("motto"), self.add_simple_text),
+            ("Motto", (project.get("motto") or {}).get("motto"), self.add_simple_text),
             (
                 "Strategy",
-                project.get("strategy", {}).get("strategy"),
+                (project.get("strategy") or {}).get("strategy"),
                 self.add_simple_text,
             ),
             (
@@ -161,28 +160,28 @@ class PDFGenerator:
             ),
             (
                 "Actors",
-                project.get("actors", {}).get("actors"),
+                (project.get("actors") or {}).get("actors", []),
                 self.add_two_elements_list,
                 "name",
                 "description",
             ),
             (
                 "Suggested technologies",
-                project.get("suggested_technologies", {}).get("suggested_technologies"),
+                (project.get("suggested_technologies") or {}).get("suggested_technologies", []),
                 self.add_two_elements_list,
                 "name",
                 "description",
             ),
             (
                 "Specifications",
-                project.get("specifications", {}).get("specifications"),
+                (project.get("specifications") or {}).get("specifications", []),
                 self.add_two_elements_list,
                 "specification",
                 "description",
             ),
             (
                 "Risks",
-                project.get("risks", {}).get("risks"),
+                (project.get("risks") or {}).get("risks", []),
                 self.add_three_element_list,
                 "risk",
                 "description",
@@ -190,7 +189,7 @@ class PDFGenerator:
             ),
             (
                 "Functional Requirements",
-                project.get("requirements", {}).get("functional_requirements"),
+                (project.get("requirements") or {}).get("functional_requirements", []),
                 self.add_three_element_list,
                 "name",
                 "description",
@@ -198,7 +197,7 @@ class PDFGenerator:
             ),
             (
                 "Non Functional Requirements",
-                project.get("requirements", {}).get("non_functional_requirements"),
+                (project.get("requirements") or {}).get("non_functional_requirements", []),
                 self.add_three_element_list,
                 "name",
                 "description",
@@ -206,7 +205,7 @@ class PDFGenerator:
             ),
             (
                 "Project Schedule",
-                project.get("project_schedule", {}).get("milestones"),
+                (project.get("project_schedule") or {}).get("milestones", []),
                 self.add_three_element_list,
                 "name",
                 "description",
@@ -214,35 +213,37 @@ class PDFGenerator:
             ),
             (
                 "Business Scenarios",
-                project.get("business_scenarios", {})
+                (project.get("business_scenarios") or {})
                 .get("business_scenario", {})
-                .get("features"),
+                .get("features", []),
                 self.add_two_elements_list,
                 "feature_name",
                 "description",
             ),
-            ("Logos", project.get("logo", {}).get("logo_urls"), self.add_pictures),
+            ("Logos", (project.get("logo") or {}).get("logo_urls", []), self.add_pictures),
             (
                 "Mockups",
-                project.get("mockups", {}).get("mockups_urls"),
+                (project.get("mockups") or {}).get("mockups_urls", []),
                 self.add_pictures,
             ),
         ]
 
         for field in fields:
             title, data, func = field[0], field[1], field[2]
-            if data:
+            if data:  # Only proceed if data is not None
                 if func in (
-                    self.add_simple_text,
-                    self.add_simple_list,
-                    self.add_pictures,
+                        self.add_simple_text,
+                        self.add_simple_list,
+                        self.add_pictures,
                 ):
                     func(title, data)
                 elif func == self.add_er_diagram:
                     func(data, title)
                 elif func == self.add_two_elements_list:
+                    # Ensure both name_one and name_two exist
                     func(data, title, field[3], field[4])
                 elif func == self.add_three_element_list:
+                    # Ensure name_one, name_two, and name_three exist
                     func(data, title, field[3], field[4], field[5])
 
     def generate(self) -> bytes:
