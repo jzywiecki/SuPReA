@@ -2,7 +2,7 @@
 This module defines the API routes for interacting with project components, specifically requirements.
 """
 
-from fastapi import APIRouter, status, Response
+from fastapi import APIRouter, status, Response, Depends
 from services import get_component
 from services import update_component_by_ai
 from services import regenerate_component_by_ai
@@ -23,6 +23,7 @@ router = APIRouter(
 @router.get(
     "/requirements/{project_id}",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def get_requirements(project_id: str):
     """
@@ -79,6 +80,7 @@ class UpdateRequirementsRequest(BaseModel):
 @router.put(
     "/requirements/update",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def update_requirements(request: UpdateRequirementsRequest):
     """

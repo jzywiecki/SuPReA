@@ -23,6 +23,7 @@ router = APIRouter(
 @router.get(
     "/database_schema/{project_id}",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def get_database_schema(project_id: str):
     """
@@ -79,6 +80,7 @@ class UpdateDatabaseSchemaRequest(BaseModel):
 @router.put(
     "/database_schema/update",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def update_database_schema(request: UpdateDatabaseSchemaRequest):
     """

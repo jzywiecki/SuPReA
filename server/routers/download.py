@@ -2,7 +2,7 @@
 This module defines the API routes for downloading project resources.
 """
 
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Response, status, Depends
 from services import generate_pdf_for_project
 from utils import verify_project_membership
 
@@ -15,6 +15,7 @@ router = APIRouter(
 @router.get(
     "/pdf/{project_id}",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def download_pdf(project_id: str):
     """
