@@ -1,4 +1,5 @@
 import ray
+from utils import logger
 
 
 @ray.remote
@@ -21,5 +22,5 @@ class RemoteTasksManager:
             self.task_queue.append(new_remote_task)
             return new_remote_task
         except Exception as e:
-            print(f"Remote task manager error: {e}")
+            logger.error(f"Error adding remote task: {e}")
             return None
