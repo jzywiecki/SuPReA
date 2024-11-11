@@ -7,6 +7,7 @@ import ray
 import requests
 from io import BytesIO
 from reportlab.platypus import Image
+from PIL import Image as PILImage
 from utils import logger
 
 
@@ -29,6 +30,21 @@ def fetch_image(url: str, width, height) -> Image | None:
     return None
 
 
+def fetch_image_bytes(url: str, width: int, height: int) -> bytes | None:
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        image = PILImage.open(BytesIO(response.content))
+
+        resized_image = image.resize((width, height))
+
+        output = BytesIO()
+        resized_image.save(output, format="PNG")
+        return output.getvalue()
+
+    return None
+
+
 @ray.remote
 def fetch_image_task(url: str, width, height) -> Image | None:
     """
@@ -40,6 +56,21 @@ def fetch_image_task(url: str, width, height) -> Image | None:
     """
     try:
         return fetch_image(url, width, height)
+    except Exception as e:
+        logger.error(f"{e}")
+        return None
+
+
+@ray.remote
+def fetch_image_bytes_task(url: str, width, height) -> bytes | None:
+    """
+    Fetches an bytes from the specified URL and returns its binary data asynchronously using Ray.
+
+    :param url: The URL of the image to fetch.
+    :return: Binary data of the image if the fetch is successful, otherwise None.
+    """
+    try:
+        return fetch_image_bytes(url, width, height)
     except Exception as e:
         logger.error(f"{e}")
         return None
