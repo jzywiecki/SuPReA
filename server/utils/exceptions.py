@@ -34,6 +34,14 @@ class ProjectNotFound(Exception):
         super().__init__(f"Project with id: '{project_id}' not found")
 
 
+class PictureNotFound(Exception):
+    """Exception raised when a requested picture is not found."""
+
+    def __init__(self, picture_id: str):
+        self.picture_id = picture_id
+        super().__init__(f"Picture with id: '{picture_id}' not found")
+
+
 class ComponentNotFound(Exception):
     """Exception raised when a specific component is not found within a project."""
 
@@ -102,6 +110,16 @@ def register_fastapi_exception_handlers(app: FastAPI) -> None:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={"detail": f"Project with id: {exc.project_id} not found"},
+        )
+
+    @app.exception_handler(PictureNotFound)
+    async def picture_not_found_exception_handler(
+        request: Request, exc: PictureNotFound
+    ):
+        logger.error(f"Picture with id: {exc.picture_id} not found")
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"detail": f"Picture with id: {exc.picture_id} not found"},
         )
 
     @app.exception_handler(InvalidParameter)
