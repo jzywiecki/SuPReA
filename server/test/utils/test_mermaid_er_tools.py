@@ -1,6 +1,6 @@
-from utils.mermaid_tools import parse_table_to_erdiagram_mermaid
-from utils.mermaid_tools import parse_relationship_to_erdiagram_mermaid
-from utils.mermaid_tools import parse_database_to_erdiagram_mermaid
+from utils.mermaid_er_tools import parse_table_to_erdiagram_mermaid
+from utils.mermaid_er_tools import parse_relationship_to_erdiagram_mermaid
+from utils.mermaid_er_tools import parse_database_to_erdiagram_mermaid
 
 import unittest
 

@@ -1,6 +1,6 @@
 from unittest import TestLoader, TextTestRunner, TestSuite
 
-from test.utils.test_mermaid_tools import (
+from test.utils.test_mermaid_er_tools import (
     TestParseTableToErdiagramMermaid,
     TestParseRelationshipToErdiagramMermaid,
     TestParseDatabaseToErdiagramMermaid,
@@ -88,6 +88,9 @@ from test.generation.test_suggested_technologies import (
     TestGenerateSuggestedTechnologiesByAI,
     TestUpdateSuggestedTechnologiesByAI,
 )
+from test.utils.test_mermaid_class_diagram_tools import (
+    TestUmlToMermaidSyntax,
+)
 
 
 if __name__ == "__main__":
@@ -154,6 +157,7 @@ if __name__ == "__main__":
             TestUpdateSuggestedTechnologies,
             TestGenerateSuggestedTechnologiesByAI,
             TestUpdateSuggestedTechnologiesByAI,
+            TestUmlToMermaidSyntax,
         )
     ]
     suite = TestSuite(tests)
