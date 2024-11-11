@@ -11,6 +11,8 @@ from .exceptions import InvalidParameter
 from .exceptions import AIModelNotFound
 from .exceptions import RayUnexpectedException
 
+from .fetch import is_valid_url
+
 from .pdf import PDFGenerator
 
 from .tasks_manager import RemoteTasksManager
