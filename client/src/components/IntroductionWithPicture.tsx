@@ -1,5 +1,9 @@
-const IntroductionWithPicture = ({ title, subtitle, description, features, imageSrc, imageAlt }) => (
-    <div className="overflow-hidden py-24 sm:py-32">
+import React, { forwardRef } from "react";
+
+// Forwarding ref to the component
+const IntroductionWithPicture = forwardRef(
+  ({ title, subtitle, description, features, imageSrc, imageAlt }, ref) => (
+    <div ref={ref} className="overflow-hidden py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
           
@@ -35,7 +39,7 @@ const IntroductionWithPicture = ({ title, subtitle, description, features, image
         </div>
       </div>
     </div>
-  );
-  
-  export default IntroductionWithPicture;
-  
+  )
+);
+
+export default IntroductionWithPicture;
