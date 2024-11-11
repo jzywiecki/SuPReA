@@ -30,6 +30,7 @@ import './styles/styles.css'
 import ProjectDetailsReadme from './pages/ProjectDetailsReadme';
 import Layout from './pages/Layout';
 import LogoList from './pages/projectPages/LogoList';
+import PageNotFound from './pages/PageNotFound';
 
 function App() {
   return (
@@ -76,7 +77,7 @@ function App() {
                 <Route path="/create-project" element={<CreateProject />} />
                 <Route path="/profile/:id" element={<Profile />} />
                 <Route path="/collaborators" element={<SearchAndAddFriends />} />
-                {/* <Route path="*" element={<ErrorPage />} /> */}
+                <Route path="*" element={<PageNotFound />} />
               </Routes>
             </div>
           </RegenerateProvider>
