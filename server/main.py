@@ -17,6 +17,7 @@ from routers import (
     question,
     suggested_technologies,
     mockups,
+    uml_diagram_class,
 )
 from fastapi.middleware.cors import CORSMiddleware
 from utils import register_fastapi_exception_handlers
@@ -42,3 +43,4 @@ app.include_router(logo.router)
 app.include_router(question.router)
 app.include_router(suggested_technologies.router)
 app.include_router(mockups.router)
+app.include_router(uml_diagram_class.router)
