@@ -9,6 +9,7 @@ import certifi
 
 from .chats import ChatDAO
 from .projects import ProjectDAO
+from .pictures import PictureDAO
 
 
 mongo_client = pymongo.MongoClient(
@@ -27,6 +28,8 @@ chat_dao = ChatDAO(db, "chats")
 
 project_dao = ProjectDAO(db, "projects")
 
+picture_dao = PictureDAO(db, "pictures")
+
 
 def get_chat_dao_ref() -> ChatDAO:
     """
@@ -42,3 +45,11 @@ def get_project_dao_ref() -> ProjectDAO:
     Solves serialization problem with Ray remote functions.
     """
     return project_dao
+
+
+def get_picture_dao_ref() -> PictureDAO:
+    """
+    Returns a reference to the global picture DAO.
+    Solves serialization problem with Ray remote functions.
+    """
+    return picture_dao
