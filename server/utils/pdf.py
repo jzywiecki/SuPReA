@@ -124,7 +124,7 @@ class PDFGenerator:
         actors_refs = []
         for picture_url in pictures_urls:
             actors_refs.append(
-                fetch_image_from_database_task.remote(picture_url, 200, 200)
+                fetch_image_from_database_task.remote(picture_url, 300, 300)
             )
         pictures = ray.get(actors_refs)
 
