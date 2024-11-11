@@ -9,11 +9,13 @@ from reportlab.platypus import Image
 from utils import logger
 
 
-def fetch_image(url: str) -> Image | None:
+def fetch_image(url: str, width, height) -> Image | None:
     """
     Fetches an image from the specified URL.
 
     :param url: The URL of the image to fetch.
+    :param width: The width of the image.
+    :param height: The height of the image.
     :return: An Image object if the fetch is successful, otherwise None.
     :rtype: reportlab.platypus.Image
     """
@@ -21,13 +23,13 @@ def fetch_image(url: str) -> Image | None:
 
     if response.status_code == 200:
         image_stream = BytesIO(response.content)
-        image = Image(image_stream, width=200, height=200)
+        image = Image(image_stream, width=width, height=height)
         return image
     return None
 
 
 @ray.remote
-def fetch_image_task(url: str):
+def fetch_image_task(url: str, width, height) -> Image | None:
     """
     Fetches an image from the specified URL asynchronously using Ray.
 
@@ -36,7 +38,7 @@ def fetch_image_task(url: str):
     :rtype: reportlab.platypus.Image
     """
     try:
-        return fetch_image(url)
+        return fetch_image(url, width, height)
     except Exception as e:
         logger.error(f"{e}")
         return None
