@@ -14,7 +14,7 @@ import ActorList from './pages/projectPages/ActorsList';
 import ElevatorSpeech from './pages/projectPages/ElevatorSpeech';
 import BusinessScenario from './pages/projectPages/BusinesScenario';
 import { RegenerateProvider } from './components/contexts/RegenerateContext';
-import Hero from './components/Hero';
+import Home from './pages/Home';
 import UMLDiagrams from './pages/projectPages/umlDiagrams';
 import ProjectTimeline from './pages/projectPages/ProjectTimeline';
 import DatabaseDiagram from './pages/projectPages/DatabaseDiagram';
@@ -50,7 +50,7 @@ function App() {
             <div className="">
               <Navbar />
               <Routes>
-                <Route path="/" element={<Hero />} />
+                <Route path="/" element={<Home />} />
                 <Route path="register" element={<RegisterView />} />
                 <Route path="login" element={<LoginView />} />
                 <Route path="/projects" element={<ProjectsView />} />
