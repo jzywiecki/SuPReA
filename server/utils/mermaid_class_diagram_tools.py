@@ -43,7 +43,9 @@ def uml_to_mermaid_syntax(umls: dict) -> str:
             elif relationship_type == "realization":
                 mermaid_diagram += f"    {class_name} ..|> {target}\n"
             elif relationship_type == "interface":
-                mermaid_diagram += f"    class {target} {{\n        <<interface>>\n    }}\n"
+                mermaid_diagram += (
+                    f"    class {target} {{\n        <<interface>>\n    }}\n"
+                )
                 mermaid_diagram += f"    {class_name} ..|> {target} : implements\n"
 
     return mermaid_diagram

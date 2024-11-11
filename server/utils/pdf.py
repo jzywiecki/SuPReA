@@ -182,8 +182,7 @@ class PDFGenerator:
                 "UML diagram class",
                 (
                     create_uml_class_diagram_mermaid(project.get("uml_diagram_class"))
-                    if project.get("uml_diagram_class")
-                       != {"uml_diagram_class": []}
+                    if project.get("uml_diagram_class") != {"uml_diagram_class": []}
                     else None
                 ),
                 self.add_mermaid_diagram,

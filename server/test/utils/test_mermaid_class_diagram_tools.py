@@ -9,16 +9,22 @@ class TestUmlToMermaidSyntax(unittest.TestCase):
             "uml_diagram_class": [
                 {
                     "name": "User",
-                    "attributes": [{"name": "id", "type": "int"}, {"name": "name", "type": "string"}],
-                    "methods": [{"name": "getId", "return_type": "int"}, {"name": "setName", "return_type": "void"}],
-                    "relationships": [{"type": "association", "target": "Order"}]
+                    "attributes": [
+                        {"name": "id", "type": "int"},
+                        {"name": "name", "type": "string"},
+                    ],
+                    "methods": [
+                        {"name": "getId", "return_type": "int"},
+                        {"name": "setName", "return_type": "void"},
+                    ],
+                    "relationships": [{"type": "association", "target": "Order"}],
                 },
                 {
                     "name": "Order",
                     "attributes": [{"name": "orderId", "type": "int"}],
                     "methods": [{"name": "calculateTotal", "return_type": "float"}],
-                    "relationships": []
-                }
+                    "relationships": [],
+                },
             ]
         }
         expected_result = (
@@ -44,14 +50,17 @@ class TestUmlToMermaidSyntax(unittest.TestCase):
                     "name": "Admin",
                     "attributes": [{"name": "level", "type": "int"}],
                     "methods": [{"name": "manageUsers", "return_type": "void"}],
-                    "relationships": [{"type": "inheritance", "target": "User"}]
+                    "relationships": [{"type": "inheritance", "target": "User"}],
                 },
                 {
                     "name": "User",
-                    "attributes": [{"name": "id", "type": "int"}, {"name": "name", "type": "string"}],
+                    "attributes": [
+                        {"name": "id", "type": "int"},
+                        {"name": "name", "type": "string"},
+                    ],
                     "methods": [{"name": "getId", "return_type": "int"}],
-                    "relationships": []
-                }
+                    "relationships": [],
+                },
             ]
         }
         expected_result = (
@@ -76,7 +85,9 @@ class TestUmlToMermaidSyntax(unittest.TestCase):
                     "name": "User",
                     "attributes": [{"name": "id", "type": "int"}],
                     "methods": [{"name": "getId", "return_type": "int"}],
-                    "relationships": [{"type": "association", "target invalid": "Order"}]
+                    "relationships": [
+                        {"type": "association", "target invalid": "Order"}
+                    ],
                 }
             ]
         }
@@ -99,8 +110,8 @@ class TestUmlToMermaidSyntax(unittest.TestCase):
                     "relationships": [
                         {"type": "association", "target": "Order"},
                         {"type": "dependency", "target": "Invoice"},
-                        {"type": "aggregation", "target": "Address"}
-                    ]
+                        {"type": "aggregation", "target": "Address"},
+                    ],
                 }
             ]
         }
@@ -124,7 +135,7 @@ class TestUmlToMermaidSyntax(unittest.TestCase):
                     "name": "User",
                     "attributes": [{"name": "userId", "type": "int"}],
                     "methods": [{"name": "getUserId", "return_type": "int"}],
-                    "relationships": [{"type": "interface", "target": "Authenticable"}]
+                    "relationships": [{"type": "interface", "target": "Authenticable"}],
                 }
             ]
         }
@@ -149,15 +160,11 @@ class TestUmlToMermaidSyntax(unittest.TestCase):
                     "name": "EmptyClass",
                     "attributes": [],
                     "methods": [],
-                    "relationships": []
+                    "relationships": [],
                 }
             ]
         }
-        expected_result = (
-            "classDiagram\n"
-            "    class EmptyClass {\n"
-            "    }\n"
-        )
+        expected_result = "classDiagram\n" "    class EmptyClass {\n" "    }\n"
         self.assertEqual(uml_to_mermaid_syntax(uml_diagram_class), expected_result)
 
     def test_no_relationships(self):
@@ -168,14 +175,14 @@ class TestUmlToMermaidSyntax(unittest.TestCase):
                     "name": "Person",
                     "attributes": [{"name": "name", "type": "string"}],
                     "methods": [{"name": "getName", "return_type": "string"}],
-                    "relationships": []
+                    "relationships": [],
                 },
                 {
                     "name": "Address",
                     "attributes": [{"name": "street", "type": "string"}],
                     "methods": [{"name": "getStreet", "return_type": "string"}],
-                    "relationships": []
-                }
+                    "relationships": [],
+                },
             ]
         }
         expected_result = (
@@ -201,8 +208,8 @@ class TestUmlToMermaidSyntax(unittest.TestCase):
                     "methods": [{"name": "getCustomerId", "return_type": "int"}],
                     "relationships": [
                         {"type": "association", "target": "Order"},
-                        {"type": "invalid_type", "target": "Invoice"}
-                    ]
+                        {"type": "invalid_type", "target": "Invoice"},
+                    ],
                 }
             ]
         }
