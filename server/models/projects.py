@@ -18,6 +18,7 @@ from .database_schema import DatabaseSchema
 from .logo import Logo
 from .mockups import Mockups
 from .suggested_technologies import SuggestedTechnologies
+from .uml_diagram_class import UMLDiagramClasses
 
 
 class Project(BaseModel):
@@ -50,6 +51,7 @@ class Project(BaseModel):
     title: Optional[Title] = None
     database_schema: Optional[DatabaseSchema] = None
     suggested_technologies: Optional[SuggestedTechnologies] = None
+    uml_diagram_class: Optional[UMLDiagramClasses] = None
     mockups: Optional[Mockups] = None
     logo: Optional[Logo] = None
     chat_id: Optional[ObjectId] = None
@@ -67,6 +69,7 @@ class Project(BaseModel):
         self.strategy = Strategy()
         self.title = Title()
         self.database_schema = DatabaseSchema()
+        self.uml_diagram_class = UMLDiagramClasses()
         self.suggested_technologies = SuggestedTechnologies()
         self.logo = Logo()
         self.mockups = Mockups()
@@ -101,6 +104,7 @@ class ComponentIdentify(Enum):
     LOGO = "logo"
     SUGGESTED_TECHNOLOGIES = "suggested_technologies"
     MOCKUPS = "mockups"
+    UML_DIAGRAM_CLASS = "uml_diagram_class"
 
 
 class ProjectPatchRequest(BaseModel):

@@ -18,6 +18,7 @@ from .model.strategy import StrategyGenerate
 from .model.title import TitleGenerate
 from .model.suggested_technologies import SuggestedTechnologiesGenerate
 from .model.mockups import MockupsGenerate
+from .model.uml_diagram_class import UMLDiagramClassesGenerate
 from .generate import GenerateActor, GenerateWithMonitor
 from utils import WrongFormatGeneratedByAI, logger
 from ai import AI
@@ -52,6 +53,7 @@ class ProjectAIGenerationActor:
             GenerateActor.remote(GenerateWithMonitor(StrategyGenerate())),
             GenerateActor.remote(GenerateWithMonitor(TitleGenerate())),
             GenerateActor.remote(GenerateWithMonitor(SuggestedTechnologiesGenerate())),
+            GenerateActor.remote(GenerateWithMonitor(UMLDiagramClassesGenerate())),
         ]
         self.generate_future = []  # Contains futures of generation components by AI.
         self.db_future = []  # Contains futures of saving components to the database.

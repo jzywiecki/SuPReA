@@ -14,3 +14,4 @@ from .strategy import Strategy
 from .title import Title
 from .suggested_technologies import SuggestedTechnologies, Technology
 from .mockups import Mockups
+from .uml_diagram_class import UMLDiagramClasses
