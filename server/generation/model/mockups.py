@@ -3,19 +3,21 @@ This module contains the MockupsGenerate class, which is responsible for generat
 """
 
 import ray
+
+from .base_picture_generation import BasePictureGeneration
 from pydantic import BaseModel
-from generation.generate import Generate
 from models import Mockups
 from models import ComponentIdentify
 from ai import ai_call_task, AI
 from utils.decorators import override
+
 
 expected_format = """
     Picture should contains mockups of your product. Don't put additional content on picture instead of mockups.
 """
 
 
-class MockupsGenerate(Generate):
+class MockupsGenerate(BasePictureGeneration):
     """
     A concrete implementation of the Generate class for generating and updating mockups models
     """
@@ -24,7 +26,9 @@ class MockupsGenerate(Generate):
         """
         Initializes the `MockupsGenerate` instance
         """
-        super().__init__(Mockups, "mockups", expected_format, ComponentIdentify.MOCKUPS)
+        super().__init__(
+            Mockups, "mockups", expected_format, ComponentIdentify.MOCKUPS, 1024, 1024
+        )
 
     @override
     def generate_by_ai(
@@ -42,7 +46,7 @@ class MockupsGenerate(Generate):
         )
 
         values_from_ai = process_ai_requests(ai_model, request)
-        self.value = self.model_class(mockups_urls=values_from_ai)
+        self.value = self.model_class(urls=values_from_ai)
         return self.value
 
     @override
@@ -61,7 +65,7 @@ class MockupsGenerate(Generate):
         )
 
         values_from_ai = process_ai_requests(ai_model, request)
-        self.value = self.model_class(mockups_urls=values_from_ai)
+        self.value = self.model_class(urls=values_from_ai)
         return self.value
 
 

@@ -8,7 +8,7 @@ import ray
 
 from models import Project
 from typing import List, Dict
-from utils.fetch import fetch_image_task
+from utils.fetch import fetch_image_from_database_task
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import (
@@ -123,7 +123,9 @@ class PDFGenerator:
         """Adds images to the PDF from a list of URLs."""
         actors_refs = []
         for picture_url in pictures_urls:
-            actors_refs.append(fetch_image_task.remote(picture_url))
+            actors_refs.append(
+                fetch_image_from_database_task.remote(picture_url, 300, 300)
+            )
         pictures = ray.get(actors_refs)
 
         if any(picture is not None for picture in pictures):
@@ -256,12 +258,12 @@ class PDFGenerator:
             ),
             (
                 "Logos",
-                (project.get("logo") or {}).get("logo_urls", []),
+                (project.get("logo") or {}).get("urls", []),
                 self.add_pictures,
             ),
             (
                 "Mockups",
-                (project.get("mockups") or {}).get("mockups_urls", []),
+                (project.get("mockups") or {}).get("urls", []),
                 self.add_pictures,
             ),
         ]

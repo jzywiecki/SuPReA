@@ -6,9 +6,12 @@ from .exceptions import WrongFormatGeneratedByAI
 from .exceptions import register_fastapi_exception_handlers
 from .exceptions import ComponentNotFound
 from .exceptions import ProjectNotFound
+from .exceptions import PictureNotFound
 from .exceptions import InvalidParameter
 from .exceptions import AIModelNotFound
 from .exceptions import RayUnexpectedException
+
+from .fetch import is_valid_url
 
 from .pdf import PDFGenerator
 

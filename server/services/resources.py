@@ -3,7 +3,10 @@ This module provides services to generate a project resources for specific proje
 """
 
 from database import project_dao
+from database import picture_dao
 from utils import ProjectNotFound, PDFGenerator
+from utils import PictureNotFound
+from models import Picture
 
 
 def generate_pdf_for_project(project_id: str):
@@ -28,3 +31,14 @@ def generate_pdf_for_project(project_id: str):
     pdf_generator.add_project(project)
 
     return pdf_generator.generate(), project.get("name", "unknown")
+
+
+def get_picture(picture_id: str):
+    """
+    Retrieves the picture from the database using the provided picture ID.
+    """
+    picture = picture_dao.get_picture(picture_id)
+    if picture is None:
+        raise PictureNotFound(picture_id)
+
+    return Picture(**picture)

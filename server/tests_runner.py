@@ -91,6 +91,9 @@ from test.generation.test_suggested_technologies import (
 from test.utils.test_mermaid_class_diagram_tools import (
     TestUmlToMermaidSyntax,
 )
+from test.utils.test_fetch import (
+    TestIsValidURL,
+)
 
 
 if __name__ == "__main__":
@@ -158,6 +161,7 @@ if __name__ == "__main__":
             TestGenerateSuggestedTechnologiesByAI,
             TestUpdateSuggestedTechnologiesByAI,
             TestUmlToMermaidSyntax,
+            TestIsValidURL,
         )
     ]
     suite = TestSuite(tests)

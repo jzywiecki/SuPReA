@@ -12,15 +12,15 @@ from .base import BaseTestUpdate
 
 
 # Test data ===================================================
-correct_data = {"logo_urls": ["exampleOne", "exampleTwo"]}
+correct_data = {"urls": ["exampleOne", "exampleTwo"]}
 
 invalid_data = {"logos": ["exampleOne", "exampleTwo"]}
 
 invalid_format = "exampleOne, exampleTwo"
 
-logo_one = Logo(logo_urls=["exampleOne", "exampleTwo"])
+logo_one = Logo(urls=["exampleOne", "exampleTwo"])
 
-logo_two = Logo(logo_urls=["exampleOne", "exampleTwo", "exampleThree"])
+logo_two = Logo(urls=["exampleOne", "exampleTwo", "exampleThree"])
 # ============================================================
 
 
@@ -44,7 +44,7 @@ class TestGenerateLogosByAI(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.generate_class = LogoGenerate
-        self.correct_generated_data = correct_data["logo_urls"]
+        self.correct_generated_data = correct_data["urls"]
         self.expected_value = logo_one
         self.invalid_generated_data_format = invalid_format
         self.invalid_generated_json = json.dumps(invalid_data)
@@ -100,7 +100,7 @@ class TestUpdateLogosByAI(unittest.TestCase):
         self.generate_class = LogoGenerate
         self.prev_expected_value = logo_two
         self.expected_value = logo_one
-        self.correct_generated_data = correct_data["logo_urls"]
+        self.correct_generated_data = correct_data["urls"]
         self.invalid_generated_data_format = invalid_format
         self.invalid_generated_json = json.dumps(invalid_data)
 
