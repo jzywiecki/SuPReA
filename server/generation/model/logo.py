@@ -38,11 +38,13 @@ class LogoGenerate(BasePictureGeneration):
         """
         Initializes the `LogoGenerate` instance.
         """
-        super().__init__(Logo, "logo", expected_format, ComponentIdentify.LOGO, 500, 500)
+        super().__init__(
+            Logo, "logo", expected_format, ComponentIdentify.LOGO, 500, 500
+        )
 
     @override
     def generate_by_ai(
-            self, ai_model: AI, for_what: str, doing_what: str, additional_info: str
+        self, ai_model: AI, for_what: str, doing_what: str, additional_info: str
     ) -> BaseModel | None:
         """
         Specify implementation for generating a model using the AI image-model.
@@ -105,8 +107,7 @@ class LogoGenerate(BasePictureGeneration):
         )
 
         list_value = process_ai_requests(
-            ai_model,
-            request1, request2, request3, request4
+            ai_model, request1, request2, request3, request4
         )
         self.value = make_model_from_reply(self.model_class, list_value)
 

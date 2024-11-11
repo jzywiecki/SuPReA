@@ -123,7 +123,9 @@ class PDFGenerator:
         """Adds images to the PDF from a list of URLs."""
         actors_refs = []
         for picture_url in pictures_urls:
-            actors_refs.append(fetch_image_from_database_task.remote(picture_url, 200, 200))
+            actors_refs.append(
+                fetch_image_from_database_task.remote(picture_url, 200, 200)
+            )
         pictures = ray.get(actors_refs)
 
         if any(picture is not None for picture in pictures):

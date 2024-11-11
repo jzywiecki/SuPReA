@@ -23,7 +23,7 @@ class TestIsValidURL(unittest.TestCase):
             "http://",
             "www.example.com",
             "ftp://",
-            "http://[invalid_ip]"
+            "http://[invalid_ip]",
         ]
 
         for url in invalid_urls:

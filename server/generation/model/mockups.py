@@ -26,7 +26,9 @@ class MockupsGenerate(BasePictureGeneration):
         """
         Initializes the `MockupsGenerate` instance
         """
-        super().__init__(Mockups, "mockups", expected_format, ComponentIdentify.MOCKUPS, 1024, 1024)
+        super().__init__(
+            Mockups, "mockups", expected_format, ComponentIdentify.MOCKUPS, 1024, 1024
+        )
 
     @override
     def generate_by_ai(

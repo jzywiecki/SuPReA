@@ -31,7 +31,7 @@ class BasePictureGeneration(Generate):
 
     @override
     def save_to_database(
-            self, project_dao: ProjectDAO, project_id: str
+        self, project_dao: ProjectDAO, project_id: str
     ) -> UpdateResult:
         """
         Asynchronously downloads images from validated URLs, resizes them, and saves
@@ -55,7 +55,9 @@ class BasePictureGeneration(Generate):
             raise ValueError("No valid URLs found in picture URLs.")
 
         for url in valid_urls:
-            fetch_images_tasks.append(fetch_image_bytes_task.remote(url, self.width, self.height))
+            fetch_images_tasks.append(
+                fetch_image_bytes_task.remote(url, self.width, self.height)
+            )
 
         self.value.urls.clear()
 
