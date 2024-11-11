@@ -16,6 +16,8 @@ import { LuPocketKnife } from "react-icons/lu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useUser } from "@/components/UserProvider";
 import React from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { PiPaperPlaneRightFill } from "react-icons/pi";
 interface Specifications {
     id: number;
     name: string;
@@ -32,6 +34,8 @@ const SpecificationsList: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isEditingMode, setIsEditingMode] = useState<boolean>(false);
     const [isBeingEdited, setIsBeingEdited] = useState<boolean>(true);
+    const [isRegenerateChatOpen, setIsRegenerateChatOpen] = useState<boolean>(false);
+    const [isUpdateChatOpen, setIsUpdateChatOpen] = useState<boolean>(false);
     const [newCard, setNewCard] = useState(false);
     const [newCardContent, setNewCardContent] = useState({ name: "", description: "", color: "", icon: "", isColorPickerOpen: false });
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -276,6 +280,8 @@ const SpecificationsList: React.FC = () => {
     // ---------------------------------------------------------------------
     const handleEditButtonClick = () => {
         setIsEditingMode(!isEditingMode);
+        setIsRegenerateChatOpen(false);
+        setIsUpdateChatOpen(false);
     };
 
     const addUserEditing = (setUsersEditing, newUser) => {
@@ -341,10 +347,7 @@ const SpecificationsList: React.FC = () => {
                 name: "User2"
             }
         ]);
-        useEffect(() => {
-            console.log("on mount", toolbarRef.current.startX)
 
-        }, []);
 
 
         const handleAddUser = () => {
@@ -374,15 +377,24 @@ const SpecificationsList: React.FC = () => {
 
 
         const handleMouseMove = (e) => {
-            if (isDragging.current) {
-                const newX = e.clientX - toolbarRef.current.startX;
-                const newY = e.clientY - toolbarRef.current.startY;
+            if (isDragging.current && toolbarRef.current && toolbarRef.current.parentElement) {
+                const toolbarWidth = toolbarRef.current.offsetWidth;
+                const toolbarHeight = toolbarRef.current.offsetHeight;
+                const parentWidth = toolbarRef.current.parentElement.offsetWidth;
+                const parentHeight = toolbarRef.current.parentElement.offsetHeight;
 
-                // Bezpośrednia aktualizacja `positionRef` zamiast stanu
+                let newX = e.clientX - toolbarRef.current.startX;
+                let newY = e.clientY - toolbarRef.current.startY;
+
+                newX = Math.max(-(parentWidth - toolbarWidth - 20), Math.min(newX, toolbarWidth));
+                newY = Math.max(-(parentHeight - toolbarHeight - 30), Math.min(newY, toolbarHeight));
+
                 positionRef.current = { x: newX, y: newY };
                 toolbarRef.current.style.transform = `translate(${newX}px, ${newY}px)`;
             }
         };
+
+
 
 
         const handleMouseUp = () => {
@@ -399,7 +411,6 @@ const SpecificationsList: React.FC = () => {
 
             <div
                 className="toolbar-container flex items-center space-x-4"
-                // style={{ position: "absolute", left: `${position.x}px`, top: `${position.y}px`, height: "fit-content" }}
                 style={{
                     position: "absolute",
                     transform: `translate(${positionRef.current.x}px, ${positionRef.current.y}px)`,
@@ -420,17 +431,22 @@ const SpecificationsList: React.FC = () => {
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <LuPocketKnife size={25} />
+                                    <LuPocketKnife onClick={() => {
+                                        setIsUpdateChatOpen((prev) => !prev)
+                                    }} size={25} />
                                 </TooltipTrigger>
                                 <TooltipContent>Update with AI</TooltipContent>
                             </Tooltip>
 
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <MdOutlineSwitchAccessShortcutAdd size={25} />
+                                    <MdOutlineSwitchAccessShortcutAdd onClick={() => {
+                                        setIsRegenerateChatOpen((prev) => !prev)
+                                    }} size={25} />
                                 </TooltipTrigger>
                                 <TooltipContent>Regenerate with AI</TooltipContent>
                             </Tooltip>
+
 
                             <Tooltip>
                                 <TooltipTrigger>
@@ -450,20 +466,184 @@ const SpecificationsList: React.FC = () => {
 
     });
 
+
+    const positionRefChat = useRef({ x: 0, y: 0 });
+    const positionRefInfo = useRef({ x: 0, y: 0 });
+    const isDraggingChat = useRef(false);
+    const isDraggingInfo = useRef(false);
+
+    const ChatButton = React.memo(() => {
+        const chatRef = useRef(null);
+
+        const handleMouseDown = (e) => {
+            if (chatRef.current && chatRef.current.contains(e.target)) {
+                isDraggingChat.current = true;
+                chatRef.current.startX = e.clientX - positionRefChat.current.x;
+                chatRef.current.startY = e.clientY - positionRefChat.current.y;
+                document.addEventListener("mousemove", handleMouseMoveChat);
+                document.addEventListener("mouseup", handleMouseUpChat);
+            }
+        };
+
+        const handleMouseMoveChat = (e) => {
+            if (isDraggingChat.current && chatRef.current && chatRef.current.parentElement) {
+                const chatWidth = chatRef.current.offsetWidth;
+                const chatHeight = chatRef.current.offsetHeight;
+                const parentWidth = chatRef.current.parentElement.offsetWidth;
+                const parentHeight = chatRef.current.parentElement.offsetHeight;
+
+                let newX = e.clientX - chatRef.current.startX;
+                let newY = e.clientY - chatRef.current.startY;
+
+                newX = Math.max(-(parentWidth - chatWidth - 20), Math.min(newX, chatWidth));
+                newY = Math.max(-(parentHeight - chatHeight - 30), Math.min(newY, chatHeight));
+
+                positionRefChat.current = { x: newX, y: newY };
+                chatRef.current.style.transform = `translate(${newX}px, ${newY}px)`;
+            }
+        };
+
+        const handleMouseUpChat = () => {
+            isDraggingChat.current = false;
+            document.removeEventListener("mousemove", handleMouseMoveChat);
+            document.removeEventListener("mouseup", handleMouseUpChat);
+        };
+
+        if (!isUpdateChatOpen) {
+            return (<></>)
+        }
+
+        return (
+            <div
+                className="absolute right-5 bottom-20 z-50 flex flex-row bg-white rounded-md shadow-lg"
+                style={{
+                    transform: `translate(${positionRefChat.current.x}px, ${positionRefChat.current.y}px)`,
+                }}
+                ref={chatRef}
+                onMouseDown={handleMouseDown}
+            >
+                <div className="flex flex-col justify-between p-1.5 bg-gray-200">
+                    <div className="h-[30%] hover:text-red-500 cursor-pointer">
+                        <IoCloseSharp onClick={() => {
+                            setIsUpdateChatOpen(false)
+                        }} size={20} />
+                    </div>
+                    <div className="flex items-center justify-center h-[60%] bg-black text-white rounded-md">
+                        <PiPaperPlaneRightFill size={15} />
+                    </div>
+                </div>
+                <Textarea
+                    placeholder={
+                        selectedItems.length > 0
+                            ? "Write what you want to update. Applicable to elements: " +
+                            Array.from(new Set(selectedItems))
+                                .map(num => num + 1)
+                                .sort((a, b) => a - b)
+                                .join(", ")
+                            : "Write what you want to update."
+                    }
+                />
+            </div>
+        );
+    });
+
+    const InfoButton = React.memo(() => {
+        const infoRef = useRef(null);
+
+        const handleMouseDown = (e) => {
+            if (infoRef.current && infoRef.current.contains(e.target)) {
+                isDraggingInfo.current = true;
+                infoRef.current.startX = e.clientX - positionRefInfo.current.x;
+                infoRef.current.startY = e.clientY - positionRefInfo.current.y;
+                document.addEventListener("mousemove", handleMouseMoveInfo);
+                document.addEventListener("mouseup", handleMouseUpInfo);
+            }
+        };
+
+        const handleMouseMoveInfo = (e) => {
+            if (isDraggingInfo.current && infoRef.current && infoRef.current.parentElement) {
+                const regenWidth = infoRef.current.offsetWidth;
+                const regenHeight = infoRef.current.offsetHeight;
+                const parentWidth = infoRef.current.parentElement.offsetWidth;
+                const parentHeight = infoRef.current.parentElement.offsetHeight;
+
+                let newX = e.clientX - infoRef.current.startX;
+                let newY = e.clientY - infoRef.current.startY;
+
+                newX = Math.max(-(parentWidth - regenWidth - 20), Math.min(newX, regenWidth));
+                newY = Math.max(-(parentHeight - regenHeight - 176), Math.min(newY, 2 * regenHeight));
+
+                positionRefInfo.current = { x: newX, y: newY };
+                infoRef.current.style.transform = `translate(${newX}px, ${newY}px)`;
+            }
+        };
+
+        const handleMouseUpInfo = () => {
+            isDraggingInfo.current = false;
+            document.removeEventListener("mousemove", handleMouseMoveInfo);
+            document.removeEventListener("mouseup", handleMouseUpInfo);
+        };
+
+        if (!isRegenerateChatOpen) {
+            return (<></>)
+        }
+
+        return (
+            <div
+                className="absolute right-5 bottom-44 z-50 flex flex-row bg-white rounded-md shadow-lg"
+                style={{
+                    position: "absolute",
+                    transform: `translate(${positionRefInfo.current.x}px, ${positionRefInfo.current.y}px)`,
+                }}
+                ref={infoRef}
+                onMouseDown={handleMouseDown}
+            >
+
+                <div className="flex flex-col justify-between p-1.5 bg-gray-200">
+                    <div className="h-[30%] hover:text-red-500 cursor-pointer">
+                        <IoCloseSharp onClick={() => {
+                            setIsRegenerateChatOpen(false)
+                        }} size={20} />
+                    </div>
+                    <div className="flex items-center justify-center h-[60%] bg-black text-white rounded-md">
+                        <PiPaperPlaneRightFill size={15} />
+                    </div>
+                </div>
+                <Textarea
+                    placeholder={
+                        selectedItems.length > 0
+                            ? "Write what to regenerate. Applicable to elements: " +
+                            Array.from(new Set(selectedItems))
+                                .map(num => num + 1)
+                                .sort((a, b) => a - b)
+                                .join(", ")
+                            : "Write what to regenerate."
+                    }
+                />
+            </div>
+        );
+    });
+
+
     if (isLoading) {
         return (
-            Array.from({ length: 7 }).map((_, index) => (
-                <Skeleton key={index} className="h-32 w-full m-2 max-w-lg" />
-            ))
+            <div className="flex flex-wrap justify-center items-start gap-4 p-4 relative">
+                {Array.from({ length: 7 }).map((_, index) => (
+                    <Skeleton key={index} className="h-32 w-full m-2 max-w-lg" />
+                ))}
+            </div>
+
         )
     }
 
     return (
-        <div>
+        <div className="h-screen">
+            <ChatButton />
+            <InfoButton />
             <FloatingToolbar />
             <div
                 onMouseDown={handleSelectionStart}
-                className="relative "
+                className="relative h-screen"
             >
 
                 <header className="text-center py-4 bg-gray-200">
