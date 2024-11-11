@@ -31,6 +31,9 @@ export const authenticationMiddleware = (io, db) => {
                 throw new UserIsNotProjectMemberException("User is not a member of the project");
             }
 
+            socket.userId = userId;
+            socket.projectId = projectId;
+
             next();
         }
 
