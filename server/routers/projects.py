@@ -137,6 +137,7 @@ def get_project(project_id: str):
     response_model=Project,
     status_code=status.HTTP_200_OK,
     response_model_by_alias=False,
+    dependencies=[Depends(verify_project_membership)],
 )
 def patch_project(project_id: str, body: ProjectPatchRequest):
     """
@@ -151,6 +152,7 @@ def patch_project(project_id: str, body: ProjectPatchRequest):
 
 @router.delete(
     "/{project_id}",
+    dependencies=[Depends(verify_project_membership)],
 )
 def delete_project(project_id: str):
     """
@@ -207,6 +209,7 @@ def get_project_list(user_id: str):
     "/{project_id}/members/add",
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
+    dependencies=[Depends(verify_project_membership)],
 )
 def invite_member(project_id: str, invite: MemberAction):
     """
@@ -221,6 +224,7 @@ def invite_member(project_id: str, invite: MemberAction):
 @router.post(
     "/{project_id}/members/remove",
     status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(verify_project_membership)],
 )
 def remove_member(project_id: str, removal: MemberAction):
     """
@@ -236,6 +240,7 @@ def remove_member(project_id: str, removal: MemberAction):
     "/{project_id}/managers/assign",
     status_code=status.HTTP_201_CREATED,
     response_model_by_alias=False,
+    dependencies=[Depends(verify_project_membership)],
 )
 def assign_manager(project_id: str, assignment: MemberAction):
     """
@@ -252,6 +257,7 @@ def assign_manager(project_id: str, assignment: MemberAction):
 @router.post(
     "/{project_id}/managers/unassign",
     status_code=status.HTTP_204_NO_CONTENT,
+    dependencies=[Depends(verify_project_membership)],
 )
 def unassign_manager(project_id: str, assignment: MemberAction):
     """
@@ -268,6 +274,7 @@ def unassign_manager(project_id: str, assignment: MemberAction):
 @router.post(
     "/{project_id}/owner/assign",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def assign_owner(project_id: str, assignment: MemberAction):
     """

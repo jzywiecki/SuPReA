@@ -23,6 +23,7 @@ class ProjectDAO:
 
     def __init__(self, mongo_db, collection_name):
         self.collection = mongo_db.get_collection(collection_name)
+        self.users_collection = mongo_db.get_collection("users")
 
     def get_project(self, project_id: str) -> Optional[Dict]:
         """
@@ -58,6 +59,54 @@ class ProjectDAO:
                 },
             )
         )
+
+    def _get_user_data(self, user_ids: List[ObjectId]) -> List[Dict]:
+        """
+        Helper method to retrieve and format user data from the database.
+        :param user_ids: List of ObjectIds representing user IDs.
+        :return: List of formatted user data dictionaries.
+        """
+        users_data = self.users_collection.find(
+            {"_id": {"$in": user_ids}},
+            {
+                "_id": 1,
+                "username": 1,
+                "email": 1,
+                "avatarURL": 1,
+                "name": 1,
+                "description": 1,
+                "readme": 1,
+                "organization": 1,
+                "location": 1,
+                "website": 1,
+            },
+        )
+
+        return [
+            {
+                "_id": ObjectId(user.get("_id")),
+                "username": user.get("username", ""),
+                "email": user.get("email", ""),
+                "avatarURL": user.get("avatarURL", ""),
+                "name": user.get("name", ""),
+                "description": user.get("description", ""),
+                "readme": user.get("readme", ""),
+                "organization": user.get("organization", ""),
+                "location": user.get("location", ""),
+                "website": user.get("website", ""),
+            }
+            for user in users_data
+        ]
+
+    def get_project_members(self, project_id: str) -> List[Dict]:
+        project = self.collection.find_one({"_id": ObjectId(project_id)})
+
+        if not project:
+            return None
+        
+        member_ids = project.get("members", [])
+        
+        return self._get_user_data(member_ids)
 
     def get_projects_by_member(self, member_id: str) -> List[Dict]:
         """

@@ -14,7 +14,6 @@ def get_token_from_headers(request: Request):
     :return: JWT token as a string.
     """
     auth_header = request.headers.get("authorization")
-    print(request.headers)
     if not auth_header:
         raise HTTPException(status_code=401, detail="Authorization header missing")
     
@@ -44,7 +43,7 @@ def verify_project_membership(
         
         members = project_dao.get_project_members(project_id)
         if user_email not in [member.get("email") for member in members]:
-            raise HTTPException(status_code=403, detail="User is not a member of the project")
+            raise HTTPException(status_code=404, detail="Project not found")
 
     except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
