@@ -11,7 +11,7 @@ from models import ComponentIdentify, Strategy
 from .common import RegenerateComponentByAIRequest
 from generation.model.strategy import StrategyGenerate
 from pydantic import BaseModel
-
+from utils import verify_project_membership
 
 router = APIRouter(
     tags=["model"],

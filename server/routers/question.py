@@ -6,6 +6,7 @@ It provides an endpoint for submitting questions to the AI and receiving respons
 from fastapi import APIRouter, status, Response
 from services import serve_ask_ai_question
 from pydantic import BaseModel
+from utils import verify_project_membership
 
 
 router = APIRouter(

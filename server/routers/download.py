@@ -4,6 +4,7 @@ This module defines the API routes for downloading project resources.
 
 from fastapi import APIRouter, Response, status
 from services import generate_pdf_for_project
+from utils import verify_project_membership
 
 router = APIRouter(
     tags=["download"],

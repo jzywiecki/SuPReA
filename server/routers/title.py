@@ -11,7 +11,7 @@ from models import ComponentIdentify, Title
 from .common import RegenerateComponentByAIRequest
 from generation.model.title import TitleGenerate
 from pydantic import BaseModel
-
+from utils import verify_project_membership
 
 router = APIRouter(
     tags=["model"],

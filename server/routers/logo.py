@@ -8,6 +8,7 @@ from services import get_component
 from services import regenerate_component_by_ai
 from .common import RegenerateComponentByAIRequest
 from models import ComponentIdentify
+from utils import verify_project_membership
 
 
 router = APIRouter(

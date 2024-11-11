@@ -11,6 +11,7 @@ from models import ComponentIdentify, ElevatorSpeech
 from .common import RegenerateComponentByAIRequest
 from generation.model.elevator_speech import ElevatorSpeechGenerate
 from pydantic import BaseModel
+from utils import verify_project_membership
 
 
 router = APIRouter(

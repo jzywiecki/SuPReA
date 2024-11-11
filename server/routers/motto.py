@@ -11,6 +11,7 @@ from models import ComponentIdentify, Motto
 from .common import RegenerateComponentByAIRequest
 from generation.model.motto import MottoGenerate
 from pydantic import BaseModel
+from utils import verify_project_membership
 
 
 router = APIRouter(

@@ -11,6 +11,7 @@ from models import ComponentIdentify, Requirements
 from .common import RegenerateComponentByAIRequest
 from generation.model.requirements import RequirementsGenerate
 from pydantic import BaseModel
+from utils import verify_project_membership
 
 
 router = APIRouter(

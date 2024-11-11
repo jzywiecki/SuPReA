@@ -11,7 +11,7 @@ from models import ComponentIdentify, Risks
 from .common import RegenerateComponentByAIRequest
 from generation.model.risks import RiskGenerate
 from pydantic import BaseModel
-
+from utils import verify_project_membership
 
 router = APIRouter(
     tags=["model"],

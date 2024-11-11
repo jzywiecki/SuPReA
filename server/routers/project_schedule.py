@@ -11,7 +11,7 @@ from models import ComponentIdentify, ProjectSchedule
 from .common import RegenerateComponentByAIRequest
 from generation.model.project_schedule import ProjectScheduleGenerate
 from pydantic import BaseModel
-
+from utils import verify_project_membership
 
 router = APIRouter(
     tags=["model"],

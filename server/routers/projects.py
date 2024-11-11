@@ -25,6 +25,7 @@ from services import (
 )
 from models import ProjectPatchRequest
 from utils import verify_project_membership
+from utils import verify_project_membership
 
 
 router = APIRouter(tags=["projects"], prefix="/projects")
