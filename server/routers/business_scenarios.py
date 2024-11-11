@@ -65,7 +65,7 @@ def regenerate_business_scenarios_by_ai(request: RegenerateComponentByAIRequest)
     """
     return regenerate_component_by_ai(request, BusinessScenariosGenerate)
 
-
+    
 class UpdateBusinessScenariosRequest(BaseModel):
     """
     The request object for updating the business scenarios component by value provided by user.

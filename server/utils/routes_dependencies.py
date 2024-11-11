@@ -31,7 +31,7 @@ def verify_project_membership(
     :raises HTTPException: If the user is not authorized or not a member.
     """
     token = get_token_from_headers(request)
-    
+   
     try:
         # Decode the token (replace 'secret' with your actual secret key)
         payload = decode(token, "secret", algorithms=["HS256"])
@@ -41,6 +41,45 @@ def verify_project_membership(
         if not user_email:
             raise HTTPException(status_code=401, detail="Invalid token payload")
         
+        members = project_dao.get_project_members(project_id)
+        if user_email not in [member.get("email") for member in members]:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    except ProjectNotFound:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    return True
+
+
+async def verify_project_membership(request: Request):
+    """
+    Verifies if the user is a member of the project. Supports raw JWT tokens from headers.
+
+    :param request: FastAPI Request object.
+    :raises HTTPException: If the user is not authorized or not a member.
+    """
+    token = get_token_from_headers(request)
+
+    try:
+        # Decode the token (replace 'secret' with your actual secret key)
+        payload = decode(token, "secret", algorithms=["HS256"])
+        logger.info(f"Decoded Payload: {payload}")
+        
+        user_email = payload.get("email")
+        if not user_email:
+            raise HTTPException(status_code=401, detail="Invalid token payload")
+        
+        # Read and parse the request body to get project_id
+        body = await request.json()
+        project_id = body.get("project_id")
+        if not project_id:
+            raise HTTPException(status_code=400, detail="Missing project_id in request body")
+        
+        # Validate project membership
         members = project_dao.get_project_members(project_id)
         if user_email not in [member.get("email") for member in members]:
             raise HTTPException(status_code=404, detail="Project not found")
