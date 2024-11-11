@@ -20,7 +20,8 @@ from reportlab.platypus import (
     ListItem,
 )
 from mermaid.graph import Graph
-from utils.mermaid_tools import create_er_diagram_mermaid
+from utils.mermaid_er_tools import create_er_diagram_mermaid
+from utils.mermaid_class_diagram_tools import create_uml_class_diagram_mermaid
 from io import BytesIO
 
 
@@ -50,7 +51,7 @@ class PDFGenerator:
         self.pdf_elements.append(ListFlowable(items, bulletType="bullet"))
         self.pdf_elements.append(Spacer(1, 12))
 
-    def add_er_diagram(self, er_diagram_format: str, title: str) -> None:
+    def add_mermaid_diagram(self, diagram_format: str, title: str) -> None:
         self.pdf_elements.append(Paragraph(title, self.title_style))
 
         max_width = A4[0] - 50
@@ -59,7 +60,7 @@ class PDFGenerator:
         with tempfile.NamedTemporaryFile(suffix=".png", delete=True) as tmp:
             tmp_file_name = tmp.name
 
-            graphe = Graph(tmp_file_name, er_diagram_format)
+            graphe = Graph(tmp_file_name, diagram_format)
             mermaid = mmd.Mermaid(graphe)
             mermaid.to_png(tmp_file_name)
 
@@ -175,7 +176,17 @@ class PDFGenerator:
                     != {"tables": [], "relationships": []}
                     else None
                 ),
-                self.add_er_diagram,
+                self.add_mermaid_diagram,
+            ),
+            (
+                "UML diagram class",
+                (
+                    create_uml_class_diagram_mermaid(project.get("uml_diagram_class"))
+                    if project.get("uml_diagram_class")
+                       != {"uml_diagram_class": []}
+                    else None
+                ),
+                self.add_mermaid_diagram,
             ),
             (
                 "Actors",
@@ -265,7 +276,7 @@ class PDFGenerator:
                     self.add_pictures,
                 ):
                     func(title, data)
-                elif func == self.add_er_diagram:
+                elif func == self.add_mermaid_diagram:
                     func(data, title)
                 elif func == self.add_two_elements_list:
                     # Ensure both name_one and name_two exist
