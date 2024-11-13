@@ -18,6 +18,10 @@ import { useUser } from "@/components/UserProvider";
 import React from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { PiPaperPlaneRightFill } from "react-icons/pi";
+import { useUserEdits } from "./UserEditsProvider";
+import { socket } from '@/utils/sockets';
+import { getComponentyByName } from "@/utils/enums";
+
 interface Specifications {
     id: number;
     name: string;
@@ -41,7 +45,10 @@ const SpecificationsList: React.FC = () => {
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
     const [selectionBox, setSelectionBox] = useState<{ startX: number; startY: number; endX: number; endY: number } | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const [containerOffsetLeft, setContainerOffsetLeft] = useState<number>(0)
+    const [containerOffsetLeft, setContainerOffsetLeft] = useState<number>(0);
+
+    const { componentUserMap, addUserToComponent, removeUserFromComponent } = useUserEdits();
+
     const colorOptions = [
         { color: "bg-red-300", label: "Red" },
         { color: "bg-blue-300", label: "Blue" },
@@ -265,10 +272,8 @@ const SpecificationsList: React.FC = () => {
         const handleMouseUp = () => {
             handleSelectionEnd();
         };
-        // if (!isDragging) {
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
-        // }
         return () => {
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
@@ -278,8 +283,9 @@ const SpecificationsList: React.FC = () => {
 
 
     // ---------------------------------------------------------------------
-    const handleEditButtonClick = () => {
-        setIsEditingMode(!isEditingMode);
+
+    const handleEditSaveButtonClick = () => {
+        setIsEditingMode(false);
         setIsRegenerateChatOpen(false);
         setIsUpdateChatOpen(false);
     };
@@ -335,6 +341,14 @@ const SpecificationsList: React.FC = () => {
     const isDragging = useRef(false);
 
     const FloatingToolbar = React.memo(() => {
+        const handleEditButtonClick = () => {
+            const message = { component: getComponentyByName("specifications").id }
+            socket.emit("edit-component", message);
+            setIsEditingMode(true); //not here
+
+
+        };
+
         const { user } = useUser();
 
         const [usersEditing, setUsersEditing] = useState([
@@ -364,7 +378,6 @@ const SpecificationsList: React.FC = () => {
             e.preventDefault();
             e.stopPropagation();
             if (toolbarRef.current && toolbarRef.current.contains(e.target)) {
-                console.log("Event triggered within toolbar-container div");
 
                 isDragging.current = true;
                 toolbarRef.current.startX = e.clientX - positionRef.current.x;
@@ -450,7 +463,7 @@ const SpecificationsList: React.FC = () => {
 
                             <Tooltip>
                                 <TooltipTrigger>
-                                    <FiSave onClick={() => handleEditButtonClick()} size={25} />
+                                    <FiSave onClick={() => handleEditSaveButtonClick()} size={25} />
                                 </TooltipTrigger>
                                 <TooltipContent>Save</TooltipContent>
                             </Tooltip>

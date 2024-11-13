@@ -7,6 +7,11 @@ import { API_URLS } from "@/services/apiUrls";
 import axiosInstance from "@/services/api";
 import { useSnackbar } from 'notistack';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { socket } from '@/utils/sockets';
+import { useUser } from "@/components/UserProvider";
+import { getComponentById } from "@/utils/enums";
+import { useUserEdits } from "./projectPages/UserEditsProvider";
+
 import { checkProjectExists } from '../services/checkProjectExists';
 import ErrorPage from "./ErrorPage";
 
@@ -17,9 +22,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const { projectID } = useParams<{ projectID: string }>();
     const { enqueueSnackbar } = useSnackbar();
     const [sidePanel, setSidePanel] = useState<SidePanelType>(null);
+    const { user } = useUser();
+    const { componentUserMap, addUserToComponent, removeUserFromComponent, addUsersToComponents } = useUserEdits();
     const [projectExistCode, setProjectExistCode] = useState<number | null>(null);
 
     useEffect(() => {
+        if (!user?.id) return;
         async function validateProject() {
             if (projectID) {
                 const exists = await checkProjectExists(projectID);
@@ -34,7 +42,61 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         }
 
         validateProject();
-    }, []);
+
+        socket.auth = {
+            projectId: projectID,
+            userId: user.id,
+            discussionChatOffset: 0,
+            aiChatOffset: 0
+        };
+
+        socket.connect();
+
+        socket.on('edition-register', handleEditionRegister)
+
+        return () => {
+            socket.off('edition-register', handleEditionRegister);
+        };
+    }, [user?.id]);
+
+    const handleEditionRegister = (message) => {
+
+        if (message?.code == 11) {
+
+            //    received message format:
+            //        {
+            //       code: 11    (odnowienie całego rejestru)
+            //       componentsToUserMap: [ {component: id, users: [ObjectID]} ]
+            //       }
+            addUsersToComponents(message?.componentsToUserMap);
+            console.log("Edition-Register Received message with code 11")
+            console.log("New edit session registered, cleared map");
+
+        }
+        else if (message?.code == 2) {
+            //    received message format:
+            //        {
+            //       code: 2    (ktoś zarejestrował sesje edycji)
+            //       component: id (e.g. 1)
+            //       userId: ObjectID
+            //       }
+            addUserToComponent(getComponentById(message?.component).name, message?.userId);
+            console.log("Edition-Register Received message with code 2")
+            console.log("User registered:", getComponentById(message?.component).name, message?.userId);
+        }
+        else if (message?.code == 3) {
+            //    received message format:
+            //        {
+            //       code: 3    (ktoś wyrejestrował sesje edycji)
+            //       component: id
+            //       userId: ObjectID
+            //       }
+            removeUserFromComponent(getComponentById(message?.component).name, message?.userId);
+            console.log("Edition-Register Received message with code 3")
+            console.log("User removed:", getComponentById(message?.component).name, message?.userId);
+
+        }
+    }
 
 
     const handleDownloadPDF = async () => {

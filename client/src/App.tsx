@@ -30,6 +30,7 @@ import './styles/styles.css'
 import ProjectDetailsReadme from './pages/ProjectDetailsReadme';
 import Layout from './pages/Layout';
 import LogoList from './pages/projectPages/LogoList';
+import { UserEditsProvider } from './pages/projectPages/UserEditsProvider';
 import PageNotFound from './pages/PageNotFound';
 import ErrorPage from './pages/ErrorPage';
 import ProtectedRoute from './services/protectedRoute';
@@ -49,40 +50,42 @@ function App() {
       }}>
       <UserProvider>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <RegenerateProvider>
-            <div className="">
-              <Navbar />
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="register" element={<RegisterView />} />
-                <Route path="login" element={<LoginView />} />
-                <Route path="/projects" element={<ProjectsView />} />
-                <Route path="/projects/:projectID/editor" element={<Layout />}>
-                  <Route path="settings" element={<ProjectsSettings />} />
-                  <Route path="summary" element={<ProjectDetailsReadme />} />
-                  <Route path="name" element={<NameList />} />
-                  <Route path="requirements" element={<RequirementsList />} />
-                  <Route path="risk" element={<RiskList />} />
-                  <Route path="motto" element={<MottoList />} />
-                  <Route path="specifications" element={<SpecificationsList />} />
-                  <Route path="strategy" element={<StrategyList />} />
-                  <Route path="actors" element={<ActorList />} />
-                  <Route path="elevator-speech" element={<ElevatorSpeech />} />
-                  <Route path="business-scenario" element={<BusinessScenario />} />
-                  <Route path="uml" element={<UMLDiagrams />} />
-                  <Route path="schedule" element={<ProjectTimeline />} />
-                  <Route path="database-diagram" element={<DatabaseDiagram />} />
-                  <Route path="logo" element={<LogoList />} />
-                </Route>
-                <Route path="/create-project" element={<CreateProject />} />
-                <Route path="/profile/:id" element={<Profile />} />
-                <Route path="/collaborators" element={<SearchAndAddFriends />} />
-                <Route path="not-found" element={<ErrorPage />} />
-                <Route path="*" element={<ErrorPage errorCode={404} />} />
+          <UserEditsProvider>
+            <RegenerateProvider>
+              <div className="">
+                <Navbar />
+                <Routes>
+                  <Route path="/" element={<Hero />} />
+                  <Route path="register" element={<RegisterView />} />
+                  <Route path="login" element={<LoginView />} />
+                  <Route path="/projects" element={<ProjectsView />} />
+                  <Route path="/projects/:projectID/editor" element={<Layout />}>
+                    <Route path="settings" element={<ProjectsSettings />} />
+                    <Route path="summary" element={<ProjectDetailsReadme />} />
+                    <Route path="name" element={<NameList />} />
+                    <Route path="requirements" element={<RequirementsList />} />
+                    <Route path="risk" element={<RiskList />} />
+                    <Route path="motto" element={<MottoList />} />
+                    <Route path="specifications" element={<SpecificationsList />} />
+                    <Route path="strategy" element={<StrategyList />} />
+                    <Route path="actors" element={<ActorList />} />
+                    <Route path="elevator-speech" element={<ElevatorSpeech />} />
+                    <Route path="business-scenario" element={<BusinessScenario />} />
+                    <Route path="uml" element={<UMLDiagrams />} />
+                    <Route path="schedule" element={<ProjectTimeline />} />
+                    <Route path="database-diagram" element={<DatabaseDiagram />} />
+                    <Route path="logo" element={<LogoList />} />
+                  </Route>
+                  <Route path="/create-project" element={<CreateProject />} />
+                  <Route path="/profile/:id" element={<Profile />} />
+                  <Route path="/collaborators" element={<SearchAndAddFriends />} />
+                  <Route path="not-found" element={<ErrorPage />} />
+                  <Route path="*" element={<ErrorPage errorCode={404} />} />
 
-              </Routes>
-            </div>
-          </RegenerateProvider>
+                </Routes>
+              </div>
+            </RegenerateProvider>
+          </UserEditsProvider>
         </ThemeProvider>
       </UserProvider>
     </SnackbarProvider>
