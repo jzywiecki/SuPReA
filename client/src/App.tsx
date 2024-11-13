@@ -31,6 +31,7 @@ import ProjectDetailsReadme from './pages/ProjectDetailsReadme';
 import Layout from './pages/Layout';
 import LogoList from './pages/projectPages/LogoList';
 import { UserEditsProvider } from './pages/projectPages/UserEditsProvider';
+import Hero from './components/Hero';
 import PageNotFound from './pages/PageNotFound';
 import ErrorPage from './pages/ErrorPage';
 import ProtectedRoute from './services/protectedRoute';
@@ -49,13 +50,13 @@ function App() {
         horizontal: 'left',
       }}>
       <UserProvider>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
           <UserEditsProvider>
             <RegenerateProvider>
               <div className="">
                 <Navbar />
                 <Routes>
-                  <Route path="/" element={<Hero />} />
+                  <Route path="/" element={<Home />} />
                   <Route path="register" element={<RegisterView />} />
                   <Route path="login" element={<LoginView />} />
                   <Route path="/projects" element={<ProjectsView />} />

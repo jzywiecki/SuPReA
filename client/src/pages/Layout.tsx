@@ -71,6 +71,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             addUsersToComponents(message?.componentsToUserMap);
             console.log("Edition-Register Received message with code 11")
             console.log("New edit session registered, cleared map");
+            console.log(message);
 
         }
         else if (message?.code == 2) {

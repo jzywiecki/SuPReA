@@ -284,11 +284,7 @@ const SpecificationsList: React.FC = () => {
 
     // ---------------------------------------------------------------------
 
-    const handleEditSaveButtonClick = () => {
-        setIsEditingMode(false);
-        setIsRegenerateChatOpen(false);
-        setIsUpdateChatOpen(false);
-    };
+
 
     const addUserEditing = (setUsersEditing, newUser) => {
         setUsersEditing(prevUsers => {
@@ -346,7 +342,14 @@ const SpecificationsList: React.FC = () => {
             socket.emit("edit-component", message);
             setIsEditingMode(true); //not here
 
+        };
+        const handleEditSaveButtonClick = () => {
+            const message = { component: getComponentyByName("specifications").id }
+            socket.emit("finish-edition", message);
 
+            setIsEditingMode(false);
+            setIsRegenerateChatOpen(false);
+            setIsUpdateChatOpen(false);
         };
 
         const { user } = useUser();
