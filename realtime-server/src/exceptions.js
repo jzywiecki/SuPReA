@@ -30,6 +30,14 @@ export class SessionIsNotRegisteredException extends Error {
 }
 
 
+export class SessionIsRegistered extends Error {
+    constructor(message = 'Session is already being edited.') {
+        super(message);
+        this.name = 'SessionIsRegistered';
+    }
+}
+
+
 export class UserAlreadyHasActiveEditSessionException extends Error {
     constructor(message = 'User already has an active editing session.') {
         super(message);

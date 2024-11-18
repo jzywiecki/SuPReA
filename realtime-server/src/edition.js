@@ -12,6 +12,7 @@ import {
     ComponentIsNotExistException,
     UserAlreadyHasActiveEditSessionException,
     SessionIsNotRegisteredException,
+    SessionIsRegistered,
 } from "./exceptions.js";
 
 
@@ -159,6 +160,15 @@ const editionExceptionHandler = (error, socket, session) => {
         socket.emit(
             'error',
             new InvalidRequestCommunicate('No active edition session.')
+        );
+    }
+
+    else if (error instanceof SessionIsRegistered) {
+        logger.info(`User ${session.userId} tried to edit a component while already editing another component: ${error.message}`);
+
+        socket.emit(
+            'error',
+            new InvalidRequestCommunicate('Session is already being edited.')
         );
     }
 

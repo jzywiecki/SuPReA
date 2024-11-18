@@ -5,7 +5,8 @@
 import { isComponentIdCorrect } from "./model.js";
 import { 
     ComponentIsNotExistException,
-    SessionIsNotRegisteredException
+    SessionIsNotRegisteredException,
+    SessionIsRegistered,
  } from "./exceptions.js";
 
 
@@ -19,6 +20,7 @@ class ProjectEditionsRegister {
     constructor() {
         this.mapComponentToSessions = new Map();
         this.mapSessionIdToSession = new Map();
+        this.sessionSets = new Set();
         this.activeSessionsQuantity = 0;
     }
 
@@ -35,7 +37,10 @@ class ProjectEditionsRegister {
         if (!isComponentIdCorrect(componentId)) {
             throw new ComponentIsNotExistException("Invalid component ID.");
         }
-    
+
+        if (this.mapSessionIdToSession.has(session.id)) {
+            throw new SessionIsRegistered("User already has an active edit session.");
+        }
     
         // Initialize the component's session array if it doesn't exist
         if (!this.mapComponentToSessions.has(componentId)) {
@@ -45,6 +50,7 @@ class ProjectEditionsRegister {
         // Add the session to component's session list and to global session maps
         this.mapComponentToSessions.get(componentId).push(session);
         this.mapSessionIdToSession.set(session.id, session);
+        this.sessionSets.add(session);
     
         // Increment the active session count
         this.activeSessionsQuantity++;
@@ -78,6 +84,7 @@ class ProjectEditionsRegister {
     
         // Remove session from global maps and active users set
         this.mapSessionIdToSession.delete(sessionId.id);
+        this.sessionSets.delete(sessionId);
     
         // Decrement the active session count
         this.activeSessionsQuantity--;
