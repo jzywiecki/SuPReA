@@ -80,8 +80,15 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
+    const updateAvatarUrl = (newAvatarUrl) => {
+        setUser((prevUser) => ({
+            ...prevUser,
+            avatarurl: newAvatarUrl,
+        }));
+    };
+
     return (
-        <UserContext.Provider value={{ user, login, logout, accessToken, refreshAccessToken }}>
+        <UserContext.Provider value={{ user, login, logout, accessToken, refreshAccessToken, updateAvatarUrl }}>
             {children}
         </UserContext.Provider>
     );
