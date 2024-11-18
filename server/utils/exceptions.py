@@ -35,6 +35,14 @@ class ProjectNotFound(Exception):
         super().__init__(f"Project with id: '{project_id}' not found")
 
 
+class UserNotFound(Exception):
+    """Exception raised when a requested user is not found."""
+
+    def __init__(self, user_id: str):
+        self.user_id = user_id
+        super().__init__(f"User with id: '{user_id}' not found")
+
+
 class PictureNotFound(Exception):
     """Exception raised when a requested picture is not found."""
 
@@ -111,6 +119,16 @@ def register_fastapi_exception_handlers(app: FastAPI) -> None:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={"detail": f"Project with id: {exc.project_id} not found"},
+        )
+
+    @app.exception_handler(UserNotFound)
+    async def user_not_found_exception_handler(
+        request: Request, exc: UserNotFound
+    ):
+        logger.error(f"User with id: {exc.user_id} not found")
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content={"detail": f"User with id: {exc.user_id} not found"},
         )
 
     @app.exception_handler(PictureNotFound)

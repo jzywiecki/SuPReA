@@ -10,6 +10,7 @@ import certifi
 from .chats import ChatDAO
 from .projects import ProjectDAO
 from .pictures import PictureDAO
+from .users import UsersDAO
 
 
 mongo_client = pymongo.MongoClient(
@@ -29,6 +30,8 @@ chat_dao = ChatDAO(db, "chats")
 project_dao = ProjectDAO(db, "projects")
 
 picture_dao = PictureDAO(db, "pictures")
+
+users_dao = UsersDAO(db, "users")
 
 
 def get_chat_dao_ref() -> ChatDAO:
