@@ -40,7 +40,6 @@ class UpdateBusinessScenariosByAIRequest(BaseModel):
     component_val: BusinessScenarios
     query: str
     ai_model: str
-    callback: str
 
 
 @router.post(
@@ -51,8 +50,7 @@ def update_business_scenarios_by_ai(request: UpdateBusinessScenariosByAIRequest)
     """
     Updates the business scenarios component for the specified project using AI-based generation.
     """
-    update_component_by_ai(request, BusinessScenariosGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return update_component_by_ai(request, BusinessScenariosGenerate)
 
 
 @router.post(
@@ -65,8 +63,7 @@ def regenerate_business_scenarios_by_ai(request: RegenerateComponentByAIRequest)
 
     :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
     """
-    regenerate_component_by_ai(request, BusinessScenariosGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return regenerate_component_by_ai(request, BusinessScenariosGenerate)
 
 
 class UpdateBusinessScenariosRequest(BaseModel):

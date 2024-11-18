@@ -10,7 +10,6 @@ from ai import AI
 from .generate import Generate
 from .generate import GenerateWithMonitor
 from .generate import GenerateActor
-import callback.realtime_server as realtime_server
 
 
 @ray.remote
@@ -19,7 +18,6 @@ def update_component_by_ai_task(
     query: str,
     ai_model: AI,
     generate_component_class: type(Generate),
-    callback: str,
 ) -> None:
     """
     Updates a component using the AI model using ray.
@@ -36,22 +34,17 @@ def update_component_by_ai_task(
         if err:
             raise err
 
-        component_identify = ray.get(update_component.get_component_identify.remote())
         component_value = ray.get(update_component.get_value.remote())
-        realtime_server.notify_task.remote(
-            realtime_server.notify_update_complete,
-            component_identify.value,
-            component_value.json(),
-            callback,
-        )
+        return component_value.json()
 
     except Exception as e:
         logger.error(f"Error while remote updating model by ai: {e}")
+        raise e
 
 
 @ray.remote
 def regenerate_component_by_ai_task(
-    details: str, ai_model: AI, generate_component_class: type(Generate), callback: str
+    details: str, ai_model: AI, generate_component_class: type(Generate)
 ) -> None:
     """
     Updates a component using the AI model using ray.
@@ -64,14 +57,9 @@ def regenerate_component_by_ai_task(
         if err:
             raise err
 
-        component_identify = ray.get(update_component.get_component_identify.remote())
         component_value = ray.get(update_component.get_value.remote())
-        realtime_server.notify_task.remote(
-            realtime_server.notify_regeneration_complete,
-            component_identify.value,
-            component_value.json(),
-            callback,
-        )
+        return component_value.json()
 
     except Exception as e:
         logger.error(f"Error while remote regenerating model by ai: {e}")
+        raise e

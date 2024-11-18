@@ -12,4 +12,3 @@ class RegenerateComponentByAIRequest(BaseModel):
 
     details: str
     ai_model: str
-    callback: str

@@ -529,7 +529,7 @@ class GenerateActor:
             return self.current_actor(), None
 
         except BaseException as e:
-            return self.current_actor(), RayUnexpectedException(str(e))
+            return self.current_actor(), RayUnexpectedException(str(e), e.__class__.__name__)
 
     def regenerate_by_ai(self, ai_model: AI, details: str):
         """
@@ -542,7 +542,7 @@ class GenerateActor:
             return self.current_actor(), None
 
         except BaseException as e:
-            return self.current_actor(), RayUnexpectedException(str(e))
+            return self.current_actor(), RayUnexpectedException(str(e), e.__class__.__name__)
 
     def update_by_ai(self, ai_model: AI, changes_request: str):
         """
@@ -555,7 +555,7 @@ class GenerateActor:
             return self.current_actor(), None
 
         except BaseException as e:
-            return self.current_actor(), RayUnexpectedException(str(e))
+            return self.current_actor(), RayUnexpectedException(str(e), e.__class__.__name__)
 
     def save_to_database(self, get_project_dao_ref, project_id: str):
         """
@@ -568,7 +568,7 @@ class GenerateActor:
             return self.current_actor(), None
 
         except BaseException as e:
-            return self.current_actor(), RayUnexpectedException(str(e))
+            return self.current_actor(), RayUnexpectedException(str(e), e.__class__.__name__)
 
     def fetch_from_database(self, get_project_dao_ref, project_id: str):
         """
@@ -582,7 +582,7 @@ class GenerateActor:
             return self.current_actor(), None
 
         except BaseException as e:
-            return self.current_actor(), RayUnexpectedException(str(e))
+            return self.current_actor(), RayUnexpectedException(str(e), e.__class__.__name__)
 
     def update(self, new_val):
         """
@@ -596,7 +596,7 @@ class GenerateActor:
             return self.current_actor(), None
 
         except BaseException as e:
-            return self.current_actor(), RayUnexpectedException(str(e))
+            return self.current_actor(), RayUnexpectedException(str(e), e.__class__.__name__)
 
     def get_value(self):
         """
@@ -618,7 +618,7 @@ class GenerateActor:
             return self.model_generate.default_value(), None
 
         except BaseException as e:
-            return self.current_actor(), RayUnexpectedException(str(e))
+            return self.current_actor(), RayUnexpectedException(str(e), e.__class__.__name__)
 
     def current_actor(self):
         """

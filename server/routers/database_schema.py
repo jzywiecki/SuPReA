@@ -40,7 +40,6 @@ class UpdateDatabaseSchemaByAIRequest(BaseModel):
     component_val: DatabaseSchema
     query: str
     ai_model: str
-    callback: str
 
 
 @router.post(
@@ -51,8 +50,7 @@ def update_database_schema_by_ai(request: UpdateDatabaseSchemaByAIRequest):
     """
     Updates the database schema component for the specified project using AI-based generation.
     """
-    update_component_by_ai(request, DatabaseSchemaGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return update_component_by_ai(request, DatabaseSchemaGenerate)
 
 
 @router.post(
@@ -65,8 +63,7 @@ def regenerate_database_schema_by_ai(request: RegenerateComponentByAIRequest):
 
     :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
     """
-    regenerate_component_by_ai(request, DatabaseSchemaGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return regenerate_component_by_ai(request, DatabaseSchemaGenerate)
 
 
 class UpdateDatabaseSchemaRequest(BaseModel):

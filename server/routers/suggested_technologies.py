@@ -40,7 +40,6 @@ class UpdateSuggestedTechnologiesByAIRequest(BaseModel):
     component_val: SuggestedTechnologies
     query: str
     ai_model: str
-    callback: str
 
 
 @router.post(
@@ -53,8 +52,7 @@ def update_suggested_technologies_by_ai(
     """
     Updates the suggested technologies component for the specified project using AI-based generation.
     """
-    update_component_by_ai(request, SuggestedTechnologiesGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return update_component_by_ai(request, SuggestedTechnologiesGenerate)
 
 
 @router.post(
@@ -67,8 +65,7 @@ def regenerate_suggested_technologies_by_ai(request: RegenerateComponentByAIRequ
 
     :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
     """
-    regenerate_component_by_ai(request, SuggestedTechnologiesGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return regenerate_component_by_ai(request, SuggestedTechnologiesGenerate)
 
 
 class UpdateSuggestedTechnologiesRequest(BaseModel):

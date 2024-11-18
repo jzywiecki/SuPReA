@@ -40,7 +40,6 @@ class UpdateStrategyByAIRequest(BaseModel):
     component_val: Strategy
     query: str
     ai_model: str
-    callback: str
 
 
 @router.post(
@@ -51,8 +50,7 @@ def update_strategy_by_ai(request: UpdateStrategyByAIRequest):
     """
     Updates the strategy component for the specified project using AI-based generation.
     """
-    update_component_by_ai(request, StrategyGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return update_component_by_ai(request, StrategyGenerate)
 
 
 @router.post(
@@ -65,8 +63,7 @@ def regenerate_strategy_by_ai(request: RegenerateComponentByAIRequest):
 
     :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
     """
-    regenerate_component_by_ai(request, StrategyGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return regenerate_component_by_ai(request, StrategyGenerate)
 
 
 class UpdateStrategyRequest(BaseModel):

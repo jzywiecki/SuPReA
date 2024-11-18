@@ -32,7 +32,7 @@ def get_requirements(project_id: str):
     return get_component(project_id, ComponentIdentify.REQUIREMENTS.value)
 
 
-class UpdateRequiremenetsByAIRequest(BaseModel):
+class UpdateRequirementsByAIRequest(BaseModel):
     """
     The request object for updating a component using AI-based generation.
     """
@@ -40,19 +40,17 @@ class UpdateRequiremenetsByAIRequest(BaseModel):
     component_val: Requirements
     query: str
     ai_model: str
-    callback: str
 
 
 @router.post(
     "/requirements/ai-update",
     status_code=status.HTTP_200_OK,
 )
-def update_requirements_by_ai(request: UpdateRequiremenetsByAIRequest):
+def update_requirements_by_ai(request: UpdateRequirementsByAIRequest):
     """
     Updates the requirements component for the specified project using AI-based generation.
     """
-    update_component_by_ai(request, RequirementsGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return update_component_by_ai(request, RequirementsGenerate)
 
 
 @router.post(
@@ -65,8 +63,7 @@ def regenerate_requirements_by_ai(request: RegenerateComponentByAIRequest):
 
     :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
     """
-    regenerate_component_by_ai(request, RequirementsGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return regenerate_component_by_ai(request, RequirementsGenerate)
 
 
 class UpdateRequirementsRequest(BaseModel):
