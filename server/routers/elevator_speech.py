@@ -40,7 +40,6 @@ class UpdateElevatorSpeechByAIRequest(BaseModel):
     component_val: ElevatorSpeech
     query: str
     ai_model: str
-    callback: str
 
 
 @router.post(
@@ -51,8 +50,7 @@ def update_elevator_speech_by_ai(request: UpdateElevatorSpeechByAIRequest):
     """
     Updates the elevator speech component for the specified project using AI-based generation.
     """
-    update_component_by_ai(request, ElevatorSpeechGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return update_component_by_ai(request, ElevatorSpeechGenerate)
 
 
 @router.post(
@@ -65,8 +63,7 @@ def regenerate_elevator_speech_by_ai(request: RegenerateComponentByAIRequest):
 
     :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
     """
-    regenerate_component_by_ai(request, ElevatorSpeechGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return regenerate_component_by_ai(request, ElevatorSpeechGenerate)
 
 
 class UpdateElevatorSpeechRequest(BaseModel):

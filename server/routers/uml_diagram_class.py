@@ -40,7 +40,6 @@ class UpdateUMLDiagramClassByAIRequest(BaseModel):
     component_val: UMLDiagramClasses
     query: str
     ai_model: str
-    callback: str
 
 
 @router.post(
@@ -51,8 +50,7 @@ def update_uml_class_diagram_by_ai(request: UpdateUMLDiagramClassByAIRequest):
     """
     Updates the uml diagram class component for the specified project using AI-based generation.
     """
-    update_component_by_ai(request, UMLDiagramClassesGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return update_component_by_ai(request, UMLDiagramClassesGenerate)
 
 
 @router.post(
@@ -65,8 +63,7 @@ def regenerate_uml_class_diagram_by_ai(request: RegenerateComponentByAIRequest):
 
     :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
     """
-    regenerate_component_by_ai(request, UMLDiagramClassesGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return regenerate_component_by_ai(request, UMLDiagramClassesGenerate)
 
 
 class UpdateUMLDiagramClassRequest(BaseModel):

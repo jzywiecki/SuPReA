@@ -100,7 +100,7 @@ export const connectionService = (io, db, editionRegister) => {
             });
         
             socket.on('disconnect', () => {
-                attemptSafeSessionRemoval(socket, editionRegister);
+                attemptSafeSessionRemoval(session, editionRegister);
 
                 logger.info(`User disconnected`);
                 logger.info(`socket id: ${socket.id}`);
@@ -124,9 +124,9 @@ export const connectionService = (io, db, editionRegister) => {
 }
 
 
-const attemptSafeSessionRemoval = (socket, editionRegister) => {
+const attemptSafeSessionRemoval = (session, editionRegister) => {
     try {
-        editionRegister.removeSession(socket.id);
+        editionRegister.unregisterEditionSession(session);
     } catch (error) {
         //ignore exception.
     }

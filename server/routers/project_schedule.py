@@ -40,7 +40,6 @@ class UpdateProjectScheduleByAIRequest(BaseModel):
     component_val: ProjectSchedule
     query: str
     ai_model: str
-    callback: str
 
 
 @router.post(
@@ -51,8 +50,7 @@ def update_project_schedule_by_ai(request: UpdateProjectScheduleByAIRequest):
     """
     Updates the project schedule component for the specified project using AI-based generation.
     """
-    update_component_by_ai(request, ProjectScheduleGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return update_component_by_ai(request, ProjectScheduleGenerate)
 
 
 @router.post(
@@ -65,8 +63,7 @@ def regenerate_project_schedule_by_ai(request: RegenerateComponentByAIRequest):
 
     :param RegenerateComponentByAIRequest request: The request object containing project ID and query for component regeneration.
     """
-    regenerate_component_by_ai(request, ProjectScheduleGenerate)
-    return Response(status_code=status.HTTP_200_OK)
+    return regenerate_component_by_ai(request, ProjectScheduleGenerate)
 
 
 class UpdateProjectScheduleRequest(BaseModel):

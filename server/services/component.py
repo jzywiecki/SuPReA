@@ -1,6 +1,7 @@
 """
 This module provides functionality for updating and retrieving project components.
 """
+import ray
 
 from typing import Dict
 
@@ -34,17 +35,15 @@ def update_component_by_ai(request, generate_component_class: type(Generate)) ->
     if not request.query:
         raise InvalidParameter("Invalid request arguments for AI")
 
-    if not request.callback:
-        raise InvalidParameter("Invalid callback argument")
-
     ai_model = get_model_remote_ref_enum(request.ai_model)
-    update_component_by_ai_task.remote(
+    update_component_by_ai_remote_task = update_component_by_ai_task.remote(
         request.component_val,
         request.query,
         ai_model,
         generate_component_class,
-        request.callback,
     )
+    result = ray.get(update_component_by_ai_remote_task)
+    return result
 
 
 def regenerate_component_by_ai(
@@ -68,14 +67,13 @@ def regenerate_component_by_ai(
     if not request.details:
         raise InvalidParameter("Invalid details arguments for AI")
 
-    if not request.callback:
-        raise InvalidParameter("Invalid callback argument")
-
     ai_model = get_model_remote_ref_enum(request.ai_model)
 
-    regenerate_component_by_ai_task.remote(
-        request.details, ai_model, generate_component_class, request.callback
+    regenerate_component_by_ai_remote_task = regenerate_component_by_ai_task.remote(
+        request.details, ai_model, generate_component_class
     )
+    result = ray.get(regenerate_component_by_ai_remote_task)
+    return result
 
 
 def update_component(request, generate_component_class: type(Generate)) -> None:

@@ -12,9 +12,10 @@ from bson.errors import InvalidId
 class RayUnexpectedException(Exception):
     """Exception raised when an unexpected error occurs in Ray."""
 
-    def __init__(self, details: str):
+    def __init__(self, details: str, name: str = "unknown"):
         super().__init__(details)
         self.details = details
+        self.name = name
 
     def __str__(self):
         return f"RayUnexpectedException: {self.details}"
@@ -145,6 +146,14 @@ def register_fastapi_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(Exception)
     async def generic_exception_handler(request: Request, exc: Exception):
         logger.error(f"Unexpected error: {exc}")
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"detail": "INTERNAL SERVER ERROR"},
+        )
+
+    @app.exception_handler(RayUnexpectedException)
+    async def ray_unexpected_exception_handler(request: Request, exc: RayUnexpectedException):
+        logger.error(f"Unexpected error in Ray: {exc}")
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"detail": "INTERNAL SERVER ERROR"},
