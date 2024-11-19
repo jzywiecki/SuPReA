@@ -14,7 +14,6 @@ const LoginForm: React.FC = () => {
     const [emailFieldError, setEmailFieldError] = useState<string>("");
     const [passwordFieldError, setPasswordFieldError] = useState<string>("");
 
-
     const emailFieldRef = useRef<HTMLInputElement>(null);
     const passwordFieldRef = useRef<HTMLInputElement>(null);
 
@@ -106,7 +105,11 @@ const LoginForm: React.FC = () => {
                             Email
                         </label>
                         <div className="mt-2.5">
-                            <Input type="email" ref={emailFieldRef} onChange={() => validateEmailField()} />
+                            <Input 
+                                type="email" 
+                                ref={emailFieldRef} 
+                                onBlur={() => validateEmailField()} 
+                            />
                             {emailFieldError && <p className='text-xs mt-1 text-red-500'>{emailFieldError}</p>}
                         </div>
                     </div>
@@ -115,7 +118,11 @@ const LoginForm: React.FC = () => {
                             Password
                         </label>
                         <div className="mt-2.5">
-                            <Input type="password" ref={passwordFieldRef} onChange={() => validatePasswordField()} />
+                            <Input 
+                                type="password" 
+                                ref={passwordFieldRef} 
+                                onBlur={() => validatePasswordField()} 
+                            />
                             {passwordFieldError && <p className='text-xs mt-1 text-red-500'>{passwordFieldError}</p>}
                         </div>
                     </div>
