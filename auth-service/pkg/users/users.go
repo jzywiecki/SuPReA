@@ -128,11 +128,23 @@ func GetUsersByProjectID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
+
 	client := database.GetDatabaseConnection()
 
 	projectID := chi.URLParam(r, "project_id")
 	if projectID == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+
+	isUserInProject, err := auth.IsUserInProject(r, projectID)
+	if err != nil {
+		http.Error(w, "Invalid project ID format", http.StatusBadRequest)
+		return
+	}
+	if !isUserInProject {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -273,6 +285,18 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	isSenderRealUser, err := auth.IsSenderRealUser(r, userID)
+	if err != nil {
+		http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+		return
+	}
+
+	if !isSenderRealUser {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	// Convert user ID string to MongoDB ObjectID
 	objID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -329,6 +353,18 @@ func PatchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	isSenderRealUser, err := auth.IsSenderRealUser(r, userID)
+	if err != nil {
+		http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+		return
+	}
+
+	if !isSenderRealUser {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	// Convert user ID string to MongoDB ObjectID
 	objID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
@@ -381,6 +417,18 @@ func ResetAvatar(w http.ResponseWriter, r *http.Request) {
 	userID := chi.URLParam(r, "id")
 	if userID == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+
+	isSenderRealUser, err := auth.IsSenderRealUser(r, userID)
+	if err != nil {
+		http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+		return
+	}
+
+	if !isSenderRealUser {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
