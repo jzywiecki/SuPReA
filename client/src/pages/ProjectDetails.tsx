@@ -22,7 +22,7 @@ const ProjectDetails = ({ project }) => {
                     <Link to={`/projects/${project.id}/editor`}>
                         <Button style={{ backgroundColor: "green", marginRight: "10px" }}><p style={{ marginRight: "10px" }}>Start</p><FaPlay /></Button>
                     </Link>
-                    <Link to={`/projects/${project.id}/settings`}>
+                    <Link to={`/projects/${project.id}/editor/settings`}>
                         <CiSettings size={20} />
                     </Link>
 

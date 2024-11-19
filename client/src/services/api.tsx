@@ -29,8 +29,8 @@ axiosInstance.interceptors.response.use(
                 const newAccessToken = response.data.access_token;
                 localStorage.setItem('accessToken', newAccessToken);
 
-                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
-                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                axiosInstance.defaults.headers.common['Authorization'] = `${newAccessToken}`;
+                originalRequest.headers['Authorization'] = `${newAccessToken}`;
 
                 return axiosInstance(originalRequest);
             } catch (error) {

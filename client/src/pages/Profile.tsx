@@ -141,8 +141,20 @@ function Profile() {
   };
 
   const toggleEditMode = () => {
+    if (user.id != id) {
+      console.log("can not edit profile that is of other user")
+      return
+    }
     setIsEditMode(!isEditMode);
     setIsEditing({});
+  };
+
+  const toggleProfilePictureModal = () => {
+    if (user.id != id) {
+      console.log("can not edit profile that is of other user")
+      return
+    }
+    setIsAvatarModalOpen(true)
   };
 
   return (
@@ -155,7 +167,7 @@ function Profile() {
               imageURL={makePictureUrl(userState.avatarurl)}  // Usuwamy nadmiarowy nawias
               alt="Profile Avatar"
               classname="w-96 h-96 rounded-full object-cover mx-auto cursor-pointer border-1 border-gray-300"
-              onClick={() => setIsAvatarModalOpen(true)}
+              onClick={() => toggleProfilePictureModal()}
             />
 
             </div>
@@ -202,12 +214,17 @@ function Profile() {
               </div>
             </div>
             <div className="flex justify-center mt-4">
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
-                onClick={toggleEditMode}
-              >
-                {isEditMode ? 'Cancel Edit' : 'Edit Profile'}
-              </button>
+              { user?.id == id ? (
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
+                  onClick={toggleEditMode}
+                >
+                  {isEditMode ? 'Cancel Edit' : 'Edit Profile'}
+                </button>
+              ) : (
+                <div></div>
+              )
+              }
             </div>
             <div className="space-y-0">
               {[

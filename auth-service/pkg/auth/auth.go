@@ -42,7 +42,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		Email:     registerRequest.Email,
 		Password:  registerRequest.Password,
 		Friends:   []models.Friend{},
-		Projects:  []int{},
+		Projects:  []string{},
 		AvatarURL: utils.GetAvatarURL(registerRequest.Username),
 	}
 
@@ -171,6 +171,68 @@ func Authenticate(r *http.Request) (bool, error) {
 	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email, "token": tokenStr}).Decode(&user)
 
 	return err == nil, fmt.Errorf("got token: %s and errored with: %w", tokenStr, err)
+}
+
+func IsUserInProject(r *http.Request, projectId string) (bool, error) {
+	tokenStr := r.Header.Get("Authorization")
+	if tokenStr == "" {
+		return false, errors.New("did not provide any token")
+	}
+
+	claims := &Claims{}
+	tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+
+	if err != nil || !tkn.Valid {
+		return false, fmt.Errorf("token is invalid %s", err.Error())
+	}
+
+	client := database.GetDatabaseConnection()
+
+	var user models.User
+	collection := database.GetCollection(client, "Projects", "users")
+	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email, "token": tokenStr}).Decode(&user)
+
+	if err != nil {
+		return false, err
+	}
+
+	// for _, value := range user.Projects {
+	// 	if value == projectId {
+	// 		return true, nil
+	// 	}
+	// }
+
+	return true, nil
+}
+
+func IsSenderRealUser(r *http.Request, senderId string) (bool, error) {
+	tokenStr := r.Header.Get("Authorization")
+	if tokenStr == "" {
+		return false, errors.New("did not provide any token")
+	}
+
+	claims := &Claims{}
+	tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+
+	if err != nil || !tkn.Valid {
+		return false, fmt.Errorf("token is invalid %s", err.Error())
+	}
+
+	client := database.GetDatabaseConnection()
+
+	var user models.User
+	collection := database.GetCollection(client, "Projects", "users")
+	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email, "token": tokenStr}).Decode(&user)
+
+	if err != nil {
+		return false, err
+	}
+
+	return user.ID.Hex() == senderId, nil
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {

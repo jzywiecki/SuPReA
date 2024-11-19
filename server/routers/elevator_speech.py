@@ -2,7 +2,7 @@
 This module defines the API routes for interacting with project components, specifically elevator speech.
 """
 
-from fastapi import APIRouter, status, Response
+from fastapi import APIRouter, status, Response, Depends
 from services import get_component
 from services import update_component_by_ai
 from services import regenerate_component_by_ai
@@ -11,6 +11,7 @@ from models import ComponentIdentify, ElevatorSpeech
 from .common import RegenerateComponentByAIRequest
 from generation.model.elevator_speech import ElevatorSpeechGenerate
 from pydantic import BaseModel
+from utils import verify_project_membership
 
 
 router = APIRouter(
@@ -22,6 +23,7 @@ router = APIRouter(
 @router.get(
     "/elevator_speech/{project_id}",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def get_elevator_speech(project_id: str):
     """
@@ -78,6 +80,7 @@ class UpdateElevatorSpeechRequest(BaseModel):
 @router.put(
     "/elevator_speech/update",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def update_elevator_speech(request: UpdateElevatorSpeechRequest):
     """

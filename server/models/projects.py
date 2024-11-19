@@ -52,8 +52,8 @@ class Project(BaseModel):
     database_schema: Optional[DatabaseSchema] = None
     suggested_technologies: Optional[SuggestedTechnologies] = None
     uml_diagram_class: Optional[UMLDiagramClasses] = None
-    mockups: Optional[Mockups] = None
-    logo: Optional[Logo] = None
+    # mockups: Optional[Mockups] = None
+    # logo: Optional[Logo] = None
     chat_id: Optional[ObjectId] = None
     ai_chat_id: Optional[ObjectId] = None
 

@@ -2,7 +2,7 @@
 This module defines the API routes for interacting with project components, specifically database schema.
 """
 
-from fastapi import APIRouter, status, Response
+from fastapi import APIRouter, status, Response, Depends
 from services import get_component
 from services import update_component_by_ai
 from services import regenerate_component_by_ai
@@ -11,6 +11,7 @@ from models import ComponentIdentify, DatabaseSchema
 from .common import RegenerateComponentByAIRequest
 from generation.model.database_schema import DatabaseSchemaGenerate
 from pydantic import BaseModel
+from utils import verify_project_membership
 
 
 router = APIRouter(
@@ -22,6 +23,7 @@ router = APIRouter(
 @router.get(
     "/database_schema/{project_id}",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def get_database_schema(project_id: str):
     """
@@ -78,6 +80,7 @@ class UpdateDatabaseSchemaRequest(BaseModel):
 @router.put(
     "/database_schema/update",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def update_database_schema(request: UpdateDatabaseSchemaRequest):
     """

@@ -1,12 +1,13 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Chat from "@/components/Chat";
 import { API_URLS } from "@/services/apiUrls";
 import axiosInstance from "@/services/api";
 import { useSnackbar } from 'notistack';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { checkProjectExists } from '../services/checkProjectExists';
 
 type SidePanelType = 'ai' | 'discussion' | null;
 
@@ -15,10 +16,26 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const { projectID } = useParams<{ projectID: string }>();
     const { enqueueSnackbar } = useSnackbar();
     const [sidePanel, setSidePanel] = useState<SidePanelType>(null);
+    const [isValidProject, setIsValidProject] = useState<boolean | null>(null);
 
     useEffect(() => {
-        navigate("summary");
-    }, []);
+        async function validateProject() {
+            if (projectID) {
+                const exists = await checkProjectExists(projectID);
+                setIsValidProject(exists);
+            } else {
+                setIsValidProject(false);
+            }
+        }
+
+        validateProject();
+    }, [projectID]);
+
+    useEffect(() => {
+        if (!isValidProject) {
+            navigate("summary");
+        }
+    }, [isValidProject, navigate]);
 
     const handleDownloadPDF = async () => {
         if (!projectID) return;
@@ -61,6 +78,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 setSidePanel(null);
         }
     };
+
+    if (isValidProject === null) {
+        return <div>Loading...</div>;
+    }
+
+    if (!isValidProject) {
+        return <Navigate to="/not-found" replace />;
+    }
 
     return (
         <SidebarProvider>

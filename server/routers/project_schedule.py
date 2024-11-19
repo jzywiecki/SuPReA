@@ -2,7 +2,7 @@
 This module defines the API routes for interacting with project components, specifically project schedule.
 """
 
-from fastapi import APIRouter, status, Response
+from fastapi import APIRouter, status, Response, Depends
 from services import get_component
 from services import update_component_by_ai
 from services import regenerate_component_by_ai
@@ -11,7 +11,7 @@ from models import ComponentIdentify, ProjectSchedule
 from .common import RegenerateComponentByAIRequest
 from generation.model.project_schedule import ProjectScheduleGenerate
 from pydantic import BaseModel
-
+from utils import verify_project_membership
 
 router = APIRouter(
     tags=["model"],
@@ -22,6 +22,7 @@ router = APIRouter(
 @router.get(
     "/project_schedule/{project_id}",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def get_project_schedule(project_id: str):
     """
@@ -78,6 +79,7 @@ class UpdateProjectScheduleRequest(BaseModel):
 @router.put(
     "/project_schedule/update",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def update_project_schedule(request: UpdateProjectScheduleRequest):
     """
