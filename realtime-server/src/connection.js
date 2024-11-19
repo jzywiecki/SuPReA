@@ -10,6 +10,7 @@ import { registerEditionEvents } from './edition.js';
 import { ObjectId } from 'mongodb';
 import { ProjectChatsReference } from './chat.js';
 import { logger } from './utils.js';
+import { editionSessionGarbageCollector } from './edition.js';
 
 
 export class Session {
@@ -100,15 +101,13 @@ export const connectionService = (io, db, editionRegister) => {
             });
         
             socket.on('disconnect', () => {
-                attemptSafeSessionRemoval(session, editionRegister);
+                editionSessionGarbageCollector(editionRegister, session, io);
 
                 logger.info(`User disconnected`);
                 logger.info(`socket id: ${socket.id}`);
             });
 
         } catch (error) {
-            attemptSafeSessionRemoval(socket, editionRegister);
-
             logger.error(`Cannot get chats from project ${socket.projectId}.`);
             logger.error(`Details: ${error.message}`);
 
@@ -121,13 +120,4 @@ export const connectionService = (io, db, editionRegister) => {
     io.on('connect_error', (error) => {
         logger.error(`Connection error: ${error.message}`);
     });
-}
-
-
-const attemptSafeSessionRemoval = (session, editionRegister) => {
-    try {
-        editionRegister.unregisterEditionSession(session);
-    } catch (error) {
-        //ignore exception.
-    }
 }

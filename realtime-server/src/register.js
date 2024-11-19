@@ -206,7 +206,7 @@ export class EditionRegister {
              * Retrieves all active editing sessions for a specific project.
              * If no active sessions exist for the given project, an empty array is returned.
              * 
-             * @param {string} projectId - The ID of the project for which active sessions are being retrieved.
+             * @param {ObjectId} projectId - The ID of the project for which active sessions are being retrieved.
              * @returns {Array} An array of objects, each containing the component name and the user ID of the active session.
             */
         const projectRegister = this.register.get(projectId.toString());
@@ -215,5 +215,23 @@ export class EditionRegister {
         }
         
         return projectRegister.getActiveSessions();
+    }
+
+
+    isSessionRegistered(sessionId, projectId) {
+        /**
+         * Checks if a session is registered in the global edition register.
+         * 
+         * @param {string} sessionId - The ID of the session to be checked.
+         * @param {ObjectId} projectId - The ID of the project in which the session is registered.
+         * 
+         * @returns {boolean} True if the session is registered, false otherwise.
+         */
+
+        if (!this.register.has(projectId.toString())) {
+            return false;
+        }
+
+        return this.register.get(projectId.toString()).isSessionRegistered(sessionId);
     }
 }

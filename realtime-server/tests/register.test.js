@@ -193,3 +193,69 @@ test('unregistering unregisted session should throw SessionsIsNotRegisteredExcep
 
     expect(() => editionRegister.unregisterEditionSession(sessionOne)).toThrow(SessionIsNotRegisteredException);
 });
+
+
+test("isSessionRegistered should return true for registered session", () => {
+    const PROJECT_ID = "1";
+    
+    const sessionOne = new Session({id: 1});
+    sessionOne.userId = "1";
+    sessionOne.projectId = PROJECT_ID;
+
+    const editionRegister = new EditionRegister();
+    editionRegister.registerEditionSession(sessionOne, Components.ACTORS.id);
+
+    const result = editionRegister.isSessionRegistered(sessionOne.id, sessionOne.projectId);
+
+    expect(result).toBe(true);
+});
+
+
+test("isSessionRegistered should return false for unregistered session", () => {
+    const PROJECT_ID = "1";
+    
+    const sessionOne = new Session({id: 1});
+    sessionOne.userId = "1";
+    sessionOne.projectId = PROJECT_ID;
+
+    const editionRegister = new EditionRegister();
+    editionRegister.registerEditionSession(sessionOne, Components.ACTORS.id);
+    editionRegister.unregisterEditionSession(sessionOne);
+
+    const result = editionRegister.isSessionRegistered(sessionOne.id, sessionOne.projectId);
+
+    expect(result).toBe(false);
+});
+
+
+test("isSessionRegistered should return false for non existing project", () => {
+    const PROJECT_ID = "1";
+    const NON_EXISTING_PROJECT_ID = "2";
+    
+    const sessionOne = new Session({id: 1});
+    sessionOne.userId = "1";
+    sessionOne.projectId = PROJECT_ID;
+
+    const editionRegister = new EditionRegister();
+    editionRegister.registerEditionSession(sessionOne, Components.ACTORS.id);
+    editionRegister.unregisterEditionSession(sessionOne);
+
+    const result = editionRegister.isSessionRegistered(sessionOne.id, NON_EXISTING_PROJECT_ID);
+
+    expect(result).toBe(false);
+});
+
+
+test("isSessionRegistered should return false for non existing session", () => {
+    const PROJECT_ID = "1";
+    
+    const sessionOne = new Session({id: 1});
+    sessionOne.userId = "1";
+    sessionOne.projectId = PROJECT_ID;
+
+    const editionRegister = new EditionRegister(); 
+
+    const result = editionRegister.isSessionRegistered(sessionOne.id, PROJECT_ID);
+
+    expect(result).toBe(false);
+});

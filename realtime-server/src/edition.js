@@ -143,6 +143,25 @@ const finishedEditionRequestHandler = (componentId, session, socket, io, edition
 }
 
 
+export const editionSessionGarbageCollector = (editionRegister, session, io) => {
+    try {
+        if (editionRegister.isSessionRegistered(session.id, session.projectId)) {
+            editionRegister.unregisterEditionSession(session);
+
+            const activeSessions = editionRegister.getUsersWithActiveEditionSessionForProject(session.projectId);
+
+            io.to(session.projectId).emit(
+                'edition-register',
+                new RefreshEditionSessionsCommunicate(activeSessions)
+            );
+        }
+    }
+    catch (error) {
+        logger.error("Error while cleaning up edition session.", error);
+    }
+}
+
+
 const editionExceptionHandler = (error, socket, session) => {
 
     if (error instanceof ComponentIsNotExistException) {
