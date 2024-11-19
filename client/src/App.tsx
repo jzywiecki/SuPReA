@@ -31,6 +31,9 @@ import ProjectDetailsReadme from './pages/ProjectDetailsReadme';
 import Layout from './pages/Layout';
 import LogoList from './pages/projectPages/LogoList';
 import PageNotFound from './pages/PageNotFound';
+import ErrorPage from './pages/ErrorPage';
+import validateProject from './services/protectedRoute';
+
 
 function App() {
   return (
@@ -55,11 +58,11 @@ function App() {
                 <Route path="register" element={<RegisterView />} />
                 <Route path="login" element={<LoginView />} />
                 <Route path="/projects" element={<ProjectsView />} />
-                <Route path="/projects/:projectID/editor" element={<Layout />}>
-                  <Route path="settings" element={<ProjectsSettings />} />
-                  <Route path="summary" element={<ProjectDetailsReadme />} />
-                  <Route path="name" element={<NameList />} />
-                  <Route path="requirements" element={<RequirementsList />} />
+                <Route path="/projects/:projectID/editor" errorElement={<ErrorPage/>} loader={validateProject} element={<Layout />}>
+                  <Route path="settings" errorElement={<ErrorPage/>} element={<ProjectsSettings />} />
+                  <Route path="summary" errorElement={<ErrorPage/>} loader={validateProject} element={<ProjectDetailsReadme />} />
+                  <Route path="name" errorElement={<ErrorPage/>} element={<NameList />} />
+                  <Route path="requirements" errorElement={<ErrorPage/>} element={<RequirementsList />} />
                   <Route path="risk" element={<RiskList />} />
                   <Route path="motto" element={<MottoList />} />
                   <Route path="specifications" element={<SpecificationsList />} />
