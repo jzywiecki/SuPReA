@@ -25,7 +25,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         try {
             enqueueSnackbar(`Exporting...`, { variant: 'info' });
-            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/download/pdf/${projectID}`, { responseType: 'blob' });
+            const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/download/pdf/${projectID}`, { responseType: 'blob' }); 
             const blob = new Blob([response.data], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
 
