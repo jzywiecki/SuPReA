@@ -32,8 +32,10 @@ def fetch_picture(picture_id: str):
     status_code=status.HTTP_201_CREATED,
 )
 async def upload_avatar(
-    user_id: str = Path(..., description="The ID of the user for whom the avatar is being uploaded"),
-    file: UploadFile = File(...)
+    user_id: str = Path(
+        ..., description="The ID of the user for whom the avatar is being uploaded"
+    ),
+    file: UploadFile = File(...),
 ):
     return await update_avatar(user_id, file)
 

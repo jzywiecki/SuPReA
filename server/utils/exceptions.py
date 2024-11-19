@@ -122,9 +122,7 @@ def register_fastapi_exception_handlers(app: FastAPI) -> None:
         )
 
     @app.exception_handler(UserNotFound)
-    async def user_not_found_exception_handler(
-        request: Request, exc: UserNotFound
-    ):
+    async def user_not_found_exception_handler(request: Request, exc: UserNotFound):
         logger.error(f"User with id: {exc.user_id} not found")
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -170,7 +168,9 @@ def register_fastapi_exception_handlers(app: FastAPI) -> None:
         )
 
     @app.exception_handler(RayUnexpectedException)
-    async def ray_unexpected_exception_handler(request: Request, exc: RayUnexpectedException):
+    async def ray_unexpected_exception_handler(
+        request: Request, exc: RayUnexpectedException
+    ):
         logger.error(f"Unexpected error in Ray: {exc}")
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
