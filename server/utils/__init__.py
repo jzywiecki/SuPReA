@@ -10,6 +10,7 @@ from .exceptions import PictureNotFound
 from .exceptions import InvalidParameter
 from .exceptions import AIModelNotFound
 from .exceptions import RayUnexpectedException
+from .exceptions import UserNotFound
 
 from .fetch import is_valid_url
 

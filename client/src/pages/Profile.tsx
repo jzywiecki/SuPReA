@@ -7,6 +7,7 @@ import rehypeRaw from 'rehype-raw';
 import { API_URLS } from '@/services/apiUrls';
 import axiosInstance from '@/services/api';
 import { useSnackbar } from 'notistack';
+import { useUser } from '@/components/UserProvider';
 interface User {
   id: string;
   username: string;
@@ -24,7 +25,8 @@ Modal.setAppElement('#root');
 
 function Profile() {
   const { id } = useParams<{ id: string }>();
-  const [user, setUser] = useState<User | null>(null);
+  const [userState, setUser] = useState<User | null>(null);
+  const { user, updateAvatarUrl } = useUser();
   const [avatar, setAvatar] = useState<File | null>(null);
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<{ [key in keyof User]?: boolean }>({});
@@ -45,27 +47,34 @@ function Profile() {
   }, [id]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (user) {
+    if (userState) {
       setUser({
-        ...user,
+        ...userState,
         [e.target.name]: e.target.value,
       });
     }
   };
 
   const handleResetAvatar = () => {
-    axiosInstance.post(`${API_URLS.BASE_URL}/users/${id}/reset-avatar`)
+    axiosInstance.delete(`${API_URLS.API_SERVER_URL}/resources/delete-avatar/${id}`)
       .then(response => {
-        enqueueSnackbar('Avatar reset successfully!', { variant: 'success' });
+        axiosInstance.post(`${API_URLS.BASE_URL}/users/${id}/reset-avatar`)
+         .then(response => {
+           enqueueSnackbar('Avatar reset successfully!', { variant: 'success' });
 
-        setPreviewAvatar(response.data);
-        setIsAvatarModalOpen(false);
-        console.log(response.data);
+          setPreviewAvatar(response.data);
+          setIsAvatarModalOpen(false);
+          console.log(response.data);
+        })
+        .catch(error => {
+          throw error;
+        });
       })
       .catch(error => {
         console.error("There was an error resetting the avatar!", error);
         enqueueSnackbar(`There was an error! ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
       });
+
   }
 
   const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -82,10 +91,10 @@ function Profile() {
   };
 
   const handleFieldSubmit = (field: keyof User) => {
-    if (!user) return;
+    if (!userState) return;
 
     const formData = new FormData();
-    formData.append(field, (user as any)[field]);
+    formData.append(field, (userState as any)[field]);
 
     axiosInstance.patch(`${API_URLS.BASE_URL}/users/${id}`, formData, {
       headers: {
@@ -106,9 +115,10 @@ function Profile() {
     if (!avatar) return;
 
     const formData = new FormData();
-    formData.append('avatar', avatar);
+    formData.append('file', avatar);
 
-    axiosInstance.put(`${API_URLS.BASE_URL}/api/users/${id}/avatar`, formData, {
+
+    axiosInstance.post(`${API_URLS.API_SERVER_URL}/resources/upload-avatar/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -116,8 +126,9 @@ function Profile() {
       .then(response => {
         enqueueSnackbar("Avatar updated successfully!", { variant: 'success' });
 
-        setUser(response.data);
-        setPreviewAvatar(response.data.avatarurl);
+        userState.avatarurl = response.data;
+        updateAvatarUrl(response.data);
+        setPreviewAvatar(response.data);
         setIsAvatarModalOpen(false);
       })
       .catch(error => {
@@ -133,12 +144,12 @@ function Profile() {
 
   return (
     <div className="max-w-5xl mt-6 mx-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-10">
-      {user && (
+      {userState && (
         <>
           <div>
             <div className="text-center mb-4">
               <img
-                src={user.avatarurl}
+                src={userState.avatarurl}
                 alt="Profile Avatar"
                 className="w-96 h-96 rounded-full object-cover mx-auto cursor-pointer border-1 border-gray-300"
                 onClick={() => setIsAvatarModalOpen(true)}
@@ -146,8 +157,8 @@ function Profile() {
 
             </div>
             <div className="space-y-0 border-b-2">
-              <h2 className="text-2xl font-bold">{user.username}</h2>
-              <p className="text-gray-500">{user.email}</p>
+              <h2 className="text-2xl font-bold">{userState.username}</h2>
+              <p className="text-gray-500">{userState.email}</p>
               <div className='space-y-0'>
                 {[
                   { field: 'description' },
@@ -158,7 +169,7 @@ function Profile() {
                         id={field}
                         name={field}
                         role="textbox"
-                        value={user[field as keyof User]}
+                        value={userState[field as keyof User]}
                         disabled={!isEditMode || !isEditing[field as keyof User]}
                         onChange={handleInputChange}
                         className={`w-full px-4 py-2 rounded-md resize-none overflow-y-auto overflow-x-auto ${isEditMode && isEditing[field as keyof User]
@@ -209,7 +220,7 @@ function Profile() {
                       type={field === 'email' ? 'email' : 'text'}
                       id={field}
                       name={field}
-                      value={user[field as keyof User]}
+                      value={userState[field as keyof User]}
                       disabled={!isEditMode || !isEditing[field as keyof User]}
                       onChange={handleInputChange}
                       className={`w-full px-4 py-2 rounded-md ${isEditMode && isEditing[field as keyof User] ? 'border border-gray-300' : 'border-none bg-white  dark:bg-inherit'}`}
@@ -241,7 +252,7 @@ function Profile() {
                 <div className="relative">
                   <textarea
                     name="readme"
-                    value={user.readme}
+                    value={userState.readme}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 rounded-md border border-gray-300 h-64"
                   />
@@ -252,10 +263,10 @@ function Profile() {
                 </div>
               ) : (
                 <div className="relative">
-                  {user.username}/about the user
+                  {userState.username}/about the user
                   <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose mt-5 p-5 border-t-2">
 
-                    {user.readme}
+                    {userState.readme}
                   </ReactMarkdown>
                   {isEditMode && (
                     <FaPencilAlt
