@@ -90,20 +90,27 @@ const ProjectList = ({ projects, onSelect, selectedProjectId, sortOrder, toggleS
                 </button>
             </div>
             <ScrollArea className="project-list-container">
-                {filteredProjects.map((project) => (
-                    <div
-                        key={project.id}
-                        className={`project-list-menu-item ${selectedProjectId === project.id ? 'bg-gray-200' : ''}`}
-                        onClick={() => onSelect(project)}
-                    >
-                        <div className='project-list-menu-item-header'>
-                            <h1>{project.name}</h1>
-                            <p>{new Date(project.created_at).toLocaleDateString("pl-PL", { month: "numeric", day: "numeric" })}</p>
-                        </div>
-                        <p className='project-list-menu-item-description'>{project.description}</p>
-                        <p className='project-list-menu-item-members'><MdSupervisorAccount /> {project.members.length}</p>
-                    </div>
-                ))}
+            {filteredProjects.map((project) => (
+    <div
+        key={project.id}
+        className={`project-list-menu-item ${selectedProjectId === project.id ? 'bg-gray-200' : ''}`}
+        onClick={() => onSelect(project)}
+    >
+        <div className='project-list-menu-item-header'>
+            <h1>{project.name}</h1>
+            <p>{new Date(project.created_at).toLocaleDateString("pl-PL", { month: "numeric", day: "numeric" })}</p>
+        </div>
+        <p className='project-list-menu-item-description'>
+            {project.description.length > 40 
+                ? `${project.description.slice(0, 40)}...` 
+                : project.description}
+        </p>
+        <p className='project-list-menu-item-members'>
+            <MdSupervisorAccount /> {project.members.length}
+        </p>
+    </div>
+))}
+
             </ScrollArea>
         </div>
     );
@@ -147,6 +154,8 @@ const ProjectsView = () => {
             if (!user?.id) return;
             try {
                 const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/list/${user.id}`);
+                console.log("RESPONSE")
+                console.log(response)
                 const processedOwnerProjects = response.data.owner.map((project) => ({
                     ...project,
                     members: project.members.filter(member => member !== project.owner),

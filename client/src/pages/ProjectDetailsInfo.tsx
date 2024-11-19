@@ -1,9 +1,33 @@
+import { API_URLS } from "@/services/apiUrls";
+import { makePictureUrl } from "@/utils/url";
+import Image from "@/components/Image";
+
+
 const ProjectDetailsInfo = ({ project }) => {
+
+    if (project.logo) {
+        project.logo = makePictureUrl(project.logo);
+    }
+
+    const defaultLogoURL = 'https://png.pngtree.com/png-vector/20221125/ourmid/pngtree-no-image-available-icon-flatvector-illustration-pic-design-profile-vector-png-image_40966566.jpg';
+
     return (<div style={{ height: "100%" }}>
-        <div className="project-element-readme-box box-name" >
+        <div className="project-element-readme-box box-name">
             <h2>{project.name}</h2>
-            <img src='https://cdn.prod.website-files.com/624ac40503a527cf47af4192/659baa52498a8bb97b45ed7f_ai-logo-generator-12.png'></img>
-        </div>
+            {project.logo ? (
+        <Image 
+          imageURL={project.logo} 
+          alt={`${project.name} Logo`} 
+          classname="w-24 h-24 object-contain" 
+        />
+      ) : (
+        <img 
+          src={defaultLogoURL} 
+          alt="Default Logo" 
+          className="w-24 h-24 object-contain" 
+        />
+      )}        </div>
+
         <div className="project-element-readme-box box-description flex space-x-4 border border-gray-300 p-4 rounded-lg">
             <div className="w-1/3 border-r border-gray-300 pr-4 flex items-center align-center">
                 {project.description ? (

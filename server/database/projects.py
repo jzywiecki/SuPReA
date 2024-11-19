@@ -55,6 +55,7 @@ class ProjectDAO:
                     "created_at": 1,
                     "mottto": 1,
                     "elevator_speech": 1,
+                    "logo": {"$arrayElemAt": ["$logo.urls", 0]}
                 },
             )
         )
@@ -82,6 +83,7 @@ class ProjectDAO:
                     "created_at": 1,
                     "mottto": 1,
                     "elevator_speech": 1,
+                    "logo": {"$arrayElemAt": ["$logo.urls", 0]}
                 },
             )
         )

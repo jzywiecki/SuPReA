@@ -5,6 +5,8 @@ import {
 } from "@/components/ui/avatar";
 import { useSnackbar } from "notistack";
 import { RiRobot3Fill } from "react-icons/ri";
+import Image from "./Image";
+import { makePictureUrl } from "@/utils/url";
 
 type MessageType = "user" | "other";
 
@@ -62,7 +64,7 @@ const ChatMessage = ({ isAI, text, sender, date, confirmed, messageType, senderI
                     <AvatarFallback><RiRobot3Fill size={30} /></AvatarFallback>
                 </Avatar> :
                 <Avatar className="m-2">
-                    <AvatarImage src={senderInfo?.avatarurl} />
+                    <Image imageURL={makePictureUrl(senderInfo?.avatarurl)} />
                     <AvatarFallback>?</AvatarFallback>
                 </Avatar>}
 
