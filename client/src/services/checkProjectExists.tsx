@@ -11,6 +11,9 @@ export async function checkProjectExists(projectID) {
             return true;
         }
 
+        
+        console.log(response.data)
+
         // In case of other successful status codes, handle accordingly
         return false;
     } catch (error) {

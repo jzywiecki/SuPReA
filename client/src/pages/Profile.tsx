@@ -138,6 +138,10 @@ function Profile() {
   };
 
   const toggleEditMode = () => {
+    if (user.id != id) {
+      console.log("can not edit profile that is of other user")
+      return
+    }
     setIsEditMode(!isEditMode);
     setIsEditing({});
   };
@@ -199,12 +203,17 @@ function Profile() {
               </div>
             </div>
             <div className="flex justify-center mt-4">
-              <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
-                onClick={toggleEditMode}
-              >
-                {isEditMode ? 'Cancel Edit' : 'Edit Profile'}
-              </button>
+              { user?.id == id ? (
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
+                  onClick={toggleEditMode}
+                >
+                  {isEditMode ? 'Cancel Edit' : 'Edit Profile'}
+                </button>
+              ) : (
+                <div></div>
+              )
+              }
             </div>
             <div className="space-y-0">
               {[
