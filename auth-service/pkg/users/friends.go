@@ -6,6 +6,7 @@ import (
 	"auth-service/pkg/database"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -27,6 +28,19 @@ func GetUserFriends(w http.ResponseWriter, r *http.Request) {
 	userId := r.URL.Query().Get("id")
 	if userId == "" {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
+		return
+	}
+
+	isSenderRealUser, err := auth.IsSenderRealUser(r, userId)
+	if err != nil {
+		errorStatus := fmt.Sprintf("Invalid user ID format with error %s", err)
+		http.Error(w, errorStatus, http.StatusBadRequest)
+		return
+	}
+
+	if !isSenderRealUser {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -112,6 +126,18 @@ func AddUserToFriends(w http.ResponseWriter, r *http.Request) {
 		userId := r.URL.Query().Get("user_id")
 		if userId == "" {
 			http.Error(w, "User ID is required", http.StatusBadRequest)
+			return nil
+		}
+
+		isSenderRealUser, err := auth.IsSenderRealUser(r, userId)
+		if err != nil {
+			http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+			return err
+		}
+
+		if !isSenderRealUser {
+			log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return nil
 		}
 
@@ -249,6 +275,18 @@ func AcceptUserToFriends(w http.ResponseWriter, r *http.Request) {
 			return nil
 		}
 
+		isSenderRealUser, err := auth.IsSenderRealUser(r, userID)
+		if err != nil {
+			http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+			return err
+		}
+
+		if !isSenderRealUser {
+			log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return nil
+		}
+
 		userObjID, err := primitive.ObjectIDFromHex(userID)
 		if err != nil {
 			http.Error(w, "Invalid User ID format", http.StatusBadRequest)
@@ -334,6 +372,18 @@ func RejectUserToFriends(w http.ResponseWriter, r *http.Request) {
 			return nil
 		}
 
+		isSenderRealUser, err := auth.IsSenderRealUser(r, userID)
+		if err != nil {
+			http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+			return err
+		}
+
+		if !isSenderRealUser {
+			log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return nil
+		}
+
 		userObjID, err := primitive.ObjectIDFromHex(userID)
 		if err != nil {
 			http.Error(w, "Invalid User ID format", http.StatusBadRequest)
@@ -412,6 +462,18 @@ func RemoveFriend(w http.ResponseWriter, r *http.Request) {
 
 	if userID == "" || friendID == "" {
 		http.Error(w, "User ID and Friend ID are required", http.StatusBadRequest)
+		return
+	}
+
+	isSenderRealUser, err := auth.IsSenderRealUser(r, userID)
+	if err != nil {
+		http.Error(w, "Invalid user ID format", http.StatusBadRequest)
+		return
+	}
+
+	if !isSenderRealUser {
+		log.Printf("Unauthorized request from %s with error message %s", r.RemoteAddr, err)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 

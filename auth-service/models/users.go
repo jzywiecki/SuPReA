@@ -12,7 +12,7 @@ type User struct {
 	Token        string             `json:"token"`
 	RefreshToken string             `json:"refresh_token"`
 	Friends      []Friend           `json:"friends"`
-	Projects     []int              `json:"projects"`
+	Projects     []string           `json:"projects"`
 	AvatarURL    string             `json:"avatarurl"`
 	Name         string             `json:"name"`
 	Description  string             `json:"description"`

@@ -3,9 +3,10 @@ This module defines the API routes for interacting with AI models.
 It provides an endpoint for submitting questions to the AI and receiving responses.
 """
 
-from fastapi import APIRouter, status, Response
+from fastapi import APIRouter, status, Response, Depends
 from services import serve_ask_ai_question
 from pydantic import BaseModel
+from utils import verify_project_membership
 
 
 router = APIRouter(
@@ -24,6 +25,7 @@ class QuestionRequest(BaseModel):
 @router.post(
     "/ai-question",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def ask_ai_question(request: QuestionRequest):
     serve_ask_ai_question(request)

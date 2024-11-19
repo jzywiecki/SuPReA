@@ -2,7 +2,7 @@
 This module defines the API routes for interacting with project components, specifically business scenarios.
 """
 
-from fastapi import APIRouter, status, Response
+from fastapi import APIRouter, status, Response, Depends
 from services import get_component
 from services import update_component_by_ai
 from services import regenerate_component_by_ai
@@ -11,6 +11,7 @@ from models import ComponentIdentify, BusinessScenarios
 from .common import RegenerateComponentByAIRequest
 from generation.model.business_scenarios import BusinessScenariosGenerate
 from pydantic import BaseModel
+from utils import verify_project_membership
 
 
 router = APIRouter(
@@ -22,6 +23,7 @@ router = APIRouter(
 @router.get(
     "/business_scenarios/{project_id}",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def get_business_scenarios(project_id: str):
     """
@@ -65,7 +67,7 @@ def regenerate_business_scenarios_by_ai(request: RegenerateComponentByAIRequest)
     """
     return regenerate_component_by_ai(request, BusinessScenariosGenerate)
 
-
+    
 class UpdateBusinessScenariosRequest(BaseModel):
     """
     The request object for updating the business scenarios component by value provided by user.
@@ -78,6 +80,7 @@ class UpdateBusinessScenariosRequest(BaseModel):
 @router.put(
     "/business_scenarios/update",
     status_code=status.HTTP_200_OK,
+    dependencies=[Depends(verify_project_membership)],
 )
 def update_business_scenarios(request: UpdateBusinessScenariosRequest):
     """

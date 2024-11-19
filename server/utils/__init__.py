@@ -14,6 +14,8 @@ from .exceptions import UserNotFound
 
 from .fetch import is_valid_url
 
+from .routes_dependencies import verify_project_membership
+
 from .pdf import PDFGenerator
 
 from .tasks_manager import RemoteTasksManager
