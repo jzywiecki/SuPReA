@@ -7,7 +7,7 @@ import { API_URLS } from "@/services/apiUrls";
 import axiosInstance from "@/services/api";
 import { useSnackbar } from 'notistack';
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { checkProjectExists } from '../services/checkProjectExists'; // Hypothetical API call to verify project existence
+import { checkProjectExists } from '../services/checkProjectExists';
 
 type SidePanelType = 'ai' | 'discussion' | null;
 
@@ -32,7 +32,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }, [projectID]);
 
     useEffect(() => {
-        if (isValidProject) {
+        if (!isValidProject) {
             navigate("summary");
         }
     }, [isValidProject, navigate]);
@@ -80,11 +80,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     };
 
     if (isValidProject === null) {
-        return <div>Loading...</div>; // Optional: Replace with a loader component
+        return <div>Loading...</div>;
     }
 
     if (!isValidProject) {
-        return <Navigate to="/not-found" replace />; // Redirect to a 404 or appropriate route if project is invalid
+        return <Navigate to="/not-found" replace />;
     }
 
     return (
