@@ -31,8 +31,7 @@ import ProjectDetailsReadme from './pages/ProjectDetailsReadme';
 import Layout from './pages/Layout';
 import LogoList from './pages/projectPages/LogoList';
 import PageNotFound from './pages/PageNotFound';
-import validateProject from './services/protectedRoute';
-
+import ProtectedRoute from './services/protectedRoute';
 
 function App() {
   return (
@@ -74,12 +73,12 @@ function App() {
                   <Route path="database-diagram" element={<DatabaseDiagram />} />
                   <Route path="logo" element={<LogoList />} />
                 </Route>
-                <Route path="/projects/:projectID/settings" element={<ProjectsSettings />} />
-
                 <Route path="/create-project" element={<CreateProject />} />
                 <Route path="/profile/:id" element={<Profile />} />
                 <Route path="/collaborators" element={<SearchAndAddFriends />} />
+                <Route path="not-found" element={<PageNotFound />} />
                 <Route path="*" element={<PageNotFound />} />
+
               </Routes>
             </div>
           </RegenerateProvider>

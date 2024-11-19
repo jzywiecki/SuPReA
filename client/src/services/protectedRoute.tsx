@@ -1,15 +1,25 @@
-import { checkProjectExists } from './checkProjectExists'; // Your function for validation
+import { Navigate, Outlet, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { checkProjectExists } from './checkProjectExists'; // Hypothetical API call to verify project existence
 
-export async function validateProject({ params }) {
-  const { projectID } = params;
+function ProtectedRoute({ redirectTo }) {
+  const { projectID } = useParams(); // Get projectID from the URL
+  const [isValidProject, setIsValidProject] = useState(null); // Null initially for loading state
 
-  const exists = await checkProjectExists(projectID);
+  useEffect(() => {
+    async function validateProject() {
+      const exists = await checkProjectExists(projectID); // Call your service
+      setIsValidProject(exists);
+    }
 
-  if (!exists) {
-    throw new Response("Project not found", { status: 404 });
+    validateProject();
+  }, [projectID]);
+
+  if (isValidProject === null) {
+    return <div>Loading...</div>; // Optional: Replace with a loader component
   }
 
-  return null; // If valid, continue with route rendering
+  return isValidProject ? <Outlet /> : <Navigate to={redirectTo} replace />;
 }
 
-export default validateProject;
+export default ProtectedRoute;
