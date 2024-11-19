@@ -26,6 +26,8 @@ interface UserData extends Members {
     avatarurl?: string;
 }
 
+const AI_ID = "651ffd7ac0f14c3aaf123456"
+
 const ChatTab = ({ isAI, messages, unconfirmedMessages, loadOlderMessages, onLoadMoreMessages, userData }: ChatTabProps) => {
     const [isAtBottom, setIsAtBottom] = useState(true);
 
@@ -52,7 +54,12 @@ const ChatTab = ({ isAI, messages, unconfirmedMessages, loadOlderMessages, onLoa
     };
 
     const findUserInfoById = (users: UserData[], id: string) => {
-        if (isAI && !(id === user.id)) return;
+        if (id === AI_ID) {
+            return {
+                username: "AI",
+                avatarurl: "AI",
+            };
+        }
 
         const user_ = users.find((user) => user.id === id);
         if (user_) {
