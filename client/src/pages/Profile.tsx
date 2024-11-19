@@ -146,6 +146,14 @@ function Profile() {
     setIsEditing({});
   };
 
+  const toggleProfilePictureModal = () => {
+    if (user.id != id) {
+      console.log("can not edit profile that is of other user")
+      return
+    }
+    setIsAvatarModalOpen(true)
+  };
+
   return (
     <div className="max-w-5xl mt-6 mx-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-10">
       {userState && (
@@ -156,7 +164,7 @@ function Profile() {
                 src={userState.avatarurl}
                 alt="Profile Avatar"
                 className="w-96 h-96 rounded-full object-cover mx-auto cursor-pointer border-1 border-gray-300"
-                onClick={() => setIsAvatarModalOpen(true)}
+                onClick={() => toggleProfilePictureModal()}
               />
 
             </div>
