@@ -7,6 +7,7 @@ class UsersDAO:
     """
     This class provides a DAO for pictures in the MongoDB database.
     """
+
     def __init__(self, mongo_db, collection_name):
         self.collection = mongo_db.get_collection(collection_name)
 
@@ -20,7 +21,7 @@ class UsersDAO:
         """
         return self.collection.update_one(
             {"_id": ObjectId(user_id)},
-            {"$set": {"avatar_id": picture_id, "avatarurl": picture_url}}
+            {"$set": {"avatar_id": picture_id, "avatarurl": picture_url}},
         )
 
     def is_user_exist(self, user_id: str) -> bool:

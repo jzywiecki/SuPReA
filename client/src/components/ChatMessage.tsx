@@ -57,7 +57,7 @@ const ChatMessage = ({ isAI, text, sender, date, confirmed, messageType, senderI
             className={`flex p-3 ${messageType === "other" ? "justify-start bg-accent" : "justify-end bg-background"}`}
             style={{ width: "25vw" }}
         >
-            {isAI ?
+            {senderInfo.avatarurl === "AI" ?
                 <Avatar className="m-2">
                     <AvatarFallback><RiRobot3Fill size={30} /></AvatarFallback>
                 </Avatar> :
