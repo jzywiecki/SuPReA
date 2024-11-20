@@ -14,14 +14,12 @@ function Image({ imageURL = '', alt = '', classname = '', onClick = () => {} }: 
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        console.log("URL: ", imageURL);
-
         if (!imageURL) {
           setImageSrc("/public/nophoto.jpg");
           return;
         }
 
-        if (imageURL.startsWith('/public/')) {
+        if (imageURL.startsWith('/public/') || imageURL.startsWith('data:')) {
           setImageSrc(imageURL);
           return;
         }

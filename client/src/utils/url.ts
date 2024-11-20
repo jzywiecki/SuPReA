@@ -15,6 +15,10 @@ export const isValidHttpUrl = (string) => {
 
 
 export const makePictureUrl = (pictureURL) => {
+    if (pictureURL?.startsWith("data:") || pictureURL?.startsWith("/public/")) {
+        return pictureURL;
+    }
+
     if (isValidHttpUrl(pictureURL)) {
         return pictureURL;
     }
