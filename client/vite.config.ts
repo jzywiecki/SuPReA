@@ -16,15 +16,15 @@ export default defineConfig({
        usePolling: true,
     },
     proxy: {
-        '/cat-api': { // Proxy dla cat-avatars
+        '/cat-api': {
             target: 'https://cat-avatars.vercel.app',
             changeOrigin: true,
             rewrite: (path) => path.replace(/^\/cat-api/, ''),
         },
-        '/no-photo': { // Proxy dla problematycznego zasobu
+        '/no-photo': {
           target: 'https://static.vecteezy.com',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/no-photo/, ''), // Dostosuj ścieżkę
+          rewrite: (path) => path.replace(/^\/no-photo/, ''),
         },
   },
 }})
