@@ -393,7 +393,7 @@ export function AppSidebar({ onProjectClick, ...props }: React.ComponentProps<ty
     socket.on('error', handleError);
     socket.on('notify-generation-complete', handleGenerationComplete);
 
-    navigate("summary");
+    // navigate("summary");
     setIsLoading(false);
 
     return () => {

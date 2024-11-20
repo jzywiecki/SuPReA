@@ -126,7 +126,6 @@
 }
 
 .project-element-readme-container {
-    background-color: #f1f1f1;
     padding: 15px 0 0 0;
     height: 100vh;
 }
@@ -151,15 +150,12 @@
     position: absolute;
     top: 0;
     right: 15px;
-    color: #4a4a4a;
     font-size: 0.9em;
 }
 
 .project-element-readme-box {
-    background-color: white;
     border-radius: 10px;
-    /* border: 2px solid rgb(177, 177, 177); */
-    box-shadow: 0px 0px 5px 1px rgb(198, 198, 198);
+    border: 1px solid rgb(177, 177, 177);
     padding: 20px;
     margin: 15px;
 
@@ -187,7 +183,6 @@
 }
 
 .box-description>div>p {
-    color: rgb(60, 60, 60);
     text-align: center;
 }
 
@@ -218,7 +213,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #ffffff;
     padding: 0px 10px 0px 0px;
     /* border-radius: 10px; */
     border-top: 1px solid rgb(63, 63, 63);

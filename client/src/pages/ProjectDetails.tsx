@@ -16,7 +16,7 @@ const ProjectDetails = ({ project }) => {
     }
 
     return (
-        <ScrollArea className="h-[calc(100vh-5rem)] bg-[#f1f1f1] pt-4" >
+        <ScrollArea className="h-[calc(100vh-5rem)] pt-4" >
             <div className="project-element-readme-header">
                 <div>
                     <Link to={`/projects/${project.id}/editor`}>
