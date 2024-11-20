@@ -40,6 +40,9 @@ function Profile() {
   useEffect(() => {
     axiosInstance.get<User>(`${API_URLS.BASE_URL}/users/${id}`)
       .then(response => {
+
+        console.log("response.data", response.data)
+
         setUser(response.data);
         console.log(response.data);
         setPreviewAvatar(response.data.avatarurl);
@@ -164,7 +167,7 @@ function Profile() {
           <div>
             <div className="text-center mb-4">
             <Image
-              imageURL={makePictureUrl(userState.avatarurl)}  // Usuwamy nadmiarowy nawias
+              imageURL={makePictureUrl(userState.avatarurl)}
               alt="Profile Avatar"
               classname="w-96 h-96 rounded-full object-cover mx-auto cursor-pointer border-1 border-gray-300"
               onClick={() => toggleProfilePictureModal()}

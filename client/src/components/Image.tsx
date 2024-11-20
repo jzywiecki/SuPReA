@@ -8,38 +8,40 @@ interface ImageProps {
   onClick?: () => void;
 }
 
-
 function Image({ imageURL = '', alt = '', classname = '', onClick = () => {} }: ImageProps) {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        console.log("url", imageURL);
+        if (!imageURL) {
+          setImageSrc("/public/nophoto.jpg");
+          return;
+        }
+
+        if (imageURL.startsWith('/public/') || imageURL.startsWith('data:')) {
+          setImageSrc(imageURL);
+          return;
+        }
 
         const response = await axiosInstance.get(imageURL, {
           responseType: 'blob',
-          headers: {
-            'Accept': 'image/jpeg',
-          },
         });
 
         const imageUrl = URL.createObjectURL(response.data);
         setImageSrc(imageUrl);
-        
       } catch (error) {
         console.error('Error in image: ', error);
       }
     };
 
-    if (imageURL) {
-      fetchImage();
-    }
+    fetchImage();
+    
   }, [imageURL]);
 
   return (
     <img
-      src={imageSrc || 'https://via.placeholder.com/150'}
+      src={imageSrc || '/public/nophoto.jpg'}
       alt={alt}
       className={classname}
       onClick={onClick}

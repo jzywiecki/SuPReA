@@ -9,12 +9,17 @@ axiosInstance.interceptors.request.use(
         if (accessToken) {
             config.headers['Authorization'] = `${accessToken}`;
         }
+        if (config.url.includes('cat-avatars.vercel.app')) {
+            delete config.headers['Authorization'];
+        }
+        if (config.url.includes('static.vecteezy.com')) {
+            delete config.headers['Authorization'];
+        }
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
+
 
 axiosInstance.interceptors.response.use(
     (response) => response,

@@ -1,4 +1,3 @@
-import { API_URLS } from "@/services/apiUrls";
 import { makePictureUrl } from "@/utils/url";
 import Image from "@/components/Image";
 
@@ -15,24 +14,15 @@ const ProjectDetailsInfo = ({ project }) => {
 
     console.log(project);
 
-    const defaultLogoURL = 'https://static.vecteezy.com/system/resources/previews/004/141/669/non_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
-
     return (<div style={{ height: "100%" }}>
         <div className="project-element-readme-box box-name">
             <h2>{project.name}</h2>
-            {project.logo ? (
         <Image 
           imageURL={project.logo} 
           alt={`${project.name} Logo`} 
           classname="w-24 h-24 object-contain" 
         />
-      ) : (
-        <img 
-          src={defaultLogoURL} 
-          alt="Default Logo" 
-          className="w-24 h-24 object-contain" 
-        />
-      )}        </div>
+       </div>
 
         <div className="project-element-readme-box box-description flex space-x-4 border border-gray-300 p-4 rounded-lg">
 

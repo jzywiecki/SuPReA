@@ -6,6 +6,7 @@ import Search from '@/components/Search';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 
 export interface User {
     id: string;
@@ -16,20 +17,22 @@ export interface User {
 }
 
 const SearchAndAddFriends: React.FC = () => {
-    const { user } = useUser();
+    const { user, isLogged } = useUser();
     const [searchResults, setSearchResults] = useState<User[]>([]);
     const [friends, setFriends] = useState<User[]>([]);
     const { enqueueSnackbar } = useSnackbar();
+    const navigate = useNavigate();
 
-    if (!user) {
-        return <div>You are not logged in!</div>;
-    }
 
     useEffect(() => {
+        if (isLogged === false) {
+            navigate('/login');
+        }
+
         if (user) {
             fetchFriends();
         }
-    }, [user]);
+    }, [user, isLogged]);
 
     const fetchFriends = async () => {
         try {
@@ -95,8 +98,8 @@ const SearchAndAddFriends: React.FC = () => {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-4">Your friends</h3>
-                {friends && friends.length > 0 ? (
+                <h2 className="text-lg font-semibold mb-4">Your friends</h2>
+                {friends && friends.filter(friend => friend.status === "accepted").length > 0 ? (
                     <ul className="space-y-4">
                         {friends.filter(friend => friend.status === "accepted").map(friend => (
                             <Link to={`/users/${friend.id}`} className="hover:underline" key={friend.id}>
@@ -109,14 +112,15 @@ const SearchAndAddFriends: React.FC = () => {
                         ))}
                     </ul>
                 ) : (
-                    <p>You have no friends yet.</p>
+                    <p className="text-gray-600">You have no friends yet.</p>
                 )}
             </div>
 
+
             {/* Pending Invitations */}
             <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-4">Pending Invitations</h3>
-                {friends && friends.length > 0 ? (
+                <h2 className="text-lg font-semibold mb-4">Pending Invitations</h2>
+                {friends && friends.filter(friend => friend.status === "invited_by_friend").length > 0 ? (
                     <ul className="space-y-4">
                         {friends.filter(friend => friend.status === "invited_by_friend").map(friend => (
                             <Link to={`/profile/${friend.id}`} className="hover:underline" key={friend.id}>
@@ -129,14 +133,15 @@ const SearchAndAddFriends: React.FC = () => {
                         ))}
                     </ul>
                 ) : (
-                    <p>You have no pending invitations.</p>
+                    <p className="text-gray-600">You have no pending invitations.</p>
                 )}
             </div>
 
+
             {/* Sent Invitations */}
             <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-4">Sent Invitations</h3>
-                {friends && friends.length > 0 ? (
+                <h2 className="text-lg font-semibold mb-4">Sent Invitations</h2>
+                {friends && friends.filter(friend => friend.status === "invited_by_user").length > 0 ? (
                     <ul className="space-y-4">
                         {friends.filter(friend => friend.status === "invited_by_user").map(friend => (
                             <Link to={`/profile/${friend.id}`} className="hover:underline" key={friend.id}>
@@ -149,9 +154,10 @@ const SearchAndAddFriends: React.FC = () => {
                         ))}
                     </ul>
                 ) : (
-                    <p>You have no sent invitations.</p>
+                    <p className="text-gray-600">You have no sent invitations.</p>
                 )}
             </div>
+
 
             {/* Search component */}
             <Search
@@ -159,7 +165,7 @@ const SearchAndAddFriends: React.FC = () => {
                 searchResults={searchResults}
                 friends={friends}
                 onClick={handleAddFriend}
-                userId={user.id}
+                userId={user?.id}
                 actionType='addFriend'
             />
         </div>

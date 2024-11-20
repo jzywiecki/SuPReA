@@ -2,7 +2,6 @@ import { ModeToggle } from "./ModeToggle";
 import {
     Avatar,
     AvatarFallback,
-    AvatarImage,
 } from "@/components/ui/avatar"
 import { useUser } from './UserProvider';
 import Image from "./Image";
@@ -48,7 +47,7 @@ const Navbar = () => {
                     </>
                 ) : (
                     <li>
-                        Example
+                        {/* Example */}
                     </li>
                 )}
                 <li>

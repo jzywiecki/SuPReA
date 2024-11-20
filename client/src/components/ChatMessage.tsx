@@ -1,7 +1,6 @@
 import {
     Avatar,
     AvatarFallback,
-    AvatarImage,
 } from "@/components/ui/avatar";
 import { useSnackbar } from "notistack";
 import { RiRobot3Fill } from "react-icons/ri";

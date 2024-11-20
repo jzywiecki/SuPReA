@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import {
     Avatar,
     AvatarFallback,
-    AvatarImage,
 } from "@/components/ui/avatar"
 type UserCardAction = 'addFriend' | 'acceptInvitation' | 'rejectInvitation' | 'withdrawInvitation' | 'removeFriend' | 'addMember';
 import { Link } from 'react-router-dom';
+import Image from './Image';
+import { makePictureUrl } from '@/utils/url';
 
 interface UserCardProps {
     user: User;
@@ -40,7 +41,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
         <Card className="flex justify-between shadow rounded-lg h-24 mt-3">
             <CardContent className="flex items-center space-x-4">
             <Avatar>
-                <AvatarImage src={user?.avatarurl} alt="@shadcn" />
+            <Image imageURL={makePictureUrl(user?.avatarurl)}/>
                 <AvatarFallback>?</AvatarFallback>
             </Avatar>
             <Link to={`/profile/${user.id}`} className="hover:underline" key={user.id}>
@@ -51,7 +52,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
             </Link>
             </CardContent>
             <CardFooter className="space-x-2">
-                {actionType === 'acceptInvitation' && (
+                {actionType === 'acceptInvitation' || actionType === 'addFriend' &&  (
                     <Button
                         onClick={() => onAction(user)}
                         className="bg-green-600 text-white hover:bg-green-700 rounded-md"
@@ -67,10 +68,10 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
                         {getButtonLabel()}
                     </Button>
                 )}
-                {actionType !== 'acceptInvitation' && actionType !== 'rejectInvitation' && actionType !== 'withdrawInvitation' && (
+                {actionType !== 'acceptInvitation' && actionType !== 'rejectInvitation' && actionType !== 'withdrawInvitation' && actionType != 'addFriend' && (
                     <Button
                         onClick={() => onAction(user)}
-                        className="bg-green-600 text-white hover:bg-green-700 rounded-md"
+                        className="bg-red-600 text-white hover:bg-red-700 rounded-md"
                     >
                         {getButtonLabel()}
                     </Button>
