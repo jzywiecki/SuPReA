@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
     Avatar,
     AvatarFallback,
-    AvatarImage,
 } from "@/components/ui/avatar"
 type UserCardAction = 'addFriend' | 'acceptInvitation' | 'rejectInvitation' | 'withdrawInvitation' | 'removeFriend' | 'addMember';
 import { Link } from 'react-router-dom';

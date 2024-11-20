@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axiosInstance from '@/services/api'; 
 
 interface ImageProps {
-  imageURL?: string; // Może być ścieżką do lokalnego katalogu lub URL-em
+  imageURL?: string;
   alt?: string;
   classname?: string;
   onClick?: () => void;
