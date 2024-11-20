@@ -167,7 +167,7 @@ const ProjectsView = () => {
                     members: project.members.filter(member => member !== project.owner),
                 }));
                 setProjects({ owner: processedOwnerProjects, member: processedMemberProjects });
-                setSelectedProject(processedOwnerProjects[0] || null);
+                setSelectedProject(null);
             } catch (error) {
                 enqueueSnackbar(`Error fetching projects ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             } finally {
