@@ -47,7 +47,7 @@ const Navbar = () => {
                     </>
                 ) : (
                     <li>
-                        Example
+                        {/* Example */}
                     </li>
                 )}
                 <li>
