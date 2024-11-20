@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, ReactNode, useEffect } from
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
 import { makePictureUrl } from '@/utils/url';
+import { set } from 'react-hook-form';
 
 interface User {
     id: string;
@@ -14,6 +15,7 @@ interface UserContextType {
     user: User | null;
     login: (userData: User, accessToken: string, refreshToken: string) => void;
     logout: () => void;
+    isLogged: boolean;
     accessToken: string | null;
     refreshAccessToken: () => Promise<void>;
 }
@@ -24,19 +26,23 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [user, setUser] = useState<User | null>(null);
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [refreshToken, setRefreshToken] = useState<string | null>(null);
+    const [isLogged, setIsLogged] = useState<boolean>(null);
 
     useEffect(() => {
-        // Retrieve user data and tokens from localStorage on initial load
         const storedUser = localStorage.getItem('user');
         const storedAccessToken = localStorage.getItem('accessToken');
         const storedRefreshToken = localStorage.getItem('refreshToken');
-
+    
         if (storedUser && storedAccessToken && storedRefreshToken) {
             setUser(JSON.parse(storedUser));
             setAccessToken(storedAccessToken);
             setRefreshToken(storedRefreshToken);
+            setIsLogged(true);
+        } else {
+            setIsLogged(false);
         }
     }, []);
+    
 
     const login = (userData: User, accessToken: string, refreshToken: string) => {
         // Store user and tokens in localStorage
@@ -44,6 +50,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(userData);
         setAccessToken(accessToken);
         setRefreshToken(refreshToken);
+        setIsLogged(true);
 
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('accessToken', accessToken);
@@ -55,6 +62,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUser(null);
         setAccessToken(null);
         setRefreshToken(null);
+        setIsLogged(false);
 
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
@@ -90,7 +98,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     return (
-        <UserContext.Provider value={{ user, login, logout, accessToken, refreshAccessToken, updateAvatarUrl }}>
+        <UserContext.Provider value={{ user, login, logout, accessToken, refreshAccessToken, updateAvatarUrl, isLogged }}>
             {children}
         </UserContext.Provider>
     );

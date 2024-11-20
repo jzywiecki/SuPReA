@@ -24,6 +24,7 @@ import { MdSupervisorAccount } from "react-icons/md";
 import { Skeleton } from "@/components/ui/skeleton"
 import { MdOutlineFreeCancellation } from "react-icons/md";
 import ProjectDetails from './ProjectDetails';
+import { useNavigate } from 'react-router-dom';
 
 // type Project = {
 //     id: string;
@@ -141,17 +142,20 @@ const NoProjects = () => (
 );
 
 const ProjectsView = () => {
-    const { user } = useUser();
+    const { isLogged, user } = useUser();
     const [projects, setProjects] = useState({ owner: [], member: [] });
     const [loading, setLoading] = useState(true);
     const { enqueueSnackbar } = useSnackbar();
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedProject, setSelectedProject] = useState(null);
     const [sortOrder, setSortOrder] = useState("newest");
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         const fetchProjects = async () => {
-            if (!user?.id) return;
+            if (!user?.id) return null
+
             try {
                 const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/list/${user.id}`);
                 const processedOwnerProjects = response.data.owner.map((project) => ({
@@ -170,8 +174,13 @@ const ProjectsView = () => {
                 setLoading(false);
             }
         };
+        if (isLogged === false) {
+            navigate('/login');
+        }
+
         fetchProjects();
-    }, [user?.id]);
+
+    }, [isLogged, user, user?.id, navigate]);
 
     const toggleSortOrder = () => setSortOrder((prevSortOrder) => prevSortOrder === "newest" ? "oldest" : "newest");
 
