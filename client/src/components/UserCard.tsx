@@ -38,7 +38,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
     };
 
     return (
-        <Card className="flex justify-between rounded-lg h-24 mt-2 p-3 dark: bg-zinc-900">
+        <Card className="flex justify-between rounded-lg h-24 mt-2 p-3 dark:bg-zinc-900">
             <CardContent className="flex items-center space-x-4 p-5">
             
             <Link to={`/profile/${user.id}`} className="hover:underline" key={user.id}>

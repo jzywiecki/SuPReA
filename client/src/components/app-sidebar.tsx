@@ -1,15 +1,9 @@
 import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
   Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
-  Settings2,
-  SquareTerminal,
 
   Text,
   Lightbulb,
@@ -41,7 +35,6 @@ import {
 } from "@/components/ui/sidebar"
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from 'react-router-dom';
-import ConnectionStatus from '@/components/ui/connection-status';
 import { User } from '@/pages/SearchAndAddFriends';
 import { useUser } from '@/components/UserProvider';
 import { API_URLS } from '@/services/apiUrls';
@@ -291,7 +284,6 @@ export function AppSidebar({ onProjectClick, ...props }: React.ComponentProps<ty
   const { user } = useUser();
   const { enqueueSnackbar } = useSnackbar();
   const { projectID } = useParams();
-  const navigate = useNavigate();
 
   const [projectName, setProjectName] = useState<string>(null);
   const [searchResults, setSearchResults] = useState<User[]>([]);

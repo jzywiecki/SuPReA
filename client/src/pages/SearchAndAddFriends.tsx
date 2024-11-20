@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import UserCard from '@/components/UserCard';
 import { useUser } from "@/components/UserProvider";
-import { Link } from 'react-router-dom';
 import Search from '@/components/Search';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
@@ -102,13 +101,11 @@ const SearchAndAddFriends: React.FC = () => {
                 {friends && friends.filter(friend => friend.status === "accepted").length > 0 ? (
                     <ul className="space-y-4">
                         {friends.filter(friend => friend.status === "accepted").map(friend => (
-                            <Link to={`/users/${friend.id}`} className="hover:underline" key={friend.id}>
                                 <UserCard
                                     user={friend}
                                     actionType="removeFriend"
                                     onAction={() => handleRemoveFriend(friend.id)}
                                 />
-                            </Link>
                         ))}
                     </ul>
                 ) : (

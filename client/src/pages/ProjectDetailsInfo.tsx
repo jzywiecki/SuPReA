@@ -15,7 +15,7 @@ const ProjectDetailsInfo = ({ project }) => {
     console.log(project);
 
     return (<div style={{ height: "100%" }}>
-        <div className="project-element-readme-box box-name">
+        <div className="project-element-readme-box box-name dark:bg-zinc-900">
             <h2>{project.name}</h2>
         <Image 
           imageURL={project.logo} 
@@ -24,7 +24,7 @@ const ProjectDetailsInfo = ({ project }) => {
         />
        </div>
 
-        <div className="project-element-readme-box box-description flex space-x-4 border border-gray-300 p-4 rounded-lg">
+        <div className="project-element-readme-box box-description flex space-x-4 p-4 dark:bg-zinc-900">
 
 
             <div className="w-1/3 border-r border-gray-300 px-4">
@@ -45,7 +45,7 @@ const ProjectDetailsInfo = ({ project }) => {
 </div>
             </div>
         </div>
-        <div className="project-element-readme-box box-images">
+        <div className="project-element-readme-box box-images dark:bg-zinc-900">
             <div className="">
             <h3 className="font-semibold text-lg mb-2">Description</h3>
                 {(project.description) ? <p>{project.description}</p> : <p>No description available.</p>}
