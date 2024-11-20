@@ -38,20 +38,21 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
     };
 
     return (
-        <Card className="flex justify-between shadow rounded-lg h-24 mt-3">
-            <CardContent className="flex items-center space-x-4">
+        <Card className="flex justify-between rounded-lg h-24 mt-2 p-3 dark: bg-zinc-900">
+            <CardContent className="flex items-center space-x-4 p-5">
+            
+            <Link to={`/profile/${user.id}`} className="hover:underline" key={user.id}>
             <Avatar>
             <Image imageURL={makePictureUrl(user?.avatarurl)}/>
                 <AvatarFallback>?</AvatarFallback>
             </Avatar>
-            <Link to={`/profile/${user.id}`} className="hover:underline" key={user.id}>
-                <div>
+            </Link>
+            <div>
                     <p className="text-lg font-semibold">{user.username}</p>
                     <p className="text-sm text-muted-foreground">{user.email}</p>
-                </div>
-            </Link>
+            </div>
             </CardContent>
-            <CardFooter className="space-x-2">
+            <CardFooter className="space-x-2 p-5">
                 {actionType === 'acceptInvitation' || actionType === 'addFriend' &&  (
                     <Button
                         onClick={() => onAction(user)}

@@ -123,13 +123,11 @@ const SearchAndAddFriends: React.FC = () => {
                 {friends && friends.filter(friend => friend.status === "invited_by_friend").length > 0 ? (
                     <ul className="space-y-4">
                         {friends.filter(friend => friend.status === "invited_by_friend").map(friend => (
-                            <Link to={`/profile/${friend.id}`} className="hover:underline" key={friend.id}>
-                                <UserCard
-                                    user={friend}
-                                    actionType="acceptInvitation"
-                                    onAction={() => handleAcceptInvitation(friend.id)}
-                                />
-                            </Link>
+                            <UserCard
+                                user={friend}
+                                actionType="acceptInvitation"
+                                onAction={() => handleAcceptInvitation(friend.id)}
+                            />
                         ))}
                     </ul>
                 ) : (
@@ -144,13 +142,11 @@ const SearchAndAddFriends: React.FC = () => {
                 {friends && friends.filter(friend => friend.status === "invited_by_user").length > 0 ? (
                     <ul className="space-y-4">
                         {friends.filter(friend => friend.status === "invited_by_user").map(friend => (
-                            <Link to={`/profile/${friend.id}`} className="hover:underline" key={friend.id}>
                                 <UserCard
                                     user={friend}
                                     actionType="withdrawInvitation"
                                     onAction={() => handleRejectInvitation(friend.id)}
                                 />
-                            </Link>
                         ))}
                     </ul>
                 ) : (
