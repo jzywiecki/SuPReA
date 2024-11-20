@@ -6,6 +6,7 @@ import Search from '@/components/Search';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
 import { useSnackbar } from 'notistack';
+import { useNavigate } from 'react-router-dom';
 
 export interface User {
     id: string;
@@ -16,20 +17,22 @@ export interface User {
 }
 
 const SearchAndAddFriends: React.FC = () => {
-    const { user } = useUser();
+    const { user, isLogged } = useUser();
     const [searchResults, setSearchResults] = useState<User[]>([]);
     const [friends, setFriends] = useState<User[]>([]);
     const { enqueueSnackbar } = useSnackbar();
+    const navigate = useNavigate();
 
-    if (!user) {
-        return <div>You are not logged in!</div>;
-    }
 
     useEffect(() => {
+        if (isLogged === false) {
+            navigate('/login');
+        }
+
         if (user) {
             fetchFriends();
         }
-    }, [user]);
+    }, [user, isLogged]);
 
     const fetchFriends = async () => {
         try {
@@ -159,7 +162,7 @@ const SearchAndAddFriends: React.FC = () => {
                 searchResults={searchResults}
                 friends={friends}
                 onClick={handleAddFriend}
-                userId={user.id}
+                userId={user?.id}
                 actionType='addFriend'
             />
         </div>
