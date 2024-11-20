@@ -4,10 +4,8 @@ from database import project_dao
 from .exceptions import ProjectNotFound
 from .loggers import logger
 
-async def verify_project_membership(
-    request: Request,
-    project_id: str = None
-):
+
+async def verify_project_membership(request: Request, project_id: str = None):
     """
     Verifies if the user is a member of the project. Supports raw JWT tokens from headers.
     If `project_id` is not provided as a parameter, it will be extracted from the request body.
@@ -21,7 +19,7 @@ async def verify_project_membership(
     try:
         payload = decode(token, "secret", algorithms=["HS256"])
         logger.info(f"Decoded Payload: {payload}")
-        
+
         user_email = payload.get("email")
         if not user_email:
             raise HTTPException(status_code=401, detail="Invalid token payload")
@@ -31,12 +29,14 @@ async def verify_project_membership(
             body_bytes = await request.body()
             if not body_bytes:
                 raise HTTPException(status_code=400, detail="Request body is empty")
-            
+
             body = await request.json()
             project_id = body.get("project_id")
             if not project_id:
-                raise HTTPException(status_code=400, detail="Missing project_id in request body")
-        
+                raise HTTPException(
+                    status_code=400, detail="Missing project_id in request body"
+                )
+
         # Verify the user's membership in the project
         members = project_dao.get_project_members(project_id)
         if user_email not in [member.get("email") for member in members]:
@@ -51,6 +51,7 @@ async def verify_project_membership(
 
     return True
 
+
 def get_token_from_headers(request: Request):
     """
     Extracts the raw JWT token directly from the Authorization header in the request.
@@ -62,5 +63,5 @@ def get_token_from_headers(request: Request):
     auth_header = request.headers.get("authorization")
     if not auth_header:
         raise HTTPException(status_code=401, detail="Authorization header missing")
-    
+
     return auth_header

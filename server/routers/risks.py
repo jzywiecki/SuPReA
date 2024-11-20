@@ -79,7 +79,7 @@ class UpdateRisksRequest(BaseModel):
 @router.put(
     "/risks/update",
     status_code=status.HTTP_200_OK,
-    dependencies=[Depends(verify_project_membership)], 
+    dependencies=[Depends(verify_project_membership)],
 )
 def update_risks(request: UpdateRisksRequest):
     """

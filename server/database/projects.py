@@ -76,11 +76,10 @@ class ProjectDAO:
 
         if not project:
             return None
-        
-        member_ids = project.get("members", [])
-        
-        return self._get_user_data(member_ids)
 
+        member_ids = project.get("members", [])
+
+        return self._get_user_data(member_ids)
 
     def get_projects_by_member_or_owner(self, user_id: str) -> List[Dict]:
         """
@@ -353,7 +352,6 @@ class ProjectDAO:
     def get_projects_by_owner(self, users_collection_name, owner_id):
         pipeline = [
             {"$match": {"owner": ObjectId(owner_id)}},
-
             {
                 "$lookup": {
                     "from": users_collection_name,
@@ -362,7 +360,6 @@ class ProjectDAO:
                     "as": "owner_info",
                 }
             },
-
             {
                 "$lookup": {
                     "from": users_collection_name,
@@ -371,7 +368,6 @@ class ProjectDAO:
                     "as": "members_info",
                 }
             },
-
             {
                 "$project": {
                     "_id": 1,
@@ -395,10 +391,9 @@ class ProjectDAO:
             {
                 "$match": {
                     "members": ObjectId(owner_id),
-                    "owner": {"$ne": ObjectId(owner_id)}
+                    "owner": {"$ne": ObjectId(owner_id)},
                 }
-             },
-
+            },
             {
                 "$lookup": {
                     "from": users_collection_name,
@@ -407,7 +402,6 @@ class ProjectDAO:
                     "as": "owner_info",
                 }
             },
-
             {
                 "$lookup": {
                     "from": users_collection_name,
@@ -416,7 +410,6 @@ class ProjectDAO:
                     "as": "members_info",
                 }
             },
-
             {
                 "$project": {
                     "_id": 1,
