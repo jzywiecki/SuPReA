@@ -22,7 +22,6 @@
 /* ----------------------------navbar */
 .navbar-deactive {
     padding: 0 0 5px 0;
-    border-bottom: 2px solid rgb(255, 255, 255);
 }
 
 .navbar-active {

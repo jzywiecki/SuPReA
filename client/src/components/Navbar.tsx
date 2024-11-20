@@ -31,17 +31,17 @@ const Navbar = () => {
                     <>
                         <li>
                             <Link to="/create-project"
-                                className={location.pathname === "/create-project" ? "navbar-active" : "navbar-deactive"}
+                                className={location.pathname === "/create-project" ? "navbar-active dark:border-white" : "navbar-deactive dark:b-bottom-0"}
                             >New Project</Link>
                         </li>
                         <li>
                             <Link to="/projects"
-                                className={location.pathname === "/projects" ? "navbar-active" : "navbar-deactive"}
+                                className={location.pathname === "/projects" ? "navbar-active dark:border-white" : "navbar-deactive"}
                             >Projects</Link>
                         </li>
                         <li>
                             <Link to="/collaborators"
-                                className={location.pathname === "/collaborators" ? "navbar-active" : "navbar-deactive"}
+                                className={location.pathname === "/collaborators" ? "navbar-active dark:border-white" : "navbar-deactive"}
                             >Collaborators</Link>
                         </li>
                     </>
