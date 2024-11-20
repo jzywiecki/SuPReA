@@ -66,28 +66,37 @@ const Navbar = () => {
                                 <>
                                     <DropdownMenuLabel>{user.username}</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem>
-                                        <Link to={`/profile/${user.id}`} style={{ width: "100%" }}>Profile</Link>
-                                    </DropdownMenuItem>
+                                    <Link to={`/profile/${user.id}`} style={{ width: "100%" }}>
+                                        <DropdownMenuItem className="text-center w-full flex justify-center items-center">
+                                            Profile
+                                        </DropdownMenuItem>
+                                    </Link>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem onClick={logout}>
-                                        <Link to="/" style={{ width: "100%" }}>Logout</Link>
-                                    </DropdownMenuItem>
+                                    <Link to="/" style={{ width: "100%" }}>
+                                        <DropdownMenuItem onClick={logout} className="text-center w-full flex justify-center items-center"
+                                        >
+                                            Logout
+                                        </DropdownMenuItem>
+                                    </Link>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem >
+                                    <DropdownMenuItem className="text-center w-full flex justify-center items-center">
                                         <ModeToggle />
                                     </DropdownMenuItem>
                                 </>
                             ) : (
                                 <>
-                                    <DropdownMenuItem>
-                                        <Link to="/login" style={{ width: "100%" }}>Login</Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        <Link to="/register" style={{ width: "100%" }}>Register</Link>
-                                    </DropdownMenuItem>
+                                    <Link to="/login" style={{ width: "100%" }}>
+                                        <DropdownMenuItem className="text-center w-full flex justify-center items-center">
+                                            Login
+                                        </DropdownMenuItem>
+                                    </Link>
+                                    <Link to="/register" style={{ width: "100%" }}>
+                                        <DropdownMenuItem className="text-center w-full flex justify-center items-center">
+                                            Register
+                                        </DropdownMenuItem>
+                                    </Link>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem >
+                                    <DropdownMenuItem className="text-center w-full flex justify-center items-center">
                                         <ModeToggle />
                                     </DropdownMenuItem>
                                 </>
