@@ -10,7 +10,6 @@ import { API_URLS } from "@/services/apiUrls";
 import { useParams } from "react-router-dom";
 import { useSnackbar } from "notistack";
 import { Skeleton } from "./ui/skeleton";
-import { set } from "react-hook-form";
 
 interface ChatProps {
     isCollapsed: boolean;
