@@ -52,7 +52,6 @@ async def update_avatar(user_id: str, file):
     Saves the provided picture to the database.
     """
     if not file.content_type.startswith("image/"):
-        print("HERE ERROR")
         raise InvalidParameter("Invalid file format. Only images are allowed.")
 
     file_data = await file.read()
@@ -71,11 +70,8 @@ async def update_avatar(user_id: str, file):
 
     picture_id = picture_dao.save_picture(picture)
 
-    picture_url = f"http://localhost:8000/resources/picture/{picture_id}"
+    picture_url = picture_id
 
-    print("HER")
-    print(picture_url)
-    print(user_id)
     users_dao.set_new_avatar(user_id, picture_id, picture_url)
 
     return picture_url

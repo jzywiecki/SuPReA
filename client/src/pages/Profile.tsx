@@ -8,6 +8,9 @@ import { API_URLS } from '@/services/apiUrls';
 import axiosInstance from '@/services/api';
 import { useSnackbar } from 'notistack';
 import { useUser } from '@/components/UserProvider';
+import Image from '@/components/Image';
+import { makePictureUrl } from '@/utils/url';
+
 interface User {
   id: string;
   username: string;
@@ -126,9 +129,9 @@ function Profile() {
       .then(response => {
         enqueueSnackbar("Avatar updated successfully!", { variant: 'success' });
 
-        userState.avatarurl = response.data;
-        updateAvatarUrl(response.data);
-        setPreviewAvatar(response.data);
+        userState.avatarurl = makePictureUrl(response.data);
+        updateAvatarUrl(userState.avatarurl);
+        setPreviewAvatar(userState.avatarurl);
         setIsAvatarModalOpen(false);
       })
       .catch(error => {
@@ -160,12 +163,12 @@ function Profile() {
         <>
           <div>
             <div className="text-center mb-4">
-              <img
-                src={userState.avatarurl}
-                alt="Profile Avatar"
-                className="w-96 h-96 rounded-full object-cover mx-auto cursor-pointer border-1 border-gray-300"
-                onClick={() => toggleProfilePictureModal()}
-              />
+            <Image
+              imageURL={makePictureUrl(userState.avatarurl)}  // Usuwamy nadmiarowy nawias
+              alt="Profile Avatar"
+              classname="w-96 h-96 rounded-full object-cover mx-auto cursor-pointer border-1 border-gray-300"
+              onClick={() => toggleProfilePictureModal()}
+            />
 
             </div>
             <div className="space-y-0 border-b-2">
@@ -314,10 +317,10 @@ function Profile() {
             className="w-full px-4 py-2 mb-4"
           />
           {previewAvatar && (
-            <img
-              src={previewAvatar}
+            <Image
+              imageURL={makePictureUrl(previewAvatar)}
               alt="Preview Avatar"
-              className="w-32 h-32 rounded-full object-cover mx-auto mb-4"
+              classname="w-32 h-32 rounded-full object-cover mx-auto mb-4"
             />
           )}
           <div className="flex justify-end">

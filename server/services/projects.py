@@ -177,8 +177,8 @@ def get_project_list_by_user_id(user_id: str) -> Dict:
     """
     # TODO: check if user exists
 
-    project_list_member = project_dao.get_projects_by_member(user_id)
-    project_list_owner = project_dao.get_projects_by_owner(user_id)
+    project_list_member = project_dao.get_projects_by_member("users", user_id)
+    project_list_owner = project_dao.get_projects_by_owner("users", user_id)
     result = {
         "owner": project_list_owner,
         "member": project_list_member,

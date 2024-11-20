@@ -33,33 +33,6 @@ class ProjectDAO:
         """
         return self.collection.find_one({"_id": ObjectId(project_id)})
 
-    def get_projects_by_owner(self, owner_id: str) -> List[Dict]:
-        """
-        Returns the projects where the specified user is the owner.
-
-        :param str owner_id: The id of the owner of the projects to retrieve.
-        :return: The projects where the specified user is the owner with only id, name, owner, and description.
-        :rtype: list of dict
-        """
-        return list(
-            self.collection.find(
-                {"owner": ObjectId(owner_id)},
-                {
-                    "_id": 1,
-                    "name": 1,
-                    "description": 1,
-                    "owner": 1,
-                    "for_who": 1,
-                    "doing_what": 1,
-                    "additional_info": 1,
-                    "members": 1,
-                    "created_at": 1,
-                    "mottto": 1,
-                    "elevator_speech": 1,
-                },
-            )
-        )
-
     def _get_user_data(self, user_ids: List[ObjectId]) -> List[Dict]:
         """
         Helper method to retrieve and format user data from the database.
@@ -103,37 +76,10 @@ class ProjectDAO:
 
         if not project:
             return None
-        
+
         member_ids = project.get("members", [])
-        
+
         return self._get_user_data(member_ids)
-
-    def get_projects_by_member(self, member_id: str) -> List[Dict]:
-        """
-        Returns the projects where the specified user is a member (but not owner).
-
-        :param str member_id: The id of the member of the projects to retrieve.
-        :return: The projects where the specified user is a member (but not owner) with only id, name, owner, and description.
-        :rtype: list of dict
-        """
-        return list(
-            self.collection.find(
-                {"members": ObjectId(member_id), "owner": {"$ne": ObjectId(member_id)}},
-                {
-                    "_id": 1,
-                    "name": 1,
-                    "description": 1,
-                    "owner": 1,
-                    "for_who": 1,
-                    "doing_what": 1,
-                    "additional_info": 1,
-                    "members": 1,
-                    "created_at": 1,
-                    "mottto": 1,
-                    "elevator_speech": 1,
-                },
-            )
-        )
 
     def get_projects_by_member_or_owner(self, user_id: str) -> List[Dict]:
         """
@@ -402,3 +348,82 @@ class ProjectDAO:
             return None
 
         return project
+
+    def get_projects_by_owner(self, users_collection_name, owner_id):
+        pipeline = [
+            {"$match": {"owner": ObjectId(owner_id)}},
+            {
+                "$lookup": {
+                    "from": users_collection_name,
+                    "localField": "owner",
+                    "foreignField": "_id",
+                    "as": "owner_info",
+                }
+            },
+            {
+                "$lookup": {
+                    "from": users_collection_name,
+                    "localField": "members",
+                    "foreignField": "_id",
+                    "as": "members_info",
+                }
+            },
+            {
+                "$project": {
+                    "_id": 1,
+                    "name": 1,
+                    "description": 1,
+                    "owner": {"$arrayElemAt": ["$owner_info.username", 0]},
+                    "for_who": 1,
+                    "doing_what": 1,
+                    "additional_info": 1,
+                    "members": "$members_info.username",
+                    "created_at": 1,
+                    "logo": {"$arrayElemAt": ["$logo.urls", 0]},
+                }
+            },
+        ]
+
+        return list(self.collection.aggregate(pipeline))
+
+    def get_projects_by_member(self, users_collection_name, owner_id):
+        pipeline = [
+            {
+                "$match": {
+                    "members": ObjectId(owner_id),
+                    "owner": {"$ne": ObjectId(owner_id)},
+                }
+            },
+            {
+                "$lookup": {
+                    "from": users_collection_name,
+                    "localField": "owner",
+                    "foreignField": "_id",
+                    "as": "owner_info",
+                }
+            },
+            {
+                "$lookup": {
+                    "from": users_collection_name,
+                    "localField": "members",
+                    "foreignField": "_id",
+                    "as": "members_info",
+                }
+            },
+            {
+                "$project": {
+                    "_id": 1,
+                    "name": 1,
+                    "description": 1,
+                    "owner": {"$arrayElemAt": ["$owner_info.username", 0]},
+                    "for_who": 1,
+                    "doing_what": 1,
+                    "additional_info": 1,
+                    "members": "$members_info.username",
+                    "created_at": 1,
+                    "logo": {"$arrayElemAt": ["$logo.urls", 0]},
+                }
+            },
+        ]
+
+        return list(self.collection.aggregate(pipeline))

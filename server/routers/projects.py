@@ -9,7 +9,7 @@ from typing import List, Optional
 from fastapi import APIRouter, status, Response, Depends
 from pydantic import BaseModel, Field
 from typing import Optional
-from models import Project, Motto, ElevatorSpeech
+from models import Project, Motto, ElevatorSpeech, Logo
 from services import (
     create_empty_project,
     create_project_by_ai,
@@ -174,14 +174,13 @@ class ProjectsListResponse(BaseModel):
         id: ObjectId = Field(alias="_id", default=None)
         name: str
         description: str
-        owner: ObjectId
+        owner: str
         for_who: str
         doing_what: str
         additional_info: str
-        members: List[ObjectId]
+        members: List[str]
         created_at: datetime
-        motto: Optional[Motto] = None
-        elevator_speech: Optional[ElevatorSpeech] = None
+        logo: Optional[str] = None
 
         class Config:
             arbitrary_types_allowed = True

@@ -5,6 +5,7 @@ import {
     AvatarImage,
 } from "@/components/ui/avatar"
 import { useUser } from './UserProvider';
+import Image from "./Image";
 
 import {
     DropdownMenu,
@@ -52,12 +53,15 @@ const Navbar = () => {
                 )}
                 <li>
                     <DropdownMenu>
-                        <DropdownMenuTrigger>
-                            <Avatar>
-                                <AvatarImage src={user?.avatarurl} alt="@shadcn" />
+                    <DropdownMenuTrigger>
+                        <Avatar>
+                            {user?.avatarurl ? (
+                                <Image imageURL={user.avatarurl} alt={user.username || "User"} />
+                            ) : (
                                 <AvatarFallback>?</AvatarFallback>
-                            </Avatar>
-                        </DropdownMenuTrigger>
+                            )}
+                        </Avatar>
+                    </DropdownMenuTrigger>
                         <DropdownMenuContent className="dropdown-navbar-menu">
                             {user ? (
                                 <>

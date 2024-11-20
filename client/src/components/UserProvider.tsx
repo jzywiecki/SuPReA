@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
+import { makePictureUrl } from '@/utils/url';
 
 interface User {
     id: string;
@@ -39,6 +40,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const login = (userData: User, accessToken: string, refreshToken: string) => {
         // Store user and tokens in localStorage
+        userData.avatarurl = makePictureUrl(userData?.avatarurl);
         setUser(userData);
         setAccessToken(accessToken);
         setRefreshToken(refreshToken);

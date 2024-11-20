@@ -30,13 +30,15 @@ const ProjectDetailsReadme = () => {
                 const membersResponse = await axiosInstance.get(`${API_URLS.BASE_URL}/users/projects/${projectID}`);
                 const usersData = membersResponse.data as Members[];
 
-                const filteredMembers = usersData.filter(member => member.id !== projectData.owner);
+                const filteredMembers = usersData.filter(member => member.id !== projectData.owner).map(member => member.username); 
 
                 const processedProject = {
                     ...projectData,
                     members: filteredMembers,
                     owner: user?.username
                 };
+
+                processedProject.logo = processedProject?.logo?.urls?.[0];
 
                 setProject(processedProject);
             } catch (error) {
