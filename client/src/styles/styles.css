@@ -19,25 +19,6 @@
     background-color: #555;
 }
 
-/* ----------------------------navbar */
-.navbar-deactive {
-    padding: 0 0 5px 0;
-}
-
-.navbar-active {
-    transition: 0.1s ease-in;
-    /* background-color: red; */
-    /* padding: 3px 6px; */
-    /* border-radius: 5px; */
-    padding: 0 0 5px 0;
-    border-bottom: 2px solid rgb(81, 81, 81);
-}
-
-.dropdown-navbar-menu {
-    margin-right: 20px;
-    text-align: center;
-}
-
 /* -------------------project list */
 .project-list-header {
     display: flex;
@@ -293,7 +274,6 @@
 
 .custom-textarea::placeholder {
     text-align: left;
-    color: #aaa;
 }
 
 #messageInput:focus~#sendButton svg path,

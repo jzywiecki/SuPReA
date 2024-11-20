@@ -31,17 +31,17 @@ const Navbar = () => {
                     <>
                         <li>
                             <Link to="/create-project"
-                                className={location.pathname === "/create-project" ? "navbar-active dark:border-white" : "navbar-deactive dark:b-bottom-0"}
+                                className={location.pathname === "/create-project" ? "transition-all duration-100 ease-in pb-[5px] border-b-2 border-gray-600 dark:border-white" : "pb-1"}
                             >New Project</Link>
                         </li>
                         <li>
                             <Link to="/projects"
-                                className={location.pathname === "/projects" ? "navbar-active dark:border-white" : "navbar-deactive"}
+                                className={location.pathname === "/projects" ? "transition-all duration-100 ease-in pb-[5px] border-b-2 border-gray-600 dark:border-white" : "pb-1"}
                             >Projects</Link>
                         </li>
                         <li>
                             <Link to="/collaborators"
-                                className={location.pathname === "/collaborators" ? "navbar-active dark:border-white" : "navbar-deactive"}
+                                className={location.pathname === "/collaborators" ? "transition-all duration-100 ease-in pb-[5px] border-b-2 border-gray-600 dark:border-white" : "pb-1"}
                             >Collaborators</Link>
                         </li>
                     </>
@@ -61,7 +61,7 @@ const Navbar = () => {
                             )}
                         </Avatar>
                     </DropdownMenuTrigger>
-                        <DropdownMenuContent className="dropdown-navbar-menu">
+                        <DropdownMenuContent className="mr-5 text-center">
                             {user ? (
                                 <>
                                     <DropdownMenuLabel>{user.username}</DropdownMenuLabel>
