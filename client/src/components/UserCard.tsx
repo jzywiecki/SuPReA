@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/avatar"
 type UserCardAction = 'addFriend' | 'acceptInvitation' | 'rejectInvitation' | 'withdrawInvitation' | 'removeFriend' | 'addMember';
 import { Link } from 'react-router-dom';
+import Image from './Image';
+import { makePictureUrl } from '@/utils/url';
 
 interface UserCardProps {
     user: User;
@@ -40,7 +42,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
         <Card className="flex justify-between shadow rounded-lg h-24 mt-3">
             <CardContent className="flex items-center space-x-4">
             <Avatar>
-                <AvatarImage src={user?.avatarurl} alt="@shadcn" />
+            <Image imageURL={makePictureUrl(user?.avatarurl)}/>
                 <AvatarFallback>?</AvatarFallback>
             </Avatar>
             <Link to={`/profile/${user.id}`} className="hover:underline" key={user.id}>
