@@ -106,7 +106,7 @@ const ProjectList = ({ projects, onSelect, selectedProjectId, sortOrder, toggleS
                 : project.description}
         </p>
         <p className='project-list-menu-item-members'>
-            <MdSupervisorAccount /> {project.members.length}
+            <MdSupervisorAccount /> {project.members.length + 1}
         </p>
     </div>
 ))}
@@ -154,8 +154,6 @@ const ProjectsView = () => {
             if (!user?.id) return;
             try {
                 const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/projects/list/${user.id}`);
-                console.log("RESPONSE")
-                console.log(response)
                 const processedOwnerProjects = response.data.owner.map((project) => ({
                     ...project,
                     members: project.members.filter(member => member !== project.owner),

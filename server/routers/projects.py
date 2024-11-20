@@ -174,14 +174,12 @@ class ProjectsListResponse(BaseModel):
         id: ObjectId = Field(alias="_id", default=None)
         name: str
         description: str
-        owner: ObjectId
+        owner: str
         for_who: str
         doing_what: str
         additional_info: str
-        members: List[ObjectId]
+        members: List[str]
         created_at: datetime
-        motto: Optional[Motto] = None
-        elevator_speech: Optional[ElevatorSpeech] = None
         logo: Optional[str] = None
 
         class Config:
