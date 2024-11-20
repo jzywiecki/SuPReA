@@ -52,7 +52,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
             </Link>
             </CardContent>
             <CardFooter className="space-x-2">
-                {actionType === 'acceptInvitation' && (
+                {actionType === 'acceptInvitation' || actionType === 'addFriend' &&  (
                     <Button
                         onClick={() => onAction(user)}
                         className="bg-green-600 text-white hover:bg-green-700 rounded-md"
@@ -68,10 +68,10 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
                         {getButtonLabel()}
                     </Button>
                 )}
-                {actionType !== 'acceptInvitation' && actionType !== 'rejectInvitation' && actionType !== 'withdrawInvitation' && (
+                {actionType !== 'acceptInvitation' && actionType !== 'rejectInvitation' && actionType !== 'withdrawInvitation' && actionType != 'addFriend' && (
                     <Button
                         onClick={() => onAction(user)}
-                        className="bg-green-600 text-white hover:bg-green-700 rounded-md"
+                        className="bg-red-600 text-white hover:bg-red-700 rounded-md"
                     >
                         {getButtonLabel()}
                     </Button>
