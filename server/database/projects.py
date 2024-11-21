@@ -427,3 +427,12 @@ class ProjectDAO:
         ]
 
         return list(self.collection.aggregate(pipeline))
+
+    def check_project_exist(self, project_id: str):
+        """
+        Check if project exist in the database.
+
+        Args:
+            project_id (str): The ID of the project to check.
+        """
+        return self.collection.find_one({"_id": ObjectId(project_id)}) is not None

@@ -30,12 +30,12 @@ import './styles/styles.css'
 import ProjectDetailsReadme from './pages/ProjectDetailsReadme';
 import Layout from './pages/Layout';
 import LogoList from './pages/projectPages/LogoList';
-import PageNotFound from './pages/PageNotFound';
+import ErrorPage from './pages/ErrorPage';
 import ProtectedRoute from './services/protectedRoute';
 
 function App() {
   return (
-    <SnackbarProvider maxSnack={3} autoHideDuration={1000}
+    <SnackbarProvider maxSnack={3} autoHideDuration={3500}
       // ref={myRef}
       action={(snackbarId) => (
         <button onClick={() => closeSnackbar(snackbarId)}>
@@ -76,8 +76,8 @@ function App() {
                 <Route path="/create-project" element={<CreateProject />} />
                 <Route path="/profile/:id" element={<Profile />} />
                 <Route path="/collaborators" element={<SearchAndAddFriends />} />
-                <Route path="not-found" element={<PageNotFound />} />
-                <Route path="*" element={<PageNotFound />} />
+                <Route path="not-found" element={<ErrorPage />} />
+                <Route path="*" element={<ErrorPage errorCode={404} />} />
 
               </Routes>
             </div>

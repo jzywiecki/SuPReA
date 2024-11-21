@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import { useUser } from '@/components/UserProvider';
 import Image from '@/components/Image';
 import { makePictureUrl } from '@/utils/url';
+import ErrorPage from './ErrorPage';
 
 interface User {
   id: string;
@@ -29,6 +30,7 @@ Modal.setAppElement('#root');
 function Profile() {
   const { id } = useParams<{ id: string }>();
   const [userState, setUser] = useState<User | null>(null);
+  const [errorCode, setErrorCode] = useState<number | null>(null);
   const { user, updateAvatarUrl } = useUser();
   const [avatar, setAvatar] = useState<File | null>(null);
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
@@ -48,6 +50,7 @@ function Profile() {
         setPreviewAvatar(response.data.avatarurl);
       })
       .catch(error => {
+        setErrorCode(error.response?.status ?? 500);
         console.error("There was an error fetching the user data!", error);
       });
   }, [id]);
@@ -159,6 +162,10 @@ function Profile() {
     }
     setIsAvatarModalOpen(true)
   };
+
+  if (errorCode) {
+    return <ErrorPage errorCode={errorCode} />;
+  }
 
   return (
     <div className="max-w-5xl mt-6 mx-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-10 relative isolate px-6 lg:px-8">

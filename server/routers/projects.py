@@ -22,9 +22,9 @@ from services import (
     unassign_member_role_from_user_by_id,
     assign_owner_role_for_user_by_id,
     update_project_info,
+    check_is_project_exist
 )
 from models import ProjectPatchRequest
-from utils import verify_project_membership
 from utils import verify_project_membership
 
 
@@ -287,3 +287,22 @@ def assign_owner(project_id: str, assignment: MemberAction):
     return assign_owner_role_for_user_by_id(
         assignment.sender_id, project_id, assignment.member_id
     )
+
+
+class IsProjectExist(BaseModel):
+    is_exist: bool
+
+
+@router.get(
+    "/exist/{project_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=IsProjectExist,
+    dependencies=[Depends(verify_project_membership)]
+)
+def is_project_exist(project_id: str):
+    """
+    Checks if the project with the specified ID exists.
+
+    :param str project_id: The unique identifier of the project.
+    """
+    return IsProjectExist(is_exist=check_is_project_exist(project_id))
