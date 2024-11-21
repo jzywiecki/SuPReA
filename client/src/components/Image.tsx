@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axiosInstance from '@/services/api'; 
+import axiosInstance from '@/services/api';
 
 interface ImageProps {
   imageURL?: string;
@@ -7,6 +7,8 @@ interface ImageProps {
   classname?: string;
   onClick?: () => void;
 }
+
+const imageCache = new Map<string, string>();
 
 function Image({ imageURL = '', alt = '', classname = '', onClick = () => {} }: ImageProps) {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -24,19 +26,26 @@ function Image({ imageURL = '', alt = '', classname = '', onClick = () => {} }: 
           return;
         }
 
+        // Sprawdź, czy obraz jest już w cache
+        if (imageCache.has(imageURL)) {
+          setImageSrc(imageCache.get(imageURL) as string);
+          return;
+        }
+
         const response = await axiosInstance.get(imageURL, {
           responseType: 'blob',
         });
 
         const imageUrl = URL.createObjectURL(response.data);
+        imageCache.set(imageURL, imageUrl);
         setImageSrc(imageUrl);
       } catch (error) {
         console.error('Error in image: ', error);
+        setImageSrc('/public/nophoto.jpg');
       }
     };
 
     fetchImage();
-    
   }, [imageURL]);
 
   return (
