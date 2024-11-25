@@ -26,7 +26,6 @@ function Image({ imageURL = '', alt = '', classname = '', onClick = () => {} }: 
           return;
         }
 
-        // Sprawdź, czy obraz jest już w cache
         if (imageCache.has(imageURL)) {
           setImageSrc(imageCache.get(imageURL) as string);
           return;
