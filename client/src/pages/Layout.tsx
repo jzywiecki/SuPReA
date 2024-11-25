@@ -17,6 +17,7 @@ import ErrorPage from "./ErrorPage";
 
 type SidePanelType = 'ai' | 'discussion' | null;
 
+
 export default function Layout({ children }: { children: React.ReactNode }) {
     const navigate = useNavigate();
     const { projectID } = useParams<{ projectID: string }>();
@@ -68,11 +69,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             //       code: 11    (odnowienie całego rejestru)
             //       componentsToUserMap: [ {component: id, users: [ObjectID]} ]
             //       }
-            addUsersToComponents(message?.componentsToUserMap);
-            console.log("Edition-Register Received message with code 11")
-            console.log("New edit session registered, cleared map");
-            console.log(message);
 
+            addUsersToComponents(message?.componentsToUserMap);
         }
         else if (message?.code == 2) {
             //    received message format:

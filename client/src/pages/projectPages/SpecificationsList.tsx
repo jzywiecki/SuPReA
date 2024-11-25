@@ -8,19 +8,15 @@ import { FaCheck, FaTrash, FaHeart, FaRegHeart } from "react-icons/fa";
 import { CiCirclePlus } from "react-icons/ci";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TfiPaintBucket } from "react-icons/tfi";
-import { Separator } from "@/components/ui/separator";
-import { FaEdit } from "react-icons/fa";
-import { FiSave } from "react-icons/fi";
-import { MdOutlineSwitchAccessShortcutAdd } from "react-icons/md";
-import { LuPocketKnife } from "react-icons/lu";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useUser } from "@/components/UserProvider";
 import React from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { PiPaperPlaneRightFill } from "react-icons/pi";
-import { useUserEdits } from "./UserEditsProvider";
 import { socket } from '@/utils/sockets';
 import { getComponentyByName } from "@/utils/enums";
+import LoadingIndicator from "@/components/ui/loadingIndicator";
+import FloatingToolbar from "../projectsUtils/FloatingToolbar";
+import ChatButton from "../projectsUtils/ChatButton";
+
 
 interface Specifications {
     id: number;
@@ -35,9 +31,11 @@ interface Specifications {
 const SpecificationsList: React.FC = () => {
     const { projectID } = useParams();
     const [specifications, setSpecifications] = useState<Specifications[]>([]);
+    const [regeneratedSpecifications, setRegeneratedSpecifications] = useState<Specifications[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
+
     const [isEditingMode, setIsEditingMode] = useState<boolean>(false);
-    const [isBeingEdited, setIsBeingEdited] = useState<boolean>(true);
     const [isRegenerateChatOpen, setIsRegenerateChatOpen] = useState<boolean>(false);
     const [isUpdateChatOpen, setIsUpdateChatOpen] = useState<boolean>(false);
     const [newCard, setNewCard] = useState(false);
@@ -46,8 +44,6 @@ const SpecificationsList: React.FC = () => {
     const [selectionBox, setSelectionBox] = useState<{ startX: number; startY: number; endX: number; endY: number } | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [containerOffsetLeft, setContainerOffsetLeft] = useState<number>(0);
-
-    const { componentUserMap, addUserToComponent, removeUserFromComponent } = useUserEdits();
 
     const colorOptions = [
         { color: "bg-red-300", label: "Red" },
@@ -85,7 +81,22 @@ const SpecificationsList: React.FC = () => {
 
     useEffect(() => {
         fetchData();
+        return () => {
+            const message = { component: getComponentyByName("specifications").id }
+            socket.emit("finish-edition", message);
+            setIsEditingMode(false);
+            setIsRegenerateChatOpen(false);
+            setIsUpdateChatOpen(false);
+        }
     }, [projectID]);
+
+    const removeTemporaryProperties = (specification) => { //TODO: modify backend too accept color, icon
+        const { name, id, color, icon, isColorPickerOpen, isEditing, isFavorite, ...rest } = specification;
+        return {
+            ...rest,
+            specification: name != undefined ? name : "",
+        };
+    };
 
     const handleEdit = (id: number, e: React.MouseEvent) => {
         e.stopPropagation();
@@ -96,21 +107,29 @@ const SpecificationsList: React.FC = () => {
         );
     };
 
+    const handleSaveAllSpecifications = async () => {
+
+        try {
+            // await axiosInstance.put(`${API_URLS.API_SERVER_URL}/model/specifications/${id}`, specToSave);
+        } catch (error) {
+            console.error("Error saving data:", error);
+        }
+    };
+
     const handleSave = async (id: number, e: React.MouseEvent) => {
         e.stopPropagation();
         const specToSave = specifications.find((spec) => spec.id === id);
         if (!specToSave) return;
 
-        try {
-            // await axiosInstance.put(`${API_URLS.API_SERVER_URL}/model/specifications/${id}`, specToSave);
-            setSpecifications((prevSpecifications) =>
-                prevSpecifications.map((spec) =>
-                    spec.id === id ? { ...spec, isEditing: false } : spec
-                )
-            );
-        } catch (error) {
-            console.error("Error saving data:", error);
-        }
+        setSpecifications((prevSpecifications) =>
+            prevSpecifications.map((spec) =>
+                spec.id === id ? { ...spec, isEditing: false } : spec
+            )
+        );
+
+        handleSaveAllSpecifications();
+
+
     };
 
     const handleCancel = (id: number, e: React.MouseEvent) => {
@@ -255,7 +274,10 @@ const SpecificationsList: React.FC = () => {
         };
 
         window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+
+        }
     }, [containerRef.current?.getBoundingClientRect().left]);
 
     useEffect(() => {
@@ -277,294 +299,58 @@ const SpecificationsList: React.FC = () => {
         return () => {
             document.removeEventListener("mousemove", handleMouseMove);
             document.removeEventListener("mouseup", handleMouseUp);
+
         };
     }, [selectionBox, specifications]);
 
+    const [textareaValue, setTextareaValue] = useState("");
 
 
-    // ---------------------------------------------------------------------
-
-
-
-    const addUserEditing = (setUsersEditing, newUser) => {
-        setUsersEditing(prevUsers => {
-            if (!prevUsers.find(user => user.nick === newUser.nick)) {
-                const updatedUsers = [...prevUsers, newUser];
-                return updatedUsers;
-            }
-            return prevUsers;
-        });
+    const filterSpecifications = (specifications, selectedItems) => {
+        let tmp_spec = specifications.filter(spec => selectedItems.includes(spec.id));
+        tmp_spec = tmp_spec.map(removeTemporaryProperties);
+        return tmp_spec;
     };
 
-    const UserAvatars = ({ usersEditing, currentUser }) => {
-        const sortedUsers = [...usersEditing.filter(u => u.name !== currentUser.name), currentUser];
+    const handleUpdateRequest = async () => {
+        const filteredSpecifications = filterSpecifications(specifications, selectedItems);
+        // const details = `${textareaValue} and regenerate me for following elements: + \n + ${JSON.stringify(filteredSpecifications)}`
 
-        return (
-            <TooltipProvider>
-                <div className="relative flex items-center justify-center space-x-2 group" style={{ width: "50%" }}>
-                    <div className="flex -space-x-3">
-                        {sortedUsers.map((user, index) => (
-                            <img
-                                key={index}
-                                src={user.avatarUrl}
-                                alt={user.name}
-                                className="w-8 h-8 rounded-full border-2 border-white shadow-lg"
-                                style={{ transform: `translateX(-${index * 6}px)` }}
-                            />
-                        ))}
-                    </div>
-                    <Tooltip>
-                        <TooltipTrigger className="flex">
-                            <div className="absolute inset-0" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <div className="flex flex-col">
-                                {sortedUsers.map((user, index) => (
-                                    <span key={index} className="text-sm text-gray-700">
-                                        {user.name}
-                                    </span>
-                                ))}
-                            </div>
-                        </TooltipContent>
-                    </Tooltip>
-                </div>
-            </TooltipProvider>
-        );
+        const component_val = { specifications: filteredSpecifications };
+
+        const UpdateSpecificationsByAIRequest = {
+            component_val: component_val,
+            query: textareaValue,
+            ai_model: "gpt-35-turbo",
+        };
+
+        try {
+            setIsRegenerating(true);
+            const response = await axiosInstance.post(`${API_URLS.API_SERVER_URL}/model/specifications/ai-update`, UpdateSpecificationsByAIRequest);
+            setRegeneratedSpecifications(
+                response.data.specifications.map((spec: Specifications, index) => ({
+                    ...spec,
+                    id: index,
+                }))
+            );
+            console.log(response.data)
+        } catch (error) {
+            console.error('Error searching users:', error);
+        } finally {
+            setIsRegenerating(false);
+        }
     };
-    const positionRef = useRef({ x: 0, y: 0 });
-
-    const toolbarRef = useRef(null);
-    const isDragging = useRef(false);
-
-    const FloatingToolbar = React.memo(() => {
-        const handleEditButtonClick = () => {
-            const message = { component: getComponentyByName("specifications").id }
-            socket.emit("edit-component", message);
-            setIsEditingMode(true); //not here
-
-        };
-        const handleEditSaveButtonClick = () => {
-            const message = { component: getComponentyByName("specifications").id }
-            socket.emit("finish-edition", message);
-
-            setIsEditingMode(false);
-            setIsRegenerateChatOpen(false);
-            setIsUpdateChatOpen(false);
-        };
-
-        const { user } = useUser();
-
-        const [usersEditing, setUsersEditing] = useState([
-            {
-                avatarUrl: "https://cat-avatars.vercel.app/api/cat?name=User1",
-                name: "User1"
-            },
-            {
-                avatarUrl: "https://cat-avatars.vercel.app/api/cat?name=User2",
-                name: "User2"
-            }
-        ]);
 
 
-
-        const handleAddUser = () => {
-            const newUser = {
-                avatarUrl: "https://example.com/avatar.jpg",
-                name: "NowyUser"
-            };
-            addUserEditing(setUsersEditing, newUser);
-        };
-
-
-
-        const handleMouseDown = (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (toolbarRef.current && toolbarRef.current.contains(e.target)) {
-
-                isDragging.current = true;
-                toolbarRef.current.startX = e.clientX - positionRef.current.x;
-                toolbarRef.current.startY = e.clientY - positionRef.current.y;
-
-                document.addEventListener("mousemove", handleMouseMove);
-                document.addEventListener("mouseup", handleMouseUp);
-            }
-        };
-
-
-        const handleMouseMove = (e) => {
-            if (isDragging.current && toolbarRef.current && toolbarRef.current.parentElement) {
-                const toolbarWidth = toolbarRef.current.offsetWidth;
-                const toolbarHeight = toolbarRef.current.offsetHeight;
-                const parentWidth = toolbarRef.current.parentElement.offsetWidth;
-                const parentHeight = toolbarRef.current.parentElement.offsetHeight;
-
-                let newX = e.clientX - toolbarRef.current.startX;
-                let newY = e.clientY - toolbarRef.current.startY;
-
-                newX = Math.max(-(parentWidth - toolbarWidth - 20), Math.min(newX, toolbarWidth));
-                newY = Math.max(-(parentHeight - toolbarHeight - 30), Math.min(newY, toolbarHeight));
-
-                positionRef.current = { x: newX, y: newY };
-                toolbarRef.current.style.transform = `translate(${newX}px, ${newY}px)`;
-            }
-        };
-
-
-
-
-        const handleMouseUp = () => {
-            isDragging.current = false;
-            document.removeEventListener("mousemove", handleMouseMove);
-            document.removeEventListener("mouseup", handleMouseUp);
-        };
-
-        return (
-            // <div style={{ background: "red", width: "100%", position: "absolute", height: "100vh", zIndex: "100" }} onClick={(e) => {
-            // e.stopPropagation();
-
-            // }}>
-
-            <div
-                className="toolbar-container flex items-center space-x-4"
-                style={{
-                    position: "absolute",
-                    transform: `translate(${positionRef.current.x}px, ${positionRef.current.y}px)`,
-                    height: "fit-content"
-                }}
-                ref={toolbarRef}
-                onMouseDown={handleMouseDown}
-                onClick={(e) => {
-                    e.stopPropagation();
-                }}>
-                {isBeingEdited ? (
-                    <UserAvatars usersEditing={usersEditing} currentUser={{ name: "You", avatarUrl: user.avatarurl }} />
-                ) : null}
-                {isBeingEdited ? <Separator orientation="vertical" className="h-5" /> : null}
-
-                {isEditingMode ? (
-                    <div className="toolbar">
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <LuPocketKnife onClick={() => {
-                                        setIsUpdateChatOpen((prev) => !prev)
-                                    }} size={25} />
-                                </TooltipTrigger>
-                                <TooltipContent>Update with AI</TooltipContent>
-                            </Tooltip>
-
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <MdOutlineSwitchAccessShortcutAdd onClick={() => {
-                                        setIsRegenerateChatOpen((prev) => !prev)
-                                    }} size={25} />
-                                </TooltipTrigger>
-                                <TooltipContent>Regenerate with AI</TooltipContent>
-                            </Tooltip>
-
-
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <FiSave onClick={() => handleEditSaveButtonClick()} size={25} />
-                                </TooltipTrigger>
-                                <TooltipContent>Save</TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </div>
-                ) : (
-                    <div className="edit-button" onClick={() => handleEditButtonClick()}>
-                        <FaEdit size={25} />
-                    </div>
-                )}
-            </div>)
-        // </div>
-
-    });
-
-
-    const positionRefChat = useRef({ x: 0, y: 0 });
     const positionRefInfo = useRef({ x: 0, y: 0 });
-    const isDraggingChat = useRef(false);
+
     const isDraggingInfo = useRef(false);
 
-    const ChatButton = React.memo(() => {
-        const chatRef = useRef(null);
-
-        const handleMouseDown = (e) => {
-            if (chatRef.current && chatRef.current.contains(e.target)) {
-                isDraggingChat.current = true;
-                chatRef.current.startX = e.clientX - positionRefChat.current.x;
-                chatRef.current.startY = e.clientY - positionRefChat.current.y;
-                document.addEventListener("mousemove", handleMouseMoveChat);
-                document.addEventListener("mouseup", handleMouseUpChat);
-            }
-        };
-
-        const handleMouseMoveChat = (e) => {
-            if (isDraggingChat.current && chatRef.current && chatRef.current.parentElement) {
-                const chatWidth = chatRef.current.offsetWidth;
-                const chatHeight = chatRef.current.offsetHeight;
-                const parentWidth = chatRef.current.parentElement.offsetWidth;
-                const parentHeight = chatRef.current.parentElement.offsetHeight;
-
-                let newX = e.clientX - chatRef.current.startX;
-                let newY = e.clientY - chatRef.current.startY;
-
-                newX = Math.max(-(parentWidth - chatWidth - 20), Math.min(newX, chatWidth));
-                newY = Math.max(-(parentHeight - chatHeight - 30), Math.min(newY, chatHeight));
-
-                positionRefChat.current = { x: newX, y: newY };
-                chatRef.current.style.transform = `translate(${newX}px, ${newY}px)`;
-            }
-        };
-
-        const handleMouseUpChat = () => {
-            isDraggingChat.current = false;
-            document.removeEventListener("mousemove", handleMouseMoveChat);
-            document.removeEventListener("mouseup", handleMouseUpChat);
-        };
-
-        if (!isUpdateChatOpen) {
-            return (<></>)
-        }
-
-        return (
-            <div
-                className="absolute right-5 bottom-20 z-50 flex flex-row bg-white rounded-md shadow-lg"
-                style={{
-                    transform: `translate(${positionRefChat.current.x}px, ${positionRefChat.current.y}px)`,
-                }}
-                ref={chatRef}
-                onMouseDown={handleMouseDown}
-            >
-                <div className="flex flex-col justify-between p-1.5 bg-gray-200">
-                    <div className="h-[30%] hover:text-red-500 cursor-pointer">
-                        <IoCloseSharp onClick={() => {
-                            setIsUpdateChatOpen(false)
-                        }} size={20} />
-                    </div>
-                    <div className="flex items-center justify-center h-[60%] bg-black text-white rounded-md">
-                        <PiPaperPlaneRightFill size={15} />
-                    </div>
-                </div>
-                <Textarea
-                    placeholder={
-                        selectedItems.length > 0
-                            ? "Write what you want to update. Applicable to elements: " +
-                            Array.from(new Set(selectedItems))
-                                .map(num => num + 1)
-                                .sort((a, b) => a - b)
-                                .join(", ")
-                            : "Write what you want to update."
-                    }
-                />
-            </div>
-        );
-    });
 
     const InfoButton = React.memo(() => {
         const infoRef = useRef(null);
+        const [textareaValue, setTextareaValue] = useState("");
+
 
         const handleMouseDown = (e) => {
             if (infoRef.current && infoRef.current.contains(e.target)) {
@@ -600,6 +386,37 @@ const SpecificationsList: React.FC = () => {
             document.removeEventListener("mouseup", handleMouseUpInfo);
         };
 
+        const filterSpecifications = (specifications, selectedItems) => {
+            let tmp_spec = specifications.filter(spec => selectedItems.includes(spec.id));
+            tmp_spec = tmp_spec.map(removeTemporaryProperties);
+            return tmp_spec;
+        };
+
+        const handleRegenerateRequest = async () => {
+            const filteredSpecifications = filterSpecifications(specifications, selectedItems);
+            const details = `${textareaValue} and regenerate me for following elements: + \n + ${JSON.stringify(filteredSpecifications)}`
+
+            const regenerateComponentAIRequest = {
+                details: details,
+                ai_model: "gpt-35-turbo"
+            };
+
+            try {
+                setIsRegenerating(true);
+                const response = await axiosInstance.post(`${API_URLS.API_SERVER_URL}/model/specifications/ai-regenerate`, regenerateComponentAIRequest);
+                setRegeneratedSpecifications(
+                    response.data.specifications.map((spec: Specifications, index) => ({
+                        ...spec,
+                        id: index,
+                    }))
+                );
+            } catch (error) {
+                console.error('Error searching users:', error);
+            } finally {
+                setIsRegenerating(false);
+            }
+        };
+
         if (!isRegenerateChatOpen) {
             return (<></>)
         }
@@ -613,6 +430,7 @@ const SpecificationsList: React.FC = () => {
                 }}
                 ref={infoRef}
                 onMouseDown={handleMouseDown}
+                onClick={(e) => { e.stopPropagation(); }}
             >
 
                 <div className="flex flex-col justify-between p-1.5 bg-gray-200">
@@ -622,7 +440,7 @@ const SpecificationsList: React.FC = () => {
                         }} size={20} />
                     </div>
                     <div className="flex items-center justify-center h-[60%] bg-black text-white rounded-md">
-                        <PiPaperPlaneRightFill size={15} />
+                        <PiPaperPlaneRightFill onClick={() => handleRegenerateRequest()} size={15} />
                     </div>
                 </div>
                 <Textarea
@@ -635,11 +453,54 @@ const SpecificationsList: React.FC = () => {
                                 .join(", ")
                             : "Write what to regenerate."
                     }
+                    value={textareaValue}
+                    onChange={(e) => setTextareaValue(e.target.value)}
                 />
             </div>
         );
     });
 
+
+    const handleSpecificationsResponseSave = (id, event) => {
+        event.stopPropagation();
+
+        const newSpecification = regeneratedSpecifications.find(spec => spec.id === id);
+        setRegeneratedSpecifications((prevSpecificationsNew) =>
+            prevSpecificationsNew.filter(spec => spec.id !== id)
+        );
+        if (newSpecification) {
+            const extendedSpecification = {
+                ...newSpecification,
+                isEditing: false,
+                color: 'bg-white',
+                isFavorite: false,
+                isColorPickerOpen: false,
+            };
+            extendedSpecification.id = specifications.length
+
+            setSpecifications((prevSpecifications) => [
+                ...prevSpecifications,
+                extendedSpecification,
+            ]);
+        }
+        handleSaveAllSpecifications();
+    };
+
+    const handleSpecificationsResponseCancel = (id, event) => {
+        setRegeneratedSpecifications((prevSpecificationsNew) =>
+            prevSpecificationsNew.filter(spec => spec.id !== id)
+        );
+    };
+
+
+    const LoadingIndicatorWrapper = (() => {
+        return (
+            <div className="newItemsLoader">
+                <LoadingIndicator />
+                <p>Updating</p>
+            </div>
+        )
+    })
 
     if (isLoading) {
         return (
@@ -654,9 +515,11 @@ const SpecificationsList: React.FC = () => {
 
     return (
         <div className="h-screen">
-            <ChatButton />
+            <ChatButton setIsUpdateChatOpen={setIsUpdateChatOpen} isUpdateChatOpen={isUpdateChatOpen} handleUpdateRequest={handleUpdateRequest} setTextareaValue={setTextareaValue} textareaValue={textareaValue} selectedItems={selectedItems} />
             <InfoButton />
-            <FloatingToolbar />
+            <FloatingToolbar socket={socket} setIsEditingMode={setIsEditingMode} setIsRegenerateChatOpen={setIsRegenerateChatOpen} setIsUpdateChatOpen={setIsUpdateChatOpen} />
+
+            {isRegenerating ? <LoadingIndicatorWrapper onClick={(e) => { e.stopPropagation(); }} /> : <></>}
             <div
                 onMouseDown={handleSelectionStart}
                 className="relative h-screen"
@@ -667,7 +530,48 @@ const SpecificationsList: React.FC = () => {
                     <p className="text-gray-600">Manage and customize the specifications of your project</p>
                 </header>
 
+
+
                 <div ref={containerRef} className="flex flex-wrap justify-center items-start gap-4 p-4 relative">
+                    {regeneratedSpecifications.length != 0 ?
+
+                        (<>
+                            {regeneratedSpecifications.map((specification, index) => (
+                                <div
+                                    key={specification.id + 1000}
+                                    className={`tmp max-w-lg w-full px-4 pt-4  border rounded-lg  relative `}
+                                >
+                                    <div className="flex flex-row w-full justify-end mb-2" >
+                                        <span className="text-green-600 text-sm absolute top-2 left-2 flex items-center justify-center">
+                                            <p className="font-semibold w-5 h-5 flex justify-center items-center rounded-br-md mr-1">New</p>
+                                        </span>
+                                        <div className="flex absolute top-1 right-2 justify-end gap-2 mt-4">
+                                            <FaCheck
+                                                className="w-5 h-5 text-green-500 cursor-pointer"
+                                                title="Save"
+                                                onClick={(e) => {
+                                                    handleSpecificationsResponseSave(specification.id, e)
+                                                }}
+                                            />
+                                            <IoCloseSharp
+                                                className="w-5 h-5 text-red-500 cursor-pointer"
+                                                title="Cancel"
+                                                onClick={(e) => handleSpecificationsResponseCancel(specification.id, e)}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-4" >
+                                        <p className="mt-4 text-base text-gray-700 flex items-center gap-2">
+                                            {specification.description}
+                                        </p>
+                                    </div>
+
+                                </div>
+                            ))}
+                        </>)
+                        : <></>}
+
                     {specifications.map((specification, index) => (
                         <div
                             key={specification.id}
@@ -741,6 +645,7 @@ const SpecificationsList: React.FC = () => {
                                     </div>
                                 )}
                             </div>
+
                             <div className="mb-4" onClick={(e) => {
                                 e.stopPropagation();
                             }}>
@@ -826,7 +731,8 @@ const SpecificationsList: React.FC = () => {
                                             description: "",
                                             color: "",
                                             icon: "",
-                                            isColorPickerOpen: false
+                                            isColorPickerOpen: false,
+                                            isFavorite: false
                                         });
                                     }}
                                 />

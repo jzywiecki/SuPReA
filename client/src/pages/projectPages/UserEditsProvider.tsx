@@ -38,16 +38,15 @@ export const UserEditsProvider: React.FC<UserEditsProviderProps> = ({ children }
         });
     };
 
-    const addUsersToComponents = (userList: { componentId: string; users: string[] }[]) => {
-        setComponentUserMap(prevMap => {
-            const updatedMap = { ...prevMap };
-            userList.forEach(({ componentId, users }) => {
-                updatedMap[componentId] = new Set(users);
+    const addUsersToComponents = (userList: { component: string; users: string[] }[]) => {
+        setComponentUserMap(() => {
+            const newMap: Record<string, Set<string>> = {};
+            userList.forEach(({ component, users }) => {
+                newMap[component] = new Set(users);
             });
-            return updatedMap;
+            return newMap;
         });
     };
-
 
     return (
         <UserEditsContext.Provider value={{ componentUserMap, addUserToComponent, removeUserFromComponent, addUsersToComponents }}>

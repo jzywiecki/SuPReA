@@ -2,7 +2,7 @@ import { io } from 'socket.io-client';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
 
-export const socket = io("http://localhost:3000", {
+export const socket = io("http://192.168.1.59:3000", {
   autoConnect: false,
   // path: "http://localhost:3000",
   // extraHeaders: {

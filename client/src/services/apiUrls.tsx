@@ -1,5 +1,5 @@
 
-const API_GATEWAY_URL = 'http://localhost:3333';
+const API_GATEWAY_URL = 'http://192.168.1.59:3333';
 
 export const API_URLS = {
     BASE_URL: API_GATEWAY_URL,
