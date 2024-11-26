@@ -1,6 +1,47 @@
 import { Link } from 'react-router-dom';
 
-const PageNotFound = () => {
+const ErrorPage = ({ errorCode }) => {
+  
+  const getErrorInfo = (code) => {
+
+    const errorCodeStr = String(code);
+
+    switch (errorCodeStr) {
+      case '404':
+        return {
+          title: 'Page not found',
+          message: 'Sorry, we couldn’t find the page you’re looking for.'
+        };
+      case '500':
+        return {
+          title: 'Internal Server Error',
+          message: 'Oops! Something went wrong on our end. Please try again later.'
+        };
+      case '403':
+        return {
+          title: 'Forbidden',
+          message: 'You do not have permission to access this page.'
+        };
+      case '401':
+        return {
+          title: 'Unauthorized',
+          message: 'You dont have a permissions to this section.'
+        };
+      case '400':
+        return {
+          title: 'Bad Request',
+          message: 'The request could not be understood by the server due to malformed syntax.'
+        };
+      default:
+        return {
+          title: 'Error',
+          message: 'An unexpected error occurred.'
+        };
+     }
+  };
+
+  const { title, message } = getErrorInfo(errorCode);
+
   return (
     <>
       <div className="relative isolate px-6 lg:px-8">
@@ -19,12 +60,12 @@ const PageNotFound = () => {
 
         <main className="grid min-h-full place-items-center px-6 py-24 sm:py-32 lg:px-8">
           <div className="text-center">
-            <p className="text-base font-semibold text-indigo-600">404</p>
+            <p className="text-base font-semibold text-indigo-600">{errorCode}</p>
             <h1 className="mt-4 text-balance text-5xl font-semibold tracking-tight">
-              Page not found
+              {title}
             </h1>
             <p className="mt-6 text-pretty text-lg font-medium text-gray-500 sm:text-xl/8">
-              Sorry, we couldn’t find the page you’re looking for.
+              {message}
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
@@ -53,4 +94,4 @@ const PageNotFound = () => {
   );
 };
 
-export default PageNotFound;
+export default ErrorPage;

@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import { useUser } from '@/components/UserProvider';
 import Image from '@/components/Image';
 import { makePictureUrl } from '@/utils/url';
+import ErrorPage from './ErrorPage';
 
 interface User {
   id: string;
@@ -29,6 +30,7 @@ Modal.setAppElement('#root');
 function Profile() {
   const { id } = useParams<{ id: string }>();
   const [userState, setUser] = useState<User | null>(null);
+  const [errorCode, setErrorCode] = useState<number | null>(null);
   const { user, updateAvatarUrl } = useUser();
   const [avatar, setAvatar] = useState<File | null>(null);
   const [previewAvatar, setPreviewAvatar] = useState<string | null>(null);
@@ -48,6 +50,7 @@ function Profile() {
         setPreviewAvatar(response.data.avatarurl);
       })
       .catch(error => {
+        setErrorCode(error.response?.status ?? 500);
         console.error("There was an error fetching the user data!", error);
       });
   }, [id]);
@@ -160,26 +163,44 @@ function Profile() {
     setIsAvatarModalOpen(true)
   };
 
+  if (errorCode) {
+    return <ErrorPage errorCode={errorCode} />;
+  }
+
   return (
-    <div className="max-w-5xl mt-6 mx-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-10">
+    <div className="max-w-5xl mt-6 mx-auto p-5 grid grid-cols-1 md:grid-cols-2 gap-10 relative isolate px-6 lg:px-8">
+      {/* Gradient background element */}
+      <div
+        className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+        aria-hidden="true"
+      >
+        <div
+          className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+          style={{
+            clipPath:
+              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+          }}
+        />
+      </div>
+  
+      {/* Main user info section */}
       {userState && (
         <>
           <div>
             <div className="text-center mb-4">
-            <Image
-              imageURL={makePictureUrl(userState.avatarurl)}
-              alt="Profile Avatar"
-              classname="w-96 h-96 rounded-full object-cover mx-auto cursor-pointer border-1 border-gray-300"
-              onClick={() => toggleProfilePictureModal()}
-            />
-
+              <Image
+                imageURL={makePictureUrl(userState.avatarurl)}
+                alt="Profile Avatar"
+                classname="w-96 h-96 rounded-full object-cover mx-auto cursor-pointer border-1 border-gray-300"
+                onClick={() => toggleProfilePictureModal()}
+              />
             </div>
             <div className="space-y-0 border-b-2">
               <h2 className="text-2xl font-bold">{userState.username}</h2>
               <p className="text-gray-500">{userState.email}</p>
-              <div className='space-y-0'>
+              <div className="space-y-0">
                 {[
-                  { field: 'description' },
+                  { field: "description" },
                 ].map(({ field }) => (
                   <div key="description" className="relative flex items-center">
                     <div className="relative mt-2 flex-1">
@@ -216,8 +237,9 @@ function Profile() {
                 ))}
               </div>
             </div>
+  
             <div className="flex justify-center mt-4">
-              { user?.id == id ? (
+              {user?.id == id ? (
                 <button
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
                   onClick={toggleEditMode}
@@ -226,9 +248,9 @@ function Profile() {
                 </button>
               ) : (
                 <div></div>
-              )
-              }
+              )}
             </div>
+  
             <div className="space-y-0">
               {[
                 { field: 'name', icon: FaUser },
@@ -246,7 +268,7 @@ function Profile() {
                       value={userState[field as keyof User]}
                       disabled={!isEditMode || !isEditing[field as keyof User]}
                       onChange={handleInputChange}
-                      className={`w-full px-4 py-2 rounded-md ${isEditMode && isEditing[field as keyof User] ? 'border border-gray-300' : 'border-none bg-white  dark:bg-inherit'}`}
+                      className={`w-full px-4 py-2 rounded-md ${isEditMode && isEditing[field as keyof User] ? 'border border-gray-300' : 'border-none bg-white dark:bg-inherit'}`}
                     />
                     {isEditMode && (
                       <>
@@ -268,7 +290,7 @@ function Profile() {
               ))}
             </div>
           </div>
-
+  
           <div>
             <div className="border-2 border-gray-300 rounded-lg p-10">
               {isEditing.readme ? (
@@ -288,7 +310,6 @@ function Profile() {
                 <div className="relative">
                   {userState.username}/about the user
                   <ReactMarkdown rehypePlugins={[rehypeRaw]} className="prose mt-5 p-5 border-t-2">
-
                     {userState.readme}
                   </ReactMarkdown>
                   {isEditMode && (
@@ -303,7 +324,7 @@ function Profile() {
           </div>
         </>
       )}
-
+  
       <Modal
         isOpen={isAvatarModalOpen}
         onRequestClose={() => setIsAvatarModalOpen(false)}
@@ -334,7 +355,7 @@ function Profile() {
               Reset avatar
             </button>
             <button
-              className="mr-4 px-4 py-2  text-white rounded-lg cursor-pointer"
+              className="mr-4 px-4 py-2 text-white rounded-lg cursor-pointer"
               onClick={() => setIsAvatarModalOpen(false)}
             >
               Cancel
@@ -350,6 +371,7 @@ function Profile() {
       </Modal>
     </div>
   );
+  
 }
 
 export default Profile;

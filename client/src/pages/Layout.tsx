@@ -8,6 +8,7 @@ import axiosInstance from "@/services/api";
 import { useSnackbar } from 'notistack';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { checkProjectExists } from '../services/checkProjectExists';
+import ErrorPage from "./ErrorPage";
 
 type SidePanelType = 'ai' | 'discussion' | null;
 
@@ -16,15 +17,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const { projectID } = useParams<{ projectID: string }>();
     const { enqueueSnackbar } = useSnackbar();
     const [sidePanel, setSidePanel] = useState<SidePanelType>(null);
-    const [isValidProject, setIsValidProject] = useState<boolean | null>(null);
+    const [projectExistCode, setProjectExistCode] = useState<number | null>(null);
 
     useEffect(() => {
         async function validateProject() {
             if (projectID) {
                 const exists = await checkProjectExists(projectID);
-                setIsValidProject(exists);
+                setProjectExistCode(exists);
             } else {
-                setIsValidProject(false);
+                setProjectExistCode(400);
             }
         }
 
@@ -32,10 +33,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }, [projectID]);
 
     useEffect(() => {
-        if (!isValidProject) {
+        if (projectExistCode == 200) {
             navigate("summary");
         }
-    }, [isValidProject, navigate]);
+    }, [projectExistCode, navigate]);
 
     const handleDownloadPDF = async () => {
         if (!projectID) return;
@@ -79,30 +80,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         }
     };
 
-    if (isValidProject === null) {
-        return <div>Loading...</div>;
+
+    if (projectExistCode != 200 && projectExistCode != null) {
+        return <ErrorPage errorCode={projectExistCode} />;
     }
 
-    if (!isValidProject) {
-        return <Navigate to="/not-found" replace />;
+    if (projectExistCode == 200) {
+        return (
+            <SidebarProvider>
+                <AppSidebar onProjectClick={handleProjectClick} />
+                <div style={{ display: "flex", flexDirection: "row", width: '100%', height: "100%" }}>
+                    <main style={{ width: "100%", position: 'relative' }}>
+                        <SidebarTrigger style={{ position: 'absolute', left: '0', zIndex: '10' }} />
+                        {children}
+                        <ScrollArea className="h-screen w-full rounded-md border p-0">
+                            <Outlet />
+                        </ScrollArea>
+                    </main>
+                    <Chat
+                        key_info={sidePanel}
+                        onProjectClick={handleProjectClick}
+                    />
+                </div>
+            </SidebarProvider>
+        );
     }
-
-    return (
-        <SidebarProvider>
-            <AppSidebar onProjectClick={handleProjectClick} />
-            <div style={{ display: "flex", flexDirection: "row", width: '100%', height: "100%" }}>
-                <main style={{ width: "100%", position: 'relative' }}>
-                    <SidebarTrigger style={{ position: 'absolute', left: '0', zIndex: '10' }} />
-                    {children}
-                    <ScrollArea className="h-screen w-full rounded-md border p-0">
-                        <Outlet />
-                    </ScrollArea>
-                </main>
-                <Chat
-                    key_info={sidePanel}
-                    onProjectClick={handleProjectClick}
-                />
-            </div>
-        </SidebarProvider>
-    );
 }
