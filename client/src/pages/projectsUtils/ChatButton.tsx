@@ -82,7 +82,7 @@ const ChatButton: React.FC<ChatButtonProps> = React.memo(({
                     }} size={20} />
                 </div>
                 <div className="flex items-center justify-center h-[60%] bg-black text-white rounded-md">
-                    <PiPaperPlaneRightFill onClick={() => handleUpdateRequest()} size={15} />
+                    <PiPaperPlaneRightFill onClick={() => handleUpdateRequest(textareaValue)} size={15} />
                 </div>
             </div>
             <Textarea
