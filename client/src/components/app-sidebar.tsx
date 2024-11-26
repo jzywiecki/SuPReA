@@ -374,6 +374,10 @@ export function AppSidebar({ onProjectClick, ...props }: React.ComponentProps<ty
     function handleGenerationComplete(response: GenerationResponse): void {
       const component = getComponentById(response.component);
 
+      if (response.component >= 12) {
+        return
+      }
+
       setGenerationStatus((prevStatus) => ({
         ...prevStatus,
         [component.id]: true,
