@@ -53,7 +53,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, actionType, onAction }) => {
             </div>
             </CardContent>
             <CardFooter className="space-x-2 p-5">
-                {actionType === 'acceptInvitation' || actionType === 'addFriend' &&  (
+                {(actionType === 'acceptInvitation' || actionType === 'addFriend') && (
                     <Button
                         onClick={() => onAction(user)}
                         className="bg-green-600 text-white hover:bg-green-700 rounded-md"

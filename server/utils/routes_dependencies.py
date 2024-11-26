@@ -2,7 +2,9 @@ from fastapi import HTTPException, Request
 from jwt import decode, ExpiredSignatureError, InvalidTokenError
 from database import project_dao
 from .exceptions import ProjectNotFound
+from .exceptions import InvalidId
 from .loggers import logger
+from bson import ObjectId
 
 
 async def verify_project_membership(request: Request, project_id: str = None):
@@ -28,6 +30,7 @@ async def verify_project_membership(request: Request, project_id: str = None):
         if not project_id:
             body_bytes = await request.body()
             if not body_bytes:
+                logger.info(f"jestesm tutaj kurwa")
                 raise HTTPException(status_code=400, detail="Request body is empty")
 
             body = await request.json()
@@ -37,11 +40,23 @@ async def verify_project_membership(request: Request, project_id: str = None):
                     status_code=400, detail="Missing project_id in request body"
                 )
 
-        # Verify the user's membership in the project
+            # Check is valid ObjectId
+            try:
+                ObjectId(project_id)
+            except:
+                raise HTTPException(
+                    status_code=404, detail="Project not found"
+                )
+
         members = project_dao.get_project_members(project_id)
+        if not members:
+            raise HTTPException(status_code=404, detail="Project not found")
+
         if user_email not in [member.get("email") for member in members]:
             raise HTTPException(status_code=404, detail="Project not found")
 
+    except InvalidId:
+        raise HTTPException(status_code=404, detail="Project not found")
     except ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token has expired")
     except InvalidTokenError:
