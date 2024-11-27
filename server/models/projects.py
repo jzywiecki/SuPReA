@@ -6,8 +6,8 @@ from enum import Enum
 
 from .actors import Actors
 from .business_scenarios import BusinessScenarios
-from .elevator_speech import ElevatorSpeech
-from .motto import Motto
+from .elevator_speech import ElevatorSpeeches
+from .mottos import Mottos
 from .project_schedule import ProjectSchedule
 from .requirements import Requirements
 from .risks import Risks
@@ -41,8 +41,8 @@ class Project(BaseModel):
     created_at: datetime = Field(default=datetime.now())
     actors: Optional[Actors] = None
     business_scenarios: Optional[BusinessScenarios] = None
-    elevator_speech: Optional[ElevatorSpeech] = None
-    motto: Optional[Motto] = None
+    elevator_speeches: Optional[ElevatorSpeeches] = None
+    mottos: Optional[Mottos] = None
     project_schedule: Optional[ProjectSchedule] = None
     requirements: Optional[Requirements] = None
     risks: Optional[Risks] = None
@@ -60,8 +60,8 @@ class Project(BaseModel):
     def set_default_values(self):
         self.actors = Actors()
         self.business_scenarios = BusinessScenarios()
-        self.elevator_speech = ElevatorSpeech()
-        self.motto = Motto()
+        self.elevator_speeches = ElevatorSpeeches()
+        self.mottos = Mottos()
         self.project_schedule = ProjectSchedule()
         self.requirements = Requirements()
         self.risks = Risks()
@@ -92,8 +92,8 @@ class ComponentIdentify(Enum):
 
     ACTORS = "actors"
     BUSINESS_SCENARIOS = "business_scenarios"
-    ELEVATOR_SPEECH = "elevator_speech"
-    MOTTO = "motto"
+    ELEVATOR_SPEECH = "elevator_speeches"
+    MOTTO = "mottos"
     PROJECT_SCHEDULE = "project_schedule"
     REQUIREMENTS = "requirements"
     RISKS = "risks"

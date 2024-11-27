@@ -3,12 +3,16 @@ This module is responsible for generating motto data.
 """
 
 from generation.generate import Generate
-from models import Motto
+from models import Mottos
 from models import ComponentIdentify
 
 
 expected_format = """
- "motto": "string"
+    "mottos": [
+        "generated motto1",
+        "generated motto2",
+        "generated motto3"
+    ]
 """
 
 
@@ -21,4 +25,4 @@ class MottoGenerate(Generate):
         """
         Initializes the `MottoGenerate` instance
         """
-        super().__init__(Motto, "motto", expected_format, ComponentIdentify.MOTTO)
+        super().__init__(Mottos, "mottos", expected_format, ComponentIdentify.MOTTO)
