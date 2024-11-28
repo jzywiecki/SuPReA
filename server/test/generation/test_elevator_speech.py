@@ -1,6 +1,6 @@
 import unittest
 import json
-from models import ElevatorSpeech
+from models import ElevatorSpeeches
 from generation.model.elevator_speech import ElevatorSpeechGenerate
 
 from .base import BaseTestFetchValueFromDatabase
@@ -10,15 +10,15 @@ from .base import BaseTestUpdateByAI
 
 
 # Test data ===================================================
-correct_data = {"content": "example"}
+correct_data = {"elevator_speeches": ["example1", "example2"]}
 
 invalid_data = {"elevator_speech": "example"}
 
 invalid_format = "example"
 
-elevator_speech_one = ElevatorSpeech(content="example")
+elevator_speech_one = ElevatorSpeeches(elevator_speeches=["example1", "example2"])
 
-elevator_speech_two = ElevatorSpeech(content="example two")
+elevator_speech_two = ElevatorSpeeches(elevator_speeches=["example3", "example4"])
 # ============================================================
 
 

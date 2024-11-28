@@ -160,11 +160,15 @@ class PDFGenerator:
                 self.add_simple_list,
             ),  # Adjusted line
             (
-                "Elevator speech",
-                (project.get("elevator_speech") or {}).get("content"),
-                self.add_simple_text,
-            ),
-            ("Motto", (project.get("motto") or {}).get("motto"), self.add_simple_text),
+                "Elevator speeches",
+                (project.get("elevator_speeches") or {}).get("elevator_speeches", []),
+                self.add_simple_list,
+            ),  # Adjusted line
+            (
+                "Mottos",
+                (project.get("mottos") or {}).get("mottos", []),
+                self.add_simple_list,
+            ),  # Adjusted line
             (
                 "Strategy",
                 (project.get("strategy") or {}).get("strategy"),

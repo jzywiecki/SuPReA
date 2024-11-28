@@ -9,7 +9,7 @@ from typing import List, Optional
 from fastapi import APIRouter, status, Response, Depends
 from pydantic import BaseModel, Field
 from typing import Optional
-from models import Project, Motto, ElevatorSpeech, Logo
+from models import Project, Mottos, ElevatorSpeeches, Logo
 from services import (
     create_empty_project,
     create_project_by_ai,

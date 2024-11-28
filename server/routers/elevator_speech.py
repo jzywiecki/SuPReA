@@ -7,7 +7,7 @@ from services import get_component
 from services import update_component_by_ai
 from services import regenerate_component_by_ai
 from services import update_component
-from models import ComponentIdentify, ElevatorSpeech
+from models import ComponentIdentify, ElevatorSpeeches
 from .common import RegenerateComponentByAIRequest
 from generation.model.elevator_speech import ElevatorSpeechGenerate
 from pydantic import BaseModel
@@ -39,7 +39,7 @@ class UpdateElevatorSpeechByAIRequest(BaseModel):
     The request object for updating a component using AI-based generation.
     """
 
-    component_val: ElevatorSpeech
+    component_val: ElevatorSpeeches
     query: str
     ai_model: str
 
@@ -74,7 +74,7 @@ class UpdateElevatorSpeechRequest(BaseModel):
     """
 
     project_id: str
-    new_val: ElevatorSpeech
+    new_val: ElevatorSpeeches
 
 
 @router.put(

@@ -2,9 +2,9 @@ from .actors import Actor, Actors
 from .business_scenarios import Feature, BusinessScenario, BusinessScenarios
 from .chat import Message, Chat
 from .database_schema import Column, Relationship, Table, DatabaseSchema
-from .elevator_speech import ElevatorSpeech
+from .elevator_speech import ElevatorSpeeches
 from .logo import Logo
-from .motto import Motto
+from .mottos import Mottos
 from .project_schedule import Milestone, ProjectSchedule
 from .projects import Project, Projects, ComponentIdentify, ProjectPatchRequest
 from .requirements import NonFunctionalRequirement, FunctionalRequirement, Requirements

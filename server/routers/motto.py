@@ -7,7 +7,7 @@ from services import get_component
 from services import update_component_by_ai
 from services import regenerate_component_by_ai
 from services import update_component
-from models import ComponentIdentify, Motto
+from models import ComponentIdentify, Mottos
 from .common import RegenerateComponentByAIRequest
 from generation.model.motto import MottoGenerate
 from pydantic import BaseModel
@@ -39,7 +39,7 @@ class UpdateMottoByAIRequest(BaseModel):
     The request object for updating a component using AI-based generation.
     """
 
-    component_val: Motto
+    component_val: Mottos
     query: str
     ai_model: str
 
@@ -74,7 +74,7 @@ class UpdateMottoRequest(BaseModel):
     """
 
     project_id: str
-    new_val: Motto
+    new_val: Mottos
 
 
 @router.put(

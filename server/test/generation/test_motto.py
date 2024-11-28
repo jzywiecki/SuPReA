@@ -1,6 +1,6 @@
 import unittest
 import json
-from models import Motto
+from models import Mottos
 from generation.model.motto import MottoGenerate
 
 from .base import BaseTestFetchValueFromDatabase
@@ -10,15 +10,15 @@ from .base import BaseTestUpdateByAI
 
 
 # Test data ===================================================
-correct_data = {"motto": "example"}
+correct_data = {"mottos": ["example", "example2"]}
 
 invalid_data = {"content": "example"}
 
 invalid_format = "example"
 
-motto_one = Motto(motto="example")
+motto_one = Mottos(mottos=["example", "example2"])
 
-motto_two = Motto(motto="example two")
+motto_two = Mottos(mottos=["example3", "example4"])
 # ============================================================
 
 
