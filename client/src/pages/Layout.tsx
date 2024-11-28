@@ -24,19 +24,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             if (projectID) {
                 const exists = await checkProjectExists(projectID);
                 setProjectExistCode(exists);
+                if (exists === 200) {
+                    navigate('summary');
+                }
+
             } else {
                 setProjectExistCode(400);
             }
         }
 
         validateProject();
-    }, [projectID]);
+    }, []);
 
-    useEffect(() => {
-        if (projectExistCode == 200) {
-            navigate("summary");
-        }
-    }, [projectExistCode, navigate]);
 
     const handleDownloadPDF = async () => {
         if (!projectID) return;
