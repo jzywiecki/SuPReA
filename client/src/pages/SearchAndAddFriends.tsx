@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import UserCard from '@/components/UserCard';
 import { useUser } from "@/components/UserProvider";
-import { Link } from 'react-router-dom';
 import Search from '@/components/Search';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export interface User {
     id: string;
@@ -96,12 +96,13 @@ const SearchAndAddFriends: React.FC = () => {
     };
 
     return (
-        <div className="relative isolate px-6 lg:px-8">
-            {/* Background with gradient and blur */}
-            <div
-                className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
-                aria-hidden="true"
-            >
+        <div className="container mx-auto px-4 py-8">
+                <div className="relative isolate px-6 lg:px-8">
+             {/* Background with gradient and blur */}
+                <div
+                    className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+                    aria-hidden="true"
+                >
                 <div
                     className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
                     style={{
@@ -110,7 +111,8 @@ const SearchAndAddFriends: React.FC = () => {
                     }}
                 />
             </div>
-    
+            </div>
+
             {/* Content container */}
             <div className="container mx-auto px-4 py-8">
                 {/* Friends Section */}

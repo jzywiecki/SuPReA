@@ -102,7 +102,6 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
         handleLoadMoreMessages(result.olderMessagesExist, setLoadOlderMessagesDiscussionChat);
         handleReceivedMessage(result.messages, setMessagesDiscussionChat, setUnconfirmedMessagesDiscussionChat);
         updateOffset(result.messages, "discussion");
-
     };
 
     const onReceiveMessagesFromAiChat = (result: MessageResponse) => {

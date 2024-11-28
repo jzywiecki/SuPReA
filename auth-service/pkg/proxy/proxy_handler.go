@@ -36,7 +36,6 @@ func ProxyRequest(w http.ResponseWriter, r *http.Request, serviceName string, co
 		return
 	}
 
-	// Check for rate limit
 	if isRateLimited(serviceName, r.RemoteAddr, config.RateLimitTimeWindow, config.RateLimitCount, cache) {
 		log.Printf("Request from %s exceeded rate limit for service: %s", r.RemoteAddr, serviceName)
 		http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)

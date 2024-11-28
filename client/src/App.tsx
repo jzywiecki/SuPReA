@@ -30,6 +30,7 @@ import './styles/styles.css'
 import ProjectDetailsReadme from './pages/ProjectDetailsReadme';
 import Layout from './pages/Layout';
 import LogoList from './pages/projectPages/LogoList';
+import PageNotFound from './pages/PageNotFound';
 import ErrorPage from './pages/ErrorPage';
 import ProtectedRoute from './services/protectedRoute';
 

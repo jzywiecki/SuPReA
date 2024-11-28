@@ -20,7 +20,7 @@ const ProjectDetails = ({ project }) => {
             <div className="project-element-readme-header">
                 <div>
                     <Link to={`/projects/${project.id}/editor`}>
-                        <Button style={{ backgroundColor: "green", marginRight: "10px" }}><p style={{ marginRight: "10px" }}>Start</p><FaPlay /></Button>
+                    <Button className="bg-green-500 mr-2 dark:text-white"><p style={{ marginRight: "10px" }}>Start</p><FaPlay /></Button>
                     </Link>
                     <Link to={`/projects/${project.id}/editor/settings`}>
                         <CiSettings size={20} />

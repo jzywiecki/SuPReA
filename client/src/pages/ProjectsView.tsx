@@ -25,6 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { MdOutlineFreeCancellation } from "react-icons/md";
 import ProjectDetails from './ProjectDetails';
 import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 // type Project = {
 //     id: string;
@@ -92,24 +93,29 @@ const ProjectList = ({ projects, onSelect, selectedProjectId, sortOrder, toggleS
             </div>
             <ScrollArea className="project-list-container">
             {filteredProjects.map((project) => (
-    <div
-        key={project.id}
-        className={`project-list-menu-item ${selectedProjectId === project.id ? 'bg-gray-200' : ''}`}
-        onClick={() => onSelect(project)}
-    >
-        <div className='project-list-menu-item-header'>
-            <h1>{project.name}</h1>
-            <p>{new Date(project.created_at).toLocaleDateString("pl-PL", { month: "numeric", day: "numeric" })}</p>
-        </div>
-        <p className='project-list-menu-item-description'>
-            {project.description.length > 40 
-                ? `${project.description.slice(0, 40)}...` 
-                : project.description}
-        </p>
-        <p className='project-list-menu-item-members'>
-            <MdSupervisorAccount /> {project.members.length + 1}
-        </p>
-    </div>
+             <Card 
+             className={`flex justify-between rounded-lg h-32 m-2.5 p-1 dark:bg-zinc-900 ${selectedProjectId === project.id ? 'bg-slate-50 dark:bg-zinc-800' : ''}`}
+             onClick={() => onSelect(project)} 
+           >
+             <CardHeader className={`flex flex-col `}>
+               <CardTitle className="text-lg font-semibold truncate">
+                 {project.name}
+               </CardTitle>
+               <CardDescription className="flex flex-col text-sm text-muted-foreground truncate">
+                 <div>
+                 {new Date(project.created_at).toLocaleDateString("pl-PL", { month: "numeric", day: "numeric" })}
+                 </div>
+                 {project.description}
+               </CardDescription>
+             </CardHeader>
+           
+             <CardFooter className="flex items-center">
+               <p className="text-sm">
+                <MdSupervisorAccount />{project.members.length + 1}
+               </p>
+             </CardFooter>
+           </Card>
+           
 ))}
 
             </ScrollArea>
@@ -167,7 +173,7 @@ const ProjectsView = () => {
                     members: project.members.filter(member => member !== project.owner),
                 }));
                 setProjects({ owner: processedOwnerProjects, member: processedMemberProjects });
-                setSelectedProject(processedOwnerProjects[0] || null);
+                setSelectedProject(null);
             } catch (error) {
                 enqueueSnackbar(`Error fetching projects ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             } finally {
