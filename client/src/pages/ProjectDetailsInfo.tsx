@@ -14,7 +14,7 @@ const ProjectDetailsInfo = ({ project }) => {
     return (
         <div className="space-y-4"> {/* Creates space between the cards */}
             {/* Project Title and Logo */}
-            <Card className="bg-slate-50 dark:bg-zinc-900">
+            <Card className="bg-slate-50 dark:bg-zinc-900 m-5">
                 <CardHeader>
                     <CardTitle className="text-2xl">{project.name}</CardTitle>
                 </CardHeader>
@@ -27,7 +27,7 @@ const ProjectDetailsInfo = ({ project }) => {
             </Card>
 
             {/* Project Owner and Members */}
-            <Card className="bg-slate-50 dark:bg-zinc-900">
+            <Card className="bg-slate-50 dark:bg-zinc-900 m-5">
                 <CardHeader>
                     <CardTitle className="text-lg">Details</CardTitle>
                 </CardHeader>
@@ -58,7 +58,7 @@ const ProjectDetailsInfo = ({ project }) => {
             </Card>
 
             {/* Project Description */}
-            <Card className="bg-slate-50 dark:bg-zinc-900">
+            <Card className="bg-slate-50 dark:bg-zinc-900 m-5">
                 <CardHeader>
                     <CardTitle className="text-lg">Description</CardTitle>
                 </CardHeader>
