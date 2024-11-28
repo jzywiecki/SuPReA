@@ -6,6 +6,7 @@ import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export interface User {
     id: string;
@@ -111,43 +112,7 @@ const SearchAndAddFriends: React.FC = () => {
                 />
             </div>
             </div>
-            <div className="mb-6">
-                <h2 className="text-lg font-semibold mb-4">Your friends</h2>
-                {friends && friends.filter(friend => friend.status === "accepted").length > 0 ? (
-                    <ul className="space-y-4">
-                        {friends.filter(friend => friend.status === "accepted").map(friend => (
-                                <UserCard
-                                    user={friend}
-                                    actionType="removeFriend"
-                                    onAction={() => handleRemoveFriend(friend.id)}
-                                />
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="text-gray-600">You have no friends yet.</p>
-                )}
-            </div>
 
-
-            {/* Pending Invitations */}
-            <div className="mb-6">
-                <h2 className="text-lg font-semibold mb-4">Pending Invitations</h2>
-                {friends && friends.filter(friend => friend.status === "invited_by_friend").length > 0 ? (
-                    <ul className="space-y-4">
-                        {friends.filter(friend => friend.status === "invited_by_friend").map(friend => (
-                            <UserCard
-                                user={friend}
-                                actionType="acceptInvitation"
-                                onAction={() => handleAcceptInvitation(friend.id)}
-                            />
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="text-gray-600">You have no pending invitations.</p>
-                )}
-
-            </div>
-    
             {/* Content container */}
             <div className="container mx-auto px-4 py-8">
                 {/* Friends Section */}

@@ -101,7 +101,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessExpirationTime := time.Now().Add(15 * time.Minute)
+	accessExpirationTime := time.Now().Add(1 * time.Hour)
 	accessClaims := &Claims{
 		Email: loginReq.Email,
 		StandardClaims: jwt.StandardClaims{
@@ -293,7 +293,7 @@ func RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessExpirationTime := time.Now().Add(15 * time.Minute)
+	accessExpirationTime := time.Now().Add(1 * time.Hour)
 	accessClaims := &Claims{
 		Email: refreshClaims.Email,
 		StandardClaims: jwt.StandardClaims{

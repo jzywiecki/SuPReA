@@ -101,20 +101,17 @@ const ProjectList = ({ projects, onSelect, selectedProjectId, sortOrder, toggleS
                <CardTitle className="text-lg font-semibold truncate">
                  {project.name}
                </CardTitle>
-               <CardDescription className="text-sm text-muted-foreground truncate">
+               <CardDescription className="flex flex-col text-sm text-muted-foreground truncate">
+                 <div>
                  {new Date(project.created_at).toLocaleDateString("pl-PL", { month: "numeric", day: "numeric" })}
+                 </div>
+                 {project.description}
                </CardDescription>
              </CardHeader>
            
-             <CardContent className="flex-1 overflow-hidden">
-               <p className="text-sm text-muted-foreground truncate">
-                 {project.description}
-               </p>
-             </CardContent>
-           
              <CardFooter className="flex items-center">
                <p className="text-sm">
-                 <MdSupervisorAccount /> {project.members.length + 1}
+                <MdSupervisorAccount />{project.members.length + 1}
                </p>
              </CardFooter>
            </Card>
