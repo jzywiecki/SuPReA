@@ -97,7 +97,7 @@ def update_component(request, generate_component_class: type(Generate)) -> None:
     if not request.new_val:
         raise InvalidParameter("Invalid new_val value")
 
-    if not project_dao.check_is_project_exist(request.project_id):
+    if not project_dao.check_project_exist(request.project_id):
         raise ProjectNotFound(request.project_id)
 
     generate_component = GenerateWithMonitor(generate_component_class())
@@ -121,7 +121,7 @@ def get_component(project_id: str, model_name: str) -> Dict:
     :return: The project component details.
     :rtype: dict
     """
-    if not project_dao.check_is_project_exist(project_id):
+    if not project_dao.check_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
     result = project_dao.get_project_component(project_id, model_name)

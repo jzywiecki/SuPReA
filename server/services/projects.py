@@ -117,7 +117,7 @@ def delete_project_by_id(project_id: str) -> DeleteResult | None:
     :return: Confirmation of deletion.
     :rtype: bool
     """
-    if not project_dao.check_is_project_exist(project_id):
+    if not project_dao.check_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
     return project_dao.delete_project(project_id, chat_dao)
@@ -132,7 +132,7 @@ def update_project_info(project_id: str, body: ProjectPatchRequest):
     :raises ProjectNotFound: If no project is found with the provided ID.
     :return: The result of the mongodb update operation.
     """
-    if not project_dao.check_is_project_exist(project_id):
+    if not project_dao.check_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
     update_fields = {k: v for k, v in body.dict().items() if v is not None}
@@ -201,7 +201,7 @@ def invite_member_by_id(sender_id: str, project_id: str, member_id: str):
 
     :raises ProjectNotFound: If no project is found with the provided ID.
     """
-    if not project_dao.check_is_project_exist(project_id):
+    if not project_dao.check_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
     project = project_dao.get_project(project_id)
@@ -233,7 +233,7 @@ def remove_member_by_id(sender_id: str, project_id: str, member_id: str):
 
     :raises ProjectNotFound: If no project is found with the provided ID.
     """
-    if not project_dao.check_is_project_exist(project_id):
+    if not project_dao.check_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
     project = project_dao.get_project(project_id)
@@ -273,7 +273,7 @@ def assign_manager_role_to_user_by_id(sender_id: str, project_id: str, member_id
 
     :raises ProjectNotFound: If no project is found with the provided ID.
     """
-    if not project_dao.check_is_project_exist(project_id):
+    if not project_dao.check_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
     project = project_dao.get_project(project_id)
@@ -307,7 +307,7 @@ def unassign_member_role_from_user_by_id(
 
     :raises ProjectNotFound: If no project is found with the provided ID.
     """
-    if not project_dao.check_is_project_exist(project_id):
+    if not project_dao.check_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
     project = project_dao.get_project(project_id)
@@ -347,7 +347,7 @@ def assign_owner_role_for_user_by_id(
     :raises ProjectNotFound: If no project is found with the provided ID.
     """
 
-    if not project_dao.check_is_project_exist(project_id):
+    if not project_dao.check_project_exist(project_id):
         raise ProjectNotFound(project_id)
 
     project = project_dao.get_project(project_id)
