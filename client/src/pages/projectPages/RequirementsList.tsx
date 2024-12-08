@@ -66,6 +66,7 @@ const RequirementsList: React.FC = () => {
     const fetchData = async () => {
         try {
             const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/model/requirements/${projectID}`);
+            console.log(response.data)
             setFunctionalRequirements(response.data.functional_requirements);
             setNonFunctionalRequirements(response.data.non_functional_requirements);
         } catch (error) {

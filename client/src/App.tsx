@@ -30,11 +30,9 @@ import './styles/styles.css'
 import ProjectDetailsReadme from './pages/ProjectDetailsReadme';
 import Layout from './pages/Layout';
 import LogoList from './pages/projectPages/LogoList';
-import { UserEditsProvider } from './pages/projectPages/UserEditsProvider';
-import Hero from './components/Hero';
-import PageNotFound from './pages/PageNotFound';
+import { UserEditsProvider } from './pages/projectsUtils/UserEditsProvider';
 import ErrorPage from './pages/ErrorPage';
-import ProtectedRoute from './services/protectedRoute';
+import ElevatorSpeechList from './pages/projectPages/ElevatorSpeech';
 
 function App() {
   return (
@@ -70,7 +68,7 @@ function App() {
                     <Route path="specifications" element={<SpecificationsList />} />
                     <Route path="strategy" element={<StrategyList />} />
                     <Route path="actors" element={<ActorList />} />
-                    <Route path="elevator-speech" element={<ElevatorSpeech />} />
+                    <Route path="elevator-speech" element={<ElevatorSpeechList />} />
                     <Route path="business-scenario" element={<BusinessScenario />} />
                     <Route path="uml" element={<UMLDiagrams />} />
                     <Route path="schedule" element={<ProjectTimeline />} />

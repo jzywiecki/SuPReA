@@ -12,7 +12,7 @@ import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
 import { getComponentyByName } from '@/utils/enums';
 import { useParams } from 'react-router-dom';
-import { useUserEdits } from '../projectPages/UserEditsProvider';
+import { useUserEdits } from './UserEditsProvider';
 
 interface Members {
     username: string;
@@ -27,13 +27,15 @@ interface FloatingToolbarProps {
     setIsEditingMode: React.Dispatch<React.SetStateAction<boolean>>;
     setIsRegenerateChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
     setIsUpdateChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    componentName: string;
 }
 
 const FloatingToolbar: React.FC<FloatingToolbarProps> = React.memo(({
     socket,
     setIsEditingMode,
     setIsRegenerateChatOpen,
-    setIsUpdateChatOpen
+    setIsUpdateChatOpen,
+    componentName
 }) => {
     const { projectID } = useParams();
     const { componentUserMap } = useUserEdits();
@@ -44,14 +46,15 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = React.memo(({
     const isDragging = useRef(false);
 
     const handleEditButtonClick = () => {
-        const message = { component: getComponentyByName("specifications").id }
+        const message = { component: getComponentyByName(componentName).id }
         socket.emit("edit-component", message);
         setIsEditingMode(true);
+        console.log("elo")
 
     };
 
     const handleEditSaveButtonClick = () => {
-        const message = { component: getComponentyByName("specifications").id }
+        const message = { component: getComponentyByName(componentName).id }
         socket.emit("finish-edition", message);
         setIsEditingMode(false);
         setIsRegenerateChatOpen(false);
@@ -74,7 +77,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = React.memo(({
                 const usersData = membersResponse.data as Members[];
                 setAllMembers(usersData);
 
-                const specificationsUsers = componentUserMap[getComponentyByName("specifications").id] || [];
+                const specificationsUsers = componentUserMap[getComponentyByName(componentName).id] || [];
                 const specificationsUsersArray = [...specificationsUsers];
 
                 const updatedUsersEditing = usersData

@@ -2,12 +2,12 @@ import { io } from 'socket.io-client';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
 
-export const socket = io("http://localhost:3000", {
+export const socket = io(API_URLS.BASE_URL, {
   autoConnect: false,
-  // path: "http://localhost:3000",
-  // extraHeaders: {
-  //   Authorization: localStorage.getItem('accessToken'),
-  // }
+  path: "/realtime-server/socket.io",
+  extraHeaders: {
+    Authorization: localStorage.getItem('accessToken'),
+  }
 });
 
 socket.on('connect_error', async (err) => {

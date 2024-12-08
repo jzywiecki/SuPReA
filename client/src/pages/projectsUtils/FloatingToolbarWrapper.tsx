@@ -10,6 +10,7 @@ interface FloatingToolbarProps {
     selectedItems: any;
     handleRegenerateRequest: (value: string) => void;
     handleUpdateRequest: (value: string) => void;
+    componentName: string;
 }
 
 const FloatingToolbarWrapper: React.FC<FloatingToolbarProps> = React.memo(({
@@ -17,7 +18,8 @@ const FloatingToolbarWrapper: React.FC<FloatingToolbarProps> = React.memo(({
     setIsEditingMode,
     selectedItems,
     handleUpdateRequest,
-    handleRegenerateRequest
+    handleRegenerateRequest,
+    componentName
 }) => {
 
     const [isRegenerateChatOpen, setIsRegenerateChatOpen] = useState<boolean>(false);
@@ -48,6 +50,7 @@ const FloatingToolbarWrapper: React.FC<FloatingToolbarProps> = React.memo(({
                 setIsEditingMode={setIsEditingMode}
                 setIsRegenerateChatOpen={setIsRegenerateChatOpen}
                 setIsUpdateChatOpen={setIsUpdateChatOpen}
+                componentName={componentName}
             /></>
     )
 

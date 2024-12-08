@@ -27,6 +27,7 @@ const BusinessScenario: React.FC = () => {
     const fetchData = async () => {
         try {
             const response = await axiosInstance.get(`${API_URLS.API_SERVER_URL}/model/business_scenarios/${projectID}`);
+            console.log(response.data)
             setTitle(response.data.business_scenario.title);
             setDescription(response.data.business_scenario.description);
             setFeatures(response.data.business_scenario.features);
