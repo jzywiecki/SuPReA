@@ -296,6 +296,7 @@ const SpecificationsList: React.FC = () => {
                 handleUpdateRequest={handleUpdateRequest}
                 componentName={"specifications"}
             />
+
             <LoadingIndicatorWrapper isLoading={isRegenerating} />
 
             <SelectionWrapper

@@ -427,6 +427,7 @@ const ActorList: React.FC = () => {
                                     className="flex gap-2 w-full flex items-center justify-end"
                                     onClick={(e) => isEditingMode && actor.isEditing && e.stopPropagation()}
                                 >
+
                                     {isEditingMode && actor.isEditing ? (
                                         <>
 
@@ -452,6 +453,7 @@ const ActorList: React.FC = () => {
                                                 }}
                                             />
                                         </>
+
                                     ) : (
                                         isEditingMode && (
                                             <>

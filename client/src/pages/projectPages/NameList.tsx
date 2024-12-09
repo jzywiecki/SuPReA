@@ -52,6 +52,7 @@ const NameList: React.FC = () => {
 
     };
 
+
     // Fetches data from server and appends it by fields for edition, favourites and colors
     const fetchData = async () => {
         setIsLoading(true);
@@ -120,6 +121,7 @@ const NameList: React.FC = () => {
     };
 
     const handleDelete = async (id, e) => {
+
         e.stopPropagation();
         try {
             const updatedNames = names.filter((spec) => spec.id !== id);
@@ -131,6 +133,7 @@ const NameList: React.FC = () => {
 
     // When new item is genereted by server this funcion handles saving it to local view and server
     const handleNamesResponseSave = (id, event) => {
+
         event.stopPropagation();
         const newSpecification = regeneratedNames.find((spec) => spec.id === id);
 
@@ -151,6 +154,7 @@ const NameList: React.FC = () => {
 
     // Sends update request to server, it passes context in form of every name that was selected
     const handleUpdateRequest = (textareaChatValue) => {
+
         const filteredNames = filterNames(names, selectedItems);
         const payload = {
             component_val: { names: filteredNames },
