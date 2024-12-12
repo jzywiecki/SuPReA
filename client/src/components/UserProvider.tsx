@@ -3,6 +3,7 @@ import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
 import { makePictureUrl } from '@/utils/url';
 import { set } from 'react-hook-form';
+import { socket } from '@/utils/sockets';
 
 interface User {
     id: string;
@@ -67,6 +68,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.removeItem('user');
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        socket.disconnect();
     };
 
     const refreshAccessToken = async () => {

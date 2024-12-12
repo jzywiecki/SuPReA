@@ -150,28 +150,29 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Authenticate(r *http.Request) (bool, error) {
-	// tokenStr := r.Header.Get("Authorization")
-	// if tokenStr == "" {
-	// 	return false, errors.New("did not provide any token")
-	// }
+	tokenStr := r.Header.Get("Authorization")
 
-	// claims := &Claims{}
-	// tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
-	// 	return jwtKey, nil
-	// })
+	// return false, fmt.Errorf("%s", r)
+	if tokenStr == "" {
+		return false, errors.New("did not provide any token")
+	}
 
-	// if err != nil || !tkn.Valid {
-	// 	return false, fmt.Errorf("token is invalid %s", err.Error())
-	// }
+	claims := &Claims{}
+	tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
 
-	// client := database.GetDatabaseConnection()
+	if err != nil || !tkn.Valid {
+		return false, fmt.Errorf("token %s is invalid %s", tkn, err.Error())
+	}
 
-	// var user models.User
-	// collection := database.GetCollection(client, "Projects", "users")
-	// err = collection.FindOne(context.Background(), bson.M{"email": claims.Email, "token": tokenStr}).Decode(&user)
+	client := database.GetDatabaseConnection()
 
-	// return err == nil, fmt.Errorf("got token: %s and errored with: %w", tokenStr, err)
-	return true, nil; //err == nil, fmt.Errorf("got token: %s and errored with: %w", tokenStr, err)
+	var user models.User
+	collection := database.GetCollection(client, "Projects", "users")
+	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email, "token": tokenStr}).Decode(&user)
+
+	return err == nil, fmt.Errorf("got token: %s and errored with: %w", tokenStr, err)
 }
 
 func IsUserInProject(r *http.Request, projectId string) (bool, error) {

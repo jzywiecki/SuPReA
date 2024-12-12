@@ -395,6 +395,10 @@ export function AppSidebar({ onProjectClick, ...props }: React.ComponentProps<ty
     };
   }, [user?.id, projectName]);
 
+  useEffect(() => {
+    socket.disconnect();
+  }, []);
+
   const handleSearch = async (searchQuery: string) => {
     try {
       const response = await axiosInstance.get<User[]>(`${API_URLS.BASE_URL}/users/filter`, {
