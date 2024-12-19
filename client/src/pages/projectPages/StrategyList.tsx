@@ -186,7 +186,7 @@ const StrategyList: React.FC = () => {
         try {
             setIsRegenerating(true);
             const response = await axiosInstance.post(`${API_URLS.API_SERVER_URL}/model/strategy/${endpoint}`, payload);
-            callback(response.data);
+            callback(JSON.parse(response.data));
         } catch (error) {
             enqueueSnackbar(`Error sending request to ${endpoint}: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error(`Error sending request to ${endpoint}:`, error);
@@ -275,7 +275,7 @@ const StrategyList: React.FC = () => {
 
     // This returns only those which are selected
     const filterStrategys = (strategys, selectedItems) => {
-        filterSpecificationsGeneric(strategys, selectedItems, removeTemporaryProperties);
+        return filterSpecificationsGeneric(strategys, selectedItems, removeTemporaryProperties);
     };
 
     if (isLoading) {

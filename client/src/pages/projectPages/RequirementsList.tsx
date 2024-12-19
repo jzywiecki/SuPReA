@@ -210,8 +210,10 @@ const RequirementsList: React.FC = () => {
     const sendAIRequest = async (endpoint, payload, callback) => {
         try {
             setIsRegenerating(true);
+            console.log(payload);
             const response = await axiosInstance.post(`${API_URLS.API_SERVER_URL}/model/requirements/${endpoint}`, payload);
-            callback(response.data);
+            console.log(response.data)
+            callback(JSON.parse(response.data));
         } catch (error) {
             enqueueSnackbar(`Error sending request to ${endpoint}: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error(`Error sending request to ${endpoint}:`, error);
@@ -325,7 +327,7 @@ const RequirementsList: React.FC = () => {
 
     // This returns only those which are selected
     const filterRequirements = (requirements, selectedItems) => {
-        filterSpecificationsGeneric(requirements, selectedItems, removeTemporaryProperties);
+        return filterSpecificationsGeneric(requirements, selectedItems, removeTemporaryProperties);
     };
 
     if (isLoading) {

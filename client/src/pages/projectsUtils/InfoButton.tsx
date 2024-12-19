@@ -84,7 +84,7 @@ const InfoButton: React.FC<InfoButtonProps> = React.memo(({
                     }} size={20} />
                 </div>
                 <div className="flex items-center justify-center h-[60%] bg-black text-white rounded-md">
-                    <PiPaperPlaneRightFill onClick={() => handleRegenerateRequest()} size={15} />
+                    <PiPaperPlaneRightFill onClick={() => handleRegenerateRequest(textareaValue)} size={15} />
                 </div>
             </div>
             <Textarea

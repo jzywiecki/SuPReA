@@ -183,7 +183,7 @@ const ElevatorSpeechList: React.FC = () => {
         try {
             setIsRegenerating(true);
             const response = await axiosInstance.post(`${API_URLS.API_SERVER_URL}/model/elevator_speech/${endpoint}`, payload);
-            callback(response.data);
+            callback(JSON.parse(response.data));
         } catch (error) {
             enqueueSnackbar(`Error sending request to ${endpoint}: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error(`Error sending request to ${endpoint}:`, error);
@@ -272,7 +272,7 @@ const ElevatorSpeechList: React.FC = () => {
 
     // This returns only those which are selected
     const filterElevatorSpeeches = (elevator_speeches, selectedItems) => {
-        filterSpecificationsGeneric(elevator_speeches, selectedItems, removeTemporaryProperties);
+        return filterSpecificationsGeneric(elevator_speeches, selectedItems, removeTemporaryProperties);
     };
 
     if (isLoading) {

@@ -194,7 +194,7 @@ const NameList: React.FC = () => {
         try {
             setIsRegenerating(true);
             const response = await axiosInstance.post(`${API_URLS.API_SERVER_URL}/model/title/${endpoint}`, payload);
-            callback(response.data);
+            callback(JSON.parse(response.data));
         } catch (error) {
             enqueueSnackbar(`Error sending request to ${endpoint}: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error(`Error sending request to ${endpoint}:`, error);
@@ -283,7 +283,7 @@ const NameList: React.FC = () => {
 
     // This returns only those which are selected
     const filterNames = (names, selectedItems) => {
-        filterSpecificationsGeneric(names, selectedItems, removeTemporaryProperties);
+        return filterSpecificationsGeneric(names, selectedItems, removeTemporaryProperties);
     };
 
     if (isLoading) {

@@ -186,7 +186,7 @@ const RiskList: React.FC = () => {
         try {
             setIsRegenerating(true);
             const response = await axiosInstance.post(`${API_URLS.API_SERVER_URL}/model/risks/${endpoint}`, payload);
-            callback(response.data);
+            callback(JSON.parse(response.data));
         } catch (error) {
             enqueueSnackbar(`Error sending request to ${endpoint}: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error(`Error sending request to ${endpoint}:`, error);
@@ -280,7 +280,7 @@ const RiskList: React.FC = () => {
     };
 
     const handleRisksResponseCancel = (id, event) => {
-        handleSpecificationsResponseCancelGeneric(id, setRisks);
+        return handleSpecificationsResponseCancelGeneric(id, setRisks);
     };
 
     // This returns only those which are selected

@@ -183,7 +183,7 @@ const ActorList: React.FC = () => {
         try {
             setIsRegenerating(true);
             const response = await axiosInstance.post(`${API_URLS.API_SERVER_URL}/model/actors/${endpoint}`, payload);
-            callback(response.data);
+            callback(JSON.parse(response.data));
         } catch (error) {
             enqueueSnackbar(`Error sending request to ${endpoint}: ${error.response?.status ?? 'Unknown error'}`, { variant: 'error' });
             console.error(`Error sending request to ${endpoint}:`, error);
@@ -281,7 +281,7 @@ const ActorList: React.FC = () => {
 
     // This returns only those which are selected
     const filterActors = (actors, selectedItems) => {
-        filterSpecificationsGeneric(actors, selectedItems, removeTemporaryProperties);
+        return filterSpecificationsGeneric(actors, selectedItems, removeTemporaryProperties);
     };
 
     if (isLoading) {
