@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 import axiosInstance from '@/api/axios';
-import { API_URLS } from '@/api/urls';
+import API_URLS from '@/api/urls';
 
 export const socket = io(API_URLS.BASE_URL, {
   autoConnect: false,
