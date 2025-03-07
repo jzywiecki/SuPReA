@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import { useUserContext } from '@/contexts/custom-context-hooks';
+import { useNavigate } from 'react-router-dom';
 
 interface CTASectionProps {
   title: string;
@@ -8,6 +8,11 @@ interface CTASectionProps {
 
 const CTASection = ({ title, description }: CTASectionProps) => {
   const { isLogged } = useUserContext();
+  const navigate = useNavigate();
+
+  const handleNavigation = () => {
+    navigate(isLogged ? "/projects" : "/login");
+  };
 
   return (
     <div className="bg-indigo-600 py-10">
@@ -19,12 +24,12 @@ const CTASection = ({ title, description }: CTASectionProps) => {
           {description}
         </p>
         <div className="mt-8">
-          <Link
-            to={isLogged ? "/projects" : "/login"}
+          <button
+            onClick={handleNavigation}
             className="inline-block px-6 py-3 text-lg font-semibold text-indigo-600 bg-white rounded-md shadow-md hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
             Explore projects
-          </Link>
+          </button>
         </div>
       </div>
     </div>
