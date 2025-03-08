@@ -4,6 +4,7 @@ import Home from '@/components/pages/Home';
 import Login from './components/pages/Login';
 import Register from './components/pages/Register';
 import Error from './components/pages/Error';
+import NewProject from './components/pages/NewProject';
 import UserContextProvider from './contexts/UserContextProvider';
 import ThemeContextProvider from './contexts/ThemeContextProvider';
 import SnackbarContextProvider from './contexts/SnackbarContextProvider';
@@ -40,7 +41,7 @@ function App() {
                 <Route path="logo" element={<h1>Hello world!</h1>} />
               </Route>
             </Route>
-            <Route path="/create-project" element={<h1>Hello world!</h1>} />
+            <Route path="/create-project" element={<NewProject/>} />
             <Route path="/profile/:id" element={<h1>Hello world!</h1>} />
             <Route path="/collaborators" element={<h1>Hello world!</h1>} />
             <Route path="not-found" element={<Error errorCode={404}/>} />
