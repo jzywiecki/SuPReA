@@ -4,12 +4,14 @@ import Home from '@/components/pages/Home';
 import Login from './components/pages/Login';
 import UserContextProvider from './contexts/UserContextProvider';
 import ThemeContextProvider from './contexts/ThemeContextProvider';
+import SnackbarContextProvider from './contexts/SnackbarContextProvider';
 
 
 function App() {
 
   return (
     <>
+    <SnackbarContextProvider>
       <ThemeContextProvider>
         <UserContextProvider>
           <Navbar />
@@ -45,6 +47,7 @@ function App() {
           </Routes>
         </UserContextProvider>
       </ThemeContextProvider>
+      </SnackbarContextProvider>
     </>
   )
 }
