@@ -2,6 +2,7 @@ import { Routes, Route, Outlet } from 'react-router-dom';
 import Navbar from '@/components/navbar/Navbar';
 import Home from '@/components/pages/Home';
 import Login from './components/pages/Login';
+import Register from './components/pages/Register';
 import UserContextProvider from './contexts/UserContextProvider';
 import ThemeContextProvider from './contexts/ThemeContextProvider';
 import SnackbarContextProvider from './contexts/SnackbarContextProvider';
@@ -17,7 +18,7 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/register" element={<h1>Hello world!</h1>} />
+            <Route path="/register" element={<Register/>} />
             <Route path="/login" element={<Login/>} />
             <Route path="/projects" element={<h1>Hello world!</h1>} />
             <Route path="/project/:projectID" element={<Outlet />}>
