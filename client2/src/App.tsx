@@ -3,10 +3,10 @@ import Navbar from '@/components/navbar/Navbar';
 import Home from '@/components/pages/Home';
 import Login from './components/pages/Login';
 import Register from './components/pages/Register';
+import Error from './components/pages/Error';
 import UserContextProvider from './contexts/UserContextProvider';
 import ThemeContextProvider from './contexts/ThemeContextProvider';
 import SnackbarContextProvider from './contexts/SnackbarContextProvider';
-
 
 function App() {
 
@@ -43,8 +43,8 @@ function App() {
             <Route path="/create-project" element={<h1>Hello world!</h1>} />
             <Route path="/profile/:id" element={<h1>Hello world!</h1>} />
             <Route path="/collaborators" element={<h1>Hello world!</h1>} />
-            <Route path="not-found" element={<h1>Hello world!</h1>} />
-            <Route path="*" element={<h1>Not found!</h1>} />
+            <Route path="not-found" element={<Error errorCode={404}/>} />
+            <Route path="*" element={<Error errorCode={404}/>} />
           </Routes>
         </UserContextProvider>
       </ThemeContextProvider>
