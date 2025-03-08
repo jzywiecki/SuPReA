@@ -1,8 +1,10 @@
 import { Routes, Route, Outlet } from 'react-router-dom';
 import Navbar from '@/components/navbar/Navbar';
 import Home from '@/components/pages/Home';
+import Login from './components/pages/Login';
 import UserContextProvider from './contexts/UserContextProvider';
 import ThemeContextProvider from './contexts/ThemeContextProvider';
+
 
 function App() {
 
@@ -14,7 +16,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<h1>Hello world!</h1>} />
-            <Route path="/login" element={<h1>Hello world!</h1>} />
+            <Route path="/login" element={<Login/>} />
             <Route path="/projects" element={<h1>Hello world!</h1>} />
             <Route path="/project/:projectID" element={<Outlet />}>
               <Route path="settings" element={<h1>setting!</h1>} />

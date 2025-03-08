@@ -1,5 +1,6 @@
 import axios from 'axios';
 import API_URLS from '@/api/urls';
+import { ApiRequestError, ConnectionError } from '@/utils/exceptions';
 
 const axiosInstance = axios.create();
 
@@ -9,13 +10,6 @@ axiosInstance.interceptors.request.use(
         if (accessToken) {
             config.headers['Authorization'] = `${accessToken}`;
         }
-        //TODO: removed external services
-        if (config.url?.includes('cat-avatars.vercel.app')) {
-            delete config.headers['Authorization'];
-        }
-        if (config.url?.includes('static.vecteezy.com')) {
-            delete config.headers['Authorization'];
-        }
         return config;
     },
     (error) => Promise.reject(error)
@@ -24,6 +18,11 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
+        
+        if (error.code === "ERR_NETWORK") {
+            throw new ConnectionError(error.message)
+        }
+
         const originalRequest = error.config;
 
         if (error.response.status === 401 && !originalRequest._retry) {
@@ -44,11 +43,11 @@ axiosInstance.interceptors.response.use(
                 localStorage.removeItem('accessToken');
                 localStorage.removeItem('refreshToken');
                 window.location.href = '/login';
-                return Promise.reject(error);
+
+                throw new ApiRequestError("Refresh token failed", 401);
             }
         }
-
-        return Promise.reject(error);
+        throw new ApiRequestError(error.response?.data?.message ?? "An error occurred", error.response.status);
     }
 );
 
