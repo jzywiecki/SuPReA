@@ -1,4 +1,5 @@
-# AI supported system for creating project requirements analysis and crafting blueprint for development
+# SuPReA - system supporting project requirements analysis
+AI supported system for creating project requirements analysis and crafting blueprint for development
 
 # Setup:
 #### Install docker and docker compose
