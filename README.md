@@ -1,4 +1,7 @@
-# DevX - Intelligent System Supporting Project Requirements Analysis
+
+# SuPReA - system supporting project requirements analysis
+AI supported system for creating project requirements analysis and crafting blueprint for development
+
 
 ## Market Problem
 Analyzing project requirements efficiently can be challenging, especially when ensuring quality and collaboration among team members. Traditional methods may lack flexibility and adaptability to specific project needs.
