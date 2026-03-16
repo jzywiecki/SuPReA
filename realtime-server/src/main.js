@@ -18,27 +18,21 @@ const DATABASE_NAME = process.env.DATABASE_NAME;
 const app = express();
 
 const corsOptions = {
-  origin: '*', 
+  origin: "http://localhost:5173",
   credentials: true,
-  optionSuccessStatus: 200,
-}
+  optionsSuccessStatus: 200,
+};
 
 app.use(cors(corsOptions));
 app.use(express.json());
 
 const server = createServer(app);
 
-const io = new Server(server, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"],
-      credentials: true
-    }
-});
+const io = new Server(server);
 
 instrument(io, {
-    auth: false,
-    mode: "development",
+  auth: false,
+  mode: "development",
 });
 
 const db = new Database(URL, DATABASE_NAME);
