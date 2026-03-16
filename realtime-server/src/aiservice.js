@@ -1,6 +1,7 @@
 import { sendMessageByAI } from "./chat.js";
 import { ComponentCreatedCommunicate } from "./notifications.js";
-import { getComponentyByName } from "./model.js";
+import { getComponentyByName, getComponentById } from "./model.js";
+import { logger } from "./utils.js";
 
 
 /**
@@ -32,11 +33,19 @@ export class AIService {
          * Notifies users when a component is created.
          * @param {Object} message - Object received from server.
         */
-        const component = getComponentyByName(message?.component)
-
-        this.io.to(message?.callback).emit(
-            'notify-generation-complete', 
-            new ComponentCreatedCommunicate(component?.id)
-        );
+        try {
+            const component = typeof message?.component === 'number'
+                ? getComponentById(message.component)
+                : getComponentyByName(message?.component);
+            const componentId = component?.id;
+            if (componentId != null) {
+                this.io.to(message?.callback).emit(
+                    'notify-generation-complete',
+                    new ComponentCreatedCommunicate(componentId)
+                );
+            }
+        } catch (err) {
+            logger.error(`Failed to notify component created: ${err.message}`);
+        }
     }
 }

@@ -1,4 +1,3 @@
-version: '3'
 services:
   app-client:
     platform: linux/amd64
@@ -20,6 +19,11 @@ services:
     container_name: "server"
     restart: always
     env_file: ".env"
+    environment:
+      - MONGODB_URL=${MONGODB_URL}
+      - VISIO_MONGODB_NAME=${DATABASE_NAME}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - REALTIME_SERVER_URL=${REALTIME_SERVER_URL}
     ports:
       - "8000:8000"
     networks:
@@ -33,6 +37,11 @@ services:
     container_name: "auth-service"
     restart: always
     env_file: ".env"
+    environment:
+      - MONGODB_URL=${MONGODB_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - REFRESH_JWT_SECRET=${REFRESH_JWT_SECRET}
+      - DOCKER_COMPOSE_CONFIG=${DOCKER_COMPOSE_CONFIG}
     ports:
       - "3333:3333"
     networks:
@@ -46,6 +55,11 @@ services:
     container_name: "realtime-server"
     restart: always
     env_file: ".env"
+    environment:
+      - MONGODB_URL=${MONGODB_URL}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - SERVER_URL=${SERVER_URL}
+      - AI_ID=${AI_ID}
     ports:
       - "3000:3000"
     networks:

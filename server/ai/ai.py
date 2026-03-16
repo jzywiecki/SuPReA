@@ -125,5 +125,12 @@ class AI(metaclass=abc.ABCMeta):
 def ai_call_task(ai_model, query) -> str:
     """
     Remote wrapper to call to the AI model.
+    Catches OpenAI exceptions and re-raises as RuntimeError to avoid Ray pickle
+    serialization issues with APIStatusError (which has non-pickleable attributes).
     """
-    return ai_model.make_ai_call(query)
+    try:
+        return ai_model.make_ai_call(query)
+    except Exception as e:
+        # Re-raise as RuntimeError so Ray can serialize the exception across workers.
+        # OpenAI's APIStatusError has 'response' and 'body' that break pickle deserialization.
+        raise RuntimeError(f"{e.__class__.__name__}: {e}") from e

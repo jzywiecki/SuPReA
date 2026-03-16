@@ -391,7 +391,6 @@ export function AppSidebar({ onProjectClick, ...props }: React.ComponentProps<ty
       socket.off('disconnect', handleDisconnect);
       socket.off('error', handleError);
       socket.off('notify-generation-complete', handleGenerationComplete);
-      socket.disconnect();
     };
   }, [user?.id, projectName]);
 

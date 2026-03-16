@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 
 
 class Database {
@@ -175,6 +175,37 @@ class Database {
             .findOne({ _id: projectId }, { projection: { _id: 0, ai_chat_id: 1 } });
     
         return result ? result.ai_chat_id : null;
+    }
+
+
+    async ensureProjectChats(projectId) {
+        const queryId = projectId instanceof ObjectId ? projectId : ObjectId.createFromHexString(String(projectId));
+        const project = await this.projectCollection.findOne(
+            { _id: queryId },
+            { projection: { _id: 1, chat_id: 1, ai_chat_id: 1 } }
+        );
+        if (!project) return { discussionChatId: null, aiChatId: null };
+
+        let discussionChatId = project.chat_id;
+        let aiChatId = project.ai_chat_id;
+
+        if (!discussionChatId) {
+            const discussionChat = await this.chatCollection.insertOne({ last_message_id: 0, messages: [] });
+            discussionChatId = discussionChat.insertedId;
+            await this.projectCollection.updateOne(
+                { _id: queryId },
+                { $set: { chat_id: discussionChatId } }
+            );
+        }
+        if (!aiChatId) {
+            const aiChat = await this.chatCollection.insertOne({ last_message_id: 0, messages: [] });
+            aiChatId = aiChat.insertedId;
+            await this.projectCollection.updateOne(
+                { _id: queryId },
+                { $set: { ai_chat_id: aiChatId } }
+            );
+        }
+        return { discussionChatId, aiChatId };
     }
 }
 

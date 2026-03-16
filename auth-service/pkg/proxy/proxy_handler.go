@@ -52,6 +52,15 @@ func ProxyRequest(w http.ResponseWriter, r *http.Request, serviceName string, co
 
 	log.Printf("Proxying request to: %s", targetURL)
 	proxy := httputil.NewSingleHostReverseProxy(targetURL)
+	// Strip CORS headers from backend to avoid duplicate "*, *" (auth-service adds its own)
+	proxy.ModifyResponse = func(resp *http.Response) error {
+		resp.Header.Del("Access-Control-Allow-Origin")
+		resp.Header.Del("Access-Control-Allow-Credentials")
+		resp.Header.Del("Access-Control-Allow-Methods")
+		resp.Header.Del("Access-Control-Allow-Headers")
+		resp.Header.Del("Access-Control-Expose-Headers")
+		return nil
+	}
 	proxy.ServeHTTP(w, r)
 }
 
@@ -72,5 +81,9 @@ func isRateLimited(serviceName string, remoteAddr string, rateLimitWindow time.D
 }
 
 func extractPathWithoutService(serviceName string, path string) string {
-	return path[len(serviceName)+1:]
+	prefix := "/" + serviceName
+	if len(path) > len(prefix) && path[:len(prefix)] == prefix {
+		return path[len(prefix):]
+	}
+	return path
 }

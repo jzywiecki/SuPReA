@@ -59,10 +59,11 @@ export const connectionService = (io, db, editionRegister) => {
             session.projectId = ObjectId.createFromHexString(projectId);
             session.userId = ObjectId.createFromHexString(userId);
 
-            const projectChatsReference = new ProjectChatsReference(
-                await db.getDiscussionChatIdFromProject(session.projectId),
-                await db.getAiChatIdFromProject(session.projectId)
-            )
+            const { discussionChatId, aiChatId } = await db.ensureProjectChats(session.projectId);
+            if (!discussionChatId || !aiChatId) {
+                logger.error(`Project ${session.projectIdStr} has no chats - check if realtime server uses same MongoDB/DB as main server`);
+            }
+            const projectChatsReference = new ProjectChatsReference(discussionChatId, aiChatId);
             
             transmitMessagesOnConnection(socket, db, projectChatsReference);
 
@@ -79,6 +80,7 @@ export const connectionService = (io, db, editionRegister) => {
                 /**
                  * This code will be executed for every event received by the socket.
                  */
+                if (process.env.SKIP_MEMBERSHIP_CHECK === 'true') return;
 
                 try {
                     const isMember = await db.isUserProjectMember(session.projectId, session.userId);

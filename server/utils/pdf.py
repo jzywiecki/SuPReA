@@ -2,8 +2,19 @@
 This module provides a class to generate a PDF document.
 """
 
+import sys
 import tempfile
-import mermaid as mmd
+from io import StringIO
+
+# Suppress mermaid-py's "Error acured while importing mermaidjs" when IPython is unavailable
+_old_stdout = sys.stdout
+sys.stdout = StringIO()
+try:
+    import mermaid as mmd
+    from mermaid.graph import Graph
+finally:
+    sys.stdout = _old_stdout
+
 import ray
 
 from models import Project
@@ -19,7 +30,6 @@ from reportlab.platypus import (
     ListFlowable,
     ListItem,
 )
-from mermaid.graph import Graph
 from utils.mermaid_er_tools import create_er_diagram_mermaid
 from utils.mermaid_class_diagram_tools import create_uml_class_diagram_mermaid
 from io import BytesIO

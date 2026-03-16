@@ -51,14 +51,16 @@ class DallE(AI):
     """Base class for DALL-E AI models."""
 
     def make_ai_call(self, query: str, model_name: str) -> str:
-        """Make a call to the DALL-E 3 model and return the response."""
+        """Make a call to the DALL-E model and return the response."""
         params = {
-            "model": "dall-e-2",
+            "model": model_name,
             "prompt": query,
             "size": "1024x1024",
-            "quality": "standard",
             "n": 1,
         }
+        # quality param only supported by DALL-E 3
+        if model_name == "dall-e-3":
+            params["quality"] = "standard"
         response = client.images.generate(**params)
         return response.data[0].url
 

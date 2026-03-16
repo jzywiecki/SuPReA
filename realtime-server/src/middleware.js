@@ -21,6 +21,18 @@ export const authenticationMiddleware = (io, db) => {
         try {
             const userId = socket?.handshake?.auth?.userId;
             const projectId = socket?.handshake?.auth?.projectId;
+
+            if (!userId || !projectId) {
+                logger.info("Rejected user: missing userId or projectId in auth");
+                return next(new Error("Missing userId or projectId"));
+            }
+
+            if (process.env.SKIP_MEMBERSHIP_CHECK === 'true') {
+                logger.info("Skipping membership check (SKIP_MEMBERSHIP_CHECK=true)");
+                socket.userId = userId;
+                socket.projectId = projectId;
+                return next();
+            }
     
             const isProjectMember = await db.isUserProjectMember(
                 ObjectId.createFromHexString(projectId),

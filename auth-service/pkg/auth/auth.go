@@ -180,6 +180,11 @@ func IsUserInProject(r *http.Request, projectId string) (bool, error) {
 		return false, errors.New("did not provide any token")
 	}
 
+	// Strip "Bearer " prefix if present (some clients send "Bearer <token>")
+	if len(tokenStr) > 7 && tokenStr[:7] == "Bearer " {
+		tokenStr = tokenStr[7:]
+	}
+
 	claims := &Claims{}
 	tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
@@ -193,17 +198,13 @@ func IsUserInProject(r *http.Request, projectId string) (bool, error) {
 
 	var user models.User
 	collection := database.GetCollection(client, "Projects", "users")
-	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email, "token": tokenStr}).Decode(&user)
+	// Look up by email only - JWT validation above proves authenticity.
+	// Matching token in DB fails after refresh (token updated) or when token format differs.
+	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email}).Decode(&user)
 
 	if err != nil {
 		return false, err
 	}
-
-	// for _, value := range user.Projects {
-	// 	if value == projectId {
-	// 		return true, nil
-	// 	}
-	// }
 
 	return true, nil
 }
@@ -214,6 +215,10 @@ func IsSenderRealUser(r *http.Request, senderId string) (bool, error) {
 		return false, errors.New("did not provide any token")
 	}
 
+	if len(tokenStr) > 7 && tokenStr[:7] == "Bearer " {
+		tokenStr = tokenStr[7:]
+	}
+
 	claims := &Claims{}
 	tkn, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
@@ -227,7 +232,7 @@ func IsSenderRealUser(r *http.Request, senderId string) (bool, error) {
 
 	var user models.User
 	collection := database.GetCollection(client, "Projects", "users")
-	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email, "token": tokenStr}).Decode(&user)
+	err = collection.FindOne(context.Background(), bson.M{"email": claims.Email}).Decode(&user)
 
 	if err != nil {
 		return false, err

@@ -42,7 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     // }, []);
 
     useEffect(() => {
-        if (!user?.id) return;
+        if (!user?.id || !projectID) return;
         navigate("summary");
 
         socket.auth = {
@@ -51,15 +51,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             discussionChatOffset: 0,
             aiChatOffset: 0
         };
+        socket.io.opts.extraHeaders = {
+            Authorization: localStorage.getItem('accessToken') || '',
+        };
 
+        console.log('[Socket] connecting auth:', { projectId: projectID, userId: user.id });
         socket.connect();
 
         socket.on('edition-register', handleEditionRegister)
 
         return () => {
             socket.off('edition-register', handleEditionRegister);
+            socket.disconnect();
         };
-    }, [user?.id]);
+    }, [user?.id, projectID]);
 
     const handleEditionRegister = (message) => {
 

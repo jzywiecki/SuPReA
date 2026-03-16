@@ -8,11 +8,17 @@ import { connectionService } from './connection.js';
 import { registerRouters } from './routers.js';
 import { EditionRegister } from './register.js';
 import { AIService } from './aiservice.js';
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config();
 import cors from 'cors';
 
 const URL = process.env.MONGODB_URL;
-const DATABASE_NAME = process.env.DATABASE_NAME;
+const DATABASE_NAME = process.env.DATABASE_NAME || process.env.VISIO_MONGODB_NAME || 'Projects';
 
 
 const app = express();
@@ -28,12 +34,9 @@ app.use(express.json());
 
 const server = createServer(app);
 
+// CORS: allow all for testing
 const io = new Server(server, {
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"],
-      credentials: true
-    }
+    cors: { origin: '*' },
 });
 
 instrument(io, {
@@ -56,4 +59,5 @@ registerRouters(app, aiService);
 
 server.listen(3000, () => {
     console.log('server running at http://localhost:3000');
+    console.log(`MongoDB database: ${DATABASE_NAME}`);
 });

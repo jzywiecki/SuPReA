@@ -43,8 +43,9 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
     // {
     //      content: string
     // }
-    socket.on('send-message-to-discussion-chat', (message) => {
-        handleSendMessageByUser(projectChatsReference.discussionChatId, message.content, 'receive-message-from-discussion-chat');
+    socket.on('send-message-to-discussion-chat', async (message) => {
+        logger.info(`Received discussion message, chatId=${projectChatsReference?.discussionChatId}`);
+        await handleSendMessageByUser(projectChatsReference.discussionChatId, message.content, 'receive-message-from-discussion-chat');
     });
 
 
@@ -53,8 +54,9 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
     //      content: string
     //      ai: int (code)
     // }
-    socket.on('send-message-to-ai-chat', (message) => {
-        const isMessageSent = handleSendMessageByUser(projectChatsReference.aiChatId, message.content, 'receive-message-from-ai-chat');
+    socket.on('send-message-to-ai-chat', async (message) => {
+        logger.info(`Received ai message, chatId=${projectChatsReference?.aiChatId}`);
+        const isMessageSent = await handleSendMessageByUser(projectChatsReference.aiChatId, message.content, 'receive-message-from-ai-chat');
         if (isMessageSent) {
             forwardMessageToAi(message);
         }
@@ -131,7 +133,12 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
          * @returns {boolean} - Returns true if the message was sent successfully, false if there was an error.
          */
         try {
-            if (!isMessageInvalid(text)) {
+            if (!chatId) {
+                logger.error("Cannot send message: project has no chat configured (chatId is null)");
+                socket.emit('error', new InternalServerErrorCommunicate('Project has no chat configured.'));
+                return false;
+            }
+            if (isMessageInvalid({ content: text })) {
                 logger.info("User tried to send invalid message.");
                 socket.emit('error', new InvalidRequestCommunicate('Cannot send message. Invalid message format.'));
                 return false;
@@ -140,19 +147,25 @@ export const registerChatEvents = (socket, io, db, session, projectChatsReferenc
             const message = await db.addMessage(session.projectId, chatId, text, session.userId);
 
             const response = {
-                messages: [message],
+                messages: [{
+                    ...message,
+                    author: message.author?.toString?.() ?? message.author,
+                    date: message.date?.toISOString?.() ?? message.date
+                }],
                 olderMessagesExist: null
             }
     
             io.to(session.projectIdStr).emit(broadcastMessageEvent, response);
+            socket.emit(broadcastMessageEvent, response);
     
             return true;
     
         } catch (error) {
             logger.error(`Cannot add message to chat ${chatId}.`);
             logger.error(`Details: ${error.message}`);
+            logger.error(`Stack: ${error.stack}`);
     
-            socket.emit('error', new InternalServerErrorCommunicate('Cannot send message.'));
+            socket.emit('error', new InternalServerErrorCommunicate(`Cannot send message: ${error.message}`));
     
             return false;
         }

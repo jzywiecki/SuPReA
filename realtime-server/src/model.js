@@ -4,8 +4,8 @@ import { ComponentIsNotExistException } from "./exceptions.js";
 export const Components = Object.freeze({
     ACTORS: {id: 1, name: "actors"},
     BUSINESS_SCENARIOS: {id: 2, name: "business_scenarios"},
-    ELEVATOR_SPEECH: {id: 3, name: "elevator_speech"},
-    MOTTO: {id: 4, name: "motto"},
+    ELEVATOR_SPEECH: {id: 3, name: "elevator_speeches"},
+    MOTTO: {id: 4, name: "mottos"},
     PROJECT_SCHEDULE: {id: 5, name: "project_schedule"},
     REQUIREMENTS: {id: 6, name: "requirements"},
     RISKS: {id: 7, name: "risks"},

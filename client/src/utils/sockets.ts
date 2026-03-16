@@ -2,15 +2,25 @@ import { io } from 'socket.io-client';
 import axiosInstance from '@/services/api';
 import { API_URLS } from '@/services/apiUrls';
 
-export const socket = io(API_URLS.BASE_URL, {
+export const socket = io(API_URLS.SOCKET_URL, {
   autoConnect: false,
-  path: "/realtime-server/socket.io",
+  path: API_URLS.SOCKET_PATH,
+  transports: ['polling', 'websocket'],
   extraHeaders: {
-    Authorization: localStorage.getItem('accessToken'),
-  }
+    Authorization: localStorage.getItem('accessToken') || '',
+  },
+});
+
+socket.on('connect', () => {
+  console.log('[Socket] connected', socket.id);
+});
+
+socket.on('disconnect', (reason) => {
+  console.log('[Socket] disconnected', reason);
 });
 
 socket.on('connect_error', async (err) => {
+  console.error('[Socket] connect_error', err.message, err);
   if (err && err.message === 'Unauthorized') {
     try {
       const refreshToken = localStorage.getItem('refreshToken');

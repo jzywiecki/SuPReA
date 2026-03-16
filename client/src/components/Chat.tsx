@@ -83,20 +83,30 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
     useEffect(() => {
         setLoading(true);
 
-        socketChats.on('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
-        // enqueueSnackbar("Team chat connected", { variant: "success" });
+        const onDiscussion = (result: MessageResponse) => {
+            console.log('[Chat] received discussion', result);
+            onReceiveMessagesFromDiscussionChat(result);
+        };
+        const onAi = (result: MessageResponse) => {
+            console.log('[Chat] received ai', result);
+            onReceiveMessagesFromAiChat(result);
+        };
+        const onError = (err: unknown) => {
+            enqueueSnackbar(String(err ?? 'Chat error'), { variant: 'error' });
+        };
 
-
-        socketChats.on('receive-message-from-ai-chat', onReceiveMessagesFromAiChat);
-        // enqueueSnackbar("AI chat connected", { variant: "success" });
+        socketChats.on('receive-message-from-discussion-chat', onDiscussion);
+        socketChats.on('receive-message-from-ai-chat', onAi);
+        socketChats.on('error', onError);
 
         setLoading(false);
 
         return () => {
-            socketChats.off('receive-message-from-discussion-chat', onReceiveMessagesFromDiscussionChat);
-            socketChats.off('receive-message-from-ai-chat', onReceiveMessagesFromAiChat);
+            socketChats.off('receive-message-from-discussion-chat', onDiscussion);
+            socketChats.off('receive-message-from-ai-chat', onAi);
+            socketChats.off('error', onError);
         };
-    }, []);
+    }, [enqueueSnackbar]);
 
     const onReceiveMessagesFromDiscussionChat = (result: MessageResponse) => {
         handleLoadMoreMessages(result.olderMessagesExist, setLoadOlderMessagesDiscussionChat);
@@ -143,17 +153,12 @@ const Chat = ({ key_info, onProjectClick }: ChatProps) => {
         setMessagesFun((prevMessages) => {
             const existingMessageIds = new Set(prevMessages.map((msg) => msg.message_id));
             const newMessages = receivedMessages.filter((msg) => !existingMessageIds.has(msg.message_id));
-
             if (!newMessages.length) return prevMessages;
-
-            const updatedMessages = [...prevMessages, ...newMessages].sort((a, b) => a.message_id - b.message_id);
-
-            setUnconfirmedMessagesFun((prev) => {
-                return prev.filter((msg) => !newMessages.some((newMsg) => newMsg.text === msg));
-            });
-
-            return updatedMessages;
+            return [...prevMessages, ...newMessages].sort((a, b) => a.message_id - b.message_id);
         });
+        setUnconfirmedMessagesFun((prev) =>
+            prev.filter((msg) => !receivedMessages.some((newMsg) => newMsg.text === msg))
+        );
     };
 
     const handleLoadMoreMessages = (

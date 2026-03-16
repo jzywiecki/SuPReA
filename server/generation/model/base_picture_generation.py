@@ -45,14 +45,20 @@ class BasePictureGeneration(Generate):
         :return: The result of the database update operation.
         :rtype: UpdateResult
 
-        :raises ValueError: If no valid URLs are found in the input.
+        When no valid URLs are found, clears the URLs and updates the project with
+        an empty list instead of raising, so generation can continue.
         """
         fetch_images_tasks = []
         picture_dao = get_picture_dao_ref()
         valid_urls = [url for url in self.value.urls if is_valid_url(url)]
 
         if not valid_urls:
-            raise ValueError("No valid URLs found in picture URLs.")
+            # Skip save when no valid URLs - avoid failing the whole generation.
+            # Clear invalid URLs and update project with empty list.
+            self.value.urls.clear()
+            return project_dao.update_project_component(
+                project_id, self.component_identify.value, self.value
+            )
 
         for url in valid_urls:
             fetch_images_tasks.append(
